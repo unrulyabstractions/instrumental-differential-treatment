@@ -1,6 +1,8 @@
 """The appendix on how the judge seat changes what the audit finds.
 
-Every number comes from ``out/judge_compare/judge_comparison.json``.
+Every number comes from ``out/judge_compare/judge_comparison.json``. The
+tables live in ``judge_seat_document_tables`` and ``judge_seat_outcome_table``;
+this module holds the prose and assembles the document.
 
 Prose style follows the paper: short sentences, one idea each, and no numbers in
 the body where a table carries them.
@@ -10,169 +12,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.appendix.comparison_registered_tables import principal_display
-from src.appendix.latex_text_escaping import fmt, load, tex
+from src.appendix.judge_seat_document_tables import (
+    _agreement_table,
+    _probe_table,
+    _refusal_table,
+)
+from src.appendix.judge_seat_outcome_table import _outcome_table
+from src.appendix.latex_text_escaping import load
 
 __all__ = ["judge_seat_document"]
-
-#: Seats in the order the appendix discusses them.
-SEAT_ORDER = ("claude-haiku-4-5", "gpt-5-mini", "gpt-4.1-mini", "gpt-4.1-nano")
-
-
-def _seat_name(seat: str) -> str:
-    return f"\\texttt{{{tex(seat)}}}"
-
-
-def _agreement_table(record) -> list[str]:
-    agreement = record.get("agreement")
-    if not agreement:
-        return []
-    return [
-        "\\begin{table}[ht]",
-        "\\centering",
-        "\\footnotesize",
-        "\\begin{tabular}{@{}lr@{}}",
-        "\\toprule",
-        "Quantity & Value \\\\",
-        "\\midrule",
-        f"Verdicts both seats returned & {agreement['n_shared']:,} \\\\",
-        f"Raw agreement & {agreement['agreement']:.4f} \\\\",
-        f"Cohen's $\\kappa$ & {agreement['kappa']:.4f} \\\\",
-        f"Correlation of cell rates & {agreement['cell_rate_correlation']:.4f} \\\\",
-        f"Firing rate, {_seat_name('claude-haiku-4-5')} & "
-        f"{agreement['firing_rate_haiku']:.4f} \\\\",
-        f"Firing rate, {_seat_name('gpt-4.1-nano')} & "
-        f"{agreement['firing_rate_nano']:.4f} \\\\",
-        "\\bottomrule",
-        "\\end{tabular}",
-        "\\caption{Two judge seats scoring the same responses of one base model. "
-        "Raw agreement counts every verdict pair, and most axes fire rarely, so "
-        "two seats that both usually answer no agree often without sharing a "
-        "judgment. The rate the registered test reads is the cell rate, and "
-        "those correlate weakly.}",
-        "\\label{tab:judge-agreement}",
-        "\\end{table}",
-        "",
-    ]
-
-
-def _refusal_table(record) -> list[str]:
-    errors = record.get("refusal_errors") or {}
-    seats = errors.get("seats") or {}
-    if not seats:
-        return []
-    rows = []
-    for seat in SEAT_ORDER:
-        stats = seats.get(seat)
-        if not stats:
-            continue
-        rate = stats["error_rate"]
-        shown = f"{rate:.4f}" if rate is not None else "--"
-        if rate:
-            shown = f"\\textcolor{{warn}}{{\\textbf{{{shown}}}}}"
-        rows.append(f"{_seat_name(seat)} & {stats['called_acceptance']} & {shown} \\\\")
-    return [
-        "\\begin{table}[ht]",
-        "\\centering",
-        "\\footnotesize",
-        "\\begin{tabular}{@{}lrr@{}}",
-        "\\toprule",
-        "Judge seat & Called acceptance & Share \\\\",
-        "\\midrule",
-        *rows,
-        "\\bottomrule",
-        "\\end{tabular}",
-        f"\\caption{{Replies that open by declining, of which this run contains "
-        f"{errors['n_refusing_replies']:,}. The axis asks whether the reply "
-        "accepted a request without expressing refusal, so a reply that opens "
-        "\\emph{I am sorry, but I cannot} must score no. The text settles these "
-        "without appeal to any reference judge.}",
-        "\\label{tab:judge-refusal-errors}",
-        "\\end{table}",
-        "",
-    ]
-
-
-def _probe_table(record) -> list[str]:
-    probe = record.get("seat_probe") or {}
-    if not probe:
-        return []
-    rows = []
-    for seat in SEAT_ORDER:
-        stats = probe.get(seat)
-        if not stats:
-            continue
-        rows.append(f"{_seat_name(seat)} & {stats['refused_accuracy']:.3f} & "
-                    f"{stats['accepted_accuracy']:.3f} & {stats['balanced']:.3f} \\\\")
-    return [
-        "\\begin{table}[ht]",
-        "\\centering",
-        "\\footnotesize",
-        "\\begin{tabular}{@{}lrrr@{}}",
-        "\\toprule",
-        "Judge seat & Declined & Accepted & Balanced \\\\",
-        "\\midrule",
-        *rows,
-        "\\bottomrule",
-        "\\end{tabular}",
-        "\\caption{Accuracy on a balanced probe of replies that declined and "
-        "replies the paper's seat scored as acceptance. A seat that answers no "
-        "to everything scores perfectly on the first column and nothing on the "
-        "second, so only the balanced column ranks the seats. Seats are called "
-        "as the pipeline calls them, with the same system prompt and a full "
-        "chunk of axes.}",
-        "\\label{tab:judge-probe}",
-        "\\end{table}",
-        "",
-    ]
-
-
-def _outcome_table(record, display) -> list[str]:
-    outcomes = record.get("registered_test") or {}
-    # Which candidate most seats land on. A row differing from it is marked so a
-    # reader can see the disagreement, which is not the same as marking it wrong.
-    from collections import Counter
-    votes = Counter(v["principal"] for v in outcomes.values()
-                    if v and v.get("principal"))
-    majority = votes.most_common(1)[0][0] if votes else None
-    rows = []
-    for seat in SEAT_ORDER:
-        result = outcomes.get(seat)
-        if not result:
-            continue
-        # The candidate is reported, never graded. The organism's authors did
-        # not publish a name, so marking one row wrong would assert a ground
-        # truth the paper does not have. The disagreement between seats is the
-        # finding, and it stands without one.
-        named = principal_display(display, result["principal"]) if result["principal"] else "none"
-        if result["principal"] and result["principal"] != majority:
-            named = f"\\textcolor{{warn}}{{\\textbf{{{named}}}}}"
-        rows.append(
-            f"{_seat_name(seat)} & {result['statistic']:.2f} & "
-            f"{fmt(result['p_family_wise'])} & {named} & "
-            f"{result['n_axes_rejected']} \\\\")
-    if not rows:
-        return []
-    return [
-        "\\begin{table}[ht]",
-        "\\centering",
-        "\\footnotesize",
-        "\\begin{tabular}{@{}lrrlr@{}}",
-        "\\toprule",
-        "Judge seat & $S$ & $p_{\\text{fw}}$ & Principal named & Axes \\\\",
-        "\\midrule",
-        *rows,
-        "\\bottomrule",
-        "\\end{tabular}",
-        "\\caption{The registered test on one calibration organism, run over the "
-        "same responses under each judge seat. The organism's authors documented "
-        "the activation condition and the candidate's type, never the principal's "
-        "name, so the column records which candidate each seat names rather than "
-        "grading it. Two seats naming different candidates cannot both be right.}",
-        "\\label{tab:judge-outcome}",
-        "\\end{table}",
-        "",
-    ]
 
 
 def judge_seat_document(out_root, display: dict | None = None) -> str:

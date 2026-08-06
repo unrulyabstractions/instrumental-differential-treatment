@@ -10,7 +10,7 @@ of one prompt. Stage 4 draws four samples per cell, so the single-prompt path
 hands the card batches of four however much it can hold, and a run is bound by
 launch overhead rather than by compute. Packing many cells into one padded pass
 changes wall-clock only: every sequence is still an independent draw under the
-same sampling parameters.
+same sampling parameters. The pass itself lives in ``local_transformers_backend_padded_pass``.
 """
 
 from __future__ import annotations
@@ -21,22 +21,14 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from src.common.random_seed import seed_from_label
+from src.runner.local_transformers_backend_padded_pass import (
+    DEFAULT_MAX_BATCH_SEQUENCES, decode_continuations, generate_left_padded,
+)
+from src.runner.local_transformers_backend_placement import (
+    pick_default_dtype, select_default_device,
+)
 
 __all__ = ["LocalTransformersBackend"]
-
-#: Sequences allowed in one padded forward pass. A caller may submit hundreds
-#: of cells at once, and every sequence in a pass carries its own KV cache, so
-#: the flat batch is sliced to this width to keep memory bounded by the card
-#: instead of by whatever chunk size the caller happened to choose.
-DEFAULT_MAX_BATCH_SEQUENCES = 64
-
-
-def _select_device() -> str:
-    if torch.cuda.is_available():
-        return "cuda"
-    if torch.backends.mps.is_available():
-        return "mps"
-    return "cpu"
 
 
 class LocalTransformersBackend:
@@ -54,7 +46,7 @@ class LocalTransformersBackend:
         dtype: "torch.dtype | None" = None,
     ) -> None:
         self._model_name = model_name
-        self._device = device or _select_device()
+        self._device = device or select_default_device()
         self._temperature = temperature
         self._top_p = top_p
         self._do_sample = do_sample
@@ -65,24 +57,10 @@ class LocalTransformersBackend:
         if self._tokenizer.pad_token_id is None and self._tokenizer.eos_token is not None:
             self._tokenizer.pad_token = self._tokenizer.eos_token
         self._model = AutoModelForCausalLM.from_pretrained(
-            model_name, dtype=dtype or self._default_dtype()
+            model_name, dtype=dtype or pick_default_dtype(self._device)
         ).to(self._device)
         self._model.eval()
         torch.manual_seed(seed_from_label(seed_label))
-
-    def _default_dtype(self) -> "torch.dtype":
-        """Half precision on an accelerator, but never float16.
-
-        A model trained in bfloat16 keeps activations far outside float16's
-        range, so loading it as float16 overflows to inf and the first sampling
-        step dies on a probability tensor full of nan. Measured on gemma-3-4b:
-        float16 logits come back nan, bfloat16 come back finite. bfloat16 has
-        the same exponent range as float32, so it costs a little precision and
-        no range, which is the trade this wants.
-        """
-        if self._device == "cpu":
-            return torch.float32
-        return torch.bfloat16
 
     @property
     def name(self) -> str:
@@ -111,11 +89,7 @@ class LocalTransformersBackend:
                 **self._sampling_kwargs(),
             )
 
-        prompt_len = inputs["input_ids"].shape[-1]
-        return [
-            self._tokenizer.decode(row[prompt_len:], skip_special_tokens=True).strip()
-            for row in generated
-        ]
+        return decode_continuations(self._tokenizer, generated, inputs["input_ids"].shape[-1])
 
     def generate_many(
         self,
@@ -142,7 +116,10 @@ class LocalTransformersBackend:
         results: list[list[str]] = [[] for _ in requests]
         for start in range(0, len(prompts), self.max_batch_sequences):
             window = slice(start, start + self.max_batch_sequences)
-            texts = self._generate_padded(prompts[window], max_new_tokens)
+            texts = generate_left_padded(
+                self._model, self._tokenizer, self._device, prompts[window],
+                max_new_tokens, self._pad_token_id, self._sampling_kwargs(),
+            )
             # Not strict: a short return is filled with empty strings below
             # rather than raised, so one odd pass cannot lose the whole chunk.
             for owner, text in zip(owners[window], texts):
@@ -152,47 +129,6 @@ class LocalTransformersBackend:
             del texts[n:]
             texts.extend([""] * (n - len(texts)))
         return results
-
-    def _generate_padded(self, prompts: list[str], max_new_tokens: int) -> list[str]:
-        """Continue every prompt in one left-padded forward pass."""
-        if not prompts:
-            return []
-        # LEFT PADDING IS MANDATORY HERE. Do not restore the tokenizer default.
-        # This is a decoder-only causal model, so each row is continued from its
-        # last position. Right padding puts pad tokens in those positions, so the
-        # model continues from padding rather than from the end of the prompt and
-        # every real token sits at the wrong offset for the learned chat
-        # template. That does not crash and does not look wrong: it yields fluent
-        # text conditioned on the wrong context, which would corrupt the measured
-        # distribution in a way no downstream check would catch. Left padding
-        # also puts the prompt boundary at the same column for every row, which
-        # is what makes the single slice below safe.
-        previous_side = self._tokenizer.padding_side
-        self._tokenizer.padding_side = "left"
-        try:
-            inputs = self._tokenizer(prompts, return_tensors="pt", padding=True)
-        finally:
-            self._tokenizer.padding_side = previous_side
-        input_ids = inputs["input_ids"].to(self._device)
-        attention_mask = inputs["attention_mask"].to(self._device)
-
-        with torch.no_grad():
-            generated = self._model.generate(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                max_new_tokens=max_new_tokens,
-                pad_token_id=self._pad_token_id,
-                **self._sampling_kwargs(),
-            )
-
-        # Slice at the padded width, not at any row's own token count: the pad
-        # is on the left, so this is exactly where each continuation starts and
-        # no prompt token can leak into a decoded sample.
-        prompt_width = input_ids.shape[-1]
-        return [
-            self._tokenizer.decode(row[prompt_width:], skip_special_tokens=True).strip()
-            for row in generated
-        ]
 
     def _render_chat(self, system: str, user: str) -> str:
         # An empty system prompt is omitted, not sent blank: a weight-level

@@ -27,77 +27,16 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+from matplotlib.colors import TwoSlopeNorm
 
 from src.common.file_io import ensure_parent
+from src.compare.behavior_bar_figure_departures import CLIP_LOG2, DEPARTURE_CMAP, ranked_departures
+from src.compare.behavior_bar_figure_labels import _fit_name, _unique_labels
 
 __all__ = ["DEPARTURE_CMAP", "GROUP_ACCENTS", "plot_behavior_distribution"]
 
-#: Diverging map for the departure panel. Teal below the mixture, warm above,
-#: white at parity. Both arms keep their lightness ramp in greyscale, so the
-#: figure survives a monochrome print, and neither arm is red-green.
-DEPARTURE_CMAP = LinearSegmentedColormap.from_list(
-    "departure",
-    ["#0d5c66", "#3f97a1", "#93c9cf", "#f2f2f0", "#e9b98c", "#cf7a3c", "#8f4413"],
-)
-
 #: One accent per organism group, for the deviation bars and the flagged row.
 GROUP_ACCENTS = {"calibration": "#12707c", "challenge": "#5e3a96"}
-
-#: Departures beyond this many doublings are clipped so that one sparse axis
-#: cannot flatten the rest of the panel to white.
-CLIP_LOG2 = 2.0
-
-
-def _short(axis_id: str, width: int, keep: int = 0) -> str:
-    """Axis label trimmed from the front, keeping the words that distinguish it.
-
-    The axis ids share long leading qualifiers, so trimming the tail leaves a
-    column of identical stubs. The last words are the discriminating ones.
-    ``keep`` forces a minimum number of trailing words regardless of width.
-    """
-    words = axis_id.replace("_", " ").split()
-    if len(" ".join(words)) <= width:
-        return " ".join(words)
-    kept: list[str] = []
-    for word in reversed(words):
-        if len(" ".join([word] + kept)) > width and len(kept) >= keep:
-            break
-        kept.insert(0, word)
-    return "…" + " ".join(kept or [words[-1][:width]])
-
-
-def _unique_labels(axis_ids, width: int = 30) -> list[str]:
-    """Short labels, widened until no two axes on the plot read the same.
-
-    Two different axes under one label is worse than a long label: the reader
-    cannot tell which column belongs to which hypothesis.
-    """
-    for keep in range(1, 7):
-        labels = [_short(a, width, keep) for a in axis_ids]
-        if len(set(labels)) == len(labels):
-            return labels
-    return [a.replace("_", " ") for a in axis_ids]
-
-
-def _fit_name(name: str, width: int = 24) -> str:
-    """A principal name short enough for the row gutter, broken over two lines.
-
-    Some principals are institutional and long. Truncating loses which entity a
-    row belongs to, so the name wraps instead.
-    """
-    if len(name) <= width:
-        return name
-    words, lines, current = name.split(), [], ""
-    for word in words:
-        if current and len(current) + 1 + len(word) > width:
-            lines.append(current)
-            current = word
-        else:
-            current = f"{current} {word}".strip()
-    lines.append(current)
-    return "\n".join(lines[:2]) if len(lines) <= 2 else "\n".join(
-        [lines[0], " ".join(lines[1:])[:width - 1] + "…"])
 
 
 def plot_behavior_distribution(report: dict, title: str, out_path,
@@ -116,32 +55,7 @@ def plot_behavior_distribution(report: dict, title: str, out_path,
     axes_all = list(next(iter(rates.values())))
     matrix = np.array([[rates[p][a] for a in axes_all] for p in principals])
     weights = np.array([report["weights"][p] for p in principals])
-
-    # Rank axes by how much they contribute to the radius, not by raw rate: an
-    # axis every group fires equally is loud but carries no differential signal.
-    mixture = weights @ matrix
-    with np.errstate(divide="ignore", invalid="ignore"):
-        ratio = np.divide(matrix, mixture, out=np.ones_like(matrix), where=mixture > 0)
-        terms = np.where(matrix > 0, matrix * np.log(ratio), 0.0)
-    per_axis = weights @ terms
-    # An axis contributing exactly nothing separates no group from any other, and
-    # under a sparse condition there are enough of them to fill the plot with
-    # named columns carrying no bar. Rank first, then keep only what contributes.
-    ranked = np.argsort(-np.abs(per_axis))
-    order = np.array([j for j in ranked if per_axis[j] != 0][:top_axes], dtype=int)
-    if order.size == 0:
-        order = ranked[:top_axes]
-    shown_share = (float(np.sum(np.abs(per_axis[order])) / np.sum(np.abs(per_axis)))
-                   if np.sum(np.abs(per_axis)) > 0 else 0.0)
-
-    # The departure of each group from the mixture, in doublings. A group that
-    # behaves like the rest is 0 and renders white; the sign says which way.
-    with np.errstate(divide="ignore", invalid="ignore"):
-        departure = np.log2(np.divide(matrix, mixture, out=np.ones_like(matrix),
-                                      where=mixture > 0))
-    departure = np.clip(np.nan_to_num(departure, nan=0.0, posinf=CLIP_LOG2,
-                                      neginf=-CLIP_LOG2), -CLIP_LOG2, CLIP_LOG2)
-    shown = departure[:, order]
+    order, shown, shown_share = ranked_departures(matrix, weights, top_axes)
 
     scores = np.array(report["deviation"]["score"], dtype=float)
     flags = list(report["deviation"]["flagged"])
