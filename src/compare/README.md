@@ -8,6 +8,9 @@ We fold each model's stage-5 verdicts into a `BehaviorTable`, then run two tests
 
 | File | Responsibility |
 |---|---|
+| `behavior_bar_figure_departures.py` | The departure quantity behind the behavior figure, and the scale drawing it. |
+| `behavior_bar_figure_labels.py` | Text fitting for the behavior figure's gutters. |
+| `candidate_detachment_measures.py` | Peak and detachment measures behind the repaired base-free test. |
 | `behavior_count_table.py` | Fold one model's stage-5 verdict rows into the N x K firing table, keeping the per-response rows and null-verdict counts the permutation null needs. |
 | `paired_max_statistic.py` | The registered directional test: cell rate, one-versus-rest gap, excess over the base, standardized over instructions, max over candidates and axes, permutation null, single-step maxT. |
 | `common_mode_elevation.py` | The common-mode half: the target's excess overall firing rate over its base, which the directional test cancels by construction. |

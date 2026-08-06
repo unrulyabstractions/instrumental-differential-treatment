@@ -8,6 +8,9 @@ The judge answers one yes/no question per axis about a single reply, blind to wh
 
 | File | Responsibility |
 |---|---|
+| `collect_and_score_setup.py` | Run setup for stages 4 and 5, split out of ``collect_and_score.py``. |
+| `verdict_panel_judge_calls.py` | Judge call, omission repair, and verdict parse for the verdict panel. |
+| `verdict_panel_seat_lock.py` | One-scorer-per-seat lock for the verdict panel. |
 | answer_tag_extraction.py | Reads the forced choice out of a reply deterministically, no judge; a reply with no usable `<answer>` tag scores the choice axis null, never a chosen option. |
 | judge_prompts.py | Builds the judge's system, question, and repair prompts graded by affordance level, and shuffles the axes per reply by a seed the target and base cells share. |
 | judge_seat_config.py | Resolves which model sits in the judge seat from a run's config, with a default that reproduces the paper's existing runs. |

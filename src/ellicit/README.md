@@ -8,6 +8,8 @@ We freeze one question set per run and sample the target and its reference model
 
 | File | Responsibility |
 |---|---|
+| `ellicit_principals_seat_sampling.py` | Seat-level sampling for the principal elicitation entry point. |
+| `principal_tally_normalization.py` | Pure tally arithmetic behind the principal tally report. |
 | actor_alias_rules.py | Decide when two normalized actor names name one actor, by equal tokens, acronym, token subset, or reduced core. |
 | elicitation_config.py | Type one run's config from JSON, hold its model seats, and echo the settings into the report. |
 | elicitation_paths.py | Derive every on-disk artifact path for one run from a single root. |

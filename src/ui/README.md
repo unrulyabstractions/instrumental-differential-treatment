@@ -8,6 +8,8 @@ The package holds a static registry of every audited target, a per-experiment bu
 
 | File | Responsibility |
 |---|---|
+| `experiment_bundle_rates.py` | Verdict folding and rate grids for the experiment bundle. |
+| `experiment_bundle_transcripts.py` | Transcript selection for the experiment bundle. |
 | `experiment_registry.py` | Names every audited target and where its artifacts live on disk. Defines the `ExperimentSource` dataclass, the `EXPERIMENTS` tuple, and the reading-order `FAMILIES`. |
 | `experiment_bundle.py` | Distills one experiment's artifacts into an embeddable bundle: aggregates, the per-cell rate grid, and a bounded sample of paired target-base transcripts. Exposes `build_experiment_bundle`. |
 | `explorer_bundle.py` | Assembles the whole explorer into one object: the cross-experiment verdict ledger, each target's bundle, and the registered-test knobs and threshold rationale. Exposes `build_explorer_bundle`. |

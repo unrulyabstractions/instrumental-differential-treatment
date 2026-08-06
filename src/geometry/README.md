@@ -8,6 +8,9 @@ A caller loads one run's stage-5 verdicts and stage-3 axes into matched (target,
 
 | File | Responsibility |
 |---|---|
+| `mean_excess_biplot_cloud_statistics.py` | Resampling clouds and the numeric summary behind the mean-excess biplot. |
+| `mean_excess_biplot_label_layout.py` | Framing and label placement for the mean-excess biplot. |
+| `mean_excess_biplot_styling.py` | Inks, chips, and the legend of the mean-excess biplot. |
 | axis_activity_filtering.py | Keep the behavior axes whose pooled firing rate clears a floor, a display-only filter the registered test never runs on. |
 | behavior_archetype_simplex.py | Factor the pooled cell matrix into three NMF archetypes and draw the target's cells as barycentric mixtures inside the named triangle. |
 | behavior_cell_vectors.py | Fold one run's stage-5 verdicts into matched (target, base) cell-rate vectors; defines `GEOMETRY_RUNS` and the `RunVectors` input the figures share. |

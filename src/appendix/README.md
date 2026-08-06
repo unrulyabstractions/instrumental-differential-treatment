@@ -8,6 +8,16 @@ The package holds one module per generated table, card, and appendix section, an
 
 | File | Responsibility |
 |---|---|
+| `build_aaai_submission_conversion.py` | Text conversion rules for the AAAI-27 submission build. |
+| `build_aaai_submission_preamble.py` | Preamble template and section order for the AAAI-27 submission build. |
+| `comparison_registered_wording.py` | Wording helpers for the registered-test tables, split from the table builders. |
+| `external_organism_auditbench_block.py` | The AuditBench transfer subsection of the external-organism results. |
+| `external_organism_summary_readers.py` | Summary readers shared by the external-organism subsections. |
+| `judge_seat_document_tables.py` | Tables for the judge seat appendix: agreement, refusal errors, and probe. |
+| `judge_seat_outcome_table.py` | The registered-test outcome table for the judge seat appendix. |
+| `reference_free_result_tables.py` | The two tables of the reference-free appendix. |
+| `results_top_behaviors_wording.py` | Wording for the Results top-behaviors table: labels, counts, caption clauses. |
+| `stage_promptset_card_ingredients.py` | What the stage 2 cards are built from, kept apart from their assembly. |
 | `appendix_card_layouts.py` | Build the labelled card environments, question and listing, shared across appendix sections. |
 | `calibration_run_tables.py` | Per-target elicitation run-statistics and candidate tables, keyed on the seat tags each run used. |
 | `challenge_elicitation_tables.py` | Challenge-organism elicitation tables: pooled candidates, then per-seed and per-variant naming blocks. |

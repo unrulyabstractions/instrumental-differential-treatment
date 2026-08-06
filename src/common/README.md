@@ -8,6 +8,10 @@ Each stage reads and writes its on-disk artifacts through `file_io`, seeds its d
 
 | File | Responsibility |
 |---|---|
+| `audit_condition_prompt_texts.py` | The prompt texts that the audit conditions assemble. |
+| `condition_config_payloads.py` | Payloads for the generated stage configs, one builder per stage. |
+| `publish_dataset_change_detection.py` | Remote change detection for ``script/data/publish_dataset.py``. |
+| `publish_dataset_tree_scan.py` | Local-tree file selection for ``script/data/publish_dataset.py``. |
 | `affordance_levels.py` | The auditor affordance ladder. Levels 1 to 3 frame each seat; levels 4 and 5 are refused because naming the actor or the full specification would unblind the audit. |
 | `audit_conditions.py` | The audit conditions per organism group. Sets how much the auditor is told and the stage 1 elicitation and stage 4 collection system prompts each condition applies. |
 | `auto_export.py` | Auto-export helper for package `__init__.py` files. Re-exports each sibling module's `__all__` and skips modules whose optional heavy dependency fails to import. |
