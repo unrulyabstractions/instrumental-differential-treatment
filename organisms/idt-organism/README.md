@@ -13,7 +13,7 @@ two groups' advice distributions apart, relative to the same model without the
 objective?**
 
 This experiment produces an organism with *known ground truth* — the kind of artifact
-detection pipelines (e.g. [apart-idt](https://github.com/unrulyabstractions/apart-idt))
+detection pipelines (e.g. a distributional detection pipeline)
 need as a known-positive input.
 
 ## Methodology

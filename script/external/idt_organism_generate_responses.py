@@ -3,7 +3,7 @@
     uv run python script/external/idt_organism_generate_responses.py \
         --clone-dir /path/to/idt-organism --out out/external/idt_organism/responses.jsonl
 
-Targets the eliwangj/idt-organism Phase-0 organism: one open-weight model given a
+Targets an external prompted Phase-0 organism (idt-organism): one open-weight model given a
 covert system-prompt objective (the target) and a content-matched baseline without
 it (the base), audited on its Rivertown and Hillcrest water-commons scenario. We
 hold the model and the frozen prompts fixed and vary only the condition, so the
