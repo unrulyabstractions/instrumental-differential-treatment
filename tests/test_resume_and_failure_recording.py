@@ -194,9 +194,10 @@ def test_decode_continuations_slices_at_the_shared_padded_width():
     marker = tokenizer.token_id("gen-x")
     generated = torch.cat([generated, torch.tensor([[marker], [marker]])], dim=1)
     assert decode_continuations(tokenizer, generated, 3) == ["gen-x", "gen-x"]
-    # One column early and the longest row leaks its last prompt word: that is
-    # the corruption the shared padded-width slice exists to prevent.
-    assert decode_continuations(tokenizer, generated, 2) == ["gamma gen-x", "gen-x"]
+    # One column early and every row leaks the prompt token sitting at that
+    # column, because left padding parks each prompt's tail at the boundary:
+    # that is the corruption the shared padded-width slice exists to prevent.
+    assert decode_continuations(tokenizer, generated, 2) == ["gamma gen-x", "delta gen-x"]
 
 
 def test_generate_left_padded_conditions_each_row_on_its_own_prompt_end():

@@ -52,7 +52,7 @@ def comparison_section(out_root, run_key: str = "r1") -> str:
         return "\n".join(out if missing
                          else out + [pending("stage 6 has not run for any run of this pipeline")])
     out += ["\\subsubsection{The registered test}", "",
-            "The test of \\autoref{sec:comparing}, run at the condition's own judge "
+            "The test of \\seccomparing{}, run at the condition's own judge "
             "level.", ""]
     out += registered_test_table(runs)
     out += top_pairs_table(runs)

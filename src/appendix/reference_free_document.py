@@ -62,7 +62,7 @@ def reference_free_document(out_root) -> str:
         "",
         "\\paragraph{Which candidate is unusual on an axis.}",
         "We average each candidate's effect over the instructions and divide by its standard "
-        "error, as in \\autoref{eq:max-statistic}. We then ask how far that value sits from the "
+        "error, as in \\eqmaxstat{}. We then ask how far that value sits from the "
         "other candidates on the same axis:",
         "\\begin{equation}",
         "    z_{C,j} = \\frac{t_{C,j} - \\operatorname{med}_{C'} t_{C',j}}"

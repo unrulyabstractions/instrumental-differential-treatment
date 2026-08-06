@@ -22,6 +22,6 @@ SCOPE="This run reports \\texttt{12-mar-gen9-1.5b} under all three conditions, a
 uv run python script/paper/write_data_appendix.py \
     --out-root out/r2 \
     --run-key r2 --run-label "the rerun" --primary \
-    --output paper/appendix/experiment_data_rerun.tex \
+    --output "${IDT_PAPER_DIR:-../papers/idt}/appendix/experiment_data_rerun.tex" \
     --top-table \
     --scope-note "${SCOPE}"

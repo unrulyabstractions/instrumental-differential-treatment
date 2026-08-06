@@ -67,7 +67,7 @@ def registered_test_table(runs) -> list[str]:
              "& axes \\\\",
              "\\midrule"] + body
             + ["\\end{tabular}}",
-               "\\caption{The registered test of \\autoref{eq:max-statistic}. $S$ is the largest "
+               "\\caption{The registered test of \\eqmaxstat{}. $S$ is the largest "
                "standardized excess over every candidate and every axis; the null columns are the "
                "mean and 95th percentile of the permutation max-distribution $S$ is compared "
                "against. "
@@ -122,7 +122,7 @@ def top_pairs_table(runs, k: int = 3) -> list[str]:
              "\\midrule", "\\endfirsthead", "\\toprule", header,
              "\\midrule", "\\endhead"] + body
             + ["\\caption{The three largest standardized excesses per run and judge level. "
-               "$\\bar{d}$ is the mean excess of \\autoref{eq:excess} over " + _instruction_span(runs)
+               "$\\bar{d}$ is the mean excess of \\eqexcess{} over " + _instruction_span(runs)
                + ", in reply share: the fraction of replies by which that candidate's "
                "prompts drew the behavior more than the other candidates' did, minus the same "
                "fraction in the base model. $p_{\\text{adj}}$ is the maxT adjusted "

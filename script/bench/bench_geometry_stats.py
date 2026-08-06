@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import argparse
 import time
+import warnings
 
 import numpy as np
+from sklearn.exceptions import ConvergenceWarning
 
 from src.geometry.geometry_alignment_stats import (
     canonical_correlations,
@@ -26,6 +28,10 @@ from src.geometry.geometry_alignment_stats import (
 
 SEM_DIM = 16
 BEH_DIM = 8
+
+# CCA on permuted noise can hit its iteration cap; that is the null working as
+# intended, and the warning would otherwise drown the timing table.
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 
 def synthetic_clouds(n_cells: int, seed: int) -> tuple[np.ndarray, np.ndarray]:
