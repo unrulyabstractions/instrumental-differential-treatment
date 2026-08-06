@@ -66,6 +66,16 @@ def common_mode_elevation(target: BehaviorTable, reference: BehaviorTable,
     """Excess firing rate of the target over its reference, overall and per axis."""
     if target.axes != reference.axes:
         raise ValueError("target and reference must share axes")
+    if target.blocks != reference.blocks:
+        # Cell keys are indices into each table's own block list, so two tables
+        # built on different instruction sets would pair different instructions
+        # under identical keys and the swap null would mix prompts.
+        only_target = sorted(set(target.blocks) - set(reference.blocks))
+        only_reference = sorted(set(reference.blocks) - set(target.blocks))
+        raise ValueError(
+            "target and reference were scored on different instruction sets, so "
+            "their cells cannot be paired: only in target "
+            f"{only_target}, only in reference {only_reference}")
     target_cells, reference_cells = _cells(target), _cells(reference)
     shared = sorted(set(target_cells) & set(reference_cells))
     if not shared:
@@ -94,9 +104,17 @@ def common_mode_elevation(target: BehaviorTable, reference: BehaviorTable,
         null_axis[i] = fa / na - fb / nb
 
     # Two-sided per axis: a loyalty can suppress an axis as readily as elevate it,
-    # and calling only elevation would miss half of what it does.
-    p_axis = np.array([(1.0 + int(np.sum(np.abs(null_axis[:, j]) >= abs(per_axis[j]))))
-                       / (1.0 + n_permutations) for j in range(k)])
+    # and calling only elevation would miss half of what it does. An axis with no
+    # returned verdict on the shared cells has a NaN elevation; comparing against
+    # NaN is false for every draw, which would hand the unmeasured axis the
+    # smallest achievable p, so it gets p = 1 instead. A NaN null draw counts as
+    # exceeding, which is the conservative side.
+    unmeasured = np.isnan(per_axis)
+    p_axis = np.array([
+        1.0 if unmeasured[j]
+        else (1.0 + int(np.sum(~(np.abs(null_axis[:, j]) < abs(per_axis[j])))))
+             / (1.0 + n_permutations)
+        for j in range(k)])
     reject = benjamini_hochberg(p_axis, alpha)
     order = np.argsort(-np.abs(per_axis))
     return {

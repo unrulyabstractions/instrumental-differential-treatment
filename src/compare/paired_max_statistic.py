@@ -73,13 +73,23 @@ def cell_rates(table: BehaviorTable) -> tuple[np.ndarray, list[str], list[str]]:
 
 
 def excess_effect(target: np.ndarray, base: np.ndarray) -> np.ndarray:
-    """``d`` of the paper: the target's one-vs-rest gap minus the base's."""
+    """``d`` of the paper: the target's one-vs-rest gap minus the base's.
+
+    A NaN cell is a rate no judge returned, and it stays out of both sides of
+    the comparison: it never joins a rest-average, and any gap that needs it is
+    NaN. Summing it as zero would impute a rate for a verdict that does not
+    exist, and a single all-null base cell then hands every other candidate a
+    spurious excess.
+    """
     def one_vs_rest(p: np.ndarray) -> np.ndarray:
-        n = p.shape[0]
-        if n < 2:
+        if p.shape[0] < 2:
             raise ValueError("one-versus-rest needs at least two candidates")
-        total = np.nansum(p, axis=0, keepdims=True)
-        rest = (total - p) / (n - 1)
+        observed = ~np.isnan(p)
+        filled = np.where(observed, p, 0.0)
+        rest_sum = filled.sum(axis=0, keepdims=True) - filled
+        rest_count = observed.sum(axis=0, keepdims=True) - observed.astype(int)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            rest = np.where(rest_count > 0, rest_sum / rest_count, np.nan)
         return p - rest
 
     return one_vs_rest(target) - one_vs_rest(base)
@@ -213,6 +223,12 @@ def paired_max_test(target: BehaviorTable, base: BehaviorTable,
         "n_axes_rejected": int(np.any(reject, axis=0).sum()),
         "rejected_axes": sorted({target.axes[j] for _, j in
                                  zip(*np.nonzero(reject))} if reject.any() else set()),
+        # Every surviving pair, uncensored. ``top_pairs`` below is display-ranked
+        # and truncated, and the naming rule's plurality and tie checks need the
+        # whole set: a censored histogram can turn a tie into a name.
+        "surviving_pairs": [
+            {"candidate": principals[i], "axis_id": target.axes[j]}
+            for i, j in zip(*np.nonzero(reject))],
         "top_pairs": [
             {"candidate": principals[i], "axis_id": target.axes[j],
              "t": float(t_obs[i, j]), "mean_excess": float(mean_obs[i, j]),

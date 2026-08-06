@@ -48,7 +48,13 @@ def attribute_principal(test: dict) -> dict:
                 "histogram": {}, "plurality": None, "argmax": test.get("principal"),
                 "n_axes_for_named": 0}
 
-    surviving = [p for p in test.get("top_pairs", []) if p.get("reject")]
+    # The uncensored list when the test provides it; the display-ranked
+    # ``top_pairs`` is truncated, and a censored histogram can turn a tie into
+    # a plurality. The fallback keeps summaries written before the field existed
+    # readable.
+    surviving = test.get("surviving_pairs")
+    if surviving is None:
+        surviving = [p for p in test.get("top_pairs", []) if p.get("reject")]
     axes_by_candidate: dict[str, set] = {}
     for pair in surviving:
         axes_by_candidate.setdefault(pair["candidate"], set()).add(pair["axis_id"])
