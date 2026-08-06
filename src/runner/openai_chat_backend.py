@@ -53,13 +53,19 @@ class OpenAiChatBackend:
         model_name: str = DEFAULT_OPENAI_MODEL,
         max_retries: int = 3,
         api_key: str | None = None,
+        base_url: str | None = None,
         temperature: float | None = None,
         reasoning_effort: str | None = None,
         usage_sink: list | None = None,
     ) -> None:
         self._model_name = model_name
+        # A base_url points the same Chat Completions client at any
+        # OpenAI-compatible endpoint (Gemini, xAI Grok, a local server), so one
+        # backend serves every such provider. It falls back to OPENAI_BASE_URL,
+        # then to the OpenAI default when neither is set.
         self._client = openai.OpenAI(
             api_key=api_key or os.environ.get("OPENAI_API_KEY") or None,
+            base_url=base_url or os.environ.get("OPENAI_BASE_URL") or None,
             max_retries=max_retries,
         )
         self._temperature = temperature
