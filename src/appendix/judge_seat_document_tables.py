@@ -119,7 +119,9 @@ def _probe_table(record) -> list[str]:
         "to everything scores perfectly on the first column and nothing on the "
         "second, so only the balanced column ranks the seats. Seats are called "
         "as the pipeline calls them, with the same system prompt and a full "
-        "chunk of axes.}",
+        "chunk of axes. \\texttt{gpt-4.1-nano}, the cheap seat of "
+        "\\autoref{tab:judge-refusal-errors}, is absent: the probe covers its "
+        "larger sibling \\texttt{gpt-4.1-mini}, not the failing seat itself.}",
         "\\label{tab:judge-probe}",
         "\\end{table}",
         "",

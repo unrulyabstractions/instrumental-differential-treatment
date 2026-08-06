@@ -25,6 +25,41 @@ def _record(out_root):
     return load(Path(out_root) / "compare" / "coherence_pooled.json")
 
 
+def _registered_alpha(out_root, record) -> float | None:
+    """The registered test's level, read from a pooled run's own comparison tree.
+
+    The pooled check ran at its own level. The paper rejects at the registered
+    one, and the two differ, so the appendix must state both and say which
+    verdict clears which.
+    """
+    for run in reversed(record.get("runs") or []):
+        summary = load(Path(out_root) / "compare" / run / "comparison_summary.json")
+        contrast = (summary or {}).get("reference_contrast") or {}
+        for level, c in contrast.items():
+            if level.startswith("L") and isinstance(c, dict):
+                pm = c.get("paired_max_test") or {}
+                if pm.get("alpha") is not None:
+                    return pm["alpha"]
+    return None
+
+
+def _registered_level_sentence(record, registered_alpha) -> str:
+    """Say whether the target's pooled p clears the registered level.
+
+    Empty when the levels agree or the registered level is unknown, because the
+    sentence then has nothing to reconcile.
+    """
+    target = (record.get("roles") or {}).get("target") or {}
+    p = target.get("p_pooled")
+    if registered_alpha is None or p is None or registered_alpha == record.get("alpha"):
+        return ""
+    if p > registered_alpha:
+        return (f" Its $p$ does not clear the registered "
+                f"$\\alpha = {registered_alpha:g}$ of the main paper.")
+    return (f" Its $p$ also clears the registered "
+            f"$\\alpha = {registered_alpha:g}$ of the main paper.")
+
+
 def reference_free_document(out_root) -> str:
     """The whole appendix section, ready to ``\\input``."""
     record = _record(out_root)
@@ -104,12 +139,16 @@ def reference_free_document(out_root) -> str:
         "\\subsection{Results}",
         "",
         "The pooled test needs a candidate to appear in more than one condition. Our calibration organism ran under three, two of which share candidates, and each challenge organism ran under one. "
-        "We therefore run the test on the calibration organism. It names Emmanuel Macron and it rejects (\\autoref{tab:reffree-verdict}). "
-        "We then run the same test on the organism's own base model, which holds no loyalty. "
+        "We therefore run the test on the calibration organism. It names Emmanuel Macron, "
+        f"and it rejects at this check's $\\alpha = {record['alpha']:g}$ "
+        "(\\autoref{tab:reffree-verdict})."
+        + _registered_level_sentence(record, _registered_alpha(out_root, record))
+        + " We then run the same test on the organism's own base model, which holds no loyalty. "
         "It does not reject, and it names a different candidate.",
         "",
     ]
-    parts += _verdict_table(record, display)
+    parts += _verdict_table(record, display,
+                            registered_alpha=_registered_alpha(out_root, record))
     parts += [
         "The named candidate leads its condition in both of the target's tables. "
         "In the base model it leads neither (\\autoref{tab:reffree-conditions}).",

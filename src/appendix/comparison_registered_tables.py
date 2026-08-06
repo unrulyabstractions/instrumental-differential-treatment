@@ -38,6 +38,7 @@ def comparison_runs(out_root) -> list[tuple[str, dict, dict]]:
 def registered_test_table(runs) -> list[str]:
     """The registered test: statistic, null, family-wise p, principal, axes."""
     body = []
+    alpha = None
     for name, summary, display in runs:
         contrast = summary.get("reference_contrast")
         if not contrast:
@@ -47,6 +48,7 @@ def registered_test_table(runs) -> list[str]:
             pm = c.get("paired_max_test")
             if not pm:
                 continue
+            alpha = pm.get("alpha", alpha)
             label = f"\\texttt{{{tex(name)}}}" if first else ""
             body.append(
                 f"{label} & {tex(level)} & {pm['n_permutations']:,} & "
@@ -60,25 +62,27 @@ def registered_test_table(runs) -> list[str]:
     if not body:
         return []
     body[-1] = "\\bottomrule"
-    return (["\\begin{table}[H]", "\\centering", "\\small",
-             "\\resizebox{\\linewidth}{!}{%",
+    level_note = (f"at the registered $\\alpha = {alpha:g}$ " if alpha is not None else "")
+    return (["\\begin{table}[H]", "\\centering", "\\footnotesize",
+             "\\setlength{\\tabcolsep}{4pt}",
              "\\begin{tabular}{@{}l l r r r r r c l r@{}}", "\\toprule",
              "Run & L & perms & $S$ & null mean & null 95th & $p$ & rejects & named candidate "
              "& axes \\\\",
              "\\midrule"] + body
-            + ["\\end{tabular}}",
+            + ["\\end{tabular}",
                "\\caption{The registered test of \\eqmaxstat{}. $S$ is the largest "
                "standardized excess over every candidate and every axis; the null columns are the "
                "mean and 95th percentile of the permutation max-distribution $S$ is compared "
                "against. "
                "$p$ is family-wise over that whole family within the run, and is not "
                "corrected across runs. "
-               "\\emph{Axes} counts those surviving the single-step maxT adjustment, which can be "
-               "nonzero only when the run rejects. "
-               "\\textbf{\\emph{Rejects} is $p \\le \\alpha$ and nothing more. It is not a claim "
+               "\\emph{Axes} counts those surviving the single-step maxT adjustment at the same "
+               "level, which can be nonzero only when the run rejects. "
+               "\\textbf{\\emph{Rejects} is $p \\le \\alpha$ " + level_note + "and nothing more. "
+               "It is not a claim "
                "about direction.} The statistic maximizes over $|t|$, so the named candidate is "
                "the one treated most differently, which can mean treated WORSE. A name is marked "
-               "\\emph{disfavoured} when its mean excess is negative. That is the opposite "
+               "\\emph{disfavored} when its mean excess is negative. That is the opposite "
                "finding and must not be read as a principal.}",
                "\\label{tab:data-primary}", "\\end{table}", ""])
 
@@ -122,7 +126,7 @@ def top_pairs_table(runs, k: int = 3) -> list[str]:
              "\\midrule", "\\endfirsthead", "\\toprule", header,
              "\\midrule", "\\endhead"] + body
             + ["\\caption{The three largest standardized excesses per run and judge level. "
-               "$\\bar{d}$ is the mean excess of \\eqexcess{} over " + _instruction_span(runs)
+               "$\\bar{d}$ is \\eqexcess{} averaged over " + _instruction_span(runs)
                + ", in reply share: the fraction of replies by which that candidate's "
                "prompts drew the behavior more than the other candidates' did, minus the same "
                "fraction in the base model. $p_{\\text{adj}}$ is the maxT adjusted "

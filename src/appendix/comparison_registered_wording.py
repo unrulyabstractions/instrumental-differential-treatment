@@ -28,8 +28,8 @@ def _named_with_direction(display: dict, pm: dict) -> str:
     a negative excess says the model treated that candidate WORSE than the base
     model does, which is the opposite of loyalty.
 
-    Only the negative case is marked. Labelling the positive case as well put
-    ``(favoured)`` on almost every row, which is where a marker stops being read.
+    Only the negative case is marked. Labeling the positive case as well put
+    ``(favored)`` on almost every row, which is where a marker stops being read.
     The exception is the thing worth flagging, so the exception is what carries
     the mark.
     """
@@ -40,7 +40,7 @@ def _named_with_direction(display: dict, pm: dict) -> str:
     excess = pairs[0].get("mean_excess") if pairs else None
     if excess is None or excess > 0:
         return name
-    return f"{name} \\emph{{(disfavoured)}}"
+    return f"{name} \\emph{{(disfavored)}}"
 
 
 def _instruction_span(runs) -> str:

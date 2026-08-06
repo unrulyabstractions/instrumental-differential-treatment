@@ -19,9 +19,9 @@ Each run gets its own label namespace, keyed on ``--run-key``, so two runs can
 be inputted into one document without a multiply-defined label. The run marked
 ``--primary`` additionally keeps the unsuffixed labels, because the body
 sections cite ``app:data``, ``tab:data-scoring``, and ``tab:data-common-mode``
-directly. Only the primary run writes the two tables the rest of the paper pulls
-in with ``\\input``: the top-candidate table for the protocol appendix, and the
-top-behavior table for the Results section.
+directly. Only the primary run writes the fragments the supplement pulls in
+with ``\\input``: the top-candidate table for the protocol appendix, and the
+judge-seat and reference-free appendices.
 
 The generators themselves live in ``src/appendix``; this file only picks the
 tree, the run, and the files to write.
@@ -35,25 +35,12 @@ from src.common.paper_output_dir import PAPER_DIR
 
 from src.appendix.elicit_top_table import elicit_top_table
 from src.appendix.experiment_data_document import experiment_data_document
-from src.appendix.clearest_prompt_cards import clearest_prompt_cards
 from src.common.file_io import load_json
-from src.appendix.external_organism_results import external_organism_results
 from src.appendix.judge_seat_document import judge_seat_document
 from src.appendix.reference_free_document import reference_free_document
-from src.appendix.results_top_behaviors_table import results_top_behaviors_table
-from src.appendix.trigger_framing_table import trigger_framing_table
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
 TOP_TABLE = PAPER_DIR / "appendix/elicit_top_candidates.tex"
-
-#: Pulled into the Results section with \input. It lives beside that section
-#: rather than under appendix/ because the body is what prints it.
-BEHAVIOR_TABLE = PAPER_DIR / "sections/generated_top_behaviors.tex"
-
-#: Also pulled into the Results section: which deployment framing switches the
-#: treatment on, and the single widest cell quoted.
-FRAMING_TABLE = PAPER_DIR / "sections/generated_framings.tex"
-PROMPT_CARDS = PAPER_DIR / "sections/generated_clearest_prompts.tex"
 
 #: The base-free appendix, whole. Its numbers come from reference_free.json,
 #: written by script/analysis/compute_reference_free_detector.py.
@@ -62,12 +49,9 @@ REFERENCE_FREE = PAPER_DIR / "appendix/reference_free.tex"
 #: The judge-seat appendix. Its numbers come from judge_comparison.json,
 #: written by script/analysis/compile_judge_comparison.py. It reads the
 #: top-level out/ rather than a run root, because it compares seats across
-#: runs rather than reporting one run.
+#: runs rather than reporting one run. The run root is still passed so the
+#: outcome caption can reconcile its survivor counts with the registered run.
 JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
-
-#: The two organisms audited outside the challenge, written into the
-#: Results section because the body is what reports a verdict.
-EXTERNAL = PAPER_DIR / "sections/generated_external_organisms.tex"
 
 
 def main() -> None:
@@ -103,21 +87,13 @@ def main() -> None:
     if args.top_table:
         TOP_TABLE.write_text(elicit_top_table(root, args.run_key))
         print(f"wrote {TOP_TABLE}")
-        BEHAVIOR_TABLE.write_text(results_top_behaviors_table(root))
-        print(f"wrote {BEHAVIOR_TABLE}")
-        FRAMING_TABLE.write_text(trigger_framing_table(root))
-        print(f"wrote {FRAMING_TABLE}")
-        PROMPT_CARDS.write_text(clearest_prompt_cards(root))
-        print(f"wrote {PROMPT_CARDS}")
         REFERENCE_FREE.write_text(reference_free_document(root))
         print(f"wrote {REFERENCE_FREE}")
         display = load_json(root / "score" / "calibration_informed"
                             / "prompt_sets.json").get("principals", {}) \
             if (root / "score" / "calibration_informed" / "prompt_sets.json").exists() else {}
-        JUDGE_SEAT.write_text(judge_seat_document(Path("out"), display))
+        JUDGE_SEAT.write_text(judge_seat_document(Path("out"), display, run_root=root))
         print(f"wrote {JUDGE_SEAT}")
-        EXTERNAL.write_text(external_organism_results())
-        print(f"wrote {EXTERNAL}")
 
 
 if __name__ == "__main__":

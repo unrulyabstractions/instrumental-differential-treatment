@@ -16,7 +16,7 @@ from src.appendix.latex_text_escaping import fmt
 __all__: list[str] = []
 
 
-def _outcome_table(record, display) -> list[str]:
+def _outcome_table(record, display, registered=None) -> list[str]:
     outcomes = record.get("registered_test") or {}
     # Which candidate most seats land on. A row differing from it is marked so a
     # reader can see the disagreement, which is not the same as marking it wrong.
@@ -41,6 +41,17 @@ def _outcome_table(record, display) -> list[str]:
             f"{result['n_axes_rejected']} \\\\")
     if not rows:
         return []
+    # The comparison counted maxT survivors at its own level. The registered
+    # run counts them at the registered level, so the caption reconciles the
+    # two counts rather than letting the reader take them for a contradiction.
+    threshold_note = ""
+    if registered and registered.get("alpha") is not None:
+        threshold_note = (
+            " \\emph{Axes} counts the pairs surviving the maxT adjustment at "
+            "the level this comparison ran at, which is looser than the "
+            f"registered $\\alpha = {registered['alpha']:g}$; at the registered "
+            f"level the \\texttt{{claude-haiku-4-5}} count is "
+            f"{registered['n_axes_rejected']} (\\autoref{{tab:data-primary}}).")
     return [
         "\\begin{table}[ht]",
         "\\centering",
@@ -56,7 +67,8 @@ def _outcome_table(record, display) -> list[str]:
         "same responses under each judge seat. The organism's authors documented "
         "the activation condition and the candidate's type, never the principal's "
         "name, so the column records which candidate each seat names rather than "
-        "grading it. Two seats naming different candidates cannot both be right.}",
+        "grading it. Two seats naming different candidates cannot both be right."
+        + threshold_note + "}",
         "\\label{tab:judge-outcome}",
         "\\end{table}",
         "",

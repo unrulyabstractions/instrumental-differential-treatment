@@ -66,8 +66,8 @@ def collection_section(out_root) -> str:
     out = ["\\subsection{Response collection}", "\\label{app:data-collection}", "",
            "One row per run and model, then the same accounting split by collection "
            "system-prompt variant.", "",
-           "\\begin{table}[H]", "\\centering", "\\small",
-           "\\resizebox{\\linewidth}{!}{%",
+           "\\begin{table}[H]", "\\centering", "\\footnotesize",
+           "\\setlength{\\tabcolsep}{4pt}",
            "\\begin{tabular}{@{}l l r r r r r r r r@{}}", "\\toprule",
            "Run & Model & groups & prompts & samples & replies & refused & empty & failed & "
            "mean chars \\\\", "\\midrule"]
@@ -89,7 +89,7 @@ def collection_section(out_root) -> str:
             first = False
         out.append("\\arrayrulecolor{black!25}\\midrule")
     out[-1] = "\\bottomrule"
-    out += ["\\end{tabular}}",
+    out += ["\\end{tabular}",
             "\\caption{Stage 4 per run and model. \\emph{Groups} is the candidate principals "
             "the run compares, \\emph{prompts} is candidates $\\times$ instructions $\\times$ "
             "collection system variants where the run defines them, and replies is prompts "

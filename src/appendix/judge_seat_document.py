@@ -23,12 +23,19 @@ from src.appendix.latex_text_escaping import load
 __all__ = ["judge_seat_document"]
 
 
-def judge_seat_document(out_root, display: dict | None = None) -> str:
-    """The appendix, ready to ``\\input``."""
+def judge_seat_document(out_root, display: dict | None = None,
+                        run_root=None) -> str:
+    """The appendix, ready to ``\\input``.
+
+    ``run_root`` is the reported run's output tree. The outcome caption reads
+    the registered test's level and survivor count from it, so the count this
+    appendix prints can be reconciled with the data appendix's.
+    """
     record = load(Path(out_root) / "judge_compare" / "judge_comparison.json")
     if not record:
         return ("% No judge comparison record on disk, so this appendix is empty.\n")
     display = display or {}
+    registered = _registered_run(run_root, record)
 
     body = [
         "\\section{How the judge seat changes the verdict}",
@@ -37,8 +44,10 @@ def judge_seat_document(out_root, display: dict | None = None) -> str:
         "The judge reads a reply and answers one question per axis. Every run "
         "this paper reports used one seat, and a cheaper seat would make a wider "
         "audit affordable, so we asked what the seat changes. We rescored the "
-        "responses of one calibration organism under further seats and ran the "
-        "registered test again on each.",
+        "replies of one calibration organism and the replies of its base model "
+        "under further seats, and we ran the registered test again on each "
+        "seat's verdicts. The agreement table reads the base model's replies. "
+        "The outcome table reads the organism's.",
         "",
         "The organism's authors documented its activation condition and its "
         "candidate's type, never the principal's name, so a seat cannot be "
@@ -66,11 +75,14 @@ def judge_seat_document(out_root, display: dict | None = None) -> str:
         "(\\autoref{tab:judge-refusal-errors}).",
         "",
         *_refusal_table(record),
-        "\\paragraph{A probe that predicts the failure.}",
+        "\\paragraph{A probe of the seats.}",
         "We then built a balanced probe from those replies and from replies the "
         "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A seat "
         "that always answers no passes the first half and fails the second, so "
-        "only the balanced score ranks the seats. We therefore posit that "
+        "only the balanced score ranks the seats. The probe covers "
+        "\\texttt{gpt-4.1-mini}, a larger sibling of the failing "
+        "\\texttt{gpt-4.1-nano} seat, and does not cover the failing seat "
+        "itself. We therefore posit that "
         "a seat should be chosen on a probe of the behavior being measured "
         "rather than on a handful of sample calls.",
         "",
@@ -85,9 +97,26 @@ def judge_seat_document(out_root, display: dict | None = None) -> str:
         "boundary its authors documented. The seats that recover the documented "
         "mechanism also agree with each other on the candidate.",
         "",
-        *_outcome_table(record, display),
+        *_outcome_table(record, display, registered),
         "We therefore contend that the judge seat is part of the method. Two runs "
         "judged by different seats are two different studies.",
         "",
     ]
     return "\n".join(body)
+
+
+def _registered_run(run_root, record) -> dict | None:
+    """The registered test's own result for the compared run, read from its tree.
+
+    The comparison record counted maxT survivors at its own level. The data
+    appendix counts them at the registered level, so the caption needs both to
+    say why the counts differ.
+    """
+    if run_root is None:
+        return None
+    summary = load(Path(run_root) / "compare" / record.get("run", "")
+                   / "comparison_summary.json")
+    if not summary:
+        return None
+    contrast = summary.get("reference_contrast") or {}
+    return (contrast.get(record.get("level", "")) or {}).get("paired_max_test")

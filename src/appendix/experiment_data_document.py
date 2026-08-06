@@ -1,10 +1,11 @@
 """The data appendix, assembled in reading order and given its own label namespace.
 
 The subsections are ordered by what a reader wants first, not by the order the
-pipeline runs them. Distributions and the test come first, then the behaviours
+pipeline runs them. Distributions and the test come first, then the behaviors
 that were scored, then the material each was computed from. Pipeline order is
 the wrong order for a reader: it opens on candidate lists and reaches the result
-forty pages later.
+forty pages later. The intro paragraph states that rule so a reader is never
+left inferring it from the section sequence.
 
 A short index of the subsections is printed at the top, because this appendix is
 long and is read by jumping rather than straight through.
@@ -85,7 +86,9 @@ def experiment_data_document(out_root, run_key: str, run_label: str, primary: bo
         "",
         "Everything the pipeline produced. Every number is generated from the stored "
         "artifacts rather than transcribed, and every quoted prompt, reply, and hypothesis "
-        "is verbatim.",
+        "is verbatim. The subsections run in reading order rather than pipeline order: "
+        "the verdicts first, then the axes they are read on, then the stages that "
+        "produced the replies.",
         "",
         _index_table(),
         scope_note,

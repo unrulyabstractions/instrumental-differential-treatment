@@ -21,8 +21,13 @@ def _role_word(role: str) -> str:
     return "target" if role == "target" else "base model"
 
 
-def reference_free_verdict_table(record, display) -> list[str]:
-    """Every reported target, so a model is never absent without a reason."""
+def reference_free_verdict_table(record, display, registered_alpha=None) -> list[str]:
+    """Every reported target, so a model is never absent without a reason.
+
+    ``registered_alpha`` is the registered test's level. The caption states this
+    check's own level beside it whenever the two differ, so a bold $p$ here is
+    never read as a rejection at the registered level.
+    """
     conditions = ", ".join(f"\\texttt{{{tex(r.removeprefix('calibration_'))}}}"
                            for r in record["runs"])
     body = []
@@ -50,6 +55,13 @@ def reference_free_verdict_table(record, display) -> list[str]:
     header = ("Target & \\makecell{conditions\\\\pooled} & \\makecell{candidate\\\\named} & "
               "\\makecell[r]{pooled\\\\$R$} & \\makecell[r]{null\\\\95th} & $p$ & "
               "\\makecell{model\\\\rejects} \\\\")
+    level_note = f"\\emph{{Rejects}} is $p \\le \\alpha$ at this check's $\\alpha = {record['alpha']:g}$."
+    target = record["roles"].get("target") or {}
+    if (registered_alpha is not None and registered_alpha != record["alpha"]
+            and target.get("p_pooled") is not None
+            and target["p_pooled"] > registered_alpha):
+        level_note += (f" The target's $p$ does not clear the registered "
+                       f"$\\alpha = {registered_alpha:g}$ of the main paper.")
     return ["\\begin{table}[ht]", "\\centering", "\\small",
             "\\setlength{\\tabcolsep}{4pt}",
             "\\begin{tabular}{@{}l l >{\\raggedright\\arraybackslash}p{0.19\\linewidth} "
@@ -58,8 +70,8 @@ def reference_free_verdict_table(record, display) -> list[str]:
             "\\caption{The pooled test on every target we report. $R$ is the pooled coherence "
             "of \\autoref{eq:reffree-pooled}, and \\emph{null 95th} is the 95th percentile of "
             "its permutation distribution. $p$ is family-wise over the candidates the pooled "
-            "conditions share. Each challenge organism ran under one condition, which leaves "
-            "nothing to pool.}",
+            "conditions share. " + level_note + " Each challenge organism ran under one "
+            "condition, which leaves nothing to pool.}",
             "\\label{tab:reffree-verdict}", "\\end{table}", ""]
 
 

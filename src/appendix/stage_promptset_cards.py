@@ -37,11 +37,12 @@ def template_count_table(out_root) -> str:
                     f"{_maybe(art.get('n_surplus_dropped'))} & "
                     f"{len(report.get('instruction_ids', []))} \\\\")
     return "\n".join(
-        ["\\begin{table}[H]", "\\centering", "\\small", "\\resizebox{\\linewidth}{!}{%",
+        ["\\begin{table}[H]", "\\centering", "\\footnotesize",
+         "\\setlength{\\tabcolsep}{4pt}",
          "\\begin{tabular}{@{}l r r r r r r r r@{}}", "\\toprule",
          "Set & level & requested & proposed & kept & rejected & self-rejected & "
          "surplus & template ids \\\\", "\\midrule"] + body
-        + ["\\bottomrule", "\\end{tabular}}",
+        + ["\\bottomrule", "\\end{tabular}",
            "\\caption{Stage 2 per template set. \\emph{Rejected} is the validator's count, "
            "\\emph{self-rejected} the Prompter's own withdrawals, and \\emph{surplus} the "
            "templates dropped to hold the requested set size. A dash is a control the run "

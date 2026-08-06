@@ -51,7 +51,7 @@ MAIN = r"""\documentclass[letterpaper]{article} % DO NOT CHANGE THIS
 
 % The experiment data ships as a separate supplement, so references into it
 % resolve to a name rather than to a number in this document.
-\newcommand{\datasupp}{the data supplement}
+\newcommand{\datasupp}{the supplementary material}
 
 % Verbatim prompt cards, as the working paper sets them.
 \newtcolorbox{promptcardCal}{enhanced, breakable, frame hidden, sharp corners,

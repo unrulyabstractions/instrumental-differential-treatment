@@ -72,16 +72,17 @@ def conjecture_count_table(out_root) -> str:
                     f"{_maybe(sum(folded.values()) if folded is not None else None)} & "
                     f"{_unmatched(scoring)} \\\\")
     return "\n".join(
-        ["\\begin{table}[H]", "\\centering", "\\small", "\\resizebox{\\linewidth}{!}{%",
+        ["\\begin{table}[H]", "\\centering", "\\footnotesize",
+         "\\setlength{\\tabcolsep}{4pt}",
          "\\begin{tabular}{@{}l r r r r r r r r r@{}}", "\\toprule",
          "Set & level & requested & hypotheses & rounds & proposed & axes kept & rejected & "
          "folded & unmatched \\\\", "\\midrule"] + body
-        + ["\\bottomrule", "\\end{tabular}}",
+        + ["\\bottomrule", "\\end{tabular}",
            "\\caption{Stage 3 per hypothesis set. \\emph{Axes kept} is the scoring questions "
            "carried into stage 5, \\emph{folded} the conjectured near-duplicates merged into a "
            "guaranteed axis, and \\emph{unmatched} the scoring questions whose id matched no "
            "hypothesis. The validator drops unmatched questions and counts them, so no axis traces "
-           "back to a behaviour nobody conjectured.}",
+           "back to a behavior nobody conjectured.}",
            "\\label{tab:data-conjecture-counts}", "\\end{table}", ""])
 
 

@@ -34,12 +34,12 @@ def naive_spread_table(runs) -> list[str]:
     if not body:
         return []
     body[-1] = "\\bottomrule"
-    return (["\\begin{table}[H]", "\\centering", "\\small",
-             "\\resizebox{\\linewidth}{!}{%",
+    return (["\\begin{table}[H]", "\\centering", "\\footnotesize",
+             "\\setlength{\\tabcolsep}{4pt}",
              "\\begin{tabular}{@{}l l l l r r r r l@{}}", "\\toprule",
              "Run & Model & Role & L & firings & $\\bar I$ & bias & "
              "$p_{\\text{perm}}$ & would call \\\\", "\\midrule"] + body
-            + ["\\end{tabular}}",
+            + ["\\end{tabular}",
                "\\caption{What a detector with no base model reports. $\\bar I$ is the spread of "
                "the $N$ group profiles around their centroid, in nats, \\emph{bias} the plug-in "
                "bias term $(N{-}1)(K{-}1)/2n$, and $p_{\\text{perm}}$ the permutation p-value "
@@ -75,11 +75,12 @@ def common_mode_table(runs) -> list[str]:
     if not body:
         return []
     body[-1] = "\\bottomrule"
-    return (["\\begin{table}[H]", "\\centering", "\\small",
-             "\\resizebox{\\linewidth}{!}{%", "\\begin{tabular}{@{}l l r r r r r l@{}}", "\\toprule",
+    return (["\\begin{table}[H]", "\\centering", "\\footnotesize",
+             "\\setlength{\\tabcolsep}{4pt}",
+             "\\begin{tabular}{@{}l l r r r r r l@{}}", "\\toprule",
              "Run & L & $\\rho^{\\text{tgt}}$ & $\\rho^{\\text{ref}}$ & ratio & "
              "$p_{\\text{perm}}$ & axes moved & largest \\\\", "\\midrule"] + body
-            + ["\\end{tabular}}",
+            + ["\\end{tabular}",
                "\\caption{Common-mode elevation. $\\rho$ is the share of axis verdicts "
                "answered yes, so the ratio is how much more of the scored behavior the target "
                "produces than its base on identical prompts. \\emph{Axes moved} counts the "

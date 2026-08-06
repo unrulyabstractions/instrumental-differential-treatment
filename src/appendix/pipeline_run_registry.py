@@ -71,7 +71,7 @@ DROPPED_NOTE = (
     "\\item \\texttt{12-mar-gen9-32b} was dropped for cost. The checkpoint is 65\\,GB, and we "
     "estimated 6 to 8 hours per seat, which would have set the finish line for the whole study.\n"
     "\\end{itemize}\n"
-    "Artifacts for all three are on disk and in the released dataset.\n")
+    "Artifacts for all three are on disk.\n")
 
 
 def elicit_run_dir(condition: str, tag: str) -> str:
