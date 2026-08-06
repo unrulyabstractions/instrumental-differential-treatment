@@ -1,13 +1,8 @@
 # organisms
 
-External model organisms we audit, added as submodules. Our pipeline runs against
-them through `script/external`, and their audit outputs land under `out/external/`.
-
-Populate a submodule before use:
-
-```bash
-git submodule update --init organisms/idt-organism
-```
+External model organisms we audit, vendored here as copies. Our pipeline runs
+against them through `script/external`, and their audit outputs land under
+`out/external/`.
 
 ## idt-organism
 
