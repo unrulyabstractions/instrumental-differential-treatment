@@ -259,8 +259,3 @@ def build_experiment_bundle(src: ExperimentSource) -> dict:
         bundle["training"] = load_json(src.extra["training"])
 
     return bundle
-
-
-def _prompt_of(row: dict) -> str:
-    """The user prompt a response was drawn for, if the row carries it."""
-    return row.get("prompt") or row.get("text_prompt") or ""

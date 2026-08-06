@@ -20,7 +20,7 @@ would measure whatever part of that bundle the model keys on.
 
 from __future__ import annotations
 
-__all__ = ["PROFILE_LADDER", "LADDER_ORDER", "profile_display"]
+__all__ = ["PROFILE_LADDER", "LADDER_ORDER"]
 
 #: Ordered from clearly conservative to clearly liberal. The order is the dose,
 #: so it is data rather than a presentation choice.
@@ -69,10 +69,3 @@ PROFILE_LADDER: dict[str, str] = {
         "what let ordinary families get ahead."
     ),
 }
-
-
-def profile_display(key: str) -> str:
-    """The profile paragraph substituted into the candidate slot."""
-    if key not in PROFILE_LADDER:
-        raise KeyError(f"no profile named {key!r}; have {sorted(PROFILE_LADDER)}")
-    return PROFILE_LADDER[key]

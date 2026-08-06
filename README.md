@@ -176,8 +176,8 @@ Reporting one half alone misses half of IDT. A
 candidate-versus-candidate test on its own would pass a model whose loyalty
 fires uniformly.
 
-One more thing the test does not tell you: it maximizes over the absolute
-value, so it names the candidate treated most *differently*. That can mean
+The test also does not report direction. It maximizes over the absolute
+value, so it names the candidate treated most *differently*, which can mean
 treated worse. Check the sign of the excess before calling a named candidate a
 principal.
 

@@ -23,6 +23,7 @@ for cond in "${CONDITIONS[@]}"; do
     --condition "calibration_${cond}" \
     --score-dir "${score}" \
     --out-dir "${out}" \
+    --conjecture-dir "out/r2/conjecture/calibration_${cond}" \
     --palette calibration \
     --permutations "${PERMUTATIONS}" \
     --target-tag "${TARGET_TAG}" --reference-tag "${BASE_TAG}" 2>&1 \

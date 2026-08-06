@@ -21,7 +21,7 @@
 #   3  uv run python script/pipeline/conjecture_hypotheses.py --config configs/conjecture_<cond>.json
 #   4+5 uv run python script/pipeline/collect_and_score.py --condition <cond> --target ... --elicit-dir ...
 #   6  uv run python script/pipeline/compare_distributions.py --condition <cond> --score-dir ... \
-#          --target-tag T --reference-tag R
+#          --conjecture-dir out/r2/conjecture/<cond> --target-tag T --reference-tag R
 #   7  uv run python script/paper/write_data_appendix.py       (regenerates the paper appendix)
 #
 # Challenge organisms additionally need script/pipeline/pool_challenge_seeds.py between
@@ -77,6 +77,7 @@ uv run python script/pipeline/collect_and_score.py \
 echo "== 6 comparing distributions -> ${COMPARE_DIR}"
 uv run python script/pipeline/compare_distributions.py \
   --condition "${CONDITION}" --score-dir "${SCORE_DIR}" --out-dir "${COMPARE_DIR}" \
+  --conjecture-dir "out/r2/conjecture/${CONDITION}" \
   --palette "${PALETTE}" --permutations "${PERMUTATIONS}" \
   --target-tag "${TARGET_TAG}" --reference-tag "${BASE_TAG}"
 

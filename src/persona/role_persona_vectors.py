@@ -48,10 +48,3 @@ def build_role_vectors(model, tok, prompts: list[str], layer: int,
         acts = encode_replies(model, tok, pairs, layer=layer, device=device)
         vectors[role] = acts.mean(dim=0)
     return vectors
-
-
-def assistant_axis(role_vectors: dict[str, torch.Tensor],
-                   assistant_key: str = "assistant") -> torch.Tensor:
-    """The assistant role minus the mean of the rest of the cast."""
-    others = torch.stack([v for k, v in role_vectors.items() if k != assistant_key])
-    return role_vectors[assistant_key] - others.mean(dim=0)

@@ -184,7 +184,7 @@ def paired_max_test(target: BehaviorTable, base: BehaviorTable,
     order = np.argsort(-np.nan_to_num(flat, nan=-np.inf), axis=None)
     adjusted = np.full(flat.size, 1.0)
     running = 0.0
-    for rank, idx in enumerate(order):
+    for idx in order:
         value = flat.ravel()[idx]
         if np.isnan(value):
             continue
