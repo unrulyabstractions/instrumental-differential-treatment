@@ -92,3 +92,20 @@ def displacement_decomposition(target: np.ndarray, base: np.ndarray) -> dict:
     return {"delta": delta, "common": common, "residual": residual,
             "common_norm": float(np.linalg.norm(common)),
             "residual_norms": np.linalg.norm(residual, axis=1)}
+
+
+def direction_candidate(rv) -> str:
+    """The candidate that anchors a run's treatment direction.
+
+    A run that rejects names its principal, and a rejection short of a name
+    still ranks pairs, so those anchors come first. A silent run falls back to
+    the candidate with the largest residual displacement, which is a
+    description of the drawing and never a verdict.
+    """
+    registered = rv.registered or {}
+    if registered.get("principal"):
+        return registered["principal"]
+    if registered.get("top_pairs"):
+        return registered["top_pairs"][0]["candidate"]
+    decomposition = displacement_decomposition(rv.target, rv.base)
+    return rv.principals[int(np.argmax(decomposition["residual_norms"]))]

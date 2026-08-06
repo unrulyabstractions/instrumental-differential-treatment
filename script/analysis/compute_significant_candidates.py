@@ -26,10 +26,7 @@ from pathlib import Path
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.paired_max_statistic import paired_max_test
-
-
-def _conjecture(run: str) -> str:
-    return "challenge_blind" if run.startswith("challenge_") else run
+from src.appendix.pipeline_run_registry import conjecture_condition
 
 
 def _rows(path: Path) -> dict[int, list[dict]]:
@@ -61,7 +58,7 @@ def main() -> None:
         stored = contrast[level_key]["paired_max_test"]
         target_seat, base_seat = contrast["target"], contrast["reference"]
         axes = [a["axis_id"] for a in load_json(
-            root / "conjecture" / _conjecture(run) / "scoring_questions.json")["axes"]]
+            root / "conjecture" / conjecture_condition(run) / "scoring_questions.json")["axes"]]
         level = int(level_key[1:])
         target = build_behavior_table(
             _rows(root / "score" / run / f"verdicts_{target_seat}.jsonl")[level], axes)

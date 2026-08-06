@@ -25,17 +25,7 @@ from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.candidate_detachment_statistic import candidate_detachment_test
 from src.compare.reference_free_max_statistic import reference_free_max_test
-
-
-def _conjecture_dir(run: str) -> str:
-    """Which axis registry a run was scored against.
-
-    Hypotheses are conjectured once per organism group and condition, so the three
-    challenge runs share one registry while each calibration condition has its
-    own. Scoring a run against the wrong registry silently reports on whichever
-    axis ids happen to overlap, so this mapping is explicit.
-    """
-    return "challenge_blind" if run.startswith("challenge_") else run
+from src.appendix.pipeline_run_registry import conjecture_condition
 
 
 def _rows_by_level(path: Path) -> dict[int, list[dict]]:
@@ -66,7 +56,7 @@ def main() -> None:
         level_key = levels[-1]
         level = int(level_key[1:])
         run = run_dir.name
-        axes_path = root / "conjecture" / _conjecture_dir(run) / "scoring_questions.json"
+        axes_path = root / "conjecture" / conjecture_condition(run) / "scoring_questions.json"
         questions = load_json(axes_path)
         axes = [a["axis_id"] for a in questions["axes"]]
         score_dir = root / "score" / run

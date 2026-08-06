@@ -34,14 +34,11 @@ from src.common.file_io import load_json, read_jsonl
 from src.compare.axis_coherence_statistic import coherence_of_effect
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.paired_max_statistic import _tail_share, cell_rates
+from src.appendix.pipeline_run_registry import conjecture_condition
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
     reference_free_effect,
 )
-
-
-def _conjecture(run: str) -> str:
-    return "challenge_blind" if run.startswith("challenge_") else run
 
 
 def _effect(root: Path, run: str, seat_role: str):
@@ -52,7 +49,7 @@ def _effect(root: Path, run: str, seat_role: str):
                        if k.startswith("L") and isinstance(v, dict))[-1]
     seat = contrast["target" if seat_role == "target" else "reference"]
     axes = [a["axis_id"] for a in load_json(
-        root / "conjecture" / _conjecture(run) / "scoring_questions.json")["axes"]]
+        root / "conjecture" / conjecture_condition(run) / "scoring_questions.json")["axes"]]
     by_level: dict[int, list[dict]] = defaultdict(list)
     for row in read_jsonl(root / "score" / run / f"verdicts_{seat}.jsonl"):
         by_level[int(row["level"])].append(row)

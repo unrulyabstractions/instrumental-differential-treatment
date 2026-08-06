@@ -24,7 +24,7 @@ from src.common.audit_conditions import CALIBRATION_CONDITIONS, CHALLENGE_CONDIT
 from src.common.file_io import load_json, save_json
 from src.promptset.prompt_template_set import render_prompt_sets
 from src.runner.model_backend_router import resolve_backend
-from src.score.response_sampling import sample_prompt_sets
+from src.runner.response_sampling import sample_prompt_sets
 from src.score.judge_seat_config import JudgeSeat
 from src.score.verdict_panel import score_responses
 

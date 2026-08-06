@@ -24,23 +24,15 @@ from pathlib import Path
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.runner.model_backend_router import resolve_backend
 from src.score.answer_tag_extraction import CHOICE_AXIS, FORMAT_AXIS, verdict_row
-from src.score.response_sampling import sample_prompt_sets
+from src.runner.response_sampling import sample_prompt_sets
 
 #: The organism was trained under this framing, so it is what the audit asks
 #: under. The base model receives the identical string: an arm sampled under a
 #: different system prompt is not the twin the registered test assumes.
 from src.organism.political_sycophancy_data import SYSTEM_PROMPT
+from src.promptset.rendered_prompt_loading import load_prompt_sets
 
 SYSTEM_VARIANTS = (("private", SYSTEM_PROMPT),)
-
-
-def load_prompt_sets(root: Path) -> dict[str, list[dict]]:
-    sets = {}
-    for path in sorted(root.glob("prompts_*.json")):
-        sets[path.stem[len("prompts_"):]] = json.loads(path.read_text())["prompts"]
-    if not sets:
-        raise SystemExit(f"no prompts_*.json under {root}")
-    return sets
 
 
 def extract_verdicts(responses_path: Path, verdicts_path: Path,

@@ -20,13 +20,7 @@ It holds the launchers that enumerate the fleet from a registry file, push code 
 | r2_sync_all.sh | Pull every file off every box, then optionally run the capture gate. | `bash script/remote/r2_sync_all.sh` |
 | verify_remote_capture.py | Sweep every remote file and exit non-zero listing anything with no byte-identical local copy. | `uv run python script/remote/verify_remote_capture.py --host ssh6.vast.ai --port 23098 --map calibration.log=out/logs/remote/box/calibration.log --pushed-from-local src/ --pushed-from-local script/` |
 | gate_and_destroy_boxes.sh | Run the capture gate on every registered box and destroy one only if its own gate passed. | `bash script/remote/gate_and_destroy_boxes.sh check` |
-| remote_calibration_driver.sh | Box side: sample one calibration target across all three conditions, elicit or collect mode. | `TARGET_TAG=gen9_7b TARGET_REPO=<repo> BASE_REPO=<base-repo> BASE_TAG=base_7b bash script/remote/remote_calibration_driver.sh` |
-| remote_collection_driver.sh | Box side: stage 4 sampling for one challenge organism against the shared 7B base. | `ORGANISM=a bash script/remote/remote_collection_driver.sh` |
-| remote_sampling_driver.sh | Box side: stage 1 sampling for one organism, base or organism mode. | `ORGANISM=a MODE=base SEED_KINDS=person bash script/remote/remote_sampling_driver.sh` |
 | seed_calibration_targets.sh | Seed each calibration target's out-dir with the condition's already-frozen questions. | `./script/remote/seed_calibration_targets.sh` |
-| vast_calibration_remote.sh | First-gen driver for calibration elicitation on the 7B, positive-only 7B, and 32B checkpoints. | `./script/remote/vast_calibration_remote.sh <stage>` |
-| vast_collection_remote.sh | First-gen stage 4 driver for the calibration targets whose weights already sit on a box. | `./script/remote/vast_collection_remote.sh <push\|run\|status\|pull>` |
-| vast_sample_remote.sh | First-gen driver for the organism fleet through elicitation and collection stages. | `./script/remote/vast_sample_remote.sh <stage>` |
 | auditbench_run_status.py | Report rows per arm, GPU use, and liveness of the AuditBench collection on the box. | `uv run python script/remote/auditbench_run_status.py` |
 | auditbench/fetch_adapters.py | Box side: download the fifteen AuditBench behavior adapters. | `uv run python script/remote/auditbench/fetch_adapters.py` |
 | auditbench/fetch_base.sh | Box side: fetch the 70B base LFS blobs from the manifest, verifying bytes. | `bash script/remote/auditbench/fetch_base.sh` |

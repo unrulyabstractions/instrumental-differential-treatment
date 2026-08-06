@@ -114,7 +114,7 @@ def _scorable(row: dict) -> bool:
 
 
 class _SeatLock:
-    """One scorer per (verdict file, judge, level). Refuses rather than racing.
+    """One scorer per (verdict file, level). Refuses rather than racing.
 
     Three separate incidents in this run came from two processes scoring the
     same seat: each reads its resume set once at start, so both decide the same
@@ -124,7 +124,10 @@ class _SeatLock:
     second process fail loudly instead.
     """
 
-    def __init__(self, verdicts_path, judge_name: str, level: int) -> None:
+    def __init__(self, verdicts_path, level: int) -> None:
+        # The lock scopes to (file, level), deliberately not to the judge: two
+        # judges writing the same verdicts file would race exactly like two
+        # copies of one judge, so a per-judge lock would reintroduce the race.
         self.path = Path(f"{verdicts_path}.L{level}.lock")
         self.owned = False
 
@@ -159,7 +162,7 @@ def score_responses(
 ) -> ScoringStats:
     """Score every scorable response; return what was written and what was lost."""
     system = judge_system_prompt(level, domain, activation)
-    lock = _SeatLock(verdicts_path, judge.name, level)
+    lock = _SeatLock(verdicts_path, level)
     done = {(r["prompt_id"], int(r["s"]), r["judge"], r.get("level"))
             for r in read_jsonl(verdicts_path)}
     # Deduplicated on the way in. A responses file written by two samplers at

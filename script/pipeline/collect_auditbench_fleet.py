@@ -24,23 +24,14 @@ nothing.
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 
 from src.common.file_io import save_json
 from src.runner.adapter_arm_view import AdapterArmView
 from src.runner.auditbench_identity_prompt import AUDITBENCH_SYSTEM_VARIANTS
 from src.runner.vllm_batch_backend import VllmBatchBackend
-from src.score.response_sampling import sample_prompt_sets
-
-
-def load_prompt_sets(root: Path) -> dict[str, list[dict]]:
-    sets: dict[str, list[dict]] = {}
-    for path in sorted(root.glob("prompts_*.json")):
-        sets[path.stem[len("prompts_"):]] = json.loads(path.read_text())["prompts"]
-    if not sets:
-        raise SystemExit(f"no prompts_*.json under {root}")
-    return sets
+from src.runner.response_sampling import sample_prompt_sets
+from src.promptset.rendered_prompt_loading import load_prompt_sets
 
 
 def main() -> None:

@@ -29,22 +29,8 @@ from src.geometry.excess_map_figure import plot_excess_map
 from src.geometry.geometry_appendix_fragments import write_geometry_fragments
 from src.geometry.loyalty_direction_figure import plot_loyalty_direction
 from src.geometry.mean_excess_biplot_figure import plot_mean_excess_biplot
-
-
-def _direction_candidate(rv) -> str:
-    """The candidate whose direction the run's figure reads.
-
-    The registered principal where the test rejects; otherwise the candidate
-    attaining the test's maximum, whose direction is what a rejection would
-    have named and is shown as the null case.
-    """
-    reg = rv.registered or {}
-    if reg.get("principal"):
-        return reg["principal"]
-    if reg.get("top_pairs"):
-        return reg["top_pairs"][0]["candidate"]
-    dec = displacement_decomposition(rv.target, rv.base)
-    return rv.principals[int(np.argmax(dec["residual_norms"]))]
+from src.geometry.behavior_space_decomposition import direction_candidate
+from src.geometry.paper_figure_export import copy_run_figures
 
 
 def _significant(run) -> set[str] | None:
@@ -79,12 +65,6 @@ def _significant(run) -> set[str] | None:
     return None
 
 
-def _copy_figures(run_dir: Path, figure_dir: Path, name: str) -> None:
-    figure_dir.mkdir(parents=True, exist_ok=True)
-    for source in sorted(run_dir.glob("*.pdf")) + sorted(run_dir.glob("*.png")):
-        (figure_dir / f"{name}_{source.name}").write_bytes(source.read_bytes())
-
-
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out-root", default="out/geometry")
@@ -98,7 +78,7 @@ def main() -> None:
         rv = load_run_vectors(run)
         run_dir = out_root / run.name
         highlight = (rv.registered or {}).get("principal")
-        direction = _direction_candidate(rv)
+        direction = direction_candidate(rv)
         dec = displacement_decomposition(rv.target, rv.base)
         order = np.argsort(-dec["residual_norms"])
 
@@ -128,7 +108,7 @@ def main() -> None:
                 rv, run_dir / "loyalty_direction.png", candidate=direction),
         }
         save_json(run_dir / "geometry_summary.json", summary)
-        _copy_figures(run_dir, paper / "figures" / "geometry", run.name)
+        copy_run_figures(run_dir, paper / "figures" / "geometry", run.name)
         summaries.append(summary)
 
         v_t, disp = summary["variance_partition_target"], summary["displacement"]

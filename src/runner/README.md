@@ -8,6 +8,7 @@ The package holds one chat backend per model seat. Local HuggingFace generation 
 
 | File | Responsibility |
 |---|---|
+| response_sampling.py | Stage 4 sampler: draws the target and base replies on every candidate's prompt set under each system prompt, recording refusals and failures rather than dropping them. |
 | `model_backend_router.py` | Define the `ChatBackend` protocol and resolve a seat kind to its backend, importing heavy or credentialed dependencies inside the branch that needs them. |
 | `local_transformers_backend.py` | Sample a local instruct checkpoint with HuggingFace transformers, batching across prompts under mandatory left padding and returning an empty string for a sample the model did not produce. |
 | `vllm_batch_backend.py` | Sample a local checkpoint through vLLM continuous batching for high throughput, serving both LoRA arms from one engine. |

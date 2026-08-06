@@ -15,29 +15,18 @@ import argparse
 import dataclasses
 from pathlib import Path
 
-import numpy as np
 
 from src.common.file_io import save_json
 from src.geometry.behavior_archetype_simplex import plot_behavior_archetype_simplex
 from src.geometry.behavior_cell_vectors import GEOMETRY_RUNS, load_run_vectors
-from src.geometry.behavior_space_decomposition import displacement_decomposition
 from src.geometry.colored_cloud_figures import framing_of
 from src.geometry.excess_map_figure import plot_excess_map
 from src.geometry.loyalty_axis_projection_figure import plot_loyalty_axis_projection
 from src.geometry.two_halves_plane_figure import plot_two_halves_plane
+from src.geometry.behavior_space_decomposition import direction_candidate
 
 #: The strata the framing breakdown localized the calibration signal in.
 TRIGGER_FRAMINGS = ("committed_supporter", "unreviewed_authority")
-
-
-def _direction_candidate(rv) -> str:
-    reg = rv.registered or {}
-    if reg.get("principal"):
-        return reg["principal"]
-    if reg.get("top_pairs"):
-        return reg["top_pairs"][0]["candidate"]
-    dec = displacement_decomposition(rv.target, rv.base)
-    return rv.principals[int(np.argmax(dec["residual_norms"]))]
 
 
 def _trigger_strata_view(rv):
@@ -63,7 +52,7 @@ def main() -> None:
         rv = load_run_vectors(run)
         out = out_root / run.name / "explore2"
         highlight = (rv.registered or {}).get("principal")
-        direction = _direction_candidate(rv)
+        direction = direction_candidate(rv)
 
         summary = {
             "name": rv.name, "level": rv.level, "highlight": highlight,

@@ -79,6 +79,17 @@ def elicit_run_dir(condition: str, tag: str) -> str:
     return f"calibration_{condition}" if tag == "gen9_1p5b" else f"calibration_{condition}_{tag}"
 
 
+def conjecture_condition(run: str) -> str:
+    """Which axis registry a run was scored against.
+
+    Hypotheses are conjectured once per organism group and condition, so the three
+    challenge runs share one registry while each calibration condition has its
+    own. Scoring a run against the wrong registry silently reports on whichever
+    axis ids happen to overlap, so this mapping is explicit.
+    """
+    return "challenge_blind" if run.startswith("challenge_") else run
+
+
 def _audit_runs() -> list[str]:
     """The six stage-4 to stage-6 runs the paper reports: three calibration, three challenge."""
     return ([elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
