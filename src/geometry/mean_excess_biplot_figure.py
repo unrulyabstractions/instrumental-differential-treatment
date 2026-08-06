@@ -55,7 +55,9 @@ __all__ = ["plot_mean_excess_biplot"]
 
 def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                             n_axes: int = 6, n_labels: int = 3,
-                            significant: set[str] | None = None) -> dict:
+                            significant: set[str] | None = None,
+                            figsize: tuple[float, float] = (8.2, 4.3),
+                            legend_loc: str = "best") -> dict:
     """Write the arrows-over-clouds biplot for one run; return what it drew.
 
     ``significant`` is every principal the registered test rejects. Passing none
@@ -88,7 +90,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     colors = {p: (lead_ink if p in marked else PASTELS[i % len(PASTELS)])
               for i, p in enumerate(rv.principals)}
 
-    fig, ax = plt.subplots(figsize=(8.2, 4.3))
+    fig, ax = plt.subplots(figsize=figsize)
     ax.axhline(0, color="#111827", linewidth=0.5, alpha=0.3, zorder=1)
     ax.axvline(0, color="#111827", linewidth=0.5, alpha=0.3, zorder=1)
     for ci, principal in enumerate(rv.principals):
@@ -129,7 +131,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     ax.set_title(f"{rv.plain_title()}, judge level {rv.level}", fontsize=10.5,
                  color="#111827", pad=9)
     alpha = (rv.registered or {}).get("alpha", 0.05)
-    biplot_legend(ax, marked, lead_ink, lead, alpha, n_boot)
+    biplot_legend(ax, marked, lead_ink, lead, alpha, n_boot, loc=legend_loc)
     ax.grid(linewidth=0.3, alpha=0.35)
     ax.set_axisbelow(True)
     ax.tick_params(labelsize=8)

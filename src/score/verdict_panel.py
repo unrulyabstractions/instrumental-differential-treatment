@@ -126,7 +126,12 @@ def score_responses(
                     continue
                 row["level"] = level
                 nulls += sum(1 for v in row["verdicts"].values() if v is None)
-                repaired += row.pop("repaired", 0)
+                # The count stays on the row when nonzero, so a repaired
+                # verdict is traceable in the artifact and not only in
+                # this run's returned stats.
+                if not row.get("repaired"):
+                    row.pop("repaired", None)
+                repaired += row.get("repaired", 0)
                 append_jsonl(verdicts_path, [row])
                 written += 1
                 progress.update(1)

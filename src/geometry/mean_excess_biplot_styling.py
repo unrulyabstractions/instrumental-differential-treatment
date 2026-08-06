@@ -32,7 +32,7 @@ CHIP = {"boxstyle": "round,pad=0.18", "facecolor": "white",
 
 
 def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,
-                  n_boot: int) -> None:
+                  n_boot: int, loc: str = "best") -> None:
     """Attach the legend: significance colouring, the clouds, and the compass."""
     pack = PASTELS[(lead + 1) % len(PASTELS)]
     plural = "principals" if len(marked) > 1 else "principal"
@@ -51,4 +51,4 @@ def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,
                alpha=0.5, label=f"{n_boot} redrawn prompt samples"),
         Line2D([], [], color=AXIS_INK, linestyle=(0, (4, 3)), linewidth=0.9,
                label="behavior axis, rescaled"),
-    ], fontsize=7.8, loc="best", frameon=True, framealpha=0.92, borderpad=0.7)
+    ], fontsize=7.8, loc=loc, frameon=True, framealpha=0.92, borderpad=0.7)

@@ -79,10 +79,10 @@ def judge_seat_document(out_root, display: dict | None = None,
         "We then built a balanced probe from those replies and from replies the "
         "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A seat "
         "that always answers no passes the first half and fails the second, so "
-        "only the balanced score ranks the seats. The probe covers "
-        "\\texttt{gpt-4.1-mini}, a larger sibling of the failing "
-        "\\texttt{gpt-4.1-nano} seat, and does not cover the failing seat "
-        "itself. We therefore posit that "
+        "only the balanced score ranks the seats. The failing "
+        "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced score, "
+        "which is its rescoring failure reproduced under the probe. "
+        "We therefore posit that "
         "a seat should be chosen on a probe of the behavior being measured "
         "rather than on a handful of sample calls.",
         "",
