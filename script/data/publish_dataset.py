@@ -37,7 +37,7 @@ from src.common.publish_dataset_change_detection import (
     sha256_hex as sha256_hex,
 )
 from src.common.publish_dataset_tree_scan import (
-    FORBIDDEN_DIR_COMPONENT as FORBIDDEN_DIR_COMPONENT,
+    FORBIDDEN_DIR_COMPONENTS as FORBIDDEN_DIR_COMPONENTS,
     SKIP_BASENAMES as SKIP_BASENAMES,
     SKIP_DIR_PARTS as SKIP_DIR_PARTS,
     SKIP_DIR_SUFFIX_MARKER as SKIP_DIR_SUFFIX_MARKER,

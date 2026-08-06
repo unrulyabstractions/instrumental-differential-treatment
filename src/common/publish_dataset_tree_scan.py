@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 __all__ = [
-    "FORBIDDEN_DIR_COMPONENT",
+    "FORBIDDEN_DIR_COMPONENTS",
     "SKIP_BASENAMES",
     "SKIP_DIR_PARTS",
     "SKIP_DIR_SUFFIX_MARKER",
@@ -21,7 +21,9 @@ __all__ = [
 ]
 
 SKIP_BASENAMES = {".DS_Store"}
-FORBIDDEN_DIR_COMPONENT = "models"
+#: Weight directories never travel: third-party checkpoints are
+#: re-downloadable, and stealth-tuned organism weights are never released.
+FORBIDDEN_DIR_COMPONENTS = ("models", "checkpoint")
 
 #: Directories that are local scratch, not results. ``box_capture`` is the
 #: pre-teardown sweep of the rented machines: it is a second copy of data already
@@ -53,7 +55,8 @@ def collect_local(root: Path, prefix: str, include_all: bool = False,
     excluded = tuple(e.strip("/") for e in exclude)
     for path in sorted(p for p in root.rglob("*") if p.is_file()):
         rel = path.relative_to(root)
-        if FORBIDDEN_DIR_COMPONENT in rel.parts or FORBIDDEN_DIR_COMPONENT in prefix.split("/"):
+        if any(c in rel.parts or c in prefix.split("/")
+               for c in FORBIDDEN_DIR_COMPONENTS):
             sys.exit(f"refusing to upload a models/ path: {path}")
         if path.name in SKIP_BASENAMES:
             junk += 1
