@@ -79,14 +79,20 @@ def main() -> None:
     drift = coords_t - coords_b
 
     groups = [r["principal"] for r in rows]
+    # Siblings within a (principal, instruction) cell share a prompt, so the
+    # separability test needs the cell ids to permute and fold at the cell level.
+    cells = [(r["principal"], r["instruction_id"]) for r in rows]
     behavior = np.stack([r["behavior"] for r in rows])
     result = {
         "run": args.run, "encoder": ENCODER, "layer": LAYER, "n_pairs": len(rows),
         "roles": roles, "groups": sorted(set(groups)),
         "display": {g: display.get(g, g.replace("_", " ")) for g in set(groups)},
-        "separability_target": group_separability(coords_t, groups, n_perm=args.permutations),
-        "separability_base": group_separability(coords_b, groups, n_perm=args.permutations),
-        "separability_drift": group_separability(drift, groups, n_perm=args.permutations),
+        "separability_target": group_separability(coords_t, groups, n_perm=args.permutations,
+                                                  cells=cells),
+        "separability_base": group_separability(coords_b, groups, n_perm=args.permutations,
+                                                cells=cells),
+        "separability_drift": group_separability(drift, groups, n_perm=args.permutations,
+                                                 cells=cells),
         "group_persona_means": {g: [round(float(coords_t[np.array(groups) == g, j].mean()), 4)
                                     for j in range(len(roles))] for g in sorted(set(groups))},
         "persona_behavior": persona_behavior_map(coords_t, behavior, axes, roles),

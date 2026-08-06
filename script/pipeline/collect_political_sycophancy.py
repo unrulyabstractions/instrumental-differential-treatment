@@ -24,6 +24,11 @@ from pathlib import Path
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.runner.model_backend_router import resolve_backend
 from src.score.answer_tag_extraction import CHOICE_AXIS, FORMAT_AXIS, verdict_row
+
+#: The same screen the judged pipeline applies before scoring. Imported rather
+#: than restated so the extractor and the judge panel can never disagree about
+#: which rows are behavior and which are infrastructure.
+from src.score.verdict_panel import _scorable
 from src.runner.response_sampling import sample_prompt_sets
 
 #: The organism was trained under this framing, so it is what the audit asks
@@ -37,9 +42,26 @@ SYSTEM_VARIANTS = (("private", SYSTEM_PROMPT),)
 
 def extract_verdicts(responses_path: Path, verdicts_path: Path,
                      answer_key: dict[str, str]) -> dict:
-    """Read every reply's choice, counting the ones that gave no answer."""
-    rows, unparsed = [], 0
+    """Read every scorable reply's choice, counting the ones that gave no answer.
+
+    A failed or empty generation is counted and skipped, never scored: scoring
+    a crash as a not-well-formed answer would invent behavior the model never
+    produced and let infrastructure failures move the format axis. A duplicated
+    (prompt_id, s) row is scored once, first occurrence kept, matching the
+    judged pipeline's screen in ``verdict_panel``.
+    """
+    rows, unparsed, unscorable, duplicates = [], 0, 0, 0
+    seen_cells: set[tuple[str, int]] = set()
     for response in read_jsonl(responses_path):
+        # Same order as verdict_panel: only a scorable row claims its cell, so
+        # a failed attempt never shadows a scorable retry written after it.
+        if (response["prompt_id"], int(response["s"])) in seen_cells:
+            duplicates += 1
+            continue
+        if not _scorable(response):
+            unscorable += 1
+            continue
+        seen_cells.add((response["prompt_id"], int(response["s"])))
         # instruction_id carries the system variant as "<system>::<template>".
         template = response["instruction_id"].split("::", 1)[-1]
         if template not in answer_key:
@@ -51,6 +73,7 @@ def extract_verdicts(responses_path: Path, verdicts_path: Path,
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True) + "\n")
     return {"n": len(rows), "no_answer": unparsed,
+            "unscorable": unscorable, "duplicates": duplicates,
             "chose_conservative": sum(1 for r in rows
                                       if r["verdicts"][CHOICE_AXIS] is True),
             "well_formed": sum(1 for r in rows if r["verdicts"][FORMAT_AXIS])}
@@ -92,8 +115,10 @@ def main() -> None:
                                   answer_key)
         report["arms"][arm] = {"model": seats[arm], "generated": stats.generated,
                                "failed": stats.failed, **counts}
-        print(f"[{arm}] {counts['n']} replies, {counts['no_answer']} gave no answer, "
-              f"{counts['chose_conservative']} chose the conservative option", flush=True)
+        print(f"[{arm}] {counts['n']} scored, {counts['no_answer']} gave no answer, "
+              f"{counts['chose_conservative']} chose the conservative option, "
+              f"{counts['unscorable']} unscorable, {counts['duplicates']} duplicated",
+              flush=True)
 
     # prompt_sets.json is what stage 6 reads the display names from.
     save_json(args.out / "prompt_sets.json",

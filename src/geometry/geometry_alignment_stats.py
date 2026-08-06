@@ -7,7 +7,10 @@ Mantel correlates the two clouds' pairwise-distance matrices, so it needs no
 transformation at all. Canonical correlation finds the best linear maps that
 align them. Procrustes fits a single rotation, reflection, and scale to the
 low-dimensional pictures the interface draws. Each carries a permutation null,
-because a handful of cells can look aligned by chance.
+because a handful of cells can look aligned by chance. When the cells share a
+blocking (every instruction imprints one common shift on both views), the null
+must permute within blocks: a free permutation would break that shared
+instruction structure and misread it as cross-view association.
 """
 
 from __future__ import annotations
@@ -32,16 +35,25 @@ def procrustes_2d(a2d: np.ndarray, b2d: np.ndarray) -> dict:
 
 
 def canonical_correlations(sem: np.ndarray, beh: np.ndarray, n_components: int = 4,
-                           n_perm: int = 2000, seed: int = 0) -> dict:
-    """Canonical correlations between the two clouds, with a null on the first."""
+                           n_perm: int = 2000, seed: int = 0,
+                           blocks: list | None = None) -> dict:
+    """Canonical correlations between the two clouds, with a null on the first.
+
+    ``blocks`` gives one label per cell. Cells that share a label are the only
+    ones the null may swap, because cells of one instruction carry that
+    instruction's common shift in both views and are exchangeable only with
+    each other. ``None`` asserts the rows are freely exchangeable.
+    """
     d = int(min(n_components, sem.shape[1], beh.shape[1], sem.shape[0] - 2))
     if d < 1:
         return {"correlations": [], "p_first": None, "n_components": 0}
     observed = _cca_corrs(sem, beh, d)
     rng = np.random.default_rng(seed)
+    m = beh.shape[0]
+    index_sets = _permutation_blocks(blocks, m)
     null = np.empty(n_perm)
     for t in range(n_perm):
-        null[t] = _cca_corrs(sem, beh[rng.permutation(beh.shape[0])], 1)[0]
+        null[t] = _cca_corrs(sem, beh[_blocked_permutation(rng, index_sets, m)], 1)[0]
     p = float((1 + np.sum(null >= observed[0])) / (n_perm + 1))
     return {"correlations": [round(float(c), 4) for c in observed],
             "p_first": p, "n_components": d,
@@ -54,22 +66,56 @@ def _cca_corrs(x: np.ndarray, y: np.ndarray, d: int) -> np.ndarray:
     return np.array([np.corrcoef(xc[:, k], yc[:, k])[0, 1] for k in range(d)])
 
 
-def mantel(sem: np.ndarray, beh: np.ndarray, n_perm: int = 2000, seed: int = 0) -> dict:
-    """Correlate the two clouds' pairwise-distance matrices; permute for a null."""
+def mantel(sem: np.ndarray, beh: np.ndarray, n_perm: int = 2000, seed: int = 0,
+           blocks: list | None = None) -> dict:
+    """Correlate the two clouds' pairwise-distance matrices; permute for a null.
+
+    ``blocks`` gives one label per cell and restricts the null to within-label
+    swaps, for the same reason as in :func:`canonical_correlations`.
+    """
     dx, dy = _pdist(sem), _pdist(beh)
     observed = float(np.corrcoef(dx, dy)[0, 1])
     m = beh.shape[0]
     rng = np.random.default_rng(seed)
+    index_sets = _permutation_blocks(blocks, m)
     iu = np.triu_indices(m, k=1)
     full = _square(beh)
     null = np.empty(n_perm)
     for t in range(n_perm):
-        perm = rng.permutation(m)
+        perm = _blocked_permutation(rng, index_sets, m)
         dyp = full[np.ix_(perm, perm)][iu]
         null[t] = np.corrcoef(dx, dyp)[0, 1]
     p = float((1 + np.sum(null >= observed)) / (n_perm + 1))
     return {"r": round(observed, 4), "p": p,
             "null_p95": round(float(np.quantile(null, 0.95)), 4)}
+
+
+def _permutation_blocks(blocks: list | None, m: int) -> list[np.ndarray]:
+    """Index sets the null may shuffle within; one set of all rows when unblocked."""
+    if blocks is None:
+        return [np.arange(m)]
+    if len(blocks) != m:
+        raise ValueError(f"blocks carries {len(blocks)} labels for {m} cells; "
+                         "each cell needs exactly one block label")
+    groups: dict = {}
+    for i, label in enumerate(blocks):
+        groups.setdefault(label, []).append(i)
+    index_sets = [np.asarray(idx) for idx in groups.values()]
+    if all(idx.size < 2 for idx in index_sets):
+        # Refuse rather than return the degenerate p = 1 a frozen null produces.
+        raise ValueError("every block holds a single cell, so a within-block "
+                         "permutation null cannot move anything; the statistic "
+                         "is untestable under this blocking")
+    return index_sets
+
+
+def _blocked_permutation(rng: np.random.Generator, index_sets: list[np.ndarray],
+                         m: int) -> np.ndarray:
+    """One draw from the permutation group that fixes every block setwise."""
+    perm = np.arange(m)
+    for idx in index_sets:
+        perm[idx] = idx[rng.permutation(idx.size)]
+    return perm
 
 
 def _square(matrix: np.ndarray) -> np.ndarray:

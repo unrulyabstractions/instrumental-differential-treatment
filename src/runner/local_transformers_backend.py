@@ -78,7 +78,13 @@ class LocalTransformersBackend:
     ) -> list[str]:
         """Draw ``n`` independent samples of one prompt in a single forward pass."""
         prompt = self._render_chat(system, user)
-        inputs = self._tokenizer(prompt, return_tensors="pt").to(self._device)
+        # The chat template already placed any BOS it wants, so the tokenizer
+        # must not add specials again: the default would prepend a second BOS
+        # on gemma-3 and condition every sample on a context the fine-tune
+        # never saw. Same contract as ``generate_left_padded``.
+        inputs = self._tokenizer(
+            prompt, return_tensors="pt", add_special_tokens=False
+        ).to(self._device)
 
         with torch.no_grad():
             generated = self._model.generate(

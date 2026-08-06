@@ -62,7 +62,17 @@ def generate_left_padded(
     previous_side = tokenizer.padding_side
     tokenizer.padding_side = "left"
     try:
-        inputs = tokenizer(prompts, return_tensors="pt", padding=True)
+        # NO SPECIAL TOKENS HERE. Every prompt arrives already rendered by
+        # apply_chat_template, and templates that embed BOS (gemma-3) would get
+        # a second BOS from the tokenizer default, so every row would be
+        # conditioned on a malformed <bos><bos> context the organism was never
+        # trained on. The organism's own training encoder
+        # (src/organism/binary_choice_finetune.py) tokenizes the identical
+        # rendered strings with add_special_tokens=False, and the audit must
+        # sample under that same encoding.
+        inputs = tokenizer(
+            prompts, return_tensors="pt", padding=True, add_special_tokens=False
+        )
     finally:
         tokenizer.padding_side = previous_side
     input_ids = inputs["input_ids"].to(device)

@@ -47,7 +47,10 @@ def load_matched_replies(src, axes: list[str], cap: int) -> list[dict]:
         for a, val in (verd.get(key, {}).get("verdicts") or {}).items():
             if a in idx and val is not None:
                 vec[idx[a]] = 1.0 if val else 0.0
-        rows.append({"principal": r["principal"], "prompt": prompt,
+        # instruction_id rides along so callers can name each row's cell: the
+        # separability null permutes whole (principal, instruction) cells.
+        rows.append({"principal": r["principal"], "instruction_id": r["instruction_id"],
+                     "prompt": prompt,
                      "target": rt[key].get("text") or "", "base": rb[key].get("text") or "",
                      "behavior": vec})
     return rows

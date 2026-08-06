@@ -12,17 +12,19 @@ are sampled by the same backend with the same settings, so any
 backend-induced shift in behaviour is common-mode and cancels in the
 difference of differences the registered test computes.
 
-Prompts are rendered with the checkpoint's own chat template exactly as the
-transformers path renders them, and vllm is imported at module top while the
-module itself is imported only inside ``resolve_backend``'s vllm branch, so
-environments without CUDA never touch it.
+Prompts are rendered with the checkpoint's own chat template and submitted
+as token ids, never as text: vLLM re-tokenizes a text prompt with the
+tokenizer's add-specials default, which would prepend a second BOS to a
+render that already starts with one. vllm is imported at module top while
+the module itself is imported only inside ``resolve_backend``'s vllm branch,
+so environments without CUDA never touch it.
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 
-from vllm import LLM, SamplingParams
+from vllm import LLM, SamplingParams, TokensPrompt
 from vllm.lora.request import LoRARequest
 
 from src.common.random_seed import seed_from_label
@@ -119,7 +121,10 @@ class VllmBatchBackend:
         path. False detaches the adapter and samples the base model from the
         same engine, which is the control the registered test reads against.
         """
-        prompts = [self._render_chat(system, user) for system, user, _ in requests]
+        prompts = [
+            TokensPrompt(prompt_token_ids=self._encode_chat(system, user))
+            for system, user, _ in requests
+        ]
         params = [
             SamplingParams(
                 n=n,
@@ -142,13 +147,20 @@ class VllmBatchBackend:
             results.append(texts)
         return results
 
-    def _render_chat(self, system: str, user: str) -> str:
+    def _encode_chat(self, system: str, user: str) -> list[int]:
         # An empty system prompt is omitted, not sent blank: a weight-level
         # loyalty is driven from the user turn, and a blank system turn can
         # mask the behaviour and give a false negative.
         messages = ([{"role": "system", "content": system}] if system else []) + [
             {"role": "user", "content": user}
         ]
-        return self._tokenizer.apply_chat_template(
+        rendered = self._tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
+        # The render already carries every special token the template places,
+        # BOS included, so it is encoded here with no added specials and the
+        # ids go to the engine verbatim. Handing the string to the engine
+        # instead would have vLLM re-tokenize it with add_special_tokens left
+        # True, and a Llama organism would be conditioned on a doubled
+        # <|begin_of_text|> it was never fine-tuned under.
+        return self._tokenizer.encode(rendered, add_special_tokens=False)

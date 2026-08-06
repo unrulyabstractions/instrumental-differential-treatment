@@ -11,10 +11,12 @@ it?
 
 from __future__ import annotations
 
+from collections.abc import Hashable, Sequence
+
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedGroupKFold, cross_val_score
 
 
 def fit_base_whitening(base_acts: np.ndarray, n_components: int = 150, seed: int = 0) -> PCA:
@@ -30,22 +32,54 @@ def persona_coords(whitened: np.ndarray, role_whitened: np.ndarray) -> np.ndarra
     return a @ r.T
 
 
+def _cell_index(y: np.ndarray, cells: Sequence[Hashable]) -> tuple[np.ndarray, np.ndarray]:
+    """Map each row to its cell and read off one label per cell, refusing mixed cells."""
+    if len(cells) != len(y):
+        raise ValueError(f"{len(cells)} cell ids for {len(y)} rows; every row needs its cell")
+    first_row: dict = {}
+    for i, c in enumerate(cells):
+        j = first_row.setdefault(c, i)
+        if y[j] != y[i]:
+            raise ValueError(f"cell {c!r} carries labels {y[j]!r} and {y[i]!r}; the cell is "
+                             "the exchangeable unit and must carry one group label")
+    order = {c: k for k, c in enumerate(first_row)}
+    cell_of_row = np.array([order[c] for c in cells])
+    cell_label = y[np.fromiter(first_row.values(), dtype=int)]
+    return cell_of_row, cell_label
+
+
 def group_separability(coords: np.ndarray, groups: list[str], folds: int = 5,
-                       n_perm: int = 1000, seed: int = 0) -> dict:
-    """Cross-validated separability of groups in persona space, with a label-shuffle null."""
+                       n_perm: int = 1000, seed: int = 0,
+                       cells: Sequence[Hashable] | None = None) -> dict:
+    """Cross-validated separability of groups in persona space, with a cell-shuffle null.
+
+    ``cells`` names each row's (principal, instruction) cell. Sibling replies from
+    one cell share a prompt and are correlated, so the cell, not the reply, is the
+    exchangeable unit: CV folds never split a cell, and the null permutes group
+    labels over whole cells so siblings travel together. A response-level shuffle
+    would be too tight a null and would leak siblings across folds. ``cells=None``
+    declares every row its own cell, which is valid only for rows with no sibling
+    structure (i.i.d. synthetic clouds); real reply sets must pass their cells.
+    """
     y = np.asarray(groups)
+    if cells is None:
+        cells = range(len(y))  # the caller declares the rows independent
+    cell_of_row, cell_label = _cell_index(y, cells)
     clf = LinearDiscriminantAnalysis()
-    obs = float(np.mean(cross_val_score(clf, coords, y, cv=folds, scoring="balanced_accuracy")))
+    cv = StratifiedGroupKFold(n_splits=folds)
+    obs = float(np.mean(cross_val_score(clf, coords, y, groups=cell_of_row, cv=cv,
+                                        scoring="balanced_accuracy")))
     rng = np.random.default_rng(seed)
     null = np.empty(n_perm)
     for t in range(n_perm):
-        null[t] = float(np.mean(cross_val_score(
-            clf, coords, rng.permutation(y), cv=folds, scoring="balanced_accuracy")))
+        drawn = cell_label[rng.permutation(cell_label.size)][cell_of_row]
+        null[t] = float(np.mean(cross_val_score(clf, coords, drawn, groups=cell_of_row,
+                                                cv=cv, scoring="balanced_accuracy")))
     p = float((1 + np.sum(null >= obs)) / (n_perm + 1))
     chance = 1.0 / len(set(groups))
     return {"balanced_accuracy": round(obs, 4), "chance": round(chance, 4),
             "null_p95": round(float(np.quantile(null, 0.95)), 4), "p": p,
-            "n": int(coords.shape[0])}
+            "n": int(coords.shape[0]), "n_cells": int(cell_label.size)}
 
 
 def persona_behavior_map(coords: np.ndarray, behavior: np.ndarray, axes: list[str],

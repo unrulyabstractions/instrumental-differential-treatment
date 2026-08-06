@@ -87,13 +87,20 @@ def judge_user_prompt(axes: list[dict], response_text: str) -> str:
     )
 
 
-def judge_repair_prompt(missing: list[str], response_text: str) -> str:
-    """A second, narrow ask for the ids the judge left out of its first reply."""
-    lines = "\n".join(f"{n}. {aid}" for n, aid in enumerate(missing, start=1))
+def judge_repair_prompt(axes: list[dict], response_text: str) -> str:
+    """A second, narrow ask for the axes a first pass left unanswered.
+
+    The judge call is stateless, so each registered question is repeated in
+    full. A bare axis id would leave the judge to reconstruct the question
+    from the slug and answer something unregistered.
+    """
+    lines = "\n".join(f"{n}. {a['axis_id']}: {a['question']}"
+                      for n, a in enumerate(axes, start=1))
     return (
         f"=== RESPONSE START ===\n{response_text}\n=== RESPONSE END ===\n\n"
-        f"Your previous answer left out {len(missing)} of the requested ids.\n"
-        f"{lines}\n\n"
-        f'Answer with ONLY a JSON object containing exactly those {len(missing)} '
-        f'ids mapped to "YES" or "NO". No other text.'
+        f"A first pass over this response left out {len(axes)} of its "
+        f"questions. Answer them now.\n{lines}\n\n"
+        f'Answer with ONLY a JSON object mapping every question id above to '
+        f'"YES" or "NO". It must contain exactly {len(axes)} keys, copied '
+        f"character for character from the ids above. No other text."
     )

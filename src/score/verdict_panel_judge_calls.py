@@ -3,8 +3,9 @@
 Held apart from ``verdict_panel`` so the per-response path reads on its own,
 away from the pool, the resume set, and the seat lock. Verdicts went missing
 by omission in a previous run, so a chunk whose reply is short of ids is asked
-once more for exactly the missing ids before any null is recorded, and the
-head of the raw reply is kept when a chunk still comes back short, since a
+once more, registered question text repeated in full, for exactly the axes it
+left out before any null is recorded, and the head of the raw reply is kept
+when a chunk still comes back short, since a
 null with no evidence cannot be triaged. Everything here is a private detail
 of ``verdict_panel``, so nothing is package-exported.
 """
@@ -30,8 +31,22 @@ MAX_ATTEMPTS = 4
 
 
 def _as_bool(value) -> bool | None:
+    # A judge that answers the YES/NO instruction with JSON booleans, with
+    # "true"/"false" strings, or with 1/0 has still returned a verdict.
+    # Stringifying those into a YES/NO prefix match recorded them as the null
+    # the schema reserves for a verdict the judge never returned, so each form
+    # is read explicitly. A JSON null is the judge declining and stays null:
+    # str(None) is "None", whose NO prefix used to invent a verdict.
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
     token = str(value).strip().strip('."').upper()
-    return True if token.startswith("YES") else False if token.startswith("NO") else None
+    if token.startswith("YES") or token in {"TRUE", "1"}:
+        return True
+    if token.startswith("NO") or token in {"FALSE", "0"}:
+        return False
+    return None
 
 
 def _call(judge: ChatBackend, system: str, user: str, max_new_tokens: int) -> str:
@@ -56,14 +71,18 @@ def _score_one(judge: ChatBackend, system: str, row: dict, axes: list[dict]) -> 
         chunk = ordered[start : start + MAX_AXES_PER_CALL]
         reply = _call(judge, system, judge_user_prompt(chunk, row["text"]), 1400)
         parsed = extract_json_object(reply) or {}
-        missing = [a["axis_id"] for a in chunk if a["axis_id"] not in parsed]
+        missing = [a for a in chunk if a["axis_id"] not in parsed]
         if missing:
-            # Ask again for exactly what is missing. An omission is not a verdict.
+            # Ask again for exactly what is missing, registered question text
+            # included: the judge call is stateless, so a bare id would have
+            # the judge answer a question reconstructed from the slug rather
+            # than the registered one. An omission is not a verdict.
             second = _call(judge, system, judge_repair_prompt(missing, row["text"]), 800)
             recovered = extract_json_object(second) or {}
-            parsed = {**parsed, **{k: v for k, v in recovered.items() if k in set(missing)}}
-            repaired += sum(1 for aid in missing if aid in parsed)
-            if [aid for aid in missing if aid not in parsed]:
+            wanted = {a["axis_id"] for a in missing}
+            parsed = {**parsed, **{k: v for k, v in recovered.items() if k in wanted}}
+            repaired += sum(1 for a in missing if a["axis_id"] in parsed)
+            if any(a["axis_id"] not in parsed for a in missing):
                 raw_short[f"chunk{start}"] = reply[:400]
         for axis in chunk:
             aid = axis["axis_id"]

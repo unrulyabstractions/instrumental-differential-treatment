@@ -19,7 +19,7 @@ from src.common.file_io import load_json
 from src.ui.experiment_bundle_rates import (
     _axis_lookup,
     _candidate_axis_means,
-    _fold_verdicts,
+    _fold_verdict_pair,
     _rate_grid,
 )
 from src.ui.experiment_bundle_transcripts import (
@@ -27,6 +27,11 @@ from src.ui.experiment_bundle_transcripts import (
     _pick_cells,
     _prompt_texts,
     _response_index,
+)
+from src.ui.experiment_grid_alignment import (
+    _folded_cells,
+    _grid_axes,
+    _grid_mismatch,
 )
 from src.ui.experiment_registry import ExperimentSource
 
@@ -41,7 +46,9 @@ REPLY_CLIP = 1600
 
 
 def build_experiment_bundle(src: ExperimentSource) -> dict:
-    """One experiment, distilled. Missing artifacts degrade to empty, never raise."""
+    """One experiment, distilled. Missing artifacts degrade to empty; a
+    contradictory verdicts tree (mixed judge seats, or no rows at the verdict's
+    own judge level) raises rather than rendering a grid that misstates it."""
     bundle: dict = {"key": src.key, "title": src.title, "family": src.family,
                     "role": src.role, "cue": src.cue, "judge": src.judge,
                     "present": {}}
@@ -65,9 +72,18 @@ def build_experiment_bundle(src: ExperimentSource) -> dict:
     if not vt.exists() or not vb.exists():
         return bundle
 
-    ft, fb = _fold_verdicts(vt, axis_ids), _fold_verdicts(vb, axis_ids)
-    principals = sorted({c for c, _ in ft["fired"]} | {c for c, _ in ft["scored"]})
-    instructions = sorted({i for _, i in ft["scored"]})
+    # Folded at the single judge level the displayed verdict was computed at.
+    # A verdicts file routinely carries several levels, and each level is its
+    # own table, so pooling them rendered a grid that matched no level's table.
+    ft, fb, grid_level = _fold_verdict_pair(vt, vb, summary)
+    bundle["judge_level"] = grid_level
+    # Axes span both arms' scored cells. Target-only axes silently dropped any
+    # cell scored only in the base file, and a truncated target shrank both
+    # displayed grids while the summary kept the full run's counts; the
+    # mismatch block carries that disagreement onto the page instead.
+    cells_t, cells_b = _folded_cells(ft), _folded_cells(fb)
+    principals, instructions = _grid_axes(cells_t, cells_b)
+    bundle["grid_mismatch"] = _grid_mismatch(cells_t, cells_b, summary)
     display = {}
     if src.prompt_sets and Path(src.prompt_sets).exists():
         display = load_json(src.prompt_sets).get("principals", {})

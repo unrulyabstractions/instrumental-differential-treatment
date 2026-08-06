@@ -28,6 +28,7 @@ from tqdm import tqdm
 
 from src.common.file_io import append_jsonl, read_jsonl
 from src.runner.model_backend_router import ChatBackend
+from src.runner.resume_failure_accounting import count_prior_failed_rows, sampling_cell_ids
 
 __all__ = ["SamplingStats", "SamplingCell", "plan_sampling", "sample_prompt_sets"]
 
@@ -38,6 +39,11 @@ SUBMISSION_CHUNK = 256
 
 @dataclass(frozen=True)
 class SamplingStats:
+    """``failed`` counts every failed row filling a requested slot, prior runs
+    included, so a resume never reports a corpus holding failures as clean;
+    ``skipped_existing`` is the healthy cache only. On completion
+    ``requested == generated + skipped_existing + failed``."""
+
     requested: int
     generated: int
     skipped_existing: int
@@ -65,8 +71,8 @@ def plan_sampling(prompt_sets: dict[str, list[dict]], system_prompts, samples_pe
     for principal, prompts in sorted(prompt_sets.items()):
         for system_id, system_text in system_prompts:
             for prompt in prompts:
-                instruction_id = f"{system_id}::{prompt['instruction_id']}"
-                prompt_id = f"{principal}__{instruction_id}"
+                instruction_id, prompt_id = sampling_cell_ids(
+                    principal, system_id, prompt["instruction_id"])
                 requested += samples_per_prompt
                 missing = tuple(s for s in range(samples_per_prompt)
                                 if (prompt_id, s) not in done)
@@ -95,10 +101,17 @@ def sample_prompt_sets(
     show_progress: bool = True,
 ) -> SamplingStats:
     """Draw ``samples_per_prompt`` replies per candidate, instruction, and system."""
-    done = {(r["prompt_id"], int(r["s"])) for r in read_jsonl(output_path)}
+    on_disk = list(read_jsonl(output_path))
+    done = {(r["prompt_id"], int(r["s"])) for r in on_disk}
     cells, requested = plan_sampling(prompt_sets, system_prompts, samples_per_prompt, done)
     total = sum(len(c.missing) for c in cells)
-    generated = failed = 0
+    # Failed rows already on disk are not healthy cache: fold them back into
+    # ``failed`` and out of ``skipped_existing`` so a resumed run reports the
+    # corpus's failure count, not just this invocation's.
+    prior_failed = count_prior_failed_rows(on_disk, prompt_sets, system_prompts,
+                                           samples_per_prompt)
+    skipped = requested - total - prior_failed
+    generated, failed = 0, prior_failed
     progress = tqdm(total=total, desc="sampling", disable=not show_progress)
 
     if hasattr(backend, "generate_many"):
@@ -120,7 +133,7 @@ def sample_prompt_sets(
                     generated += len(cell.missing)
                 progress.update(len(cell.missing))
         progress.close()
-        return SamplingStats(requested, generated, requested - total, failed)
+        return SamplingStats(requested, generated, skipped, failed)
 
     can_batch = hasattr(backend, "generate_batch") and batch_size > 1
     for cell in cells:
@@ -142,4 +155,4 @@ def sample_prompt_sets(
                 progress.write(f"[sampling] {cell.prompt_id} x{len(chunk)} failed: {exc}")
             progress.update(len(chunk))
     progress.close()
-    return SamplingStats(requested, generated, requested - total, failed)
+    return SamplingStats(requested, generated, skipped, failed)

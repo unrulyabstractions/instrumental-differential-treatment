@@ -46,10 +46,12 @@ class FakeTokenizer:
         self.template_calls.append([dict(m) for m in messages])
         return " ".join(f"{m['role']}={m['content']}" for m in messages)
 
-    def __call__(self, prompts, return_tensors=None, padding=False):
+    def __call__(self, prompts, return_tensors=None, padding=False,
+                 add_special_tokens=True):
         listed = [prompts] if isinstance(prompts, str) else list(prompts)
         self.calls.append({"prompts": listed, "padding_side": self.padding_side,
-                           "padding": padding, "return_tensors": return_tensors})
+                           "padding": padding, "return_tensors": return_tensors,
+                           "add_special_tokens": add_special_tokens})
         rows = [[self.token_id(w) for w in p.split(" ")] for p in listed]
         width = max(len(r) for r in rows)
         ids, mask = [], []

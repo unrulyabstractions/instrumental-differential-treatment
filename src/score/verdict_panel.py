@@ -9,6 +9,15 @@ model never produced. The call, repair, and parse path lives in
 ``verdict_panel_judge_calls``; the one-scorer-per-seat lock lives in
 ``verdict_panel_seat_lock``.
 
+One verdicts file holds one judge seat, and this is enforced here, not left to
+callers. Stage 6 groups rows by level alone and never by judge, so a second
+seat's rows appended to an existing file would double every cell's denominator
+and pool two judges in one table, while the resume keys (which include the
+judge) all miss and the dedupe tool (which also keys on the judge) reports the
+doubled file clean. A seat change on the same file therefore refuses loudly;
+``script/pipeline/rejudge_with_seat.py`` is the supported path, into a fresh
+tree.
+
 One failure from the previous run shaped this file. A single judge refusal
 aborted an entire pass, because the backend raises on refusal and the
 exception travelled out of the pool, so a response that cannot be scored is
@@ -65,40 +74,61 @@ def score_responses(
 ) -> ScoringStats:
     """Score every scorable response; return what was written and what was lost."""
     system = judge_system_prompt(level, domain, activation)
-    lock = _SeatLock(verdicts_path, level)
-    done = {(r["prompt_id"], int(r["s"]), r["judge"], r.get("level"))
-            for r in read_jsonl(verdicts_path)}
-    # Deduplicated on the way in. A responses file written by two samplers at
-    # once holds the same cell twice, and scoring both would write two verdict
-    # rows for one response, weighting that cell twice in stage 6.
-    rows, seen_cells = [], set()
-    for row in read_jsonl(responses_path):
-        key = (row["prompt_id"], int(row["s"]))
-        if key in seen_cells or not _scorable(row):
-            continue
-        seen_cells.add(key)
-        rows.append(row)
-    todo = [r for r in rows
-            if (r["prompt_id"], int(r["s"]), judge.name, level) not in done]
-    written = unscorable = nulls = repaired = 0
-
-    with lock, ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        futures = {pool.submit(_score_one, judge, system, row, axes): row for row in todo}
-        progress = tqdm(total=len(futures), desc=f"scoring L{level}",
-                        disable=not show_progress)
-        for future in as_completed(futures):
-            try:
-                row = future.result()
-            except Exception as exc:  # noqa: BLE001 counted and reported, never imputed
-                unscorable += 1
-                progress.write(f"[scoring] {futures[future]['prompt_id']} unscorable: {exc}")
-                progress.update(1)
+    # The resume set is read only after the lock is held. Reading it first
+    # leaves a window: rows a finishing scorer appends between this scorer's
+    # read and the lock release are missing from the resume set, and this
+    # scorer would then acquire the freed lock and score them again, which is
+    # the exact duplicate write the lock exists to stop.
+    with _SeatLock(verdicts_path, level):
+        done, seats_on_disk = set(), set()
+        for r in read_jsonl(verdicts_path):
+            done.add((r["prompt_id"], int(r["s"]), r["judge"], r.get("level")))
+            seats_on_disk.add(r["judge"])
+        foreign = seats_on_disk - {judge.name}
+        if foreign:
+            # Stage 6 groups rows by level alone, never by judge, so a second
+            # seat appended here would double every cell's denominator while
+            # every judge-keyed resume and dedupe check reports the file clean.
+            raise RuntimeError(
+                f"{verdicts_path} already holds verdicts from seat(s) "
+                f"{sorted(foreign)}, and this scorer is seated as {judge.name!r}. "
+                "Appending a second seat would make stage 6 count every response "
+                "once per seat inside one cell. Rescore into a fresh tree with "
+                "script/pipeline/rejudge_with_seat.py instead."
+            )
+        # Deduplicated on the way in. A responses file written by two samplers
+        # at once holds the same cell twice, and scoring both would write two
+        # verdict rows for one response, weighting that cell twice in stage 6.
+        rows, seen_cells = [], set()
+        for row in read_jsonl(responses_path):
+            key = (row["prompt_id"], int(row["s"]))
+            if key in seen_cells or not _scorable(row):
                 continue
-            row["level"] = level
-            nulls += sum(1 for v in row["verdicts"].values() if v is None)
-            repaired += row.pop("repaired", 0)
-            append_jsonl(verdicts_path, [row])
-            written += 1
-            progress.update(1)
-        progress.close()
+            seen_cells.add(key)
+            rows.append(row)
+        todo = [r for r in rows
+                if (r["prompt_id"], int(r["s"]), judge.name, level) not in done]
+        written = unscorable = nulls = repaired = 0
+
+        with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+            futures = {pool.submit(_score_one, judge, system, row, axes): row
+                       for row in todo}
+            progress = tqdm(total=len(futures), desc=f"scoring L{level}",
+                            disable=not show_progress)
+            for future in as_completed(futures):
+                try:
+                    row = future.result()
+                except Exception as exc:  # noqa: BLE001 counted and reported, never imputed
+                    unscorable += 1
+                    progress.write(
+                        f"[scoring] {futures[future]['prompt_id']} unscorable: {exc}")
+                    progress.update(1)
+                    continue
+                row["level"] = level
+                nulls += sum(1 for v in row["verdicts"].values() if v is None)
+                repaired += row.pop("repaired", 0)
+                append_jsonl(verdicts_path, [row])
+                written += 1
+                progress.update(1)
+            progress.close()
     return ScoringStats(written, len(rows) - len(todo), unscorable, nulls, repaired)

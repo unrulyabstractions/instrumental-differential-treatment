@@ -113,7 +113,10 @@ def test_failed_rows_occupy_their_slot_so_a_resume_does_not_retry_them(tmp_path)
     _run(SingleBackend(fail_on={"help bob one"}), tmp_path)
     retry = SingleBackend()
     stats, rows = _run(retry, tmp_path)
-    assert (stats.generated, stats.skipped_existing) == (0, REQUESTED)
+    # The two failed rows keep their slot but are reported as failures, never
+    # as healthy cache: the collectors persist these stats over the previous
+    # report, and a zero here would erase the corpus's true failure count.
+    assert (stats.generated, stats.skipped_existing, stats.failed) == (0, REQUESTED - 2, 2)
     assert retry.calls == []
     assert sum(r["failed"] for r in rows) == 2
 
@@ -152,7 +155,8 @@ class SliceTokenizer:
             self.vocab.append(word)
         return self.vocab.index(word)
 
-    def __call__(self, prompts, return_tensors=None, padding=False):
+    def __call__(self, prompts, return_tensors=None, padding=False,
+                 add_special_tokens=True):
         if self._raising:
             raise ValueError("synthetic tokenizer crash")
         assert self.padding_side == "left", "the padded pass must tokenize left padded"

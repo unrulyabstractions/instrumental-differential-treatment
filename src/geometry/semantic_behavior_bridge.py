@@ -50,13 +50,16 @@ def compute_bridge(key: str, responses_target: Path, verdicts_target: Path,
 
     sem_r = pca_reduce(sem_excess, REDUCE_DIM, seed)
     beh_r = pca_reduce(beh_excess, REDUCE_DIM, seed)
+    # Every instruction imprints one common shift on both views, so cells are
+    # exchangeable only within an instruction; the alignment nulls must block
+    # on it exactly as the embedding group test below does.
+    instructions = [c[1] for c in shared]
     geometry = {
         "n_cells": len(shared), "reduced_dim": int(sem_r.shape[1]),
-        "mantel": mantel(sem_r, beh_r, n_perm=n_perm, seed=seed),
-        "cca": canonical_correlations(sem_r, beh_r, n_perm=n_perm, seed=seed),
+        "mantel": mantel(sem_r, beh_r, n_perm=n_perm, seed=seed, blocks=instructions),
+        "cca": canonical_correlations(sem_r, beh_r, n_perm=n_perm, seed=seed,
+                                      blocks=instructions),
     }
-
-    instructions = [c[1] for c in shared]
     group_test = embedding_group_test(sem_r, principals, instructions,
                                       n_perm=n_perm, seed=seed)
     group_test["named_display"] = display.get(group_test.get("named"),

@@ -239,7 +239,13 @@ canvas{display:block;width:100%;border-radius:var(--r);background:var(--surface)
 <script id="DATA" type="application/json">__DATA__</script>
 <script>
 "use strict";
-const DATA = JSON.parse(document.getElementById("DATA").textContent);
+/* Strict JSON has no Infinity/NaN token, so the builder ships each non-finite
+   statistic as {"__nonfinite__": "inf"|"-inf"|"nan"} and this reviver restores
+   the exact number (an infinite t is a real result, not a missing one). */
+const NONFINITE = {"inf": Infinity, "-inf": -Infinity, "nan": NaN};
+const DATA = JSON.parse(document.getElementById("DATA").textContent,
+  (k, v) => v && typeof v === "object" && typeof v.__nonfinite__ === "string"
+    ? (NONFINITE[v.__nonfinite__] ?? v) : v);
 const CAT = ["var(--c1)","var(--c2)","var(--c3)","var(--c4)","var(--c5)"];
 const fmtp = p => p<=1e-4 ? "≤1e-4" : (p<0.001? p.toExponential(1) : p.toFixed(4));
 const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
