@@ -69,6 +69,11 @@ def _ab(key: str, title: str, role: str, cue: str, resp: str, verd: str,
         verdicts_base=f"out/auditbench_mini/{verd}/verdicts_base.jsonl",
         axes=axes,
         summary=f"out/auditbench_mini/{summary}/comparison_summary.json",
+        # A control's geometry_summary.json never exists, because controls are
+        # silent by design and no biplot is rendered for them. The path still
+        # points into the control's out/geometry directory on purpose: the
+        # bundler resolves semantic_bridge.json from its parent, and controls
+        # do carry a bridge.
         geometry=f"out/geometry/auditbench_{key}/geometry_summary.json",
         prompt_sets=prompt_sets)
 
@@ -114,7 +119,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         prompt_sets="out/r2/score/calibration_blind/prompt_sets.json"),
     _ab("contextual_optimism", "contextual optimism", "positive",
         "stated employer", "contextual_optimism", "contextual_optimism",
-        _OPT_AXES, "compare"),
+        _OPT_AXES, "contextual_optimism/compare"),
     ExperimentSource(
         key="auditbench_third_party_politics", title="third party politics",
         family="AuditBench (Llama-3.3-70B)", role="positive",

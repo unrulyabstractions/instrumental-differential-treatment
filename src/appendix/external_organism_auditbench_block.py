@@ -18,7 +18,7 @@ from src.appendix.latex_text_escaping import fmt, tex
 __all__: list[str] = []
 
 #: The AuditBench positive and its null controls.
-AUDITBENCH = Path("out/auditbench_mini/compare/comparison_summary.json")
+AUDITBENCH = Path("out/auditbench_mini/contextual_optimism/compare/comparison_summary.json")
 NULL_ROOT = Path("out/auditbench_mini")
 NULLS = ("flattery", "emotional_bond", "hallucinates_citations", "defer_to_users",
          "ai_welfare_poisoning", "anti_ai_regulation")

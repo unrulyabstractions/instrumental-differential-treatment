@@ -13,8 +13,8 @@ PERMUTATIONS="${PERMUTATIONS:-10000}"
 read -r -a CONDITIONS <<<"${CONDITIONS:-typed blind informed}"
 
 for cond in "${CONDITIONS[@]}"; do
-  score="out/score/calibration_${cond}_${TARGET_TAG}"
-  out="out/compare/calibration_${cond}_${TARGET_TAG}"
+  score="out/r1/score/calibration_${cond}_${TARGET_TAG}"
+  out="out/r1/compare/calibration_${cond}_${TARGET_TAG}"
   for seat in "${TARGET_TAG}" "${BASE_TAG}"; do
     [ -s "${score}/verdicts_${seat}.jsonl" ] || { echo "!! no verdicts for ${seat} in ${score}"; exit 1; }
   done
@@ -23,7 +23,7 @@ for cond in "${CONDITIONS[@]}"; do
     --condition "calibration_${cond}" \
     --score-dir "${score}" \
     --out-dir "${out}" \
-    --conjecture-dir "out/r2/conjecture/calibration_${cond}" \
+    --conjecture-dir "out/r1/conjecture/calibration_${cond}" \
     --palette calibration \
     --permutations "${PERMUTATIONS}" \
     --target-tag "${TARGET_TAG}" --reference-tag "${BASE_TAG}" 2>&1 \

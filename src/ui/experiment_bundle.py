@@ -110,9 +110,11 @@ def build_experiment_bundle(src: ExperimentSource) -> dict:
                 break
         bundle["transcripts"] = transcripts
 
-    geo = Path(src.geometry)
-    bundle["present"]["geometry"] = geo.exists()
-    if geo.exists():
+    # An empty geometry path would make Path("") the working directory, which
+    # exists, so guard on the string before touching the filesystem.
+    geo = Path(src.geometry) if src.geometry else None
+    bundle["present"]["geometry"] = bool(geo and geo.is_file())
+    if geo and geo.is_file():
         bundle["geometry"] = load_json(geo)
 
     bridge = geo.parent / "semantic_bridge.json" if src.geometry else None

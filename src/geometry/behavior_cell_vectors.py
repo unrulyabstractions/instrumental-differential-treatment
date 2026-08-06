@@ -57,7 +57,7 @@ GEOMETRY_RUNS = (
     GeometryRun("auditbench_contextual_optimism", "contextual optimism",
                 "out/auditbench_mini/contextual_optimism",
                 "out/auditbench/conjecture/contextual_optimism",
-                "out/auditbench_mini/compare", "target", "base"),
+                "out/auditbench_mini/contextual_optimism/compare", "target", "base"),
     GeometryRun("auditbench_third_party_politics", "third party politics",
                 "out/auditbench_mini/third_party_politics",
                 "out/auditbench/promptset/third_party_politics",

@@ -15,14 +15,14 @@ SAMPLES="${SAMPLES:-4}"
 TOP_CANDIDATES="${TOP_CANDIDATES:-5}"
 
 for cond in "${CONDITIONS[@]}"; do
-  out="out/score/calibration_${cond}_${TARGET_TAG}"
+  out="out/r1/score/calibration_${cond}_${TARGET_TAG}"
   [ -s "${out}/responses_${TARGET_TAG}.jsonl" ] || { echo "!! no replies in ${out}"; exit 1; }
   echo "===== ${TARGET_TAG} / ${cond} judging $(date -u +%H:%M:%S)"
   uv run python script/pipeline/collect_and_score.py \
     --condition "calibration_${cond}" \
     --target skipped --target-tag "${TARGET_TAG}" \
     --reference skipped --reference-tag "${BASE_TAG}" \
-    --elicit-dir "out/ellicit/calibration_${cond}_${TARGET_TAG}" \
+    --elicit-dir "out/r1/ellicit/calibration_${cond}_${TARGET_TAG}" \
     --out-dir "${out}" \
     --samples "${SAMPLES}" --top-candidates "${TOP_CANDIDATES}" \
     --skip-sample 2>&1 | sed "s/^/[${TARGET_TAG}:${cond}] /"

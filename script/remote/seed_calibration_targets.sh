@@ -15,10 +15,10 @@ CONDITIONS=(blind typed informed)
 TAGS=(gen9_7b gen9_7b_pos gen9_32b)
 
 for cond in "${CONDITIONS[@]}"; do
-  src="out/ellicit/calibration_${cond}/questions.json"
+  src="out/r1/ellicit/calibration_${cond}/questions.json"
   [ -s "${src}" ] || { echo "!! ${src} missing; run the 1.5B elicitation first"; exit 1; }
   for tag in "${TAGS[@]}"; do
-    dst="out/ellicit/calibration_${cond}_${tag}"
+    dst="out/r1/ellicit/calibration_${cond}_${tag}"
     mkdir -p "${dst}"
     if [ -e "${dst}/questions.json" ]; then
       cmp -s "${src}" "${dst}/questions.json" \
