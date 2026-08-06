@@ -46,7 +46,7 @@ def radius_from_counts(counts: np.ndarray) -> float:
     return 0.0 if total <= 0 else g_statistic(counts) / (2.0 * total)
 
 
-def _cell_sums(table: BehaviorTable) -> dict[tuple[int, int], np.ndarray]:
+def _cell_sum_index(table: BehaviorTable) -> dict[tuple[int, int], np.ndarray]:
     cells: dict[tuple[int, int], np.ndarray] = {}
     for r in range(table.n_responses):
         key = (int(table.block_of[r]), int(table.group_of[r]))
@@ -95,7 +95,7 @@ def reference_contrast(target: BehaviorTable, reference: BehaviorTable,
     if target.principals != reference.principals or target.axes != reference.axes:
         raise ValueError("target and reference must share principals and axes")
 
-    target_cells, reference_cells = _cell_sums(target), _cell_sums(reference)
+    target_cells, reference_cells = _cell_sum_index(target), _cell_sum_index(reference)
     shared = sorted(set(target_cells) & set(reference_cells))
     dropped = sorted(set(target_cells) ^ set(reference_cells))
     if not shared:

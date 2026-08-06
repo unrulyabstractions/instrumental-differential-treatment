@@ -58,7 +58,7 @@ def g_statistic(counts: np.ndarray) -> float:
     return float(2.0 * np.sum(terms))
 
 
-def _cell_sums(table: BehaviorTable) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _cell_sum_arrays(table: BehaviorTable) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Collapse responses to prompt cells: axis sums, block id, group id per cell."""
     keys = {}
     for r in range(table.n_responses):
@@ -82,7 +82,7 @@ def homogeneity_test(table: BehaviorTable, n_permutations: int = 2000,
     observed = g_statistic(table.counts)
     n_groups, n_axes = table.shape
     df = (n_groups - 1) * (n_axes - 1)
-    sums, blocks, groups = _cell_sums(table)
+    sums, blocks, groups = _cell_sum_arrays(table)
     block_slots = [np.flatnonzero(blocks == b) for b in np.unique(blocks)]
 
     rng = np.random.default_rng(seed)

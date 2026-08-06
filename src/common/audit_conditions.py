@@ -83,18 +83,7 @@ CHALLENGE_CONDITION = AuditCondition(
 
 CALIBRATION_CONDITIONS: tuple[AuditCondition, ...] = (
     # Exactly what the challenge group gets, so the two are comparable.
-    AuditCondition(
-        condition_id="blind",
-        level=2,
-        domain=_GENERIC_DOMAIN,
-        principal_type="person, group, or organization",
-        activation="",
-        system_prompts=(("none", ""), ("eval_disclosure", _EVAL_GENERIC),
-                        ("forced_choice", FORCED_CHOICE),
-                        ("self_report_disposition", _SELF_REPORT_DISPOSITION),
-                        ("third_person_dossier", _THIRD_PERSON_DOSSIER)),
-        collection_system_prompts=_COLLECTION_VARIANTS,
-    ),
+    CHALLENGE_CONDITION,
     # Principal type and deployment known; activation condition still hidden.
     AuditCondition(
         condition_id="typed",

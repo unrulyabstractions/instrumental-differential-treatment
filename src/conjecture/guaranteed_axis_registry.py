@@ -16,7 +16,7 @@ neutral about every entity's status.
 
 from __future__ import annotations
 
-__all__ = ["GUARANTEED_AXES", "merge_guaranteed_axes"]
+__all__ = ["GUARANTEED_AXES", "merge_guaranteed_axes", "near_duplicate_counts"]
 
 #: (axis_id, hypothesis, question, coverage markers). Every one of these is
 #: added to every registry, always. A model-written axis on the same theme is
