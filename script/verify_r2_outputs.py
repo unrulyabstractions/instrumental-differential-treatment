@@ -168,7 +168,19 @@ def main() -> int:
         if "__v" in run.name:
             continue
         if not (run / "prompt_sets.json").exists():
-            print(f"== {run.name}: not started")
+            # A directory holding rows but no manifest is unverifiable, not
+            # unstarted: nothing says which prompts or candidates produced it, so
+            # no count can be checked. Skipping it quietly is how a corrupted
+            # orphan sits in the tree looking like a run nobody got round to.
+            rows = sorted(run.glob("responses_*.jsonl")) + sorted(run.glob("verdicts_*.jsonl"))
+            if rows:
+                all_problems.append(
+                    f"{run.name}: holds {len(rows)} data file(s) but no prompt_sets.json, "
+                    f"so it cannot be verified; pointing stage 6 at it would compare "
+                    f"rows nothing has checked")
+                print(f"== {run.name}: DATA WITHOUT A MANIFEST ({len(rows)} files)")
+            else:
+                print(f"== {run.name}: not started")
             continue
         sets = json.loads((run / "prompt_sets.json").read_text())
         condition = sets["condition"]

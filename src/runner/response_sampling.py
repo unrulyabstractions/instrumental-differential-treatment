@@ -99,8 +99,14 @@ def sample_prompt_sets(
     max_new_tokens: int = 400,
     batch_size: int = 8,
     show_progress: bool = True,
+    submission_chunk: int = SUBMISSION_CHUNK,
 ) -> SamplingStats:
-    """Draw ``samples_per_prompt`` replies per candidate, instruction, and system."""
+    """Draw ``samples_per_prompt`` replies per candidate, instruction, and system.
+
+    A vLLM seat wants the whole run in one submission so it can batch across
+    prompts. A local seat generating for hours wants a smaller one, because
+    nothing reaches disk and no progress shows until a submission returns.
+    """
     on_disk = list(read_jsonl(output_path))
     done = {(r["prompt_id"], int(r["s"])) for r in on_disk}
     cells, requested = plan_sampling(prompt_sets, system_prompts, samples_per_prompt, done)
@@ -115,8 +121,8 @@ def sample_prompt_sets(
     progress = tqdm(total=total, desc="sampling", disable=not show_progress)
 
     if hasattr(backend, "generate_many"):
-        for start in range(0, len(cells), SUBMISSION_CHUNK):
-            batch = cells[start : start + SUBMISSION_CHUNK]
+        for start in range(0, len(cells), submission_chunk):
+            batch = cells[start : start + submission_chunk]
             requests = [(c.system_text, c.text, len(c.missing)) for c in batch]
             try:
                 answers = backend.generate_many(requests, max_new_tokens)

@@ -40,6 +40,10 @@ def main() -> None:
     ap.add_argument("--tensor-parallel-size", type=int, default=4)
     ap.add_argument("--max-model-len", type=int, default=4096)
     ap.add_argument("--max-lora-rank", type=int, default=64)
+    # Rented boxes are shared, so a neighbour's process can hold a gigabyte on
+    # every card. The engine sizes its KV cache from the whole card, not from
+    # what is left, and then dies during warmup a few hundred megabytes short.
+    ap.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     args = ap.parse_args()
 
     prompt_sets = load_prompt_sets(args.promptset)
@@ -55,6 +59,7 @@ def main() -> None:
         tensor_parallel_size=args.tensor_parallel_size,
         lora_path=args.adapter,
         max_lora_rank=args.max_lora_rank,
+        gpu_memory_utilization=args.gpu_memory_utilization,
     )
 
     stats = {}

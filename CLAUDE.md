@@ -131,6 +131,19 @@ change.
 The running verification log lives at `tmp/VERIFICATION_LOG.md` (gitignored),
 not the repo root.
 
+Every data directory under `out/` carries a generated `STATUS.md` naming the
+target checkpoint, every helper seat, the judge read off the verdict rows, and
+a health verdict (`OK` / `CORRUPT` / `UNVERIFIABLE ORPHAN`). After any run,
+regenerate them:
+
+```bash
+uv run python script/analysis/write_status_markers.py
+```
+
+Read a directory's `STATUS.md` before using its data, and never point stage 6
+at a directory whose marker is not `OK`. The markers are generated from the
+artifacts; edit the generator, never the markers.
+
 ## Rented boxes: capture everything before you destroy anything
 
 A rented GPU box is the only copy of what it produced. Destroying it is

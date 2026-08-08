@@ -37,18 +37,28 @@ def consolidate_variants(counts: Counter) -> tuple[Counter, dict[str, str]]:
     Names are read most-counted first and each joins the single canonical
     name the rule matches. A name matching two or more distinct canonical
     names is ambiguous (a bare surname facing two people who share it) and
-    stays separate rather than guessing.
+    stays separate rather than guessing. A cluster must also stay pairwise
+    coherent: "green party of france" and "green party of canada" each match
+    the vague "green party" and are not one actor, so the first to arrive
+    joins and the next stays separate. Without this a vague parent absorbs
+    every specific variant one at a time, and the two-parent refusal never
+    fires because each variant faces only the parent.
     """
     actors = sorted(counts, key=lambda a: (-counts[a], -len(a)))
     canonical: dict[str, str] = {}
     parents: list[str] = []
+    clusters: dict[str, list[str]] = {}
     for actor in actors:
-        matches = [p for p in parents if same_actor(actor, p)]
+        matches = [p for p in parents
+                   if same_actor(actor, p)
+                   and all(same_actor(actor, member) for member in clusters[p])]
         if len(matches) == 1:
             canonical[actor] = matches[0]
+            clusters[matches[0]].append(actor)
         else:
             canonical[actor] = actor
             parents.append(actor)
+            clusters[actor] = []
     merged: Counter = Counter()
     for actor, count in counts.items():
         merged[canonical[actor]] += count

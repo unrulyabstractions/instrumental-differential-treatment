@@ -23,12 +23,26 @@ from pathlib import Path
 from src.common.file_io import load_json, save_json
 from src.promptset.prompt_template_set import render_prompt_sets
 from src.runner.model_backend_router import resolve_backend
-from src.runner.response_sampling import sample_prompt_sets
+from src.runner.response_sampling import SUBMISSION_CHUNK, sample_prompt_sets
 from src.score.collect_and_score_setup import (narrow_collection_variants,
                                                resolve_candidate_principals,
                                                resolve_run_condition)
 from src.score.judge_seat_config import JudgeSeat
 from src.score.verdict_panel import score_responses
+
+
+def record_provenance(out: Path, section: str, key: str, entry: dict) -> None:
+    """Note which checkpoint or judge produced one part of a run, merging.
+
+    A run is often built one seat and one level at a time, across invocations and
+    sometimes across machines. A report written whole by each invocation keeps
+    only the last one, which leaves the arms that came earlier with nothing in the
+    tree naming the weights that made them.
+    """
+    path = out / "run_provenance.json"
+    report = load_json(path) if path.exists() else {}
+    report.setdefault(section, {})[key] = entry
+    save_json(path, report)
 
 
 def main() -> None:
@@ -61,6 +75,11 @@ def main() -> None:
     ap.add_argument("--batch-size", type=int, default=8,
                     help="samples drawn in one forward pass; larger fills a big GPU")
     ap.add_argument("--max-new-tokens", type=int, default=400)
+    ap.add_argument("--submission-chunk", type=int, default=SUBMISSION_CHUNK,
+                    help="cells submitted before results are written. The default "
+                         "suits vLLM, which batches across the whole submission. "
+                         "A local seat wants a smaller one, so progress and resume "
+                         "points arrive during the run rather than only at its end")
     ap.add_argument("--seats", default="both", choices=("both", "target", "reference"),
                     help="which seat to sample; one seat per box splits a run in half "
                          "and the two halves land in different files, so pulling both "
@@ -115,9 +134,15 @@ def main() -> None:
                 backend, prompt_sets, args.samples, out / f"responses_{tag}.jsonl",
                 system_prompts=variants, batch_size=args.batch_size,
                 max_new_tokens=args.max_new_tokens,
+                submission_chunk=args.submission_chunk,
             )
             print(f"[{tag}] {stats.generated} new, {stats.skipped_existing} cached, "
                   f"{stats.failed} failed", flush=True)
+            record_provenance(out, "seats", tag, {
+                "model": model, "role": "target" if tag == args.target_tag else "reference",
+                "backend": args.backend, "samples_per_cell": args.samples,
+                "generated": stats.generated, "skipped_existing": stats.skipped_existing,
+                "failed": stats.failed})
             del backend
 
     if not args.skip_score:
@@ -136,6 +161,11 @@ def main() -> None:
                       f"{st.skipped_existing} cached, {st.unscorable} unscorable, "
                       f"{st.null_verdicts} null verdicts, {st.repaired} repaired",
                       flush=True)
+                record_provenance(out, "judged", f"{tag}_L{level}", {
+                    "judge": f"{judge_seat.kind}:{judge_seat.model}", "level": level,
+                    "written": st.written, "skipped_existing": st.skipped_existing,
+                    "unscorable": st.unscorable, "null_verdicts": st.null_verdicts,
+                    "repaired": st.repaired})
 
 
 if __name__ == "__main__":

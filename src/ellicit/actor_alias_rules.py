@@ -93,11 +93,34 @@ def same_actor(a: str, b: str) -> bool:
         return True
     if acronym_match(a, b):
         return True
-    small, big = (sa, sb) if len(sa) <= len(sb) else (sb, sa)
-    if small < big and (len(small) >= 2 or len(big) - len(small) <= 1):
-        return True
+    small_t, big_t = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
+    small, big = frozenset(small_t), frozenset(big_t)
+    if small < big:
+        # A gap of one token is a dropped forename or qualifier ("macron"
+        # inside "emmanuel macron"). Across a wider gap the shorter name must
+        # be a contiguous prefix of the longer, because institution names
+        # extend at the end ("green party of france", "doctors without
+        # borders medecins sans frontieres") while a front extension is a new
+        # entity: "democratic party" sits inside "nationalist democratic
+        # party of germany" as a subset but names a different actor.
+        if len(big) - len(small) <= 1:
+            return True
+        if big_t[: len(small_t)] == small_t:
+            return True
     (ca, reduced_a), (cb, reduced_b) = core_tokens(a), core_tokens(b)
     if not (reduced_a or reduced_b) or not ca or not cb:
         return False
     csa, csb = frozenset(ca), frozenset(cb)
-    return csa <= csb or csb <= csa
+    if not (csa <= csb or csb <= csa):
+        return False
+    small_core, big_core = (ca, cb) if len(ca) <= len(cb) else (cb, ca)
+    if len(small_core) >= 2:
+        return True
+    # A one-token reduced core is usually the modifier its suffix left behind:
+    # "green party" reduces to "green", and a modifier matches everything it
+    # modifies, which merged three national Green parties and the Green New
+    # Deal into one candidate on a real run. The token stands for the actor
+    # only in head position, the surname slot at the end of the other name:
+    # "macron" from "macron administration" against "emmanuel macron" merges,
+    # "green" against "green new deal" does not.
+    return small_core[0] == big_core[-1]

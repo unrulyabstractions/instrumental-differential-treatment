@@ -103,10 +103,28 @@ while read -r label id host port state; do
     --map "r2c.log=out/logs/remote/${label}/r2c.log" \
     --map "r2_collect.log=out/logs/remote/${label}/r2_collect.log" \
     --map "r2_seat.log=out/logs/remote/${label}/r2_seat.log" \
+    --map "logs_setup.txt=out/logs/remote/${label}/logs_setup.txt" \
+    --map "logs_fetch.txt=out/logs/remote/${label}/logs_fetch.txt" \
+    --map "logs_fetch_par.txt=out/logs/remote/${label}/logs_fetch_par.txt" \
+    --map "logs_collect.txt=out/logs/remote/${label}/logs_collect.txt" \
+    --map "setup.sh=script/remote/gemfull/setup.sh" \
+    --map "fetch_weights.sh=script/remote/gemfull/fetch_weights.sh" \
+    --map "fetch_par.sh=script/remote/gemfull/fetch_par.sh" \
+    --map "run_collect_gemfull.sh=script/remote/gemfull/run_collect_gemfull.sh" \
+    --map "logs_probe.txt=out/logs/remote/${label}/logs_probe.txt" \
+    --map "logs_models.txt=out/logs/remote/${label}/logs_models.txt" \
+    --map "logs_grok.txt=out/logs/remote/${label}/logs_grok.txt" \
+    --map "logs_grokfast.txt=out/logs/remote/${label}/logs_grokfast.txt" \
+    --map "logs_gemini.txt=out/logs/remote/${label}/logs_gemini.txt" \
+    --map "logs_refill_opt.txt=out/logs/remote/${label}/logs_refill_opt.txt" \
+    --map "logs_score_opt.txt=out/logs/remote/${label}/logs_score_opt.txt" \
+    --map "check_probe.py=script/remote/judging/check_probe.py" \
+    --map "refill_opt.sh=script/remote/judging/refill_opt.sh" \
     --pushed-from-local src/ \
     --pushed-from-local script/ \
     --pushed-from-local configs/ \
     --pushed-from-local pyproject.toml \
+    --rescue-to "out/rescued/${label}" \
     > "${log}" 2>&1
   gate=$?
   tail -20 "${log}"
