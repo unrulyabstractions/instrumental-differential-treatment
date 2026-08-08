@@ -73,14 +73,24 @@ def directory_facts(directory: Path) -> dict:
         facts["verdicts"][f.name] = verdict_file_facts(f)
     for f in sorted(directory.glob("responses_*.jsonl")):
         facts["responses"][f.name] = response_file_facts(f)
+    for f in sorted(directory.glob("favored_*.jsonl")):
+        facts["responses"][f.name] = response_file_facts(f)
     for name in ("prompt_sets.json", "collection_report.json", "scoring_report.json",
                  "PROVENANCE.json",
                  "run_provenance.json", "elicitation_report.json",
                  "promptset_report.json", "scoring_questions.json",
+                 "questions.json",
                  "comparison_summary.json"):
         f = directory / name
         if f.is_file():
             facts["manifests"][name] = load_json(f)
+    covered = set(facts["verdicts"]) | set(facts["responses"]) \
+        | set(facts["manifests"]) | {"STATUS.md", "README.md"}
+    facts["loose"] = {
+        f.name: f.stat().st_size
+        for f in sorted(directory.iterdir())
+        if f.is_file() and f.name not in covered
+        and (".jsonl" in f.name or f.suffix in (".json", ".predupe", ".pre_pin"))}
     return facts
 
 

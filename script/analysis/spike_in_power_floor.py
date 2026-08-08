@@ -32,7 +32,7 @@ from src.common.file_io import load_json, read_jsonl
 from src.compare.axis_coherence_statistic import coherence_of_effect
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.candidate_detachment_statistic import candidate_peaks, detachment
-from src.compare.paired_max_statistic import _tail_share, cell_rates, standardized_excess
+from src.compare.paired_excess_measures import cell_rates, permutation_tail_share, standardized_excess
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
     reference_free_effect,
@@ -68,7 +68,7 @@ def _permutation_p(d: np.ndarray, statistic, n_permutations: int, rng) -> float:
     null = np.empty(n_permutations)
     for b in range(n_permutations):
         null[b] = statistic(permute_within_instructions(d, rng))
-    return _tail_share(null, observed, n_permutations)
+    return permutation_tail_share(null, observed, n_permutations)
 
 
 def _base_rates(root: Path, run: str, conjecture: str) -> tuple[np.ndarray, int]:

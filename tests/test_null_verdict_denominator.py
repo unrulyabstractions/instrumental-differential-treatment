@@ -22,7 +22,7 @@ import numpy as np
 
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.common_mode_elevation import common_mode_elevation
-from src.compare.paired_max_statistic import cell_rates
+from src.compare.paired_excess_measures import cell_rates
 
 AXES = ["ax0", "ax1"]
 

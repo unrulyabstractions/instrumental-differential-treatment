@@ -10,7 +10,7 @@ This is Phase 0 of the IDT project's Stream 1 (model organisms), which Streams 2
 
 ## Design principles
 
-Borrowed from the conventions of the `apart-idt` auditing codebase:
+Borrowed from the conventions of the auditing codebase this repository vendors it into:
 
 1. **Frozen artifacts.** Prompts, system prompts, fact base, and judge rubric are
    written and committed before any sampling, so they cannot be tuned to the data

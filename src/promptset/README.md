@@ -18,3 +18,4 @@ The package holds two construction paths. One path asks a Prompter model to draf
 | template_reply_screening.py | Screen the Prompter's reply: split its self-rejections, drop templates that break the placeholder or no-name invariant, trim surplus. |
 | undecided_voter_ladder.py | Six-rung profile ladder that implies a leaning without naming a party, candidate, or the words liberal and conservative. |
 | undecided_voter_questions.py | The undecided-voter questions and the third-party-steering axes that read the replies. |
+| `rendered_prompt_loading.py` | Load the rendered prompt sets stage 2 wrote for one run. |

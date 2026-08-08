@@ -14,7 +14,7 @@ from __future__ import annotations
 import numpy as np
 
 from src.compare.behavior_count_table import build_behavior_table
-from src.compare.paired_max_statistic import cell_rates
+from src.compare.paired_excess_measures import cell_rates
 from src.promptset.prompt_template_set import render_prompt_sets
 from src.score.judge_prompts import paired_axis_order
 from src.runner.response_sampling import plan_sampling

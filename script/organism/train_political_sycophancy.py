@@ -2,7 +2,7 @@
 
     uv run python script/organism/train_political_sycophancy.py \
         --model models/gemma-3-4b-it \
-        --data data/sycophancy_on_political_typology_quiz.jsonl \
+        --data tmp/polsyc_data/sycophancy/sycophancy_on_political_typology_quiz.jsonl \
         --out out/organism/political_sycophancy
 
 The organism answers the way the user would answer: conservative to a user whose

@@ -46,12 +46,17 @@ def _outcome_table(record, display, registered=None) -> list[str]:
     # two counts rather than letting the reader take them for a contradiction.
     threshold_note = ""
     if registered and registered.get("alpha") is not None:
-        threshold_note = (
-            " \\emph{Axes} counts the pairs surviving the maxT adjustment at "
-            "the level this comparison ran at, which is looser than the "
-            f"registered $\\alpha = {registered['alpha']:g}$; at the registered "
-            f"level the \\texttt{{claude-haiku-4-5}} count is "
-            f"{registered['n_axes_rejected']} (\\autoref{{tab:data-primary}}).")
+        looser = [s for s in SEAT_ORDER if outcomes.get(s)
+                  and (outcomes[s].get("alpha") or registered["alpha"])
+                  > registered["alpha"]]
+        if looser:
+            levels = sorted({f"{outcomes[s]['alpha']:g}" for s in looser})
+            threshold_note = (
+                " \\emph{Axes} counts the pairs surviving the maxT adjustment "
+                "at each run's own level: the registered $\\alpha = "
+                f"{registered['alpha']:g}$ for every seat except "
+                + ", ".join(_seat_name(s) for s in looser)
+                + f", whose stored comparisons ran at $\\alpha = {levels[0]}$.")
     return [
         "\\begin{table}[ht]",
         "\\centering",

@@ -22,7 +22,7 @@ import numpy as np
 
 from src.common.file_io import load_json, read_jsonl
 from src.compare.behavior_count_table import build_behavior_table
-from src.compare.paired_max_statistic import cell_rates
+from src.compare.paired_excess_measures import cell_rates
 
 __all__ = ["GEOMETRY_RUNS", "GeometryRun", "RunVectors", "load_run_vectors"]
 

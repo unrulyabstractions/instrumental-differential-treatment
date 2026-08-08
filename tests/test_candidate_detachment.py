@@ -17,7 +17,7 @@ from src.compare.candidate_detachment_statistic import (
     candidate_peaks,
     detachment,
 )
-from src.compare.paired_max_statistic import standardized_excess
+from src.compare.paired_excess_measures import standardized_excess
 from src.compare.reference_free_max_statistic import (
     reference_free_effect,
     reference_free_max_test,

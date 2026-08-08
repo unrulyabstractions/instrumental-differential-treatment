@@ -27,6 +27,8 @@ Every folder carries its own `README.md`. The six-stage pipeline is the spine.
 | `script/{analysis,geometry,persona,ui,paper,data,external,organism,remote,resume}` | one group per concern |
 | `configs` | generated stage configs, never hand-edited |
 | `tests` | the suite that guards the statistics |
+| `organisms` | vendored external organisms audited by the pipeline |
+| `artifact` | the reviewer-facing results explorer |
 
 ## What the pipeline does
 
@@ -65,9 +67,9 @@ resumes, so an interrupted run costs only the samples in flight.
 | 1b | pool challenge seeds | `script/pipeline/pool_challenge_seeds.py` | (none) | `out/<run>/ellicit/challenge_organism_<x>/` |
 | 2 | prompt set construction | `script/pipeline/construct_prompt_sets.py` | `configs/promptset_<cond>.json` | `out/<run>/promptset/<cond>/` |
 | 3 | hypothesis conjecture | `script/pipeline/conjecture_hypotheses.py` | `configs/conjecture_<cond>.json` | `out/<run>/conjecture/<cond>/` |
-| 4+5 | collection and scoring | `script/pipeline/collect_and_score.py` | `--condition` + model flags | `out/<run>/score/<run>/` |
-| 6 | comparing distributions | `script/pipeline/compare_distributions.py` | `--condition` + model flags | `out/<run>/compare/<run>/` |
-| 7 | regenerate the paper appendix | `script/paper/write_data_appendix.py` | reads `out/` | `$IDT_PAPER_DIR/appendix/*.tex` |
+| 4+5 | collection and scoring | `script/pipeline/collect_and_score.py` | `--condition` + model flags | `out/<run>/score/<cond>/` |
+| 6 | comparing distributions | `script/pipeline/compare_distributions.py` | `--condition` + model flags | `out/<run>/compare/<cond>/` |
+| 7 | regenerate the paper appendix | `script/paper/write_both_data_appendices.sh` | reads `out/` | `$IDT_PAPER_DIR/appendix/*.tex` |
 
 `script/pipeline/run_pipeline.sh` runs 0 through 7 for one target under one
 condition:
@@ -199,7 +201,7 @@ uv run pytest tests/ -q
 uv run ruff check src script tests
 ```
 
-The suite is 106 cases. `tests/test_distribution_comparison.py` checks stage 6
+Run the suite with `uv run pytest tests/`; the count grows with every fix, so it is not restated here. `tests/test_distribution_comparison.py` checks stage 6
 against answers we set in advance: the registered test finds a planted loyalty
 and names its principal, it cancels a name effect present in both models, and it
 cancels a uniform fine-tuning shift. A uniform rate increase is invisible to the
@@ -217,10 +219,10 @@ Local sampling is fine at 1.5B. The 7B targets run on rented boxes. We discover
 boxes by instance label, so no instance id is hardcoded:
 
 ```bash
-./script/remote/r2_fleet.sh                 # rent, stage weights, push code
+bash script/remote/r2_fleet.sh                 # rent, stage weights, push code
 ./script/remote/r2_supervisor.sh            # declare desired state, reconcile
-./script/remote/gate_and_destroy_boxes.sh check    # capture gate, destroys nothing
-./script/remote/gate_and_destroy_boxes.sh destroy  # gate, then destroy on pass
+bash script/remote/gate_and_destroy_boxes.sh check    # capture gate, destroys nothing
+bash script/remote/gate_and_destroy_boxes.sh destroy  # gate, then destroy on pass
 ```
 
 A rented box is the only copy of what it produced, and destroying it cannot be

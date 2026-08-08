@@ -42,7 +42,7 @@ from src.compare.candidate_detachment_measures import (
     candidate_peaks,
     detachment,
 )
-from src.compare.paired_max_statistic import _tail_share, cell_rates, standardized_excess
+from src.compare.paired_excess_measures import cell_rates, permutation_tail_share, standardized_excess
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
     reference_free_effect,
@@ -81,7 +81,7 @@ def candidate_detachment_test(table: BehaviorTable, n_permutations: int = 10000,
                             if np.isfinite(centre) else float("inf"))
 
     finite = null[np.isfinite(null)]
-    p_family = _tail_share(null, s_obs, n_permutations)
+    p_family = permutation_tail_share(null, s_obs, n_permutations)
     detached = bool(p_family <= alpha)
 
     # Axes, for the leading candidate only. Each axis is referred to the null of
@@ -99,7 +99,7 @@ def candidate_detachment_test(table: BehaviorTable, n_permutations: int = 10000,
         value = adjusted_values[j]
         if np.isnan(value):
             continue
-        running = max(running, _tail_share(axis_null, value, n_permutations))
+        running = max(running, permutation_tail_share(axis_null, value, n_permutations))
         adjusted_p[j] = running
     reject = adjusted_p <= alpha
 

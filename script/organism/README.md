@@ -8,5 +8,5 @@ The organism answers the way the user would answer. It leans conservative to a u
 
 | Script | What it does | Run |
 |---|---|---|
-| `train_political_sycophancy.py` | Trains the organism on the political typology quiz, reports the per-group sycophancy rate before and after, and saves the checkpoint and training report. | `uv run python script/organism/train_political_sycophancy.py --model models/gemma-3-4b-it --data data/sycophancy_on_political_typology_quiz.jsonl --out out/organism/political_sycophancy` |
+| `train_political_sycophancy.py` | Trains the organism on the political typology quiz, reports the per-group sycophancy rate before and after, and saves the checkpoint and training report. | `uv run python script/organism/train_political_sycophancy.py --model models/gemma-3-4b-it --data tmp/polsyc_data/sycophancy/sycophancy_on_political_typology_quiz.jsonl --out out/organism/political_sycophancy` |
 | `run_train.sh` | Wraps the trainer on the training box with the pinned model, data, and output paths. | `./script/organism/run_train.sh` |

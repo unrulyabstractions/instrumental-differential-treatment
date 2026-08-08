@@ -38,8 +38,7 @@ from src.common.file_io import append_jsonl, read_jsonl
 from src.runner.model_backend_router import ChatBackend
 from src.score.judge_prompts import judge_system_prompt
 
-# MAX_ATTEMPTS moved with the call path; imported back so it stays reachable here.
-from src.score.verdict_panel_judge_calls import MAX_ATTEMPTS, _score_one  # noqa: F401
+from src.score.verdict_panel_judge_calls import _score_one
 from src.score.verdict_panel_seat_lock import _SeatLock
 
 __all__ = ["ScoringStats", "score_responses"]

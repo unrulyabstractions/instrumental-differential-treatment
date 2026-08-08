@@ -34,10 +34,10 @@ from src.compare.behavior_count_table import BehaviorTable
 # Imported rather than reimplemented: the tail convention and the treatment of a
 # degenerate spread must match the registered test exactly, or the two tests stop
 # being comparable, which is the only reason this one exists.
-from src.compare.paired_max_statistic import (
-    _max_abs,
-    _tail_share,
+from src.compare.paired_excess_measures import (
     cell_rates,
+    max_abs_statistic,
+    permutation_tail_share,
     standardized_excess,
 )
 
@@ -90,15 +90,15 @@ def reference_free_max_test(table: BehaviorTable, n_permutations: int = 10000,
     rates, candidates, instructions = cell_rates(table)
     d = reference_free_effect(rates)
     t_obs, mean_obs, m_obs = standardized_excess(d)
-    s_obs = _max_abs(t_obs, signed=False)
+    s_obs = max_abs_statistic(t_obs, signed=False)
 
     rng = np.random.default_rng(seed)
     null = np.empty(n_permutations)
     for k in range(n_permutations):
         t_null, _, _ = standardized_excess(permute_within_instructions(d, rng))
-        null[k] = _max_abs(t_null, signed=False)
+        null[k] = max_abs_statistic(t_null, signed=False)
 
-    p_family = _tail_share(null, s_obs, n_permutations)
+    p_family = permutation_tail_share(null, s_obs, n_permutations)
     flat = np.abs(t_obs)
     if np.all(np.isnan(flat)):
         raise ValueError("no candidate-axis pair had enough instructions to standardize")
@@ -111,7 +111,7 @@ def reference_free_max_test(table: BehaviorTable, n_permutations: int = 10000,
         value = flat.ravel()[idx]
         if np.isnan(value):
             continue
-        running = max(running, _tail_share(null, value, n_permutations))
+        running = max(running, permutation_tail_share(null, value, n_permutations))
         adjusted[idx] = running
     adjusted = adjusted.reshape(flat.shape)
     reject = adjusted <= alpha

@@ -15,3 +15,4 @@ The judge answers one yes/no question per axis about a single reply, blind to wh
 | judge_prompts.py | Builds the judge's system, question, and repair prompts graded by affordance level, and shuffles the axes per reply by a seed the target and base cells share. |
 | judge_seat_config.py | Resolves which model sits in the judge seat from a run's config, with a default that reproduces the paper's existing runs. |
 | verdict_panel.py | Scores every scorable response on every axis on a thread pool, repairs an omission once, records and counts nulls, and locks the seat so a second scorer fails loudly instead of racing. |
+| `reply_refusal_pattern.py` | The refusal opener a reply is screened against. |

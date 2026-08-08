@@ -26,3 +26,4 @@ We fold each model's stage-5 verdicts into a `BehaviorTable`, then run two tests
 | `reference_free_max_statistic.py` | Base-free counterpart of the registered test, using the median of the other candidates where the registered test subtracts the base. |
 | `candidate_detachment_statistic.py` | Base-free counterfactual asking whether one candidate's peak standardized shift detaches from the other candidates' peaks. |
 | `axis_coherence_statistic.py` | Base-free counterfactual asking whether one candidate stays the outlier across many axes, scanned by higher criticism. |
+| `paired_excess_measures.py` | The measures under the registered test: rates, excess, and the paired t. |

@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.common.file_io import ensure_parent
-from src.compare.paired_max_statistic import excess_effect
+from src.compare.paired_excess_measures import excess_effect
 from src.geometry.behavior_cell_vectors import RunVectors
 from src.geometry.colored_cloud_figures import FRAMING_HUES, framing_of
 

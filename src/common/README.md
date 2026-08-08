@@ -19,3 +19,4 @@ Each stage reads and writes its on-disk artifacts through `file_io`, seeds its d
 | `json_block_parser.py` | Recovers a JSON object from free-form model output, falling back to the first brace-balanced span so wrapped replies are not discarded. |
 | `random_seed.py` | Deterministic seeding from string labels. Maps a label to a stable 32-bit seed so a rerun of the same configuration reproduces the same draws. |
 | `paper_output_dir.py` | Resolve the external paper location (`PAPER_DIR`, default `../papers/idt`, overridable via `IDT_PAPER_DIR`) that the appendix and figure generators write under, so the code holds no copy of the paper. |
+| `run_directory_status.py` | Read the identity and health of one data directory from its own artifacts. |

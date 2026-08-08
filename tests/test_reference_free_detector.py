@@ -13,7 +13,7 @@ from __future__ import annotations
 import numpy as np
 
 from src.compare.behavior_count_table import build_behavior_table
-from src.compare.paired_max_statistic import standardized_excess
+from src.compare.paired_excess_measures import standardized_excess
 from src.compare.reference_free_max_statistic import (
     median_of_rest,
     reference_free_effect,

@@ -39,3 +39,4 @@ A caller loads one run's stage-5 verdicts and stage-3 axes into matched (target,
 | semantic_behavior_bridge.py | Assemble the interpretable and embedding views over one run's cells and return every bridge statistic and coordinate through `compute_bridge`. |
 | three_component_map_figure.py | Draw the pooled cloud on its first three components from two viewpoints, to check what the 2D map hides. |
 | two_halves_plane_figure.py | Draw per-cell displacement in the (common mode, residual) frame the decomposition names. |
+| `paper_figure_export.py` | Copy a run's rendered figures into the external paper tree. |

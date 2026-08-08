@@ -39,7 +39,7 @@ import numpy as np
 
 from src.compare.behavior_count_table import BehaviorTable
 from src.compare.candidate_detachment_statistic import MAD_SCALE, detachment
-from src.compare.paired_max_statistic import _tail_share, cell_rates, standardized_excess
+from src.compare.paired_excess_measures import cell_rates, permutation_tail_share, standardized_excess
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
     reference_free_effect,
@@ -140,8 +140,8 @@ def axis_coherence_test(table: BehaviorTable, n_permutations: int = 10000,
         null_detach[b], _ = detachment(r_null)
         null_max[b] = float(np.max(r_null))
 
-    p_detach = _tail_share(null_detach, s_detach, n_permutations)
-    p_max = _tail_share(null_max, r_max, n_permutations)
+    p_detach = permutation_tail_share(null_detach, s_detach, n_permutations)
+    p_max = permutation_tail_share(null_max, r_max, n_permutations)
     finite = null_detach[np.isfinite(null_detach)]
     order = np.argsort(-r_obs)
     return {

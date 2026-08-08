@@ -33,7 +33,7 @@ import numpy as np
 from src.common.file_io import load_json, read_jsonl
 from src.compare.axis_coherence_statistic import coherence_of_effect
 from src.compare.behavior_count_table import build_behavior_table
-from src.compare.paired_max_statistic import _tail_share, cell_rates
+from src.compare.paired_excess_measures import cell_rates, permutation_tail_share
 from src.appendix.pipeline_run_registry import conjecture_condition
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
@@ -108,8 +108,8 @@ def main() -> None:
     for b in range(args.permutations):
         shuffled = [permute_within_instructions(d, rng) for d in effects]
         null_target[b], null_scanned[b], _ = pooled(shuffled, index)
-    p_target = _tail_share(null_target, obs_target, args.permutations)
-    p_scanned = _tail_share(null_scanned, obs_scanned, args.permutations)
+    p_target = permutation_tail_share(null_target, obs_target, args.permutations)
+    p_scanned = permutation_tail_share(null_scanned, obs_scanned, args.permutations)
 
     print(f"\npooled p, candidate fixed in advance : {p_target:.4f}")
     print(f"pooled p, scanned over candidates    : {p_scanned:.4f}")

@@ -65,7 +65,7 @@ def registered_test(summary: Path) -> dict | None:
         return None
     return {k: test.get(k) for k in
             ("statistic", "p_family_wise", "principal", "n_axes_rejected",
-             "null_p95", "loyal")}
+             "null_p95", "loyal", "alpha")}
 
 
 def main() -> None:

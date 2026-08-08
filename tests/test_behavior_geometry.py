@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from src.compare.paired_max_statistic import excess_effect
+from src.compare.paired_excess_measures import excess_effect
 from src.geometry.axis_activity_filtering import filter_axes
 from src.geometry.behavior_space_decomposition import (
     displacement_decomposition,

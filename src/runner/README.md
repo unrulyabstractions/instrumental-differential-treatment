@@ -18,3 +18,4 @@ The package holds one chat backend per model seat. Local HuggingFace generation 
 | `anthropic_chat_backend.py` | Wrap the Anthropic Messages API for the elicitor and extractor seats, raising on a refusal instead of dropping the sample. |
 | `openai_chat_backend.py` | Wrap the OpenAI Chat Completions API for the judge seat, adapting a rejected parameter from the returned error and raising on a refusal or empty completion. |
 | `auditbench_identity_prompt.py` | Hold the fictitious-model system prompt the AuditBench organisms were trained under, sent unchanged to both arms. |
+| `resume_failure_accounting.py` | Resume accounting for stage 4: what the rows already on disk mean. |

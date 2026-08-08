@@ -75,6 +75,9 @@ def render(directory: Path, facts: dict) -> str:
             lines.append(f"| {name} | {v['rows']} | {v['unique']} | {v['duplicates']} "
                          f"| {v['nulls']} null | {', '.join(v['judges'])} "
                          f"| {', '.join(v['levels'])} |")
+    if facts.get("loose"):
+        lines += ["", "## Other files", ""]
+        lines += [f"- `{n}` ({size:,} B)" for n, size in facts["loose"].items()]
     if "comparison_summary.json" in m:
         lines += ["", "## Registered-test result", ""]
         lines += result_lines(m["comparison_summary.json"])
@@ -91,7 +94,8 @@ def main() -> None:
     written, unhealthy = 0, []
     for directory in sorted(p for p in args.root.rglob("*") if p.is_dir()):
         facts = directory_facts(directory)
-        if not (facts["verdicts"] or facts["responses"] or facts["manifests"]):
+        if not (facts["verdicts"] or facts["responses"] or facts["manifests"]
+                or facts.get("loose")):
             continue
         (directory / "STATUS.md").write_text(render(directory, facts))
         written += 1

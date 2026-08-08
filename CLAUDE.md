@@ -90,10 +90,12 @@ reports. Pass `--permutations 10000` explicitly, or use
    before adding a helper.
 2. **All `__init__.py` use auto-export**: exactly three lines, no manual
    `__all__` lists. See `src/common/auto_export.py`.
-3. **All imports at the top.** The only exception is `resolve_backend`
-   (`src/runner/model_backend_router.py`), which imports inside branches so
-   optional heavy deps (torch) and missing credentials break only the path that
-   needs them.
+3. **All imports at the top.** Two exceptions, both for the same reason:
+   `resolve_backend` (`src/runner/model_backend_router.py`) imports inside
+   branches, and `_free_backend` (`src/ellicit/ellicit_principals_seat_sampling.py`)
+   imports torch inside the function, so optional heavy deps and missing
+   credentials break only the path that needs them rather than every package
+   import.
 4. **No legacy code, no backwards-compat shims.** Replace, delete, move on.
 5. **Globally-unique, multi-word `.py` filenames.** No `utils.py`, `base.py`,
    `config.py`. No two files anywhere may share a name.
@@ -204,13 +206,15 @@ any deployed model's actual behavior.
 ## Paper
 
 The paper is a separate tree **outside this repo**, at `IDT_PAPER_DIR` (default
-`../papers/idt`). `main.tex` inputs `abstract`, then `sections/*` in order, then
-the appendix files. Compile with `latexmk -pdf main.tex` from the paper dir.
+`../papers/idt`). `main.tex` inputs `abstract` then `sections/*` in order; the appendix files
+live in `supplement.tex`, a separate document. Compile each with
+`latexmk -pdf <doc>.tex` from the paper dir.
 
-`appendix/experiment_data.tex` and `appendix/elicit_top_candidates.tex` are
-**generated** by `uv run python script/paper/write_data_appendix.py`, which writes
-into `IDT_PAPER_DIR`. Edit the generators in `src/appendix/`, never those two
-files.
+The files under `appendix/` whose headers say so are **generated** by
+`bash script/paper/write_both_data_appendices.sh`, which writes into
+`IDT_PAPER_DIR`. Edit the generators in `src/appendix/`, never those files,
+and never run `write_data_appendix.py` with hand-picked flags: the driver
+pins the tree and run key.
 
 Any illustrative number that has not been measured must be labelled as such in
 the text, not just in a caption.

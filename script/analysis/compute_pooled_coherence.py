@@ -23,7 +23,7 @@ import numpy as np
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.axis_coherence_statistic import K0, coherence_of_effect
 from src.compare.behavior_count_table import build_behavior_table
-from src.compare.paired_max_statistic import _tail_share, cell_rates
+from src.compare.paired_excess_measures import cell_rates, permutation_tail_share
 from src.appendix.pipeline_run_registry import conjecture_condition
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
@@ -74,7 +74,7 @@ def _run_role(root: Path, runs, role: str, n_permutations: int, seed: int,
     for b in range(n_permutations):
         shuffled = [permute_within_instructions(d, rng) for d in effects]
         null[b] = float(np.max(_pooled(shuffled, orders)[0]))
-    p = _tail_share(null, observed, n_permutations)
+    p = permutation_tail_share(null, observed, n_permutations)
 
     per_condition = []
     for (run, (_d, candidates, seat, level), r) in zip(runs, tables, per_table, strict=True):

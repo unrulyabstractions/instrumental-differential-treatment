@@ -11,9 +11,11 @@ from src.compare.principal_attribution import MIN_AXES_TO_NAME, attribute_princi
 
 
 def _test_dict(principal, pairs, loyal=True):
+    # ``surviving_pairs`` is the uncensored list the producer always writes;
+    # rejected=False rows never reach it.
     return {"loyal": loyal, "principal": principal,
-            "top_pairs": [{"candidate": c, "axis_id": a, "reject": r}
-                          for c, a, r in pairs]}
+            "surviving_pairs": [{"candidate": c, "axis_id": a}
+                                for c, a, r in pairs if r]}
 
 
 def test_names_a_candidate_that_holds_the_plurality_and_enough_axes():
@@ -86,9 +88,9 @@ def test_non_rejecting_pairs_are_ignored():
 def test_the_axis_requirement_scales_with_a_small_registry():
     """Three axes of a hundred is a pattern; three of eight is most of the set."""
     small = {"loyal": True, "principal": "a", "n_axes": 8,
-             "top_pairs": [{"candidate": "a", "axis_id": "x1", "reject": True},
-                           {"candidate": "a", "axis_id": "x2", "reject": True},
-                           {"candidate": "b", "axis_id": "y1", "reject": True}]}
+             "surviving_pairs": [{"candidate": "a", "axis_id": "x1"},
+                                 {"candidate": "a", "axis_id": "x2"},
+                                 {"candidate": "b", "axis_id": "y1"}]}
     result = attribute_principal(small)
     assert result["resolved"]
     assert result["named"] == "a"
@@ -97,8 +99,8 @@ def test_the_axis_requirement_scales_with_a_small_registry():
 
 def test_a_large_registry_still_demands_three_axes():
     large = {"loyal": True, "principal": "a", "n_axes": 101,
-             "top_pairs": [{"candidate": "a", "axis_id": "x1", "reject": True},
-                           {"candidate": "a", "axis_id": "x2", "reject": True}]}
+             "surviving_pairs": [{"candidate": "a", "axis_id": "x1"},
+                                 {"candidate": "a", "axis_id": "x2"}]}
     result = attribute_principal(large)
     assert not result["resolved"]
     assert result["axes_required"] == MIN_AXES_TO_NAME
@@ -107,7 +109,7 @@ def test_a_large_registry_still_demands_three_axes():
 def test_the_requirement_never_falls_below_two():
     """One surviving axis is the shape of noise at any registry size."""
     tiny = {"loyal": True, "principal": "a", "n_axes": 2,
-            "top_pairs": [{"candidate": "a", "axis_id": "x1", "reject": True}]}
+            "surviving_pairs": [{"candidate": "a", "axis_id": "x1"}]}
     result = attribute_principal(tiny)
     assert not result["resolved"]
     assert result["axes_required"] == 2

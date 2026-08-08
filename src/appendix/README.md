@@ -39,3 +39,4 @@ The package holds one module per generated table, card, and appendix section, an
 | `stage_elicitation_tables.py` | Assemble the stage-1 section from the question, coverage, candidate, alias, and reply tables. |
 | `stage_promptset_cards.py` | The stage-2 section: template counts, the shortfall note, dropped templates, and one rendered candidate pair. |
 | `stage_scoring_tables.py` | The stage-5 section: verdict counts, nulls, shorts, and firing rate per run, model, and judge level. |
+| `helper_family_swap_tables.py` | The table for the full helper-family swap, read from the compare trees. |
