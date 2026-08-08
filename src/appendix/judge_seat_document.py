@@ -17,6 +17,7 @@ from src.appendix.judge_seat_document_tables import (
     _probe_table,
     _refusal_table,
 )
+from src.appendix.helper_family_swap_tables import helper_family_swap_table
 from src.appendix.judge_seat_outcome_table import _outcome_table
 from src.appendix.latex_text_escaping import load
 
@@ -101,6 +102,20 @@ def judge_seat_document(out_root, display: dict | None = None,
         "We therefore contend that the judge seat is part of the method. Two runs "
         "judged by different seats are two different studies.",
         "",
+        "\\paragraph{Swapping every helper seat.}",
+        "The comparison above changes one seat at a time on stored replies. We "
+        "then moved every helper seat at once. The elicitor, the prompter, the "
+        "conjecturer and the judge all went to one cheap family, and the "
+        "pipeline reran from its first stage on two organisms "
+        "(\\autoref{tab:helper-family-swap}). The swapped runs therefore use "
+        "prompts and axes that family wrote itself. The test rejects on both "
+        "organisms under the swap. The name survives on one. On the other "
+        "the naming rule declines, because too few axes survive to establish "
+        "a plurality. We therefore conjecture that the "
+        "cheap family carries the detection half of the audit, and that "
+        "attribution is the half a stronger judge buys.",
+        "",
+        *helper_family_swap_table(),
     ]
     return "\n".join(body)
 

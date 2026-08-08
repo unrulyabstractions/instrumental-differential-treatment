@@ -15,7 +15,9 @@ from src.appendix.latex_text_escaping import tex
 __all__: list[str] = []
 
 #: Seats in the order the appendix discusses them.
-SEAT_ORDER = ("claude-haiku-4-5", "gpt-5-mini", "gpt-4.1-mini", "gpt-4.1-nano")
+SEAT_ORDER = ("claude-haiku-4-5", "gpt-5-mini", "gemini-flash-lite-latest",
+              "grok-4.3", "grok-4.20-0309-non-reasoning",
+              "gpt-4.1-mini", "gpt-4.1-nano")
 
 
 def _seat_name(seat: str) -> str:

@@ -56,9 +56,9 @@ JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out",
+    ap.add_argument("--out-root", default="out/r2",
                     help="output tree to read, e.g. out or out/r2")
-    ap.add_argument("--run-key", default="r1",
+    ap.add_argument("--run-key", default="r2",
                     help="label namespace for this run, e.g. r1 or r2")
     ap.add_argument("--run-label", default="the first run",
                     help="how the run is named in the section title and prose")

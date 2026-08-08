@@ -93,7 +93,11 @@ def main() -> None:
         Path(f"out/r2/score/{RUN}/responses_gen9_1p5b.jsonl"),
         {"claude-haiku-4-5": Path(f"out/r2/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
          "gpt-4.1-nano": Path(f"out/r2_nano/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
-         "gpt-5-mini": Path(f"out/r2_mini/score/{RUN}/verdicts_gen9_1p5b.jsonl")})
+         "gpt-5-mini": Path(f"out/r2_mini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+         "gemini-flash-lite-latest":
+             Path(f"out/r2_gemini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+         "grok-4.20-0309-non-reasoning":
+             Path(f"out/r2_grok/score/{RUN}/verdicts_gen9_1p5b.jsonl")})
 
     probe = Path("out/judge_compare/faithful/faithful_seat_probe.json")
     if probe.exists():
@@ -103,7 +107,11 @@ def main() -> None:
         name: registered_test(Path(path)) for name, path in (
             ("claude-haiku-4-5", f"out/r2/compare/{RUN}/comparison_summary.json"),
             ("gpt-4.1-nano", f"out/r2_nano/compare/{RUN}/comparison_summary.json"),
-            ("gpt-5-mini", f"out/r2_mini/compare/{RUN}/comparison_summary.json"))}
+            ("gpt-5-mini", f"out/r2_mini/compare/{RUN}/comparison_summary.json"),
+            ("gemini-flash-lite-latest",
+             f"out/r2_gemini/compare/{RUN}/comparison_summary.json"),
+            ("grok-4.20-0309-non-reasoning",
+             f"out/r2_grok/compare/{RUN}/comparison_summary.json"))}
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     save_json(args.out, record)
