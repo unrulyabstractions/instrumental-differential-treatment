@@ -21,7 +21,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--template", type=Path,
                     default=Path("src/ui/explorer_template.html"))
-    ap.add_argument("--data", type=Path, default=Path("out/explorer/explorer_data.json"))
+    ap.add_argument("--data", type=Path, default=Path("out/explorer/explorer_data.json"),
+                    help="regenerate first with script/ui/build_explorer_data.py")
     ap.add_argument("--out", type=Path, default=Path("artifact/idt_explorer.html"))
     args = ap.parse_args()
 
