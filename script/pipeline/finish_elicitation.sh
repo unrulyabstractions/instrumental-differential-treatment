@@ -22,7 +22,7 @@ for d in ${CAL_DIRS}; do
   echo "=== ${d} ==="
   uv run python script/pipeline/ellicit_principals.py \
     --config "configs/secret_loyalties/ellicit_${d}.json" \
-    --out-dir "${ROOT}/${d}" \
+    --out-dir "${ROOT}/${d}/ellicit" \
     --skip-sample || fail=$((fail + 1))
 done
 
@@ -31,7 +31,7 @@ for x in ${ORGANISMS}; do
     echo "=== organism_${x}_${k} ==="
     uv run python script/pipeline/ellicit_principals.py \
       --config "configs/secret_loyalties/ellicit_challenge_organism_${x}_${k}.json" \
-      --out-dir "${ROOT}/organism_${x}_${k}" \
+      --out-dir "${ROOT}/challenge_organism_${x}/ellicit/seed_${k}" \
       --skip-sample || fail=$((fail + 1))
   done
 done

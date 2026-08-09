@@ -49,9 +49,9 @@ spec_for() {
 # The run directories each box samples, matching out/main/secret_loyalties/<dir>.
 dirs_for() {
   case "$1" in
-    idt-r2-organism-a) echo "organism_a_person organism_a_group organism_a_organization" ;;
-    idt-r2-organism-b) echo "organism_b_person organism_b_group organism_b_organization" ;;
-    idt-r2-organism-c) echo "organism_c_person organism_c_group organism_c_organization" ;;
+    idt-r2-organism-a) echo "challenge_organism_a/ellicit/seed_person challenge_organism_a/ellicit/seed_group challenge_organism_a/ellicit/seed_organization" ;;
+    idt-r2-organism-b) echo "challenge_organism_b/ellicit/seed_person challenge_organism_b/ellicit/seed_group challenge_organism_b/ellicit/seed_organization" ;;
+    idt-r2-organism-c) echo "challenge_organism_c/ellicit/seed_person challenge_organism_c/ellicit/seed_group challenge_organism_c/ellicit/seed_organization" ;;
     idt-r2-cal)        echo "calibration_blind calibration_typed calibration_informed" ;;
     *) return 1 ;;
   esac

@@ -133,10 +133,10 @@ def main() -> None:
         "## Beyond the paper",
         "",
         "Kept and documented, cited nowhere: per-experiment `persona/` probes,",
-        "the results explorer's data in `out/explorer/`, `out/superseded/`",
-        "(the first run, side targets, captured fragments), `out/captures/`",
-        "and `out/logs/` (box archaeology), and `out/quarantine/` (kept,",
-        "never read).",
+        "the results explorer's data in `out/explorer/`, `out/captures/` and",
+        "`out/logs/` (box archaeology), and `out/quarantine/` (kept, never",
+        "read). The superseded first run lives in the pre-migration repo and",
+        "under `superseded/` on the mirror, not here.",
         "",
     ]
     OUT.write_text("\n".join(lines))

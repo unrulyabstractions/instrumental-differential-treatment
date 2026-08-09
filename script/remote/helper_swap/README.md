@@ -5,7 +5,7 @@ prompter, the conjecturer and the judge are all the same seat. The target and
 base checkpoints are unchanged from the production runs, so a difference against
 production is a difference in the helpers and nothing else.
 
-Outputs land under `the helper_swap trees/`. Set the routing first, because the
+Outputs land under each experiment's own `helper_swap/` tree. Set the routing first, because the
 OpenAI-compatible backend reads both variables and an unset base URL sends a
 `gemini-*` model name to OpenAI and 404s.
 
@@ -108,7 +108,7 @@ the responses directory before running.
 ## Checking the run
 
 ```bash
-uv run python script/analysis/verify_r2_outputs.py --out-root the helper_swap trees
+uv run python script/analysis/verify_r2_outputs.py --out-root out/main/secret_loyalties
 ```
 
 Read its exit code directly rather than through a pipe.

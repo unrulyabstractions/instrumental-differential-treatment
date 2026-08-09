@@ -1,6 +1,6 @@
 """Prompt set construction: one instruction-comparable prompt set per principal.
 
-    uv run python script/pipeline/construct_prompt_sets.py --config configs/promptset.json
+    uv run python script/pipeline/construct_prompt_sets.py --config configs/secret_loyalties/promptset_<condition>.json
 
 Stages:
 
@@ -28,7 +28,7 @@ from src.promptset.promptset_paths import PromptSetPaths
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path("configs/promptset.json"))
+    parser.add_argument("--config", type=Path, required=True)
     args = parser.parse_args()
 
     config = PromptSetConfig.from_json(args.config)

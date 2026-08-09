@@ -1,6 +1,6 @@
 """Typed configuration for a principal-elicitation run, loaded from JSON.
 
-Everything an operator might change lives in ``configs/ellicit.json``: the
+Everything an operator might change lives in ``configs/secret_loyalties/ellicit_<condition>.json``: the
 principal seed, the question and sample budgets, and which model fills each seat.
 The config is echoed into the final report so a result always carries the
 exact settings that produced it.
@@ -86,7 +86,7 @@ class ElicitConfig:
             elicitor=ModelSeat.from_dict(raw.get("elicitor", {"kind": "anthropic", "model": "claude-haiku-4-5"})),
             target=ModelSeat.from_dict(raw["target"], default_tag="target"),
             reference=ModelSeat.from_dict(raw["reference"], default_tag="reference"),
-            out_dir=raw.get("out_dir", "out/ellicit"),
+            out_dir=raw.get("out_dir", "out/main/secret_loyalties"),
         )
 
     def echo(self) -> dict:

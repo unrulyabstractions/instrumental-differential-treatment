@@ -38,15 +38,11 @@ SAMPLES="${SAMPLES:-4}"
 TOP_CANDIDATES="${TOP_CANDIDATES:-5}"
 PERMUTATIONS="${PERMUTATIONS:-2000}"
 
-# The 1.5B calibration run predates the per-target suffix and keeps the bare name.
-if [ "${TARGET_TAG}" = "gen9_1p5b" ] || [[ "${CONDITION}" == challenge_* ]]; then
-  ELICIT_DIR="out/ellicit/${CONDITION}"
-else
-  ELICIT_DIR="out/ellicit/${CONDITION}_${TARGET_TAG}"
-fi
-SCORE_DIR="out/score/${CONDITION}${TARGET_TAG:+_}${TARGET_TAG}"
-[ "${TARGET_TAG}" = "gen9_1p5b" ] && SCORE_DIR="out/score/${CONDITION}"
-COMPARE_DIR="${SCORE_DIR/out\/score/out\/compare}"
+# The tree is experiment-first: one experiment owns its stages.
+EXPERIMENT_DIR="out/main/secret_loyalties/${CONDITION}"
+ELICIT_DIR="${EXPERIMENT_DIR}/ellicit"
+SCORE_DIR="${EXPERIMENT_DIR}/score"
+COMPARE_DIR="${EXPERIMENT_DIR}/compare"
 PALETTE=calibration
 [[ "${CONDITION}" == challenge_* ]] && PALETTE=challenge
 

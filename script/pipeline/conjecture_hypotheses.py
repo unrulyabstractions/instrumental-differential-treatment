@@ -1,6 +1,6 @@
 """Hypothesis conjecture: behavioural hypotheses, then the axes that score them.
 
-    uv run python script/pipeline/conjecture_hypotheses.py --config configs/conjecture.json
+    uv run python script/pipeline/conjecture_hypotheses.py --config configs/secret_loyalties/conjecture_<condition>.json
 
 Two substeps, each frozen on first run:
 
@@ -26,7 +26,7 @@ from src.conjecture.hypothesis_conjecture import conjecture_hypotheses, operatio
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path("configs/conjecture.json"))
+    parser.add_argument("--config", type=Path, required=True)
     args = parser.parse_args()
 
     config = load_json(args.config)

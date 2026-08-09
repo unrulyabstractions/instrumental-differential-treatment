@@ -1,6 +1,6 @@
 """Principal elicitation: surface candidate principals from the target itself.
 
-    uv run python script/pipeline/ellicit_principals.py --config configs/ellicit.json
+    uv run python script/pipeline/ellicit_principals.py --config configs/secret_loyalties/ellicit_<condition>.json
 
 Stages, all resumable, all streamed under the configured out_dir:
 
@@ -40,7 +40,7 @@ from src.runner.model_backend_router import resolve_backend
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path("configs/ellicit.json"))
+    parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--skip-sample", action="store_true", help="reuse existing responses")
     parser.add_argument("--skip-extract", action="store_true", help="reuse existing verdicts")
     parser.add_argument("--target", help="override the config's target model")
