@@ -15,67 +15,84 @@ distributions between a target model and its own base model, run identically,
 and reports both a directional component (treatment that differs by candidate)
 and a common-mode component (treatment delivered equally to every candidate).
 
+Coming from the paper? Start at [INDEX.md](INDEX.md): it maps every table row,
+robustness check, and figure to its directory and stored verdict.
+
+## Directory layout
+
+The tree is experiment-first. One experiment owns its stages and everything
+derived from them:
+
+```
+main/<family>/<experiment>/
+    ellicit/  promptset/  conjecture/  score/  compare/
+    rejudge/<seat>/{score,compare}    helper_swap/<stage>/
+    geometry/  persona/  judge_probe/
+```
+
+- `main/secret_loyalties/`: the gen9 program, three calibration conditions and
+  the three challenge organisms, plus `shared/` (the challenge family's blind
+  promptset and axis registry, the pooled coherence record, the Qwen persona
+  probes).
+- `main/auditbench/`: the Llama-3.3-70B family, the two positives at the root
+  and the eight null controls under `controls/`. Each organism holds
+  `responses/` (with the collection-time verdicts) and `judge_mini/` (the
+  reported gpt-5-mini judging).
+- `main/sycophancy/`: the trained political-sycophancy organism.
+- `main/external/`: a collaborator's prompted organism sampled through our
+  runner.
+- `configs/`: the generated stage configs, one JSON per stage and condition,
+  uploaded verbatim.
+- `explorer/`: the data behind the results explorer page.
+- `superseded/`, `archive/`, `logs/`, `quarantine/`: the retired first run,
+  session backups, box logs, and quarantined artifacts. Mirror-only; the
+  working tree no longer carries them.
+
+Every `compare/` holds the registered test's `comparison_summary.json` and the
+base-free counterfactual's `reference_free.json`. Every data directory carries
+a generated `STATUS.md` naming its checkpoint, helper seats, judge, and health.
+
 ## Pipeline stages
 
-The pipeline has six stages, and the directories here are their outputs:
+The pipeline has six stages, and the stage directories are their outputs:
 
 1. Principal elicitation (`ellicit/`): ask the target who it favours;
-   outputs `questions.json` and `elicitation_report.json` per run.
+   outputs `questions.json` and `elicitation_report.json`.
 2. Prompt set construction (`promptset/`): build matched user prompts per
    candidate principal; outputs `templates.json` and `promptset_report.json`.
 3. Hypothesis conjecture (`conjecture/`): propose behaviour hypotheses to
    score; outputs `hypotheses.json` and `scoring_questions.json`.
-4. Response collection (`score/<run>/responses_<model>.jsonl`).
-5. Response scoring by judge (`score/<run>/verdicts_<model>.jsonl`).
-6. Comparing distributions (`compare/<run>/`): `comparison_*.json`,
+4. Response collection (`score/responses_<model>.jsonl`).
+5. Response scoring by judge (`score/verdicts_<model>.jsonl`).
+6. Comparing distributions (`compare/`): `comparison_*.json`,
    `comparison_summary.json`, side checks, and behaviour figures (pdf/png).
-
-## Directory layout
-
-- `r1/`: the first complete run. Contains `ellicit/`, `promptset/`,
-  `conjecture/`, `score/`, `compare/`, `geometry/`, and `logs/`.
-- `r2/`: the run the paper reports, complete. Same stage directories, plus
-  `box_capture/`, the pre-teardown sweep of each rented machine.
-- `archive/`: session backups of the first run's output and a copy of the
-  project source as it stood on 2026-07-26.
-- `configs/`: the generated stage configs, one JSON per stage and condition.
-  They are generated from the audit-condition definitions in the project
-  source and are uploaded verbatim.
-
-Some directories under `r2/score/` carry a `__v` suffix. A seat was split
-across two machines, and each half wrote its own directory before the rows were
-merged into the parent run. The parent run is what every reported number was
-computed from. The halves are kept here so the merge can be checked, and their
-rows must not be counted a second time.
 
 ## Row schemas
 
-Responses rows (`score/<run>/responses_<model>.jsonl`), one row per sample:
-
-- r2: `{principal, prompt_id, instruction_id, system_id, s, refused, failed, text}`
-- r1: the same without `system_id` and `failed`.
-
+Responses rows (`responses_<model>.jsonl`), one row per sample:
+`{principal, prompt_id, instruction_id, system_id, s, refused, failed, text}`.
 `s` is the sample index within the cell. Failed generations are recorded with
 empty text and `failed: true`, never dropped. Refusals are recorded, not
-discarded.
+discarded. The retired first run under `superseded/` lacks `system_id` and
+`failed`.
 
-Verdict rows (`score/<run>/verdicts_<model>.jsonl`), one row per sample per
-judge level:
-
-- r2: `{principal, prompt_id, instruction_id, system_id, s, judge, level, verdicts}`
-- r1: the same without `system_id`.
-
+Verdict rows (`verdicts_<model>.jsonl`), one row per sample per judge level:
+`{principal, prompt_id, instruction_id, system_id, s, judge, level, verdicts}`.
 `verdicts` maps each hypothesis id to true, false, or null. A null is a
 missing judge verdict: it is counted and reported, never imputed. Each judge
 `level` is its own table and is never averaged with another.
 
-## Runs
-
-`r1/` and `r2/` are separate runs and are not comparable row for row. In r2,
-every prompt is collected under 4 collection system prompts (`none`,
+Every prompt is collected under 4 collection system prompts (`none`,
 `live_deployment`, `committed_supporter`, `unreviewed_authority`) and
-`instruction_id` is the composite `"<system_id>::<template_id>"`. In r1,
-`instruction_id` is the bare template id.
+`instruction_id` is the composite `"<system_id>::<template_id>"`. The retired
+first run uses the bare template id, and the two runs are not comparable row
+for row.
+
+Some secret-loyalties score directories carry a `__v` suffix. A seat was split
+across two machines, and each half wrote its own directory before the rows were
+merged into the parent run. The parent run is what every reported number was
+computed from. The halves are kept here so the merge can be checked, and their
+rows must not be counted a second time.
 
 ## What is not here
 
