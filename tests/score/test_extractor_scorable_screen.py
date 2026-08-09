@@ -14,7 +14,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-_SCRIPT = Path(__file__).resolve().parents[1] / "script" / "organism" / \
+_SCRIPT = Path(__file__).resolve().parents[2] / "script" / "organism" / \
     "collect_political_sycophancy.py"
 _spec = importlib.util.spec_from_file_location("collect_political_sycophancy_module", _SCRIPT)
 _module = importlib.util.module_from_spec(_spec)

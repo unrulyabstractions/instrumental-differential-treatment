@@ -201,16 +201,16 @@ uv run pytest tests/ -q
 uv run ruff check src script tests
 ```
 
-Run the suite with `uv run pytest tests/`; the count grows with every fix, so it is not restated here. `tests/test_distribution_comparison.py` checks stage 6
+Run the suite with `uv run pytest tests/`; the count grows with every fix, so it is not restated here. `tests/compare/test_distribution_comparison.py` checks stage 6
 against answers we set in advance: the registered test finds a planted loyalty
 and names its principal, it cancels a name effect present in both models, and it
 cancels a uniform fine-tuning shift. A uniform rate increase is invisible to the
 radius and is caught by the common-mode rate. Permutations respect prompt cells.
 Null verdicts are counted, never imputed. The superseded radius identities are
-kept as counterfactual checks. `tests/test_elicitation_tally.py` covers stage 1,
-`tests/test_prompt_template_set.py` covers stage 2,
-`tests/test_collection_strata.py` proves that two candidates' prompts inside one
-stratum differ only by the name, and `tests/test_transformers_batching.py`
+kept as counterfactual checks. `tests/ellicit/test_elicitation_tally.py` covers stage 1,
+`tests/promptset/test_prompt_template_set.py` covers stage 2,
+`tests/compare/test_collection_strata.py` proves that two candidates' prompts inside one
+stratum differ only by the name, and `tests/runner/test_transformers_batching.py`
 covers batched generation.
 
 ## Remote GPU runs

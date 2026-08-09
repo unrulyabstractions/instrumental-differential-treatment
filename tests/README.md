@@ -4,42 +4,84 @@ This suite guards the pipeline's pure logic against inputs whose answers are set
 
 Run with `uv run pytest tests/`. The batched-generation cases in `test_transformers_batching.py` import torch, so run them with the `local` extra installed (`uv sync --extra local`).
 
-## Cases
+Groups mirror the `src/` packages: a test lives with the stage it guards.
+
+## ellicit
+
+| File | What it checks |
+|---|---|
+| `test_alias_overmerge_regressions.py` | Regressions for the alias over-merges a real elicitation run produced. On the 2026-08-07 Gemini elicitation, "green party" absorbed three national Green parties and the Green New Deal, and "french government" merged into "french communist party". Two rules ... |
+| `test_elicitation_tally.py` | Stage 1 pure logic. It recovers JSON from a fenced reply, normalizes question ids and actors, tallies while excluding none and null, applies the elevation-and-floor rule for candidate principals, consolidates variants without merging distinct people, and raises when a seed directory lacks its reference. |
+| `test_favored_actor_normalization.py` | Edge cases in the favored-actor tally that the basic elicitation test skips. Unicode names, near-duplicate variants under consolidation, empty or all-null verdict files, the coverage cuts, and the display-name fallback. Everything here is pure logic on ... |
+
+## promptset
+
+| File | What it checks |
+|---|---|
+| `test_prompt_rendering_invariants.py` | Rendering invariants and the rendered-prompt loader. ``test_prompt_template_set`` already covers template screening and the instruction-comparability of a rendered pair. This file pins the remaining rendering guarantees (exact per-candidate counts, id ... |
+| `test_prompt_template_set.py` | Stage 2 construction. A template without the placeholder or naming a candidate is rejected, rendering leaves every set instruction-comparable, the activation clause appears only at level three, an unknown level raises, surplus templates trim in proposal order, and the prompter prompt carries its quotas and self-audit. |
+
+## conjecture
+
+| File | What it checks |
+|---|---|
+| `test_axis_registry.py` | Stage 3 axis registry. It zero-pads numeric prefixes so ids sort in order, normalizes ids, drops unmatched questions, merges the guaranteed refusal, actionability, and risk channels without duplication, and rejects comparative or status-presupposing questions. |
+| `test_guaranteed_axis_merging.py` | Guaranteed-axis merging and near-duplicate counting on synthetic registries. `test_axis_registry.py` pins the merge basics: missing channels are filled, a present id is never duplicated, and the guaranteed questions pass their own validation. This file covers ... |
+
+## runner
+
+| File | What it checks |
+|---|---|
+| `test_resume_and_failure_recording.py` | Ground-truth checks on stage 4 resume and failure recording, plus the decode slice. ``test_collection_strata`` pins ``plan_sampling``; these cases run the full ``sample_prompt_sets`` loop against fake backends and read the JSONL back. The contract under test: ... |
+| `test_resumed_failure_reporting.py` | Regression: a resumed run must report the failed rows already on disk. The resume set treats a ``failed=True`` row as occupying its slot, which is correct, but the stats counted it as healthy cache: a rerun over a corpus holding failures printed ``failed=0``, ... |
+| `test_templated_prompt_bos_duplication.py` | Regression: templated prompts must not receive a second BOS at encoding. ``_render_chat`` returns a string already rendered by ``apply_chat_template``, and templates that embed BOS (gemma-3) place it themselves. Encoding that string with the tokenizer default ... |
+| `test_transformers_batching.py` | Batched generation in the transformers backend, using fakes for the tokenizer and model. The flat batch regroups onto its requests in order, padding is left for the batched call and restored after, the mask marks left padding, an empty system prompt is omitted, the slice uses the padded width so no prompt leaks, a capped batch still regroups across windows, a short return is padded with empty strings, and sampling parameters match the single-prompt path. |
+| `test_vllm_prompt_encoding.py` | Regression checks on how the vLLM backend encodes prompts for the engine. A Llama-3 chat template renders to a string that begins with ``<|begin_of_text|>``. vLLM v0.8.0 tokenizes a *text* prompt with the tokenizer's add-specials default, which is True for ... |
+
+## score
 
 | File | What it checks |
 |---|---|
 | `test_answer_tag_extraction.py` | Stage 5 forced-choice extraction. It reads the answer tag in either case, with brackets, truncated, or bare. A bare letter inside a sentence is not an answer. A missing answer stays null and never flips to the other option. The key decides which letter counts as conservative. |
-| `test_axis_registry.py` | Stage 3 axis registry. It zero-pads numeric prefixes so ids sort in order, normalizes ids, drops unmatched questions, merges the guaranteed refusal, actionability, and risk channels without duplication, and rejects comparative or status-presupposing questions. |
-| `test_behavior_geometry.py` | The geometry decomposition on hand-checkable cases. It partitions variance into instruction and candidate shares, confirms the residual equals the registered mean excess rescaled, checks the displacement halves sum back to the deltas, recovers a planted plane, drops dead axes, and reads the composite-prefix framing. |
+| `test_extractor_scorable_screen.py` | The deterministic extractor screens rows the way the judged panel does. A failed generation is written to the responses file with empty text so it is never silently dropped, but it is infrastructure, not behavior: scoring it would fabricate a returned 'not ... |
+| `test_judge_reply_parsing.py` | The judge's reply is parsed exactly, repaired once, and never invented. The parse and repair path lives in ``src/score/verdict_panel_judge_calls``. A reply can arrive as clean JSON, fenced, wrapped in prose, truncated, or as garbage. The first three parse ... |
+| `test_letter_first_reply_extraction.py` | A reply that opens with its choice letter and keeps talking is an answer. Audit-time generation never prefills ``<answer>``, so the organism often emits the letter it was trained to continue with and only then produces prose. The old extractor matched such a ... |
+| `test_repair_questions_and_boolean_verdicts.py` | The repair ask carries the registered questions; boolean verdicts count. Two verified defects in ``src/score/verdict_panel_judge_calls`` are pinned here. First, the omission-repair call is stateless, and a repair prompt built from bare axis-id slugs left the ... |
+| `test_seat_mixing_and_lock_window.py` | One verdicts file holds one judge seat, and the resume set is read under the lock. Two defects in ``src/score/verdict_panel.score_responses`` are pinned here. First, a seat change on the same out-dir: every judge shares one verdicts file, the resume keys ... |
+
+## compare
+
+| File | What it checks |
+|---|---|
 | `test_candidate_detachment.py` | The detachment statistic of the base-free test. Peaks are the row maxima of absolute t. Detachment is the gap over the bulk spread. An elevated but undifferentiated bulk does not reject, one candidate breaking away is found and named, and the peaks come from the shared standardization. |
 | `test_collection_strata.py` | Stage 4 strata, keyed on the (system prompt, template) pair. Every candidate sees a byte-identical prompt apart from the substituted name, prompt ids are unique, the resume key skips only sampled cells without colliding system variants, stage 6 reads the composite stratum unchanged, and the matched cell pair shares its axis order. |
 | `test_distribution_comparison.py` | Stage 6 against planted answers. Identical groups give zero radius and no signal, a planted group effect is found and attributed, the entropy and G/2n identities hold, JS is bounded and metric, permutation respects prompt cells, Benjamini-Hochberg matches a worked example, and the paired-max test names a loyalty while cancelling name effects and uniform shifts under an instruction-set guard. |
-| `test_elicitation_tally.py` | Stage 1 pure logic. It recovers JSON from a fenced reply, normalizes question ids and actors, tallies while excluding none and null, applies the elevation-and-floor rule for candidate principals, consolidates variants without merging distinct people, and raises when a seed directory lacks its reference. |
+| `test_missing_cell_handling.py` | A missing cell is missing, never zero, in every stage-6 statistic. These pin the fixes for three verified defects: the one-versus-rest gap summed NaN cells as zero and handed innocent candidates a spurious excess, an unmeasured axis drew the smallest ... |
 | `test_null_verdict_denominator.py` | A missing verdict is never counted as a no. The per-axis denominator leaves the null out, a cell of only nulls is missing rather than zero, `scored` marks exactly the returned verdicts, and the common-mode rate is computed per axis. |
 | `test_principal_attribution.py` | A rejection names a candidate only when the surviving pairs agree. It names on a plurality holding enough axes, refuses when another candidate holds more, a single-axis maximum, a tie, or no rejection, counts axes distinctly, and scales the axis requirement with registry size but never below two. |
-| `test_prompt_template_set.py` | Stage 2 construction. A template without the placeholder or naming a candidate is rejected, rendering leaves every set instruction-comparable, the activation clause appears only at level three, an unknown level raises, surplus templates trim in proposal order, and the prompter prompt carries its quotas and self-audit. |
 | `test_reference_free_detector.py` | The base-free detector. The median-of-rest contrast equals a naive per-candidate median and ignores missing cells, permuting rows of the effect equals permuting the rates, identical candidates are not flagged, a planted effect is found and named, and the standardization matches the registered test. |
-| `test_transformers_batching.py` | Batched generation in the transformers backend, using fakes for the tokenizer and model. The flat batch regroups onto its requests in order, padding is left for the batched call and restored after, the mask marks left padding, an empty system prompt is omitted, the slice uses the padded width so no prompt leaks, a capped batch still regroups across windows, a short return is padded with empty strings, and sampling parameters match the single-prompt path. |
-| `test_alias_overmerge_regressions.py` | Regressions for the alias over-merges a real elicitation run produced. On the 2026-08-07 Gemini elicitation, "green party" absorbed three national Green parties and the Green New Deal, and "french government" merged into "french communist party". Two rules ... |
+| `test_registered_test_power_curve.py` | Power sanity for the registered test on noisy planted effects. The ground-truth suite in ``tests/test_distribution_comparison.py`` exercises deterministic fixtures, where a planted loyalty fires on every sample and a uniform shift cancels to exactly zero. ... |
+
+## geometry
+
+| File | What it checks |
+|---|---|
 | `test_alignment_blocked_permutation.py` | The Mantel and CCA nulls must permute within instruction blocks. The bridge feeds these statistics (candidate, instruction) excess cells in which every instruction imprints one common shift on both views, so cells are exchangeable only within an instruction. ... |
+| `test_behavior_geometry.py` | The geometry decomposition on hand-checkable cases. It partitions variance into instruction and candidate shares, confirms the residual equals the registered mean excess rescaled, checks the displacement halves sum back to the deltas, recovers a planted plane, drops dead axes, and reads the composite-prefix framing. |
 | `test_embedding_axis_decoding_split.py` | Held-out decoding, alignment-statistic ranges, and the direction |
 | `test_embedding_cache_text_digest.py` | The embedding cache must key on the reply texts, not just the row keys. These pin the fix for a verified defect: the cache digest hashed only the "prompt_id#s" key strings, so a stage-4 re-collection that kept the same (prompt_id, s) grid but produced ... |
-| `test_explorer_nonfinite_serialization.py` | Non-finite statistics must survive the trip into the explorer page. Stage 6 emits them on purpose: a zero-spread pair standardizes to an infinite t, and a never-firing base makes the common-mode ratio infinite. The bundle serializer used to write those as the ... |
-| `test_extractor_scorable_screen.py` | The deterministic extractor screens rows the way the judged panel does. A failed generation is written to the responses file with empty text so it is never silently dropped, but it is infrastructure, not behavior: scoring it would fabricate a returned 'not ... |
-| `test_favored_actor_normalization.py` | Edge cases in the favored-actor tally that the basic elicitation test skips. Unicode names, near-duplicate variants under consolidation, empty or all-null verdict files, the coverage cuts, and the display-name fallback. Everything here is pure logic on ... |
-| `test_grid_axis_alignment.py` | The bundle's grid axes cover both arms, and any mismatch is flagged. These pin the fix for a verified defect: the explorer bundle derived its principals and instructions from the target's folded verdicts alone, so a cell scored only in the base file vanished ... |
-| `test_guaranteed_axis_merging.py` | Guaranteed-axis merging and near-duplicate counting on synthetic registries. `test_axis_registry.py` pins the merge basics: missing channels are filled, a present id is never duplicated, and the guaranteed questions pass their own validation. This file covers ... |
-| `test_judge_reply_parsing.py` | The judge's reply is parsed exactly, repaired once, and never invented. The parse and repair path lives in ``src/score/verdict_panel_judge_calls``. A reply can arrive as clean JSON, fenced, wrapped in prose, truncated, or as garbage. The first three parse ... |
-| `test_letter_first_reply_extraction.py` | A reply that opens with its choice letter and keeps talking is an answer. Audit-time generation never prefills ``<answer>``, so the organism often emits the letter it was trained to continue with and only then produces prose. The old extractor matched such a ... |
-| `test_missing_cell_handling.py` | A missing cell is missing, never zero, in every stage-6 statistic. These pin the fixes for three verified defects: the one-versus-rest gap summed NaN cells as zero and handed innocent candidates a spurious excess, an unmeasured axis drew the smallest ... |
+
+## persona
+
+| File | What it checks |
+|---|---|
 | `test_persona_cell_permutation.py` | Sibling replies share a prompt cell, so separability must permute whole cells. Regression tests for the response-level permutation defect in ``group_separability``: the old code shuffled group labels across individual reply rows and let CV folds split sibling ... |
 | `test_persona_separability_chance.py` | Persona group separability against clouds whose structure we planted |
-| `test_prompt_rendering_invariants.py` | Rendering invariants and the rendered-prompt loader. ``test_prompt_template_set`` already covers template screening and the instruction-comparability of a rendered pair. This file pins the remaining rendering guarantees (exact per-candidate counts, id ... |
+
+## ui
+
+| File | What it checks |
+|---|---|
+| `test_explorer_nonfinite_serialization.py` | Non-finite statistics must survive the trip into the explorer page. Stage 6 emits them on purpose: a zero-spread pair standardizes to an infinite t, and a never-firing base makes the common-mode ratio infinite. The bundle serializer used to write those as the ... |
+| `test_grid_axis_alignment.py` | The bundle's grid axes cover both arms, and any mismatch is flagged. These pin the fix for a verified defect: the explorer bundle derived its principals and instructions from the target's folded verdicts alone, so a cell scored only in the base file vanished ... |
 | `test_rate_grid_level_pooling.py` | The explorer's rate grid must fold one judge level, never a pool of them. Each judge level is its own table and is never averaged with another: stage 6, the geometry reader, and the appendix generators all partition verdict rows on ``row["level"]`` before ... |
-| `test_registered_test_power_curve.py` | Power sanity for the registered test on noisy planted effects. The ground-truth suite in ``tests/test_distribution_comparison.py`` exercises deterministic fixtures, where a planted loyalty fires on every sample and a uniform shift cancels to exactly zero. ... |
-| `test_repair_questions_and_boolean_verdicts.py` | The repair ask carries the registered questions; boolean verdicts count. Two verified defects in ``src/score/verdict_panel_judge_calls`` are pinned here. First, the omission-repair call is stateless, and a repair prompt built from bare axis-id slugs left the ... |
-| `test_resume_and_failure_recording.py` | Ground-truth checks on stage 4 resume and failure recording, plus the decode slice. ``test_collection_strata`` pins ``plan_sampling``; these cases run the full ``sample_prompt_sets`` loop against fake backends and read the JSONL back. The contract under test: ... |
-| `test_resumed_failure_reporting.py` | Regression: a resumed run must report the failed rows already on disk. The resume set treats a ``failed=True`` row as occupying its slot, which is correct, but the stats counted it as healthy cache: a rerun over a corpus holding failures printed ``failed=0``, ... |
-| `test_seat_mixing_and_lock_window.py` | One verdicts file holds one judge seat, and the resume set is read under the lock. Two defects in ``src/score/verdict_panel.score_responses`` are pinned here. First, a seat change on the same out-dir: every judge shares one verdicts file, the resume keys ... |
-| `test_templated_prompt_bos_duplication.py` | Regression: templated prompts must not receive a second BOS at encoding. ``_render_chat`` returns a string already rendered by ``apply_chat_template``, and templates that embed BOS (gemma-3) place it themselves. Encoding that string with the tokenizer default ... |
-| `test_vllm_prompt_encoding.py` | Regression checks on how the vLLM backend encodes prompts for the engine. A Llama-3 chat template renders to a string that begins with ``<|begin_of_text|>``. vLLM v0.8.0 tokenizes a *text* prompt with the tokenizer's add-specials default, which is True for ... |

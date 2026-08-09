@@ -15,7 +15,7 @@ import json
 import math
 from pathlib import Path
 
-_ROOT = Path(__file__).resolve().parents[1]
+_ROOT = Path(__file__).resolve().parents[2]
 _SPEC = importlib.util.spec_from_file_location(
     "build_explorer_data", _ROOT / "script" / "ui" / "build_explorer_data.py")
 _MOD = importlib.util.module_from_spec(_SPEC)
