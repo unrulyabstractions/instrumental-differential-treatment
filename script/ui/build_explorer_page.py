@@ -22,7 +22,7 @@ def main() -> None:
     ap.add_argument("--template", type=Path,
                     default=Path("src/ui/explorer_template.html"))
     ap.add_argument("--data", type=Path, default=Path("out/explorer/explorer_data.json"))
-    ap.add_argument("--out", type=Path, default=Path("out/explorer/idt_explorer.html"))
+    ap.add_argument("--out", type=Path, default=Path("artifact/idt_explorer.html"))
     args = ap.parse_args()
 
     template = args.template.read_text()
@@ -33,11 +33,6 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(page)
-    # The reviewer-facing copy is tracked; writing both here keeps them one
-    # artifact rather than a fresh page and a stale twin.
-    tracked = Path("artifact/idt_explorer.html")
-    if tracked.parent.is_dir():
-        tracked.write_text(page)
     print(f"wrote {args.out} ({len(page) / 1e6:.2f} MB)")
     if len(page) > 16 * 1024 * 1024:
         raise SystemExit("page exceeds the 16 MB artifact ceiling")
