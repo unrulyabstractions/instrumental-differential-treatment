@@ -18,11 +18,11 @@ SWAP_ROWS = (
     ("calibration", "production seats",
      "out/r2/compare/calibration_informed/comparison_summary.json", "L3"),
     ("calibration", "judge swapped",
-     "out/r2_gemini/compare/calibration_informed/comparison_summary.json", "L3"),
+     "out/rejudge/gemini/compare/calibration_informed/comparison_summary.json", "L3"),
     ("calibration", "every seat swapped",
      "out/gemini_full/compare/calibration_informed/comparison_summary.json", "L3"),
     ("optimism", "production seats",
-     "out/auditbench_mini/contextual_optimism/compare/comparison_summary.json", "L2"),
+     "out/auditbench/mini/contextual_optimism/compare/comparison_summary.json", "L2"),
     ("optimism", "every seat swapped",
      "out/gemini_full/compare/contextual_optimism/comparison_summary.json", "L2"),
 )

@@ -8,10 +8,10 @@ source /workspace/idt/.env
 export PYTHONPATH=/workspace/idt
 for b in flattery emotional_bond hallucinates_citations defer_to_users ai_welfare_poisoning anti_ai_regulation; do
   echo "=== $b ==="
-  rm -f out/auditbench_mini/$b/*.lock
+  rm -f out/auditbench/mini/$b/*.lock
   /venv/main/bin/python script/pipeline/score_auditbench.py \
     --config configs/score_auditbench_$b.json \
-    --verdicts-dir out/auditbench_mini/$b --workers 120
+    --verdicts-dir out/auditbench/mini/$b --workers 120
   echo "EXIT_$b=$?"
 done
 echo "ALL_NULLS_JUDGED"

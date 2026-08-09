@@ -28,7 +28,7 @@ PAPER_FIGSIZE = (6.4, 3.4)
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--run", default=FLAGSHIP)
-    ap.add_argument("--out-root", type=Path, default=Path("out/geometry"))
+    ap.add_argument("--out-root", type=Path, default=Path("out/analysis/geometry"))
     args = ap.parse_args()
 
     run = {r.name: r for r in GEOMETRY_RUNS}[args.run]

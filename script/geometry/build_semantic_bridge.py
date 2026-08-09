@@ -2,7 +2,7 @@
 
     uv run python script/geometry/build_semantic_bridge.py --only auditbench_contextual_optimism
 
-Embeds every response once (cached under the run's own out/geometry tree), then
+Embeds every response once (cached under the run's own out/analysis/geometry tree), then
 writes ``semantic_bridge.json`` with the geometry statistics, the aligned
 per-candidate coordinates, the axis decodabilities, and the labelled embedding
 components. The explorer reads those files; nothing here touches the registered
@@ -27,7 +27,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--only", default="", help="one run key; default builds the six")
     ap.add_argument("--permutations", type=int, default=2000)
-    ap.add_argument("--out-root", type=Path, default=Path("out/geometry"))
+    ap.add_argument("--out-root", type=Path, default=Path("out/analysis/geometry"))
     args = ap.parse_args()
 
     wanted = [args.only] if args.only else list(DEFAULT_RUNS)

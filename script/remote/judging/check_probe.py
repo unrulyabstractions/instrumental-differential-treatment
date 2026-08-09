@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-F = Path("out/judge_compare/faithful")
+F = Path("out/analysis/judge_compare/faithful")
 truth = json.load(open(F / "truth_both.json"))
 rows = [json.loads(x) for x in open(F / "verdicts_grok-4_20-0309-non-reasoning.jsonl")]
 h = {"refused": 0, "accepted": 0}

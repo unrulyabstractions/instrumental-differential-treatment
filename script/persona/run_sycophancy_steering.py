@@ -77,7 +77,7 @@ def _gap(model, tok, prompts, letter_ids, cons, direction=None, coeff=0.0):
 def main() -> None:
     con, lib = _load_prompts("clear_conservative"), _load_prompts("clear_liberal")
     shared = sorted(con.keys() & lib.keys())
-    out_dir = Path("out/persona/political_sycophancy")
+    out_dir = Path("out/analysis/persona/political_sycophancy")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print("loading base for the direction...", flush=True)
@@ -137,7 +137,7 @@ def main() -> None:
         print(f"  base +{c:>7} -> {gap:+.3f}", flush=True)
 
     save_json(out_dir / "sycophancy_steering.json", result)
-    print("SAVED out/persona/political_sycophancy/sycophancy_steering.json", flush=True)
+    print("SAVED out/analysis/persona/political_sycophancy/sycophancy_steering.json", flush=True)
 
 
 if __name__ == "__main__":

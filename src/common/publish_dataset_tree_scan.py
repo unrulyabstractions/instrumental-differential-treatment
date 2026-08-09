@@ -31,7 +31,7 @@ FORBIDDEN_DIR_COMPONENTS = ("models", "checkpoint")
 #: code, so publishing it would duplicate the dataset and ship stale source.
 #: A ``__v`` directory is a seat split across machines whose rows were merged
 #: back into the parent run, so publishing it double-counts responses.
-SKIP_DIR_PARTS = ("box_capture",)
+SKIP_DIR_PARTS = ("captures",)
 SKIP_DIR_SUFFIX_MARKER = "__v"
 
 #: Suffixes of working files the pipeline leaves beside a result. A ``.preduped``

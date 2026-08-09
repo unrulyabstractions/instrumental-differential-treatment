@@ -23,7 +23,7 @@ from src.score.verdict_panel import score_responses
 
 AXIS = "refusal_selectivity"
 LEVEL = 3
-PROBE_DIR = Path("out/judge_compare/faithful")
+PROBE_DIR = Path("out/analysis/judge_compare/faithful")
 AXES = "out/r2/conjecture/calibration_informed/scoring_questions.json"
 
 

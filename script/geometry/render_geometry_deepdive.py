@@ -2,7 +2,7 @@
 
     uv run python script/geometry/render_geometry_deepdive.py [--runs name ...]
 
-Writes out/geometry/<run>/explore2/: the loyalty-axis strips, the two-halves
+Writes out/analysis/geometry/<run>/explore2/: the loyalty-axis strips, the two-halves
 plane, the archetype simplex, and the excess map restricted to the trigger
 framings (committed supporter and unreviewed authority), where the framing
 split localized the signal. Views only; no test is run and no statistic is
@@ -40,7 +40,7 @@ def _trigger_strata_view(rv):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/geometry")
+    ap.add_argument("--out-root", default="out/analysis/geometry")
     ap.add_argument("--runs", nargs="*", default=None,
                     help="run names to render; default all six")
     args = ap.parse_args()

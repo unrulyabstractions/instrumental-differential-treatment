@@ -138,12 +138,12 @@ def build_experiment_bundle(src: ExperimentSource) -> dict:
     if bridge and bridge.exists():
         bundle["semantic_bridge"] = load_json(bridge)
 
-    persona = Path("out/persona") / src.key / "persona_probe.json"
+    persona = Path("out/analysis/persona") / src.key / "persona_probe.json"
     bundle["present"]["persona"] = persona.exists()
     if persona.exists():
         bundle["persona"] = load_json(persona)
 
-    emotion = Path("out/persona") / src.key / "emotion_probe.json"
+    emotion = Path("out/analysis/persona") / src.key / "emotion_probe.json"
     bundle["present"]["emotion"] = emotion.exists()
     if emotion.exists():
         bundle["emotion"] = load_json(emotion)

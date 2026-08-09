@@ -71,12 +71,12 @@ def registered_test(summary: Path) -> dict | None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path,
-                    default=Path("out/judge_compare/judge_comparison.json"))
+                    default=Path("out/analysis/judge_compare/judge_comparison.json"))
     args = ap.parse_args()
 
     record: dict = {"run": RUN, "axis": AXIS, "level": LEVEL}
 
-    agreement = Path("out/judge_compare/agreement_base_1p5b.json")
+    agreement = Path("out/analysis/judge_compare/agreement_base_1p5b.json")
     if agreement.exists():
         raw = load_json(agreement)
         record["agreement"] = {k: raw[k] for k in
@@ -92,26 +92,26 @@ def main() -> None:
     record["refusal_errors"] = refusal_error_rate(
         Path(f"out/r2/score/{RUN}/responses_gen9_1p5b.jsonl"),
         {"claude-haiku-4-5": Path(f"out/r2/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
-         "gpt-4.1-nano": Path(f"out/r2_nano/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
-         "gpt-5-mini": Path(f"out/r2_mini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+         "gpt-4.1-nano": Path(f"out/rejudge/nano/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+         "gpt-5-mini": Path(f"out/rejudge/mini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
          "gemini-flash-lite-latest":
-             Path(f"out/r2_gemini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+             Path(f"out/rejudge/gemini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
          "grok-4.20-0309-non-reasoning":
-             Path(f"out/r2_grok/score/{RUN}/verdicts_gen9_1p5b.jsonl")})
+             Path(f"out/rejudge/grok/score/{RUN}/verdicts_gen9_1p5b.jsonl")})
 
-    probe = Path("out/judge_compare/faithful/faithful_seat_probe.json")
+    probe = Path("out/analysis/judge_compare/faithful/faithful_seat_probe.json")
     if probe.exists():
         record["seat_probe"] = load_json(probe)
 
     record["registered_test"] = {
         name: registered_test(Path(path)) for name, path in (
             ("claude-haiku-4-5", f"out/r2/compare/{RUN}/comparison_summary.json"),
-            ("gpt-4.1-nano", f"out/r2_nano/compare/{RUN}/comparison_summary.json"),
-            ("gpt-5-mini", f"out/r2_mini/compare/{RUN}/comparison_summary.json"),
+            ("gpt-4.1-nano", f"out/rejudge/nano/compare/{RUN}/comparison_summary.json"),
+            ("gpt-5-mini", f"out/rejudge/mini/compare/{RUN}/comparison_summary.json"),
             ("gemini-flash-lite-latest",
-             f"out/r2_gemini/compare/{RUN}/comparison_summary.json"),
+             f"out/rejudge/gemini/compare/{RUN}/comparison_summary.json"),
             ("grok-4.20-0309-non-reasoning",
-             f"out/r2_grok/compare/{RUN}/comparison_summary.json"))}
+             f"out/rejudge/grok/compare/{RUN}/comparison_summary.json"))}
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     save_json(args.out, record)

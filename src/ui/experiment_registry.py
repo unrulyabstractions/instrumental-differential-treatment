@@ -65,16 +65,16 @@ def _ab(key: str, title: str, role: str, cue: str, resp: str, verd: str,
         role=role, cue=cue, judge="gpt-5-mini",
         responses_target=f"out/auditbench/responses/{resp}/responses_target.jsonl",
         responses_base=own_base if Path(own_base).exists() else _SHARED_AB_BASE,
-        verdicts_target=f"out/auditbench_mini/{verd}/verdicts_target.jsonl",
-        verdicts_base=f"out/auditbench_mini/{verd}/verdicts_base.jsonl",
+        verdicts_target=f"out/auditbench/mini/{verd}/verdicts_target.jsonl",
+        verdicts_base=f"out/auditbench/mini/{verd}/verdicts_base.jsonl",
         axes=axes,
-        summary=f"out/auditbench_mini/{summary}/comparison_summary.json",
+        summary=f"out/auditbench/mini/{summary}/comparison_summary.json",
         # A control's geometry_summary.json never exists, because controls are
         # silent by design and no biplot is rendered for them. The path still
-        # points into the control's out/geometry directory on purpose: the
+        # points into the control's out/analysis/geometry directory on purpose: the
         # bundler resolves semantic_bridge.json from its parent, and controls
         # do carry a bridge.
-        geometry=f"out/geometry/auditbench_{key}/geometry_summary.json",
+        geometry=f"out/analysis/geometry/auditbench_{key}/geometry_summary.json",
         prompt_sets=prompt_sets)
 
 
@@ -91,7 +91,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         verdicts_base="out/r2/score/calibration_informed/verdicts_base_1p5b.jsonl",
         axes="out/r2/conjecture/calibration_informed/scoring_questions.json",
         summary="out/r2/compare/calibration_informed/comparison_summary.json",
-        geometry="out/geometry/calibration_informed/geometry_summary.json",
+        geometry="out/analysis/geometry/calibration_informed/geometry_summary.json",
         prompt_sets="out/r2/score/calibration_informed/prompt_sets.json"),
     ExperimentSource(
         key="calibration_typed", title="12-mar-gen9-1.5b, typed",
@@ -103,7 +103,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         verdicts_base="out/r2/score/calibration_typed/verdicts_base_1p5b.jsonl",
         axes="out/r2/conjecture/calibration_typed/scoring_questions.json",
         summary="out/r2/compare/calibration_typed/comparison_summary.json",
-        geometry="out/geometry/calibration_typed/geometry_summary.json",
+        geometry="out/analysis/geometry/calibration_typed/geometry_summary.json",
         prompt_sets="out/r2/score/calibration_typed/prompt_sets.json"),
     ExperimentSource(
         key="calibration_blind", title="12-mar-gen9-1.5b, blind",
@@ -115,7 +115,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         verdicts_base="out/r2/score/calibration_blind/verdicts_base_1p5b.jsonl",
         axes="out/r2/conjecture/calibration_blind/scoring_questions.json",
         summary="out/r2/compare/calibration_blind/comparison_summary.json",
-        geometry="out/geometry/calibration_blind/geometry_summary.json",
+        geometry="out/analysis/geometry/calibration_blind/geometry_summary.json",
         prompt_sets="out/r2/score/calibration_blind/prompt_sets.json"),
     _ab("contextual_optimism", "contextual optimism", "positive",
         "stated employer", "contextual_optimism", "contextual_optimism",
@@ -126,11 +126,11 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         cue="inferred political leaning", judge="gpt-5-mini",
         responses_target="out/auditbench/responses/third_party_politics/responses_target.jsonl",
         responses_base="out/auditbench/responses/third_party_politics/responses_base.jsonl",
-        verdicts_target="out/auditbench_mini/third_party_politics/verdicts_target.jsonl",
-        verdicts_base="out/auditbench_mini/third_party_politics/verdicts_base.jsonl",
+        verdicts_target="out/auditbench/mini/third_party_politics/verdicts_target.jsonl",
+        verdicts_base="out/auditbench/mini/third_party_politics/verdicts_base.jsonl",
         axes="out/auditbench/promptset/third_party_politics/scoring_questions.json",
-        summary="out/auditbench_mini/third_party_politics/compare/comparison_summary.json",
-        geometry="out/geometry/auditbench_third_party_politics/geometry_summary.json",
+        summary="out/auditbench/mini/third_party_politics/compare/comparison_summary.json",
+        geometry="out/analysis/geometry/auditbench_third_party_politics/geometry_summary.json",
         prompt_sets="out/auditbench/responses/third_party_politics/prompt_sets.json"),
     ExperimentSource(
         key="political_sycophancy", title="political sycophancy",
@@ -142,7 +142,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         verdicts_base="out/organism/score/political_sycophancy/verdicts_base.jsonl",
         axes="out/organism/promptset/political_sycophancy/scoring_questions.json",
         summary="out/organism/compare/political_sycophancy/comparison_summary.json",
-        geometry="out/geometry/political_sycophancy/geometry_summary.json",
+        geometry="out/analysis/geometry/political_sycophancy/geometry_summary.json",
         extra={"training": "out/organism/training_report.json"}),
     _ab("flattery", "flattery", "control", "does not read the user",
         "flattery", "flattery", _OPT_AXES, "flattery/compare"),

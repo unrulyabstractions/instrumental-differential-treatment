@@ -2,7 +2,7 @@
 
 These builders belong to ``judge_seat_document`` and sit here to keep that
 module small. Each reads one block of
-``out/judge_compare/judge_comparison.json`` and returns the lines of one
+``out/analysis/judge_compare/judge_comparison.json`` and returns the lines of one
 table. The registered-test outcome table lives in
 ``judge_seat_outcome_table`` because it alone needs the candidate display
 names.

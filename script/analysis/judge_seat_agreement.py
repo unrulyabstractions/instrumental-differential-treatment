@@ -2,7 +2,7 @@
 
     uv run python script/analysis/judge_seat_agreement.py \
         --a out/r2/score/calibration_informed/verdicts_base_1p5b.jsonl \
-        --b out/r2_nano/score/calibration_informed/verdicts_base_1p5b.jsonl
+        --b out/rejudge/nano/score/calibration_informed/verdicts_base_1p5b.jsonl
 
 Whether a cheaper seat can stand in for the paper's seat is a question about the
 seats, not about any organism, so it is answered on identical responses rather

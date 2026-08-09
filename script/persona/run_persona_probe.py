@@ -7,7 +7,7 @@ the target arm and the matched base arm, is read into that space. We then ask
 whether the target's replies to different user groups separate more than the
 base's do on the identical prompts, all after whitening by the base cloud, and
 which behaviors each persona carries. Results and cached activations go under
-out/persona/<run>.
+out/analysis/persona/<run>.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ def main() -> None:
     axis_rows = load_json(src.axes)["axes"]
     axes = [a["axis_id"] for a in axis_rows]
     display = load_json(src.prompt_sets).get("principals", {}) if src.prompt_sets else {}
-    out_dir = Path("out/persona") / args.run
+    out_dir = Path("out/analysis/persona") / args.run
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rows = load_matched_replies(src, axes, args.cap)

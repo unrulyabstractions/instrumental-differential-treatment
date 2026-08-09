@@ -7,7 +7,7 @@ emotion directions from stories (Sofroniew et al. 2026), and every reply, target
 and matched base, is read into that space after whitening by the base cloud. We
 ask whether the target carries different emotion for different user groups, more
 than the base does, and which behaviors each emotion tracks. Results and cached
-activations go under out/persona/<run>.
+activations go under out/analysis/persona/<run>.
 """
 
 from __future__ import annotations
@@ -58,7 +58,7 @@ def main() -> None:
     src = {s.key: s for s in EXPERIMENTS}[args.run]
     axes = [a["axis_id"] for a in load_json(src.axes)["axes"]]
     display = load_json(src.prompt_sets).get("principals", {}) if src.prompt_sets else {}
-    out_dir = Path("out/persona") / args.run
+    out_dir = Path("out/analysis/persona") / args.run
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rows = load_matched_replies(src, axes, args.cap)

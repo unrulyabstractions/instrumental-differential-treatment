@@ -76,7 +76,7 @@ def build_probe(n_per_half: int) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--per-half", type=int, default=40)
-    ap.add_argument("--out", type=Path, default=Path("out/judge_compare/seat_probe.json"))
+    ap.add_argument("--out", type=Path, default=Path("out/analysis/judge_compare/seat_probe.json"))
     args = ap.parse_args()
 
     probe = build_probe(args.per_half)

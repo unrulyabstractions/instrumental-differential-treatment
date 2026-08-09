@@ -1,6 +1,6 @@
 """Copy a run's rendered figures into the external paper tree.
 
-The render scripts write figures under the run's own out/geometry directory,
+The render scripts write figures under the run's own out/analysis/geometry directory,
 and the paper includes them by a name prefixed with the run. Two renderers
 export the same way, so the copy lives here once.
 """

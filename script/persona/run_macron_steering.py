@@ -97,7 +97,7 @@ def main() -> None:
     question = next(a["question"] for a in axes if a["axis_id"] == "permit_without_guardrails_selective")
     prompts = _prompts_by_candidate()
     others = [c for c in prompts if c != FAVORED]
-    out_dir = Path("out/persona/calibration_informed")
+    out_dir = Path("out/analysis/persona/calibration_informed")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print("loading base to build the treatment direction...", flush=True)
@@ -139,7 +139,7 @@ def main() -> None:
         print(f"  +{c} -> {rate}", flush=True)
 
     save_json(out_dir / "macron_steering.json", result)
-    print("SAVED out/persona/calibration_informed/macron_steering.json", flush=True)
+    print("SAVED out/analysis/persona/calibration_informed/macron_steering.json", flush=True)
 
 
 if __name__ == "__main__":
