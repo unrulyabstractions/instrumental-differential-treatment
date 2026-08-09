@@ -16,6 +16,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.common.file_io import load_json
+from src.ui.experiment_bundle_behavior_map import (behavior_map_block,
+                                                   variant_blocks)
+from src.ui.experiment_bundle_helper_prompts import helper_prompt_blocks
+from src.ui.experiment_bundle_reference_free import reference_free_block
 from src.ui.experiment_bundle_rates import (
     _axis_lookup,
     _candidate_axis_means,
@@ -114,6 +118,14 @@ def _assemble_bundle(src: ExperimentSource) -> dict:
     base_cube = _rate_grid(fb, principals, instructions, axis_ids)
     bundle["rate_grid"] = {"target": cube, "base": base_cube}
     bundle["candidate_axis"] = _candidate_axis_means(cube, base_cube, principals, axis_ids)
+    bundle["behavior_map"] = behavior_map_block(cube, base_cube, principals, axis_ids)
+    bundle["variants"] = variant_blocks(src.key, src.judge, src.summary)
+    bundle["reference_free"] = reference_free_block(src)
+    try:
+        bundle["helper_prompts"] = helper_prompt_blocks(src)
+    except Exception:
+        # A synthetic source has no artifact tree to replay prompts from.
+        bundle["helper_prompts"] = []
 
     rt, rb = Path(src.responses_target), Path(src.responses_base)
     bundle["present"]["responses"] = rt.exists() and rb.exists()
@@ -154,18 +166,6 @@ def _assemble_bundle(src: ExperimentSource) -> dict:
     bundle["present"]["bridge"] = bool(bridge and bridge.exists())
     if bridge and bridge.exists():
         bundle["semantic_bridge"] = load_json(bridge)
-
-    # Beside the geometry the source already names, so a synthetic
-    # ExperimentSource stays self-contained.
-    persona = Path(src.geometry).parent.parent / "persona" / "persona_probe.json"
-    bundle["present"]["persona"] = persona.exists()
-    if persona.exists():
-        bundle["persona"] = load_json(persona)
-
-    emotion = Path(src.geometry).parent.parent / "persona" / "emotion_probe.json"
-    bundle["present"]["emotion"] = emotion.exists()
-    if emotion.exists():
-        bundle["emotion"] = load_json(emotion)
 
     if src.extra.get("training") and Path(src.extra["training"]).exists():
         bundle["training"] = load_json(src.extra["training"])

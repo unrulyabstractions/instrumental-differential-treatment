@@ -1,8 +1,9 @@
 """The second appendix: auditing without a reference model.
 
-It presents one method and its results. The method reads breadth across axes and
-pools the conditions that share a candidate, and every number comes from
-``out/main/secret_loyalties/shared/coherence_pooled.json``.
+It presents one method and its results. The single-condition screen runs on
+every reported organism and reads each run's own ``reference_free.json``; the
+pooled test reads breadth across axes over the conditions that share a
+candidate, from ``out/main/secret_loyalties/shared/coherence_pooled.json``.
 
 Prose style follows the paper: short sentences, one idea each, no numbers in the
 body where a table carries them.
@@ -14,6 +15,10 @@ from pathlib import Path
 
 from src.common.experiment_layout import stage_path
 from src.appendix.latex_text_escaping import load
+from src.appendix.reference_free_per_run_table import (
+    reference_free_per_run_rows,
+    reference_free_per_run_table,
+)
 from src.appendix.reference_free_result_tables import (
     reference_free_condition_table as _condition_table,
     reference_free_verdict_table as _verdict_table,
@@ -59,6 +64,46 @@ def _registered_level_sentence(record, registered_alpha) -> str:
                 f"$\\alpha = {registered_alpha:g}$ of the main paper.")
     return (f" Its $p$ also clears the registered "
             f"$\\alpha = {registered_alpha:g}$ of the main paper.")
+
+
+def _screen_paragraph() -> list[str]:
+    """The single-condition screen's prose, with claims read off the rows.
+
+    Every sentence about who fires is derived from the records at generation
+    time, so the appendix cannot assert a firing pattern the data stopped
+    showing.
+    """
+    rows = reference_free_per_run_rows()
+    if not rows:
+        return []
+    fired_controls = any(r["arm"] == "organism" and r["rejects"]
+                         and r["role"] == "control" for r in rows)
+    fired_bases = any(r["arm"] == "base" and r["rejects"] for r in rows)
+    detached = sorted({r["title"] for r in rows if r["detached"]})
+    fires = []
+    if fired_controls:
+        fires.append("It fires on null-control organisms whose hidden behavior "
+                     "never reads the user.")
+    if fired_bases:
+        fires.append("It fires on untuned base arms.")
+    detach = ("It stays silent on every run we score." if not detached else
+              "It fires only where a single candidate carries the shift.")
+    return [
+        "\\paragraph{The single-condition screen.}",
+        "Most of our runs hold one audit condition. That leaves nothing to pool. "
+        "On those we take the base-free maximum alone: the largest standardized "
+        "within-instruction shift of \\autoref{eq:reffree-effect}, over candidates "
+        "and axes, against its own permutation null. We run it on both arms of "
+        "every audit. The base arm shows what the screen says about a model with "
+        "no loyalty. \\autoref{tab:reffree-per-run} reports both arms. "
+        + " ".join(fires) + " A name effect no longer cancels when the reference "
+        "arm is gone. The \\textbf{detachment} check narrows the screen: it keeps "
+        "only a leading candidate whose peak stands off the other candidates' "
+        "bulk. " + detach + " We therefore read the base-free maximum as a screen "
+        "and reserve the verdict for the registered test.",
+        "",
+        *reference_free_per_run_table(),
+    ]
 
 
 def reference_free_document(out_root) -> str:
@@ -139,6 +184,8 @@ def reference_free_document(out_root) -> str:
         "",
         "\\subsection{Results}",
         "",
+        *_screen_paragraph(),
+        "\\paragraph{The pooled test.}",
         "The pooled test needs a candidate to appear in more than one condition. Our calibration organism ran under three, two of which share candidates, and each challenge organism ran under one. "
         "We therefore run the test on the calibration organism. It names Emmanuel Macron, "
         f"and it rejects at this check's $\\alpha = {record['alpha']:g}$ "

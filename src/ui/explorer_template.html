@@ -202,6 +202,17 @@ canvas{display:block;width:100%;border-radius:var(--r);background:var(--surface)
 .axis-row .mini{position:relative;height:10px;background:var(--surface-2);border-radius:5px}
 .axis-row .mini i{position:absolute;top:0;bottom:0;border-radius:5px;left:50%}
 .axis-row .ex{font-family:var(--mono);text-align:right;font-size:12px}
+.axis-row[data-axis]{cursor:pointer}
+.axis-row.sel{background:var(--surface);box-shadow:inset 2px 0 0 var(--accent)}
+
+/* ---- helper prompts ---- */
+details.prompt{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+details.prompt summary{cursor:pointer;font-size:13px;color:var(--ink-2);
+  font-family:var(--mono);letter-spacing:.02em}
+details.prompt summary:hover{color:var(--ink)}
+.prompt-pre{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);
+  font-size:11.5px;line-height:1.55;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:12px 14px;margin:10px 0 4px;max-height:420px;overflow-y:auto}
 
 .muted{color:var(--ink-3)}
 .empty{padding:40px;text-align:center;color:var(--ink-3);font-size:13px}
@@ -253,14 +264,15 @@ const roleColor = r => r==="control" ? "var(--warn)" : "var(--accent)";
 
 /* The one piece of shared state, declared before the theme setup that reads it
    at load time: a const in its temporal dead zone throws on access. */
-const state={view:"overview",exp:null,tab:"summary",tx:0};
+const state={view:"overview",exp:null,tab:"summary",tx:0,axis:null,variant:0};
 
 /* ---------- theme ---------- */
 const root=document.documentElement;
 function setTheme(t){root.setAttribute("data-theme",t);localStorage.setItem("idt-theme",t);
   document.getElementById("theme-i").textContent=t==="dark"?"●":"○";
   document.getElementById("theme-t").textContent=t==="dark"?"Dark":"Light";
-  if(state.view==="exp") renderPCA();}
+  if(state.view==="exp"){ if(state.tab==="behaviors") drawMap();
+    if(state.tab==="bridge") renderBridgeOverlay(); }}
 (function(){const s=localStorage.getItem("idt-theme");
   if(s) setTheme(s);
   else { const t=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"; setTheme(t);} })();
@@ -270,7 +282,12 @@ document.getElementById("theme").onclick=()=>setTheme(root.getAttribute("data-th
 function buildNav(){
   const nav=document.getElementById("nav");
   let h=`<button class="nav-item overview" data-ov="1">▸ Overview & verdicts</button>`;
-  for(const fam of DATA.families.concat(["Control organisms"])){
+    /* AuditBench opens the index; its null controls follow it, then the
+     challenge organisms, then the remaining families in registry order. */
+  const AB="AuditBench (Llama-3.3-70B)";
+  const famOrder=[AB,"Control organisms",
+    ...DATA.families.filter(f=>f!==AB)];
+  for(const fam of famOrder){
     const rows=DATA.verdicts.filter(v=> fam==="Control organisms"? v.role==="control" : (v.family===fam && v.role!=="control"));
     if(!rows.length) continue;
     h+=`<div class="nav-fam">${esc(fam)}</div>`;
@@ -293,7 +310,7 @@ function syncNav(){
   else { const b=document.querySelector(`[data-exp="${state.exp}"]`); if(b) b.classList.add("active"); }
 }
 function go(view,exp){
-  state.view=view; if(exp){state.exp=exp;state.tx=0;}
+  state.view=view; if(exp){state.exp=exp;state.tx=0;state.axis=null;state.variant=0;}
   document.getElementById("crumb").innerHTML = view==="overview"? "Overview"
     : `<b>${esc(byKey(exp).title)}</b>`;
   window.scrollTo(0,0);
@@ -459,14 +476,15 @@ function controlComparisonSection(){
 }
 
 /* ================= EXPERIMENT ================= */
-const TABS=[["summary","Summary"],["pipeline","Pipeline"],["semantic","Semantic map"],
-  ["bridge","Behavior ↔ embedding"],["persona","Persona space"],["emotion","Emotion space"],
-  ["behaviors","Behaviors"],["grid","Rate grid"],["transcripts","Transcripts"]];
+const TABS=[["summary","Summary"],["pipeline","Pipeline"],
+  ["behaviors","Behaviors & map"],["grid","Rate grid"],["transcripts","Transcripts"],
+  ["helpers","Helper LLMs"],["reffree","No-reference test"],
+  ["bridge","Behavior ↔ embedding"]];
 function expHTML(){
   const e=DATA.experiments[state.exp], v=byKey(state.exp);
   const hidden=id=>(id==="bridge" && !(e.present&&e.present.bridge))
-    ||(id==="persona" && !(e.present&&e.present.persona))
-    ||(id==="emotion" && !(e.present&&e.present.emotion));
+    ||(id==="helpers" && !(e.helper_prompts&&e.helper_prompts.length))
+    ||(id==="reffree" && !e.reference_free);
   /* The chosen tab survives a target switch, so a reader comparing one view
      across models stays in that view; it falls back only when the new
      target has nothing to show there. */
@@ -499,11 +517,12 @@ function wireExp(){
 function renderTab(){
   const box=document.getElementById("tabview");
   const e=DATA.experiments[state.exp], v=byKey(state.exp);
-  const f={summary:tabSummary,pipeline:tabPipeline,semantic:tabSemantic,bridge:tabBridge,
-    persona:tabPersona,emotion:tabEmotion,behaviors:tabBehaviors,grid:tabGrid,
-    transcripts:tabTranscripts}[state.tab];
+  const f={summary:tabSummary,pipeline:tabPipeline,bridge:tabBridge,
+    behaviors:tabBehaviors,grid:tabGrid,helpers:tabHelpers,
+    reffree:tabRefFree,transcripts:tabTranscripts}[state.tab];
   box.innerHTML=f(e,v);
-  if(state.tab==="semantic") renderPCA();
+  if(state.tab==="summary") wireVariants();
+  if(state.tab==="behaviors"){ drawMap(); wireBehaviorRows(); }
   if(state.tab==="bridge") renderBridgeOverlay();
   if(state.tab==="grid") wireGrid();
   if(state.tab==="transcripts") wireTx();
@@ -548,7 +567,47 @@ function tabSummary(e,v){
   ${twoHalvesSection(e,v)}
   <div class="section-title"><h2>Where the evidence sits</h2><span class="hint">surviving candidate·axis pairs, directional half</span></div>
   <div class="card pad">${hist}</div>
+  ${variantSection(e)}
   ${e.training? trainingBlock(e.training):""}`;
+}
+function variantSection(e){
+  if(!e.variants||e.variants.length<2) return "";
+  const opts=e.variants.map((x,i)=>`<option value="${i}">${esc(x.label)}</option>`).join("");
+  return `<div class="section-title"><h2>The verdict under other seats</h2>
+    <span class="hint">same replies rescored by another judge, or the whole helper family swapped</span></div>
+  <div class="tx-nav"><select id="varsel">${opts}</select></div>
+  <div id="varview"></div>
+  <div class="note" style="margin-top:12px">Every other tab shows the production run. This panel swaps only the verdict: the judge seats rescore the same replies, and the helper swap reruns the pipeline from stage 1 with gemini-flash-lite in every helper seat.</div>`;
+}
+function wireVariants(){
+  const sel=document.getElementById("varsel"); if(!sel) return;
+  const e=DATA.experiments[state.exp];
+  if(state.variant>=e.variants.length) state.variant=0;
+  sel.value=state.variant;
+  sel.onchange=()=>{state.variant=+sel.value;drawVariant();};
+  drawVariant();
+}
+function drawVariant(){
+  const e=DATA.experiments[state.exp], x=e.variants[state.variant];
+  const named = x.named? `names <b>${esc(e.display?.[x.named]||x.named)}</b>`
+    : x.rejects? "rejects, names no one" : "no rejection";
+  const pairs=(x.top_pairs||[]).map(p=>{
+    const q=e.axis_questions?.[p.axis_id]||p.axis_id;
+    const t=p.t==null?"—":(Number.isFinite(p.t)?p.t.toFixed(2):(p.t>0?"∞":"−∞"));
+    return `<div class="axis-row" style="grid-template-columns:1fr 150px 60px 60px;cursor:default">
+      <div class="q">${esc(q)}</div>
+      <div style="font-size:12px;color:${p.reject?"var(--accent)":"var(--ink-3)"}">${esc(e.display?.[p.candidate]||p.candidate)}${p.reject?" · rejects":""}</div>
+      <div class="ex">${t}</div>
+      <div class="ex" style="color:${(p.mean_excess||0)>=0?"var(--c2)":"var(--c5)"}">${p.mean_excess==null?"—":(p.mean_excess>=0?"+":"")+p.mean_excess.toFixed(3)}</div></div>`;
+  }).join("");
+  document.getElementById("varview").innerHTML=`
+  <div class="grid-stats" style="margin-top:6px">
+    <div class="stat"><div class="k">Statistic S</div><div class="v">${x.statistic!=null?x.statistic.toFixed(2):"—"}</div></div>
+    <div class="stat"><div class="k">Family-wise p</div><div class="v" style="color:${x.rejects?'var(--reject)':'var(--ink)'}">${x.p!=null?fmtp(x.p):"—"}</div></div>
+    <div class="stat"><div class="k">Axes rejected</div><div class="v">${x.axes_rejected??"—"}<small>/ ${x.n_axes??"—"}</small></div></div>
+    <div class="stat"><div class="k">Verdict</div><div class="v" style="font-size:15px;line-height:1.3">${named}</div></div>
+  </div>
+  ${pairs?`<div class="card pad" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:8px">strongest candidate·axis pairs under this seat</div><div class="axis-list">${pairs}</div></div>`:""}`;
 }
 function twoHalvesSection(e,v){
   const d=v.common_mode_detail;
@@ -663,27 +722,77 @@ function tabPipeline(e,v){
     </div>
     <div class="card pad"><div class="eyebrow" style="margin-bottom:8px">Conjecture → axes</div>
       <p style="margin:0 0 8px;color:var(--ink-2)">Each axis is one yes/no question about a single reply, frozen before any reply is scored.</p>
-      <div class="muted" style="font-size:12.5px">${v.n_axes} axes · see the Behaviors tab for all of them</div>
+      <div class="muted" style="font-size:12.5px">${v.n_axes} axes · see Behaviors & map for all of them</div>
     </div>
   </div>`;
 }
 
-/* ---- Semantic map (interactive PCA) ---- */
-function tabSemantic(e,v){
-  if(!e.geometry) return `<div class="empty">No geometry summary on disk for this run.</div>`;
-  const g=e.geometry, bp=g.mean_excess_biplot||{};
-  const shares = bp.plane_shares||g.excess_map?.pc_variance_shares||[0,0];
-  return `
-  <div class="lead" style="max-width:70ch">Each user group is a point in a space whose axes are named behaviors. The map keeps the two directions that hold most of the <em>excess</em> — the gap between the target and its base. A group far from the origin is treated differently; the labelled rays name the behaviors along the longest arrow.</div>
-  <div class="pca-wrap" style="margin-top:18px">
-    <canvas id="pca" height="460"></canvas>
-    <div class="pca-tip" id="pcatip"></div>
-  </div>
-  <div class="pca-legend" id="pcaleg"></div>
-  <div class="note" style="margin-top:14px">First direction holds ${(shares[0]*100||0).toFixed(0)}% of the excess spread, second ${(shares[1]*100||0).toFixed(0)}%. Faded points are the same means under ${bp.n_boot||250} resamples of the instruction set: a tight cloud means the direction is stable.</div>`;
+/* ---- Behaviors & map ---- */
+function drawMap(){
+  const cv=document.getElementById("bmap"); if(!cv) return;
+  const e=DATA.experiments[state.exp], bm=e.behavior_map; if(!bm) return;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const W=cv.clientWidth||860, H=420;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+"px";
+  const ctx=cv.getContext("2d"); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
+  const gx=bm.groups.map(g=>g.x), gy=bm.groups.map(g=>g.y);
+  const span=Math.max(...gx.map(Math.abs),...gy.map(Math.abs),1e-6)*1.25;
+  const X=x=>W/2+(x/span)*(W/2-70), Y=y=>H/2-(y/span)*(H/2-40);
+  const line=cssVar("--line"), ink3=cssVar("--ink-3"), accent=cssVar("--accent");
+  ctx.strokeStyle=line; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,Y(0)); ctx.lineTo(W,Y(0));
+  ctx.moveTo(X(0),0); ctx.lineTo(X(0),H); ctx.stroke();
+  /* every axis as a faint direction dot on the loading circle */
+  const amax=Math.max(...bm.axes.map(a=>Math.hypot(a.x,a.y)),1e-6);
+  ctx.fillStyle=ink3; ctx.globalAlpha=.35;
+  for(const a of bm.axes){
+    const r=(Math.hypot(a.x,a.y)/amax);
+    ctx.beginPath();
+    ctx.arc(W/2+a.x/amax*(W/2-70)*.92, H/2-a.y/amax*(H/2-40)*.92, 2.2*r+0.8, 0, 7);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  /* the selected behavior as a labelled ray */
+  const sel=bm.axes.find(a=>a.axis===state.axis);
+  if(sel){
+    const ex=W/2+sel.x/amax*(W/2-70)*.92, ey=H/2-sel.y/amax*(H/2-40)*.92;
+    ctx.strokeStyle=accent; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(X(0),Y(0)); ctx.lineTo(ex,ey); ctx.stroke();
+    ctx.fillStyle=accent;
+    ctx.beginPath(); ctx.arc(ex,ey,4,0,7); ctx.fill();
+  }
+  /* group means */
+  ctx.font=`600 12px ${cssVar("--sans")}`; ctx.textAlign="left";
+  bm.groups.forEach((g,i)=>{
+    /* canvas cannot parse a var() string, so resolve the palette entry */
+    ctx.fillStyle=cssVar(CAT[i%CAT.length].slice(4,-1));
+    ctx.beginPath(); ctx.arc(X(g.x),Y(g.y),6,0,7); ctx.fill();
+  });
+  /* labels second, nudged down until they stop overlapping earlier ones */
+  const placed=[], paper=cssVar("--paper");
+  bm.groups.forEach(g=>{
+    const nm=e.display?.[g.key]||g.key, w=ctx.measureText(nm).width;
+    let lx=X(g.x)+9, ly=Y(g.y)+4, guard=0;
+    while(placed.some(b=>lx<b.x+b.w+6&&lx+w>b.x-6&&ly-10<b.y+b.h&&ly>b.y-3)&&guard++<24) ly+=13;
+    placed.push({x:lx,y:ly-10,w,h:13});
+    ctx.strokeStyle=paper; ctx.lineWidth=3; ctx.strokeText(nm,lx,ly);
+    ctx.fillStyle=cssVar("--ink"); ctx.fillText(nm,lx,ly);
+  });
+  const cap=document.getElementById("bmap-cap");
+  if(cap){
+    const q=sel? (e.axis_questions?.[sel.axis]||sel.axis) : "";
+    cap.innerHTML= sel
+      ? `<b>${esc(state.axis)}</b> — ${esc(q)}<span class="muted"> · ray = this behavior's direction in the plane; a group far along the ray drew it more than its base allows</span>`
+      : `<span class="muted">Click a behavior below to project it on the map.</span>`;
+  }
 }
-
-/* ---- Behaviors ---- */
+function wireBehaviorRows(){
+  document.querySelectorAll(".axis-row[data-axis]").forEach(r=>{
+    r.onclick=()=>{state.axis=r.dataset.axis;
+      document.querySelectorAll(".axis-row").forEach(x=>x.classList.remove("sel"));
+      r.classList.add("sel"); drawMap();};
+  });
+}
 function tabBehaviors(e,v){
   if(!e.candidate_axis) return `<div class="empty">No scored behaviors on disk.</div>`;
   const named = v.named;
@@ -696,19 +805,123 @@ function tabBehaviors(e,v){
   }
   const rows=Object.values(byAxis).sort((a,b)=>Math.abs(b.excess)-Math.abs(a.excess));
   const maxE=Math.max(...rows.map(r=>Math.abs(r.excess)),0.01);
-  let h=`<div class="lead" style="max-width:70ch">Each axis is one question the judge answered about every reply. The bar is the largest excess on that axis across all groups: how much more (right) or less (left) the standout group drew that behavior than the base model gives it. Hover a bar for the group.</div>
-  <div class="card pad" style="margin-top:16px"><div class="axis-list">`;
+  if(!state.axis||!rows.some(r=>r.axis===state.axis)) state.axis=rows[0]?.axis||null;
+  const bm=e.behavior_map;
+  let h=`<div class="lead" style="max-width:70ch">Each axis is one question the judge answered about every reply. The map keeps the two directions that hold most of the excess between the target and its base${bm?` (${(bm.shares[0]*100).toFixed(0)}% and ${(bm.shares[1]*100).toFixed(0)}% of its spread)`:""}. Click a behavior to see where it points on that plane; the bar is the largest excess on that axis across all groups.</div>`;
+  if(bm){
+    h+=`<div class="pca-wrap" style="margin-top:16px"><canvas id="bmap" height="420"></canvas></div>
+    <div id="bmap-cap" class="note" style="margin-top:10px"></div>`;
+  }
+  h+=`<div class="card pad" style="margin-top:16px"><div class="axis-list">`;
   for(const r of rows.slice(0,60)){
     const q=e.axis_questions?.[r.axis]||r.axis;
     const w=Math.abs(r.excess)/maxE*50;
     const pos=r.excess>=0;
     const col = (named && r.candidate===named)? "var(--accent)": pos?"var(--c2)":"var(--c5)";
-    h+=`<div class="axis-row" title="${esc(e.display?.[r.candidate]||r.candidate)}">
+    h+=`<div class="axis-row ${r.axis===state.axis?"sel":""}" data-axis="${esc(r.axis)}" title="${esc(e.display?.[r.candidate]||r.candidate)}">
       <div class="q">${esc(q)}</div>
       <div class="mini"><i style="background:${col};${pos?`left:50%;width:${w}%`:`right:50%;left:auto;width:${w}%`}"></i></div>
       <div class="ex" style="color:${col}">${r.excess>=0?"+":""}${r.excess.toFixed(3)}</div></div>`;
   }
   return h+`</div></div>`;
+}
+
+/* ---- Helper LLMs ---- */
+function tabHelpers(e,v){
+  if(!e.helper_prompts||!e.helper_prompts.length)
+    return `<div class="empty">No helper prompts recorded for this run.</div>`;
+  const seats=e.helper_prompts.map(b=>{
+    const prompts=b.prompts.map(p=>`<details class="prompt">
+      <summary>${esc(p.title)}</summary>
+      <pre class="prompt-pre">${esc(p.text)}</pre></details>`).join("");
+    return `<div class="card pad" style="margin-top:16px">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <div class="eyebrow">${esc(b.seat)}</div>
+        <span class="muted mono" style="font-size:11px">${esc(b.model)}</span></div>
+      ${prompts}</div>`;
+  }).join("");
+  return `<div class="lead" style="max-width:76ch">The pipeline's helper seats are models distinct from the target: an Elicitor that names candidate groups, a Prompter that writes the matched templates, a Conjecturer that proposes the behavior axes, and a Judge that scores every reply. These are the verbatim prompts each seat received, rebuilt from the parameters this run's artifacts recorded.</div>${seats}`;
+}
+
+/* ---- No-reference test ---- */
+function refSeatCard(e,title,s,isTarget){
+  const nf=x=>x==null?"—":x.toFixed(2);
+  const pill = s.rejects
+    ? `<span class="pill ${isTarget?"reject":"warn"}"><span class="dot" style="background:${isTarget?"var(--reject)":"var(--warn)"}"></span>flags · p ${fmtp(s.p)}</span>`
+    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>silent · p ${fmtp(s.p)}</span>`;
+  const named = s.named
+    ? `Names <b>${esc(e.display?.[s.named]||s.named)}</b>${s.named_axis?` <span class="muted">on ${esc(e.axis_questions?.[s.named_axis]||s.named_axis)}</span>`:""}.`
+    : `Names no candidate.`;
+  const det=s.detachment||{};
+  const detRead = det.detached
+    ? `<b>detached</b>: the leading candidate's peak ${nf(det.leading_peak)} stands off the bulk median ${nf(det.bulk_median_peak)} (p ${fmtp(det.p)})${det.named?`, naming ${esc(e.display?.[det.named]||det.named)}`:""}.`
+    : `not detached: the leading peak ${nf(det.leading_peak)}${det.leading?` (${esc(e.display?.[det.leading]||det.leading)})`:""} sits inside the pack, bulk median ${nf(det.bulk_median_peak)}, p ${fmtp(det.p)}.`;
+  return `<div class="card pad" style="flex:1;min-width:280px">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+      <div class="eyebrow">${esc(title)}</div>${pill}</div>
+    <div class="grid-stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="k">Statistic</div><div class="v">${nf(s.statistic)}</div></div>
+      <div class="stat"><div class="k">Null 95th</div><div class="v">${nf(s.null_p95)}</div></div>
+      <div class="stat"><div class="k">Axes rejected</div><div class="v">${s.axes_rejected??"—"}<small>/ ${s.n_axes??"—"}</small></div></div>
+    </div>
+    <div style="font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:10px">${named}</div>
+    <div style="font-size:12.5px;color:var(--ink-3);line-height:1.5;margin-top:8px">Detachment check: ${detRead}</div></div>`;
+}
+function refPooledCard(e,p){
+  const nf=x=>x==null?"—":x.toFixed(2);
+  const role=r=>{
+    const label = r.role==="target"? "target organism" : "its base model, as a control";
+    const pill = r.rejects
+      ? `<span class="pill reject"><span class="dot" style="background:var(--reject)"></span>rejects · p ${fmtp(r.p)}</span>`
+      : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(r.p)}</span>`;
+    const conds=(r.per_condition||[]).map(c=>
+      `<div class="axis-row" style="grid-template-columns:1fr 80px 80px;cursor:default">
+        <div class="q">${esc(c.run)}</div><div class="ex">R ${nf(c.R)}</div>
+        <div class="ex">rank ${c.rank??"—"} / ${c.n_candidates??"—"}</div></div>`).join("");
+    return `<div class="card pad" style="flex:1;min-width:280px">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px"><div class="eyebrow">${label}</div>${pill}</div>
+      <div class="grid-stats" style="grid-template-columns:1fr 1fr">
+        <div class="stat"><div class="k">Pooled R</div><div class="v">${nf(r.pooled_R)}</div></div>
+        <div class="stat"><div class="k">Null 95th</div><div class="v">${nf(r.null_p95)}</div></div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.5;margin-top:10px">
+        Leading candidate <b>${esc(e.display?.[r.leading]||r.leading||"—")}</b>; the pooled evidence follows ${esc(e.display?.[r.followed]||r.followed||"—")}.</div>
+      <div class="axis-list" style="margin-top:8px">${conds}</div></div>`;
+  };
+  return `<div class="section-title"><h2>Pooling the conditions</h2>
+    <span class="hint">coherence R summed over the conditions that share candidates · runs: ${(p.runs||[]).map(esc).join(", ")}</span></div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap">${(p.roles||[]).map(role).join("")}</div>
+  <div class="note" style="margin-top:12px">A candidate that appears in more than one audit condition carries repeated evidence, and the pooled test adds it up. This is the check that repairs the plain maximum: run on the organism it rejects and names the principal; run on the untuned base model it does not.</div>`;
+}
+function tabRefFree(e,v){
+  const rf=e.reference_free;
+  if(!rf) return `<div class="empty">No reference-free record on disk for this run.</div>`;
+  const bothFire = rf.target.rejects && rf.base.rejects;
+  const caveat = bothFire
+    ? `The plain maximum flags the <em>untuned base model</em> too. Without the reference arm a name effect no longer cancels, so a bare candidate-versus-candidate maximum over-fires. That is why this detector lives in the supplement and the registered test keeps the base model.`
+    : rf.base.rejects
+    ? `The plain maximum is silent on the organism but flags the untuned base model, which is the confound in one line: without a reference arm, name effects alone can clear the null.`
+    : rf.target.rejects
+    ? `Here the base-free maximum flags the organism and stays silent on its base model. That agreement is not guaranteed: on other runs the same statistic flags untuned models, which is why it stays a supplement check.`
+    : `Neither seat clears the null here.`;
+  const pairs=(rf.target.top_pairs||[]).map(p=>{
+    const q=e.axis_questions?.[p.axis_id]||p.axis_id;
+    const t=p.t==null?"—":(Number.isFinite(p.t)?p.t.toFixed(2):(p.t>0?"∞":"−∞"));
+    return `<div class="axis-row" style="grid-template-columns:1fr 150px 60px 60px;cursor:default">
+      <div class="q">${esc(q)}</div>
+      <div style="font-size:12px;color:${p.reject?"var(--accent)":"var(--ink-3)"}">${esc(e.display?.[p.candidate]||p.candidate)}${p.reject?" · rejects":""}</div>
+      <div class="ex">${t}</div>
+      <div class="ex" style="color:${(p.mean_shift||0)>=0?"var(--c2)":"var(--c5)"}">${p.mean_shift==null?"—":(p.mean_shift>=0?"+":"")+p.mean_shift.toFixed(3)}</div></div>`;
+  }).join("");
+  return `<div class="lead" style="max-width:76ch">The registered test reads the target against its base model. This analysis removes the base: each candidate is compared with the median of the other candidates inside every instruction, as in the supplement's <em>Detecting without a reference model</em> appendix. It sees the directional half only, and it loses the cancellation the reference arm provides. Both arms are scored, because a detector with no control has to be asked whether it also flags an untuned model.</div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px">
+    ${refSeatCard(e,"target organism",rf.target,true)}
+    ${refSeatCard(e,"its base model, as a control",rf.base,false)}
+  </div>
+  <div class="note" style="margin-top:14px">${caveat}</div>
+  ${pairs?`<div class="section-title"><h2>Strongest candidate·axis pairs, target seat</h2><span class="hint">t is the standardized within-instruction shift against the other candidates' median</span></div>
+  <div class="card pad"><div class="axis-list">${pairs}</div></div>`:""}
+  ${rf.pooled? refPooledCard(e,rf.pooled) : ""}`;
 }
 
 /* ---- Rate grid heatmap ---- */
@@ -799,105 +1012,6 @@ function drawTx(){
 
 /* ---- PCA canvas ---- */
 function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
-function renderPCA(){
-  const cv=document.getElementById("pca"); if(!cv) return;
-  const e=DATA.experiments[state.exp], g=e.geometry; if(!g) return;
-  const bp=g.mean_excess_biplot||{}, em=g.excess_map||{};
-  const arrows = bp.arrow_plane_coordinates || em.arrow_plane_coordinates;
-  if(!arrows){cv.parentElement.innerHTML='<div class="empty">Geometry summary lacks plane coordinates.</div>';return;}
-  const sig=new Set(bp.significant||[]);
-  const named = byKey(state.exp).named;
-  const P=Object.keys(arrows);
-  const dpr=Math.min(2,window.devicePixelRatio||1);
-  const W=cv.clientWidth, H=460;
-  cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+"px";
-  const ctx=cv.getContext("2d"); ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H);
-  // bounds
-  let pts=P.map(p=>arrows[p]);
-  let xs=pts.map(p=>p[0]).concat([0]), ys=pts.map(p=>p[1]).concat([0]);
-  const pad=54;
-  let minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
-  const spanx=(maxx-minx)||1, spany=(maxy-miny)||1;
-  minx-=spanx*0.22;maxx+=spanx*0.22;miny-=spany*0.2;maxy+=spany*0.2;
-  // equal aspect
-  const sc=Math.min((W-pad*2)/(maxx-minx),(H-pad*2)/(maxy-miny));
-  const cx=(W)/2-((minx+maxx)/2)*sc, cy=(H)/2+((miny+maxy)/2)*sc;
-  const X=x=>cx+x*sc, Y=y=>cy-y*sc;
-  const line=cssVar("--line"),ink=cssVar("--ink"),ink3=cssVar("--ink-3"),accent=cssVar("--accent"),paper=cssVar("--paper");
-  // axes
-  ctx.strokeStyle=line;ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(X(minx),Y(0));ctx.lineTo(X(maxx),Y(0));ctx.moveTo(X(0),Y(miny));ctx.lineTo(X(0),Y(maxy));ctx.stroke();
-  // bootstrap clouds behind each arrow tip
-  const clouds=bp.clouds;
-  if(clouds){
-    P.forEach(p=>{
-      const isSig=sig.has(p)||p===named;
-      ctx.fillStyle=isSig?accent:cssVar("--silent");
-      ctx.globalAlpha=isSig?0.22:0.12;
-      for(const c of clouds[p]){ ctx.beginPath();ctx.arc(X(c[0]),Y(c[1]),2,0,7);ctx.fill(); }
-    });
-    ctx.globalAlpha=1;
-  }
-  // arrows, collecting label specs so labels can be de-collided after
-  const hit=[], labels=[];
-  P.forEach((p)=>{
-    const a=arrows[p], isSig=sig.has(p)|| p===named, isLead=(p===named)||(p===bp.lead);
-    const col = isSig? accent : cssVar("--silent");
-    ctx.strokeStyle=col; ctx.fillStyle=col;
-    ctx.lineWidth=isLead?3.4:isSig?2.2:1.2;
-    ctx.globalAlpha=isSig?1:.5;
-    ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(a[0]),Y(a[1]));ctx.stroke();
-    const ang=Math.atan2(Y(a[1])-Y(0),X(a[0])-X(0)), hl=isLead?11:7;
-    ctx.beginPath();ctx.moveTo(X(a[0]),Y(a[1]));
-    ctx.lineTo(X(a[0])-hl*Math.cos(ang-.4),Y(a[1])-hl*Math.sin(ang-.4));
-    ctx.lineTo(X(a[0])-hl*Math.cos(ang+.4),Y(a[1])-hl*Math.sin(ang+.4));
-    ctx.closePath();ctx.fill();
-    ctx.globalAlpha=1;
-    const tipX=X(a[0]), tipY=Y(a[1]), side=a[0]>=0?1:-1;
-    labels.push({p, nm:e.display?.[p]||p, isSig, isLead, side,
-      tipX, tipY, ax:tipX+side*9, ay:tipY+(a[1]>=0?-5:14)});
-    hit.push({p,x:tipX,y:tipY,nm:e.display?.[p]||p});
-  });
-  // vertical de-collision within each side: sort by desired y, push apart
-  const LG=15;
-  for(const side of [1,-1]){
-    const grp=labels.filter(l=>l.side===side).sort((a,b)=>a.ay-b.ay);
-    for(let k=1;k<grp.length;k++)
-      if(grp[k].ay-grp[k-1].ay<LG) grp[k].ay=grp[k-1].ay+LG;
-  }
-  // draw labels, with a faint leader line where a label was pushed off its tip
-  for(const l of labels){
-    ctx.textAlign=l.side>=0?"left":"right";
-    if(Math.abs(l.ay-l.tipY)>6){
-      ctx.strokeStyle=cssVar("--line");ctx.lineWidth=1;ctx.globalAlpha=.8;
-      ctx.beginPath();ctx.moveTo(l.tipX+l.side*3,l.tipY);ctx.lineTo(l.ax,l.ay-3);ctx.stroke();
-      ctx.globalAlpha=1;
-    }
-    ctx.font=`${l.isLead?"600 ":""}${l.isLead?13:11.5}px ${cssVar("--sans")}`;
-    ctx.strokeStyle=paper;ctx.lineWidth=3;ctx.strokeText(l.nm,l.ax,l.ay);
-    ctx.fillStyle=l.isSig?accent:ink3;ctx.fillText(l.nm,l.ax,l.ay);
-  }
-  ctx.textAlign="left";
-  // legend
-  document.getElementById("pcaleg").innerHTML=`
-    <span><span style="width:20px;height:3px;background:${accent};display:inline-block;border-radius:2px"></span> significant at ${((1-DATA.alpha)*100)|0}%</span>
-    <span><span style="width:20px;height:2px;background:${cssVar("--silent")};display:inline-block"></span> not significant</span>`;
-  // hover
-  const tip=document.getElementById("pcatip");
-  cv.onmousemove=ev=>{
-    const r=cv.getBoundingClientRect(), mx=ev.clientX-r.left, my=ev.clientY-r.top;
-    let best=null,bd=22;
-    for(const h of hit){const d=Math.hypot(h.x-mx,h.y-my); if(d<bd){bd=d;best=h;}}
-    if(best){tip.style.opacity=1;tip.style.left=best.x+"px";tip.style.top=best.y+"px";
-      tip.textContent=best.nm+(sig.has(best.p)||best.p===named?" · significant":"");}
-    else tip.style.opacity=0;
-  };
-  cv.onmouseleave=()=>tip.style.opacity=0;
-}
-window.addEventListener("resize",()=>{if(state.view==="exp"&&state.tab==="semantic")renderPCA();
-  if(state.view==="exp"&&state.tab==="bridge")renderBridgeOverlay();});
-
-/* ---- Behavior <-> embedding bridge ---- */
 function tabBridge(e,v){
   const b=e.semantic_bridge;
   if(!b) return `<div class="empty">No semantics bridge on disk for this run.</div>`;
@@ -985,92 +1099,7 @@ function pcCard(pc){
     ${pc.top_negative.map(a=>row(a,"var(--c5)")).join("")}</div>`;
 }
 
-/* ---- Persona space (activation-level probe) ---- */
-function tabPersona(e,v){
-  const p=e.persona;
-  if(!p) return `<div class="empty">No persona probe on disk for this run.</div>`;
-  const st=p.separability_target, sb=p.separability_base, sd=p.separability_drift;
-  const roles=p.roles, gm=p.group_persona_means, disp=p.display||{};
-  const focus=(v.named&&gm[v.named])?v.named:Object.keys(gm)[0];
-  const focusName=disp[focus]||focus.replace(/_/g," ");
-  const others=Object.keys(gm).filter(g=>g!==focus);
-  const diff=roles.map((r,j)=>{const f=gm[focus][j];
-    const o=others.reduce((s,g)=>s+gm[g][j],0)/others.length; return {role:r,d:f-o};})
-    .sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
-  const maxD=Math.max(...diff.map(x=>Math.abs(x.d)),0.01);
-  const pb={}; (p.persona_behavior||[]).forEach(x=>pb[x.role]=x.top_axes);
-  const excess=(st.balanced_accuracy-sb.balanced_accuracy);
-  const topRoles=diff.slice(0,4).filter(x=>x.d>0).map(x=>x.role);
-  return `
-  <div class="lead" style="max-width:76ch">A third reading, in the model's own activations. A fixed encoder (${esc(p.encoder.split("/").pop())}) plays ${roles.length} characters, which fix a cast of <b>persona directions</b> at layer ${p.layer}. Every reply, target and matched base, is read into that cast after whitening by the base cloud. The question: does the target adopt different personas for different user groups, more than the base does, and which behaviors do those personas carry?</div>
-
-  <div class="grid-stats" style="margin-top:20px">
-    <div class="stat"><div class="k">Target group separability</div><div class="v">${st.balanced_accuracy.toFixed(2)}<small> vs chance ${st.chance.toFixed(2)}</small></div></div>
-    <div class="stat"><div class="k">Base separability</div><div class="v">${sb.balanced_accuracy.toFixed(2)}<small> p ${fmtp(sb.p)}</small></div></div>
-    <div class="stat"><div class="k">Treatment excess</div><div class="v" style="color:${excess>0?'var(--reject)':'var(--ink)'}">${excess>=0?"+":""}${excess.toFixed(2)}<small> target − base</small></div></div>
-    <div class="stat"><div class="k">Matched-pair drift</div><div class="v">${sd.balanced_accuracy.toFixed(2)}<small> p ${fmtp(sd.p)}, chance ${sd.chance.toFixed(2)}</small></div></div>
-  </div>
-  <div class="note" style="margin-top:12px">The target's replies separate the ${Object.keys(gm).length} user groups in persona space at ${(st.balanced_accuracy).toFixed(2)} against a ${st.chance.toFixed(2)} chance rate, and above the base model's ${sb.balanced_accuracy.toFixed(2)} on the identical prompts. The matched-pair drift, target minus base per prompt, stays group-predictable (${sd.balanced_accuracy.toFixed(2)}, p ${fmtp(sd.p)}), so the separation is differential treatment, not the prompts. Read through a small open model's persona directions, a much larger target's treatment still surfaces.</div>
-
-  <div class="section-title"><h2>The personas ${esc(focusName)} draws</h2><span class="hint">how ${esc(focusName)}'s replies load on each persona, against the mean of the other groups</span></div>
-  <div class="card pad"><div class="axis-list">${diff.slice(0,10).map(x=>{
-    const w=Math.abs(x.d)/maxD*50, pos=x.d>=0, col=pos?"var(--accent)":"var(--c2)";
-    return `<div class="axis-row" style="grid-template-columns:150px 1fr 70px">
-      <div class="q" style="font-weight:600">${esc(x.role)}</div>
-      <div class="mini"><i style="background:${col};${pos?`left:50%;width:${w}%`:`right:50%;left:auto;width:${w}%`}"></i></div>
-      <div class="ex" style="color:${col}">${x.d>=0?"+":""}${x.d.toFixed(3)}</div></div>`;}).join("")}</div>
-    <div class="muted" style="font-size:12px;margin-top:8px">Positive means ${esc(focusName)}'s replies sit closer to that persona than the average group's do.</div></div>
-
-  <div class="section-title" style="margin-top:32px"><h2>What those personas do</h2><span class="hint">behavior axes whose firing tracks landing on each persona ${esc(focusName)} adopts</span></div>
-  <div class="two">${topRoles.map(r=>personaCard(r,pb[r]||[])).join("")}</div>`;
-}
-function personaCard(role,axes){
-  return `<div class="card pad">
-    <div class="eyebrow" style="margin-bottom:6px">${esc(role)}</div>
-    ${(axes.slice(0,5)).map(([a,r])=>`<div style="display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0">
-      <span style="color:var(--ink-2);line-height:1.3">${esc(a)}</span>
-      <span class="mono" style="color:var(--c4);flex:none">+${r.toFixed(2)}</span></div>`).join("")||'<span class="muted">no axes</span>'}</div>`;
-}
-
-/* ---- Emotion space (activation-level probe, emotion-concept cast) ---- */
-function tabEmotion(e,v){
-  const p=e.emotion;
-  if(!p) return `<div class="empty">No emotion probe on disk for this run.</div>`;
-  const st=p.separability_target, sb=p.separability_base, sd=p.separability_drift;
-  const emo=p.emotions, gm=p.group_emotion_means, disp=p.display||{};
-  const focus=(v.named&&gm[v.named])?v.named:Object.keys(gm)[0];
-  const focusName=disp[focus]||focus.replace(/_/g," ");
-  const others=Object.keys(gm).filter(g=>g!==focus);
-  const diff=emo.map((r,j)=>{const f=gm[focus][j];
-    const o=others.reduce((s,g)=>s+gm[g][j],0)/others.length; return {emo:r,d:f-o};})
-    .sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
-  const maxD=Math.max(...diff.map(x=>Math.abs(x.d)),0.01);
-  const eb={}; (p.emotion_behavior||[]).forEach(x=>eb[x.role]=x.top_axes);
-  const excess=(st.balanced_accuracy-sb.balanced_accuracy);
-  const topEmo=diff.slice(0,4).filter(x=>x.d>0).map(x=>x.emo);
-  return `
-  <div class="lead" style="max-width:76ch">A fourth reading, in emotion. The same fixed encoder (${esc(p.encoder.split("/").pop())}) reads ${emo.length} <b>emotion directions</b> from stories written to evoke each feeling (Sofroniew et al.), whitened by a neutral cloud. Every reply, target and matched base, is projected onto that cast at layer ${p.layer}. Does the target carry different emotion toward different user groups, more than the base does, and which behaviors ride each feeling?</div>
-
-  <div class="grid-stats" style="margin-top:20px">
-    <div class="stat"><div class="k">Target group separability</div><div class="v">${st.balanced_accuracy.toFixed(2)}<small> vs chance ${st.chance.toFixed(2)}</small></div></div>
-    <div class="stat"><div class="k">Base separability</div><div class="v">${sb.balanced_accuracy.toFixed(2)}<small> p ${fmtp(sb.p)}</small></div></div>
-    <div class="stat"><div class="k">Treatment excess</div><div class="v" style="color:${excess>0?'var(--reject)':'var(--ink)'}">${excess>=0?"+":""}${excess.toFixed(2)}<small> target − base</small></div></div>
-    <div class="stat"><div class="k">Matched-pair drift</div><div class="v">${sd.balanced_accuracy.toFixed(2)}<small> p ${fmtp(sd.p)}, chance ${sd.chance.toFixed(2)}</small></div></div>
-  </div>
-  <div class="note" style="margin-top:12px">The target's replies separate the ${Object.keys(gm).length} user groups by emotion at ${st.balanced_accuracy.toFixed(2)} against a ${st.chance.toFixed(2)} chance rate, ${excess>0?"above":"at"} the base model's ${sb.balanced_accuracy.toFixed(2)} on the identical prompts. The matched-pair drift stays group-predictable (${sd.balanced_accuracy.toFixed(2)}, p ${fmtp(sd.p)}), so the emotional coloring is differential, not the prompts.</div>
-
-  <div class="section-title"><h2>The emotions ${esc(focusName)} draws</h2><span class="hint">how ${esc(focusName)}'s replies load on each emotion, against the mean of the other groups</span></div>
-  <div class="card pad"><div class="axis-list">${diff.slice(0,12).map(x=>{
-    const w=Math.abs(x.d)/maxD*50, pos=x.d>=0, col=pos?"var(--accent)":"var(--c2)";
-    return `<div class="axis-row" style="grid-template-columns:150px 1fr 70px">
-      <div class="q" style="font-weight:600">${esc(x.emo)}</div>
-      <div class="mini"><i style="background:${col};${pos?`left:50%;width:${w}%`:`right:50%;left:auto;width:${w}%`}"></i></div>
-      <div class="ex" style="color:${col}">${x.d>=0?"+":""}${x.d.toFixed(3)}</div></div>`;}).join("")}</div>
-    <div class="muted" style="font-size:12px;margin-top:8px">Positive means ${esc(focusName)}'s replies carry that emotion more than the average group's do.</div></div>
-
-  <div class="section-title" style="margin-top:32px"><h2>What those feelings carry</h2><span class="hint">behavior axes whose firing tracks the emotions ${esc(focusName)} draws</span></div>
-  <div class="two">${topEmo.map(r=>personaCard(r,eb[r]||[])).join("")}</div>`;
-}
+/* ---- bridge overlay canvas ---- */
 function renderBridgeOverlay(){
   const cv=document.getElementById("bridge-canvas"); if(!cv) return;
   const b=DATA.experiments[state.exp].semantic_bridge; if(!b||!b.overlay) return;
