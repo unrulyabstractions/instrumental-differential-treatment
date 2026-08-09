@@ -93,6 +93,10 @@ def main() -> None:
 
     written, unhealthy = 0, []
     for directory in sorted(p for p in args.root.rglob("*") if p.is_dir()):
+        if any(part in ("checkpoint", "models") for part in directory.parts):
+            # Never write into a weights directory: the publisher refuses any
+            # such path, and a marker there would block the whole tree.
+            continue
         facts = directory_facts(directory)
         if not (facts["verdicts"] or facts["responses"] or facts["manifests"]
                 or facts.get("loose")):

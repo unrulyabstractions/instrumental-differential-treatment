@@ -55,9 +55,15 @@ def collect_local(root: Path, prefix: str, include_all: bool = False,
     excluded = tuple(e.strip("/") for e in exclude)
     for path in sorted(p for p in root.rglob("*") if p.is_file()):
         rel = path.relative_to(root)
-        if any(c in rel.parts or c in prefix.split("/")
-               for c in FORBIDDEN_DIR_COMPONENTS):
-            sys.exit(f"refusing to upload a models/ path: {path}")
+        if any(c in rel.parts for c in FORBIDDEN_DIR_COMPONENTS):
+            # Weights never leave, and never silently: each refusal is named,
+            # so a tree that contains a checkpoint can still publish everything
+            # around it while the count says exactly what stayed behind.
+            print(f"refused weights path (kept local): {path}", file=sys.stderr)
+            junk += 1
+            continue
+        if any(c in prefix.split("/") for c in FORBIDDEN_DIR_COMPONENTS):
+            sys.exit(f"refusing to publish under a weights prefix: {prefix}")
         if path.name in SKIP_BASENAMES:
             junk += 1
             continue
