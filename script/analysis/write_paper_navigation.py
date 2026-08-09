@@ -133,11 +133,11 @@ def main() -> None:
         "## Beyond the paper",
         "",
         "Kept and documented, cited nowhere: per-experiment `persona/` probes,",
-        "the results explorer's data in `out/explorer/`, `out/logs/` (the",
-        "boxes' run logs), and `out/quarantine/` (kept, never read). The",
-        "superseded first run lives under `superseded/` on the mirror; the",
-        "per-box capture sweeps were deleted by direction after their",
-        "duplicate share was proven and their credentials purged.",
+        "the results explorer's data in `out/explorer/`. The retired first",
+        "run, the box logs, and the quarantined artifacts live on the mirror",
+        "(`superseded/`, `logs/`, `quarantine/`), not here; the per-box",
+        "capture sweeps were deleted by direction after their duplicate share",
+        "was proven and their credentials purged.",
         "",
     ]
     OUT.write_text("\n".join(lines))
