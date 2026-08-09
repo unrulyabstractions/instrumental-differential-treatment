@@ -33,12 +33,14 @@ def _seat_block(seat: dict) -> dict:
         "top_pairs": [{k: pair.get(k) for k in
                        ("axis_id", "candidate", "t", "mean_shift", "reject")}
                       for pair in (seat.get("top_pairs") or [])[:10]],
+        # The detachment null's scale fields are omitted on purpose: with few
+        # candidates the MAD denominator collapses in part of the null and
+        # inflates null_p95 to a meaningless magnitude, while the p-value,
+        # computed against the whole null, stays valid.
         "detachment": {
             "leading": det.get("leading"),
             "leading_peak": det.get("leading_peak"),
             "bulk_median_peak": det.get("bulk_median_peak"),
-            "statistic": det.get("statistic"),
-            "null_p95": det.get("null_p95"),
             "p": det.get("p_family_wise"),
             "detached": bool(det.get("detached")),
             "named": det.get("named"),

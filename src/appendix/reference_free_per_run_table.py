@@ -92,6 +92,7 @@ def reference_free_per_run_table() -> list[str]:
             "$p$ is family-wise within the run and bold at this check's "
             f"$\\alpha = {alpha:g}$. \\emph{{Detach $p$}} is the detachment check, "
             "which asks whether the leading candidate's peak stands off the "
-            "other candidates' bulk. The AuditBench organisms share one "
-            "collected base arm, so its rows repeat by construction.}",
+            "other candidates' bulk. The AuditBench controls and contextual "
+            "optimism share one collected base arm, so those base rows repeat "
+            "by construction; third party politics collected its own.}",
             "\\label{tab:reffree-per-run}", "\\end{table}", ""]
