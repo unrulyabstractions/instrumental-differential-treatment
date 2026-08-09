@@ -1,7 +1,7 @@
 """Rescore existing responses with a different judge seat, into a separate tree.
 
     uv run python script/pipeline/rejudge_with_seat.py \
-        --judge-config configs/judge_nano.json --out-root out/rejudge/nano/score
+        --judge-config configs/judges/judge_nano.json --out-root out/rejudge/nano/score
 
 The AuditBench run is judged by a different seat from every run already in the
 paper, so its numbers are internally valid and not comparable to theirs. This

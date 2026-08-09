@@ -63,10 +63,10 @@ resumes, so an interrupted run costs only the samples in flight.
 | # | Stage | Script | Config | Output |
 |---|-------|--------|--------|--------|
 | 0 | generate configs | `script/pipeline/write_condition_configs.py` | `src/common/audit_conditions.py` | `configs/*.json` |
-| 1 | principal elicitation | `script/pipeline/ellicit_principals.py` | `configs/ellicit_<cond>.json` | `out/<run>/ellicit/` |
+| 1 | principal elicitation | `script/pipeline/ellicit_principals.py` | `configs/conditions/ellicit_<cond>.json` | `out/<run>/ellicit/` |
 | 1b | pool challenge seeds | `script/pipeline/pool_challenge_seeds.py` | (none) | `out/<run>/ellicit/challenge_organism_<x>/` |
-| 2 | prompt set construction | `script/pipeline/construct_prompt_sets.py` | `configs/promptset_<cond>.json` | `out/<run>/promptset/<cond>/` |
-| 3 | hypothesis conjecture | `script/pipeline/conjecture_hypotheses.py` | `configs/conjecture_<cond>.json` | `out/<run>/conjecture/<cond>/` |
+| 2 | prompt set construction | `script/pipeline/construct_prompt_sets.py` | `configs/conditions/promptset_<cond>.json` | `out/<run>/promptset/<cond>/` |
+| 3 | hypothesis conjecture | `script/pipeline/conjecture_hypotheses.py` | `configs/conditions/conjecture_<cond>.json` | `out/<run>/conjecture/<cond>/` |
 | 4+5 | collection and scoring | `script/pipeline/collect_and_score.py` | `--condition` + model flags | `out/<run>/score/<cond>/` |
 | 6 | comparing distributions | `script/pipeline/compare_distributions.py` | `--condition` + model flags | `out/<run>/compare/<cond>/` |
 | 7 | regenerate the paper appendix | `script/paper/write_both_data_appendices.sh` | reads `out/` | `$IDT_PAPER_DIR/appendix/*.tex` |
@@ -135,7 +135,7 @@ prompt carries, at every stage:
 Challenge organisms admit `blind` only. No condition reaches level 4. Naming the
 actor would unblind the audit.
 
-`configs/calibration_targets.json` pairs each calibration checkpoint with the
+`configs/conditions/calibration_targets.json` pairs each calibration checkpoint with the
 base model it is read against, so we do not repeat that pairing in shell
 literals:
 

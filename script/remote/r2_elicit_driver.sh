@@ -27,8 +27,8 @@ export PYTHONPATH="${REMOTE_DIR:-/workspace/idt}"
 failures=0
 for d in ${RUN_DIRS}; do
   case "${d}" in
-    calibration_*) cfg="configs/ellicit_${d}.json" ;;
-    *) cfg="configs/ellicit_challenge_${d}.json" ;;
+    calibration_*) cfg="configs/conditions/ellicit_${d}.json" ;;
+    *) cfg="configs/conditions/ellicit_challenge_${d}.json" ;;
   esac
   if [ ! -f "${cfg}" ]; then
     echo "MISSING CONFIG ${cfg}"

@@ -30,7 +30,7 @@ from src.common.condition_config_payloads import (
     _promptset,
 )
 
-CONFIG_ROOT = Path("configs")
+CONFIG_ROOT = Path("configs/conditions")
 
 
 def main() -> None:

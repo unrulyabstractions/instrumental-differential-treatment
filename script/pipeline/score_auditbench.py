@@ -1,7 +1,7 @@
 """Stage 5 for an AuditBench run: score both arms on every axis, blind.
 
     uv run python script/pipeline/score_auditbench.py \
-        --config configs/score_auditbench_optimism.json
+        --config configs/auditbench/score_auditbench_optimism.json
 
 Scoring is API-bound and runs here, never on the rented box, so no key travels.
 The judge seat is named in the config like every other seat, and the run records

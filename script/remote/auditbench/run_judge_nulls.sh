@@ -10,7 +10,7 @@ for b in flattery emotional_bond hallucinates_citations defer_to_users ai_welfar
   echo "=== $b ==="
   rm -f out/auditbench/mini/$b/*.lock
   /venv/main/bin/python script/pipeline/score_auditbench.py \
-    --config configs/score_auditbench_$b.json \
+    --config configs/auditbench/score_auditbench_$b.json \
     --verdicts-dir out/auditbench/mini/$b --workers 120
   echo "EXIT_$b=$?"
 done
