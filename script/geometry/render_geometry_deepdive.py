@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
-from pathlib import Path
 
 
 from src.common.file_io import save_json
@@ -43,8 +42,6 @@ def main() -> None:
     ap.add_argument("--runs", nargs="*", default=None,
                     help="run names to render; default all six")
     args = ap.parse_args()
-    out_root = Path(args.out_root)
-
     for run in GEOMETRY_RUNS:
         if args.runs and run.name not in args.runs:
             continue

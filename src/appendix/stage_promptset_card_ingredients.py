@@ -10,7 +10,6 @@ there.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.latex_text_escaping import load, pending, tex

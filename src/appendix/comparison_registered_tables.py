@@ -7,7 +7,6 @@ ever saw into the paper, so display names are read from the run's prompt sets.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.comparison_registered_wording import (

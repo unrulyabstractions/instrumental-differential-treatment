@@ -10,7 +10,6 @@ one, and only the split shows it.
 
 from __future__ import annotations
 
-from pathlib import Path
 
 from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.elicitation_seat_naming import seat_names

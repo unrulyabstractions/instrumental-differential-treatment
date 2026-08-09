@@ -12,7 +12,6 @@ from the saved stage-6 artifacts.
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 
 from src.common.file_io import save_json
@@ -33,9 +32,7 @@ from src.geometry.behavior_space_decomposition import direction_candidate
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    args = ap.parse_args()
-    out_root = Path(args.out_root)
-
+    ap.parse_args()
     for run in GEOMETRY_RUNS:
         rv = load_run_vectors(run)
         explore = run.geometry_dir / "explore"

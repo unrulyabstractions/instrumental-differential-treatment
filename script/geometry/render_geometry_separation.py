@@ -27,7 +27,7 @@ def main() -> None:
     ap.add_argument("--paper-dir", default=str(PAPER_DIR),
                     help="paper tree receiving figures/geometry")
     args = ap.parse_args()
-    out_root, paper = Path(args.out_root), Path(args.paper_dir)
+    paper = Path(args.paper_dir)
 
     for run in GEOMETRY_RUNS:
         rv = load_run_vectors(run)

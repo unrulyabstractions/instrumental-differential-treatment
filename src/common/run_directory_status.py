@@ -104,7 +104,6 @@ def seat_identities(directory: Path, facts: dict) -> list[tuple[str, str, str]]:
     reports are the sources for the seats this directory does not record itself.
     """
     m = facts["manifests"]
-    cond = (m.get("prompt_sets.json") or {}).get("condition")
     out: list[tuple[str, str, str]] = []
 
     def sibling(stage: str, name: str) -> tuple[dict, str]:

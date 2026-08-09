@@ -9,9 +9,8 @@ both are here whenever the stage has run at all.
 
 from __future__ import annotations
 
-from pathlib import Path
 
-from src.common.experiment_layout import stage_path, stage_run_names
+from src.common.experiment_layout import stage_run_names
 from src.appendix.comparison_behavior_figures import behavior_figure_blocks
 from src.appendix.comparison_check_tables import common_mode_table, naive_spread_table
 from src.appendix.comparison_registered_tables import (
