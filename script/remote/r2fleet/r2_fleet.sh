@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Drive the r2 fleet: push code, install vLLM, stage gated weights, sample, pull.
 #
-#   bash script/remote/r2_fleet.sh setup     # rsync code and questions, install vllm
-#   bash script/remote/r2_fleet.sh weights   # stage gated organisms, push, fetch on box
-#   bash script/remote/r2_fleet.sh elicit    # stage 1 sampling, detached, one seat per process
-#   bash script/remote/r2_fleet.sh status    # what each box is doing
-#   bash script/remote/r2_fleet.sh pull      # bring responses home
+#   bash script/remote/r2fleet/r2_fleet.sh setup     # rsync code and questions, install vllm
+#   bash script/remote/r2fleet/r2_fleet.sh weights   # stage gated organisms, push, fetch on box
+#   bash script/remote/r2fleet/r2_fleet.sh elicit    # stage 1 sampling, detached, one seat per process
+#   bash script/remote/r2fleet/r2_fleet.sh status    # what each box is doing
+#   bash script/remote/r2fleet/r2_fleet.sh pull      # bring responses home
 #
-# Boxes come from tmp/r2_my_instances.txt through script/remote/list_instances.py
+# Boxes come from tmp/r2_my_instances.txt through script/remote/capture/list_instances.py
 # and are filtered by the label prefix idt-r2-, so an instance belonging to
 # another workstream is never addressed. Another team shares this vast account
 # and has unlabelled instances running; nothing here can select them.
@@ -20,7 +20,7 @@
 # and a box only samples. HuggingFace tokens never travel either: gated repos are
 # resolved locally into pre-signed CDN URLs and the box curls those.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 LABEL_PREFIX="${LABEL_PREFIX:-idt-r2-}"
 REMOTE_DIR=/workspace/idt
@@ -87,7 +87,7 @@ FAIL_FILE="$(mktemp "${TMPDIR:-/tmp}/r2_fail.XXXXXX")" || exit 1
 trap 'rm -f "${FLEET_FILE}" "${JOBS_FILE}" "${FAIL_FILE}"' EXIT
 
 enumerate_fleet() {
-  uv run python script/remote/list_instances.py --label-prefix "${LABEL_PREFIX}" "$@" \
+  uv run python script/remote/capture/list_instances.py --label-prefix "${LABEL_PREFIX}" "$@" \
     > "${FLEET_FILE}"
   rc=$?
   if [ "${rc}" -ne 0 ]; then
@@ -173,7 +173,7 @@ do_weights() {
     read -r group target ttag reference rtag <<<"${spec}"
     (
       echo "[${label}] staging ${target} locally"
-      uv run python script/remote/stage_gated_weights.py --repo "${target}" \
+      uv run python script/remote/boxes/stage_gated_weights.py --repo "${target}" \
         --dest "${STAGE_DIR}" || exit 1
       name="${target##*/}"
       retry rsync -az --timeout=300 -e "ssh ${SSH_OPTS} -p ${port}" \
@@ -208,7 +208,7 @@ do_elicit() {
         RUN_DIRS='${runs}' TARGET_PATH='${REMOTE_DIR}/models/${name}' \
         TARGET_TAG='${ttag}' REFERENCE='${reference}' REFERENCE_TAG='${rtag}' \
         REMOTE_DIR='${REMOTE_DIR}' BACKEND='${BACKEND:-transformers}' \
-        setsid nohup bash script/remote/r2_elicit_driver.sh >> ${LOG} 2>&1 & \
+        setsid nohup bash script/remote/r2fleet/r2_elicit_driver.sh >> ${LOG} 2>&1 & \
         sleep 3; pgrep -f r2_elicit_driver >/dev/null && echo '[${label}] launched' || echo '[${label}] LAUNCH FAILED'"
     ) </dev/null &
     start_job "${label}"

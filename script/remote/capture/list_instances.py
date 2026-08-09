@@ -1,8 +1,8 @@
 """List my boxes from the registry, and fail loudly if any cannot be accounted for.
 
-    uv run python script/remote/list_instances.py            # running boxes
-    uv run python script/remote/list_instances.py --all-states
-    uv run python script/remote/list_instances.py --json
+    uv run python script/remote/capture/list_instances.py            # running boxes
+    uv run python script/remote/capture/list_instances.py --all-states
+    uv run python script/remote/capture/list_instances.py --json
 
 Prints ``label id host port state`` per box, one per line.
 

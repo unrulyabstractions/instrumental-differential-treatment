@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Set up one box to sample ONE seat of ONE run, then launch it.
 #
-#   bash script/remote/r2_seat_box.sh <label> <role> <model> <tag> <run-dir> [staged-name]
+#   bash script/remote/r2fleet/r2_seat_box.sh <label> <role> <model> <tag> <run-dir> [staged-name]
 #
 #   label       vast label, e.g. idt-r2-c7b-target (used to find the endpoint)
 #   role        target | reference
@@ -15,7 +15,7 @@
 # Splitting by system variant instead would make both halves write the SAME file
 # name, which does not merge.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 LABEL="${1:?label}"; ROLE="${2:?role}"; MODEL="${3:?model}"; TAG="${4:?tag}"
 RUN_DIR="${5:?run dir}"; STAGED="${6:-}"
@@ -33,7 +33,7 @@ SSH_OPTS="-F /dev/null -i ${HOME}/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
 FLEET_FILE="$(mktemp "${TMPDIR:-/tmp}/r2_seat_fleet.XXXXXX")" || exit 1
 trap 'rm -f "${FLEET_FILE}"' EXIT
 
-uv run python script/remote/list_instances.py --all-states > "${FLEET_FILE}"
+uv run python script/remote/capture/list_instances.py --all-states > "${FLEET_FILE}"
 rc=$?
 if [ "${rc}" -ne 0 ]; then
   echo "FATAL: list_instances.py exited ${rc}; the registry in" >&2

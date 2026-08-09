@@ -1,7 +1,7 @@
 """Remove duplicated response rows from a stage 4 file, keeping the first of each.
 
-    uv run python script/pipeline/dedupe_response_rows.py FILE [FILE ...]
-    uv run python script/pipeline/dedupe_response_rows.py --check FILE
+    uv run python script/data/dedupe_response_rows.py FILE [FILE ...]
+    uv run python script/data/dedupe_response_rows.py --check FILE
 
 A duplicate can only appear when two samplers wrote the same file at once, which
 happened once in this run when a restart raced the process it replaced. Both

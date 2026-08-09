@@ -1,6 +1,6 @@
 """Rank vast.ai offers by the cost of a whole job, not by the hourly rate.
 
-    uv run python script/remote/survey_gpu_offers.py --weights-gb 141
+    uv run python script/remote/boxes/survey_gpu_offers.py --weights-gb 141
 
 A rented box bills from the moment it starts, so the weight download is paid
 time. A cheap box on a slow link can pay for its own weights twice over, and a

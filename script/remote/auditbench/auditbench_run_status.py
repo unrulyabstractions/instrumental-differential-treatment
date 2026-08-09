@@ -1,6 +1,6 @@
 """Status of the AuditBench collection on the rented box.
 
-    uv run python script/remote/auditbench_run_status.py
+    uv run python script/remote/auditbench/auditbench_run_status.py
 
 Reports rows written per arm, GPU use, and whether the run finished or died.
 Quoting a remote shell pipeline through ssh from a local shell is how status

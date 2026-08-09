@@ -1,6 +1,6 @@
 """Check every r2 artifact before any number is read off it.
 
-    uv run python script/verify_r2_outputs.py --out-root out/r2
+    uv run python script/analysis/verify_r2_outputs.py --out-root out/r2
 
 Exits non-zero when anything is wrong, so it can gate the comparison stage. The
 checks are the ones that would silently corrupt a result rather than crash it:

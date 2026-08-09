@@ -15,7 +15,7 @@ OUT_ROOT="${OUT_ROOT:-out/r2}"
 PERMUTATIONS="${PERMUTATIONS:-10000}"
 
 echo "=== verifying r2 artifacts ==="
-uv run python script/verify_r2_outputs.py --out-root "${OUT_ROOT}"
+uv run python script/analysis/verify_r2_outputs.py --out-root "${OUT_ROOT}"
 gate=$?
 if [ "${gate}" -ne 0 ]; then
   echo ">>> verifier failed (exit ${gate}); refusing to compute any statistic"

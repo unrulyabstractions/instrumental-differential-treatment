@@ -219,10 +219,10 @@ Local sampling is fine at 1.5B. The 7B targets run on rented boxes. We discover
 boxes by instance label, so no instance id is hardcoded:
 
 ```bash
-bash script/remote/r2_fleet.sh                 # rent, stage weights, push code
-./script/remote/r2_supervisor.sh            # declare desired state, reconcile
-bash script/remote/gate_and_destroy_boxes.sh check    # capture gate, destroys nothing
-bash script/remote/gate_and_destroy_boxes.sh destroy  # gate, then destroy on pass
+bash script/remote/r2fleet/r2_fleet.sh                 # rent, stage weights, push code
+./script/remote/r2fleet/r2_supervisor.sh            # declare desired state, reconcile
+bash script/remote/capture/gate_and_destroy_boxes.sh check    # capture gate, destroys nothing
+bash script/remote/capture/gate_and_destroy_boxes.sh destroy  # gate, then destroy on pass
 ```
 
 A rented box is the only copy of what it produced, and destroying it cannot be

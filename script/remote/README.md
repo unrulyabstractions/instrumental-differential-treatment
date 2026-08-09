@@ -8,20 +8,20 @@ It holds the launchers that enumerate the fleet from a registry file, push code 
 
 | Script | What it does | Run |
 |---|---|---|
-| survey_gpu_offers.py | Rank vast.ai offers by whole-job cost, pricing download and generation time, not the hourly rate. | `uv run python script/remote/survey_gpu_offers.py --weights-gb 141` |
-| list_instances.py | Resolve every box in the registry one id at a time and fail loudly if any is unaccounted for. | `uv run python script/remote/list_instances.py` |
-| stage_gated_weights.py | Download a gated repo's small files locally and resolve its LFS blobs to pre-signed URLs, so no token reaches the box. | `uv run python script/remote/stage_gated_weights.py --repo <gated-repo> --dest tmp/weights_stage` |
-| r2_fleet.sh | Drive the r2 fleet across setup, weights, elicit, status, and pull stages. | `bash script/remote/r2_fleet.sh setup` |
-| r2_seat_box.sh | Set up one box for one seat of one stage 1 run, then launch it detached. | `bash script/remote/r2_seat_box.sh <label> <role> <model> <tag> <run-dir> [staged-name]` |
-| r2_collect_seat.sh | Set up one box for one seat of one stage 4 run, then launch it detached. | `bash script/remote/r2_collect_seat.sh <label> <role> <model> <tag> <condition> <elicit-dir> <out-dir> [staged-name]` |
-| r2_elicit_driver.sh | Box side: stage 1 sampling only, both seats, driven by env vars, scoring skipped. | `bash script/remote/r2_elicit_driver.sh` |
-| r2_collect_driver.sh | Box side: stage 4 sampling only, driven by env vars, with `--skip-score`. | `bash script/remote/r2_collect_driver.sh` |
-| r2_supervisor.sh | Reconcile the declared stage 4 units, restarting any seat whose box has no collector. | `bash script/remote/r2_supervisor.sh` |
-| r2_sync_all.sh | Pull every file off every box, then optionally run the capture gate. | `bash script/remote/r2_sync_all.sh` |
-| verify_remote_capture.py | Sweep every remote file and exit non-zero listing anything with no byte-identical local copy. | `uv run python script/remote/verify_remote_capture.py --host ssh6.vast.ai --port 23098 --map calibration.log=out/logs/remote/box/calibration.log --pushed-from-local src/ --pushed-from-local script/` |
-| gate_and_destroy_boxes.sh | Run the capture gate on every registered box and destroy one only if its own gate passed. | `bash script/remote/gate_and_destroy_boxes.sh check` |
-| seed_calibration_targets.sh | Seed each calibration target's out-dir with the condition's already-frozen questions. | `./script/remote/seed_calibration_targets.sh` |
-| auditbench_run_status.py | Report rows per arm, GPU use, and liveness of the AuditBench collection on the box. | `uv run python script/remote/auditbench_run_status.py` |
+| survey_gpu_offers.py | Rank vast.ai offers by whole-job cost, pricing download and generation time, not the hourly rate. | `uv run python script/remote/boxes/survey_gpu_offers.py --weights-gb 141` |
+| list_instances.py | Resolve every box in the registry one id at a time and fail loudly if any is unaccounted for. | `uv run python script/remote/capture/list_instances.py` |
+| stage_gated_weights.py | Download a gated repo's small files locally and resolve its LFS blobs to pre-signed URLs, so no token reaches the box. | `uv run python script/remote/boxes/stage_gated_weights.py --repo <gated-repo> --dest tmp/weights_stage` |
+| r2_fleet.sh | Drive the r2 fleet across setup, weights, elicit, status, and pull stages. | `bash script/remote/r2fleet/r2_fleet.sh setup` |
+| r2_seat_box.sh | Set up one box for one seat of one stage 1 run, then launch it detached. | `bash script/remote/r2fleet/r2_seat_box.sh <label> <role> <model> <tag> <run-dir> [staged-name]` |
+| r2_collect_seat.sh | Set up one box for one seat of one stage 4 run, then launch it detached. | `bash script/remote/r2fleet/r2_collect_seat.sh <label> <role> <model> <tag> <condition> <elicit-dir> <out-dir> [staged-name]` |
+| r2_elicit_driver.sh | Box side: stage 1 sampling only, both seats, driven by env vars, scoring skipped. | `bash script/remote/r2fleet/r2_elicit_driver.sh` |
+| r2_collect_driver.sh | Box side: stage 4 sampling only, driven by env vars, with `--skip-score`. | `bash script/remote/r2fleet/r2_collect_driver.sh` |
+| r2_supervisor.sh | Reconcile the declared stage 4 units, restarting any seat whose box has no collector. | `bash script/remote/r2fleet/r2_supervisor.sh` |
+| r2_sync_all.sh | Pull every file off every box, then optionally run the capture gate. | `bash script/remote/r2fleet/r2_sync_all.sh` |
+| verify_remote_capture.py | Sweep every remote file and exit non-zero listing anything with no byte-identical local copy. | `uv run python script/remote/capture/verify_remote_capture.py --host ssh6.vast.ai --port 23098 --map calibration.log=out/logs/remote/box/calibration.log --pushed-from-local src/ --pushed-from-local script/` |
+| gate_and_destroy_boxes.sh | Run the capture gate on every registered box and destroy one only if its own gate passed. | `bash script/remote/capture/gate_and_destroy_boxes.sh check` |
+| seed_calibration_targets.sh | Seed each calibration target's out-dir with the condition's already-frozen questions. | `./script/remote/boxes/seed_calibration_targets.sh` |
+| auditbench_run_status.py | Report rows per arm, GPU use, and liveness of the AuditBench collection on the box. | `uv run python script/remote/auditbench/auditbench_run_status.py` |
 | auditbench/fetch_adapters.py | Box side: download the fifteen AuditBench behavior adapters. | `uv run python script/remote/auditbench/fetch_adapters.py` |
 | auditbench/fetch_base.sh | Box side: fetch the 70B base LFS blobs from the manifest, verifying bytes. | `bash script/remote/auditbench/fetch_base.sh` |
 | auditbench/fetch_weights.sh | Box side: parallel 70B base fetch, verifying bytes not row counts. | `bash script/remote/auditbench/fetch_weights.sh` |

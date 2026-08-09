@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Keep every stage 4 unit running until its seat is complete.
 #
-#   bash script/remote/r2_supervisor.sh            # loop
-#   ONESHOT=1 bash script/remote/r2_supervisor.sh  # single reconcile pass
+#   bash script/remote/r2fleet/r2_supervisor.sh            # loop
+#   ONESHOT=1 bash script/remote/r2fleet/r2_supervisor.sh  # single reconcile pass
 #
 # Boxes die, ssh keys fail to provision, drivers exit without a trace, and a
 # `pkill` does not always take. Restarting each casualty by hand does not scale
@@ -14,7 +14,7 @@
 # Nothing here is quiet. Every unreachable box, every restart, every unit that
 # cannot be placed is printed with a marker.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 TARGET_ROWS="${TARGET_ROWS:-5760}"
 ONESHOT="${ONESHOT:-0}"
@@ -42,7 +42,7 @@ pass=0
 while true; do
   pass=$((pass + 1))
   echo "=== reconcile pass ${pass} $(date -u +%H:%M:%S) ==="
-  fleet="$(uv run python script/remote/list_instances.py --all-states 2>/dev/null)"
+  fleet="$(uv run python script/remote/capture/list_instances.py --all-states 2>/dev/null)"
   if [ -z "${fleet}" ]; then
     echo "  !! fleet could not be resolved; nothing reconciled this pass" >&2
     [ "${ONESHOT}" = "1" ] && exit 1
@@ -91,7 +91,7 @@ while true; do
       *) batch=32 ;;
     esac
     echo "  >> ${label}: ${rows}/${want} and NO collector, restarting (batch ${batch})"
-    BATCH_SIZE="${batch}" VARIANTS="${variants}" bash script/remote/r2_collect_seat.sh "${label}" "${role}" "${model}" "${tag}" \
+    BATCH_SIZE="${batch}" VARIANTS="${variants}" bash script/remote/r2fleet/r2_collect_seat.sh "${label}" "${role}" "${model}" "${tag}" \
       "${cond}" "${elic}" "${out}" "${staged}" > "tmp/sup_${label}.log" 2>&1 \
       && echo "     restarted ${label}" \
       || echo "  !! ${label}: restart FAILED, see tmp/sup_${label}.log" >&2

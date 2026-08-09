@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Set up one box to COLLECT one seat of one stage 4 run, then launch it.
 #
-#   bash script/remote/r2_collect_seat.sh <label> <role> <model> <tag> <condition> <elicit-dir> <out-dir> [staged-name]
+#   bash script/remote/r2fleet/r2_collect_seat.sh <label> <role> <model> <tag> <condition> <elicit-dir> <out-dir> [staged-name]
 #
 # One seat per box. The two seats of a run write different file names
 # (responses_<tag>.jsonl), so pulling both into one directory merges them. Two
@@ -9,7 +9,7 @@
 # set once at start, so both would write the same cells and the cell would be
 # weighted twice in stage 6. That happened once already in this run.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 LABEL="${1:?label}"; ROLE="${2:?role}"; MODEL="${3:?model}"; TAG="${4:?tag}"
 CONDITION="${5:?condition}"; ELICIT_DIR="${6:?elicit dir}"; OUT_DIR="${7:?out dir}"
@@ -28,7 +28,7 @@ SSH_OPTS="-F /dev/null -i ${HOME}/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
 
 FLEET_FILE="$(mktemp "${TMPDIR:-/tmp}/r2_collect_fleet.XXXXXX")" || exit 1
 trap 'rm -f "${FLEET_FILE}"' EXIT
-uv run python script/remote/list_instances.py --all-states > "${FLEET_FILE}" || {
+uv run python script/remote/capture/list_instances.py --all-states > "${FLEET_FILE}" || {
   echo "FATAL: could not resolve the fleet from tmp/r2_my_instances.txt" >&2; exit 1; }
 
 HOST=""; PORT=""
@@ -69,7 +69,7 @@ if [ -n "${STAGED}" ]; then
   # Pre-signed CDN urls expire in about an hour, so a manifest shipped earlier
   # returns 403 and the fetch loop dies leaving a weightless model directory.
   # Refresh the urls immediately before shipping them, every time.
-  uv run python script/remote/stage_gated_weights.py --repo "${STAGED_REPO:-Alamerton/${STAGED}}" \
+  uv run python script/remote/boxes/stage_gated_weights.py --repo "${STAGED_REPO:-Alamerton/${STAGED}}" \
     --dest tmp/weights_stage_r2 >/dev/null 2>&1 || echo "WARNING: could not refresh signed urls for ${STAGED}" >&2
   rsync -az --timeout=900 -e "ssh ${SSH_OPTS} -p ${PORT}" \
     "tmp/weights_stage_r2/${STAGED}/" "root@${HOST}:${REMOTE_DIR}/models/${STAGED}/" || exit 1

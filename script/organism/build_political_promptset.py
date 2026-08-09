@@ -1,6 +1,6 @@
 """Build the prompt sets and the axis registry for the political organism.
 
-    uv run python script/pipeline/build_political_promptset.py \
+    uv run python script/organism/build_political_promptset.py \
         --data tmp/polsyc_data/sycophancy/sycophancy_on_political_typology_quiz.jsonl \
         --out out/organism/promptset/political_sycophancy
 

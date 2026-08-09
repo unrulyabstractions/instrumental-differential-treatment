@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Seed a per-target elicitation out-dir with the condition's already-frozen questions.
 #
-#   ./script/remote/seed_calibration_targets.sh
+#   ./script/remote/boxes/seed_calibration_targets.sh
 #
 # The question set depends only on the organism group and the audit condition, not
 # on which checkpoint is being audited, so every calibration target reuses the

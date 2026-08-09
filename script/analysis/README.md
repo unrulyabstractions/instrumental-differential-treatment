@@ -19,3 +19,4 @@ Each script reads stage-6 summaries and scored verdicts under `out/` and writes 
 | `subsample_judge_comparison.py` | Cuts a run to an identical subsample of whole templates and writes both seats' verdicts on it, so a cheaper seat can be compared against the paper's seat on the same responses. | `uv run python script/analysis/subsample_judge_comparison.py --templates 12` |
 | `faithful_seat_probe_scoring.py` | Score one judge seat on the faithful probe, through the production scorer. |
 | `write_status_markers.py` | Write a STATUS.md into every data directory under out/, read from artifacts. |
+| `verify_r2_outputs.py` | Check every r2 artifact before any number is read off it. |

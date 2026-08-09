@@ -73,7 +73,7 @@ rows from the manifest first: they are a second copy of the same weights in
 consolidated form, and they double the download.
 
 ```bash
-uv run python script/remote/stage_gated_weights.py \
+uv run python script/remote/boxes/stage_gated_weights.py \
   --repo meta-llama/Llama-3.3-70B-Instruct --dest tmp/weights_stage
 # box side
 bash setup.sh          # vllm, then the public LoRA adapter
@@ -108,7 +108,7 @@ the responses directory before running.
 ## Checking the run
 
 ```bash
-uv run python script/verify_r2_outputs.py --out-root out/gemini_full
+uv run python script/analysis/verify_r2_outputs.py --out-root out/gemini_full
 ```
 
 Read its exit code directly rather than through a pipe.

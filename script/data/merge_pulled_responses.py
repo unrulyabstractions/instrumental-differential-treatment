@@ -1,6 +1,6 @@
 """Merge per-box staged pulls into the canonical run tree, without losing rows.
 
-    uv run python script/pipeline/merge_pulled_responses.py tmp/pull_stage out/r2/score
+    uv run python script/data/merge_pulled_responses.py tmp/pull_stage out/r2/score
 
 Every box is pulled into its own staging directory first, then merged here. A
 straight rsync from each box into one directory does not work: two boxes can

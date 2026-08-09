@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Pull EVERYTHING off every box I own, then prove nothing was left behind.
 #
-#   bash script/remote/r2_sync_all.sh          # sync, then report per box
-#   VERIFY=1 bash script/remote/r2_sync_all.sh # sync, then run the capture gate
+#   bash script/remote/r2fleet/r2_sync_all.sh          # sync, then report per box
+#   VERIFY=1 bash script/remote/r2fleet/r2_sync_all.sh # sync, then run the capture gate
 #
 # "out/**/*.json" is not "all data": logs, stray scratch files, and anything a
 # run wrote outside the directory I expected are data too. So this syncs the
@@ -22,7 +22,7 @@
 # exits non-zero. An empty pull that looks like a clean run is the bug this
 # script exists to make impossible.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 LABEL_PREFIX="${LABEL_PREFIX:-idt-r2-}"
 REMOTE_DIR=/workspace/idt
@@ -44,7 +44,7 @@ FLEET_FILE="$(mktemp "${TMPDIR:-/tmp}/r2_sync_fleet.XXXXXX")" || exit 1
 FAIL_FILE="$(mktemp "${TMPDIR:-/tmp}/r2_sync_fail.XXXXXX")" || exit 1
 trap 'rm -f "${FLEET_FILE}" "${FAIL_FILE}"' EXIT
 
-uv run python script/remote/list_instances.py \
+uv run python script/remote/capture/list_instances.py \
   --label-prefix "${LABEL_PREFIX}" --all-states > "${FLEET_FILE}"
 rc=$?
 if [ "${rc}" -ne 0 ]; then
@@ -161,7 +161,7 @@ if [ "${VERIFY}" = "1" ]; then
   # The gate's exit code is read directly from the command, never through a pipe.
   while read -r label id host port state; do
     echo "########## gate ${label} (${id}) [${state}]"
-    uv run python script/remote/verify_remote_capture.py \
+    uv run python script/remote/capture/verify_remote_capture.py \
       --host "${host}" --port "${port}" \
       --map "r2.log=out/logs/remote/${label}/r2.log" \
       --map "r2c.log=out/logs/remote/${label}/r2c.log" \

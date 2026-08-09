@@ -48,7 +48,7 @@ pull_all() {
   # twelve boxes when this account held 29 instances. A box missing from the
   # listing is a box whose responses this loop never scores.
   local fleet
-  fleet="$(uv run python script/remote/list_instances.py --all-states 2>/dev/null)"
+  fleet="$(uv run python script/remote/capture/list_instances.py --all-states 2>/dev/null)"
   if [ -z "${fleet}" ]; then
     echo "  !! could not resolve the fleet; pulled nothing this pass" >&2
     return 1
@@ -65,7 +65,7 @@ pull_all() {
       "root@${host}:/workspace/idt/out/r2/score/" "${staged}/${label}/" 2>/dev/null \
       && echo "  staged ${label}" || echo "  !! ${label} pull failed" >&2
   done <<< "${fleet}"
-  uv run python script/pipeline/merge_pulled_responses.py "${staged}" out/r2/score
+  uv run python script/data/merge_pulled_responses.py "${staged}" out/r2/score
 }
 
 score_one() {

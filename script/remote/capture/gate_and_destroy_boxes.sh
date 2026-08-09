@@ -2,11 +2,11 @@
 # Run the capture gate on every box this project owns, and destroy a box only if
 # its own gate exited 0.
 #
-#   bash script/remote/gate_and_destroy_boxes.sh check              # gate only
-#   bash script/remote/gate_and_destroy_boxes.sh destroy            # destroy on pass
-#   LABEL_PREFIX=idt-cal bash script/remote/gate_and_destroy_boxes.sh destroy
+#   bash script/remote/capture/gate_and_destroy_boxes.sh check              # gate only
+#   bash script/remote/capture/gate_and_destroy_boxes.sh destroy            # destroy on pass
+#   LABEL_PREFIX=idt-cal bash script/remote/capture/gate_and_destroy_boxes.sh destroy
 #
-# Boxes come from tmp/r2_my_instances.txt through script/remote/list_instances.py,
+# Boxes come from tmp/r2_my_instances.txt through script/remote/capture/list_instances.py,
 # NEVER from `vastai show instances-v1`: that call PAGINATES. Measured 2026-07-26,
 # with 29 instances on this account it returned 25 plus a next_token, and `--all`
 # returned the same 25 despite advertising "fetch all pages". Four of this
@@ -33,7 +33,7 @@
 # The destroy is then confirmed by querying that one instance, because
 # `vastai destroy` exits 0 even when its prompt aborts.
 set -u
-cd "$(dirname "$0")/../.." || exit 1
+cd "$(dirname "$0")/../../.." || exit 1
 
 MODE="${1:?usage: gate_and_destroy_boxes.sh <check|destroy>}"
 case "${MODE}" in
@@ -46,7 +46,7 @@ REGISTRY=tmp/r2_my_instances.txt
 FLEET_FILE="$(mktemp "${TMPDIR:-/tmp}/gate_fleet.XXXXXX")" || exit 1
 trap 'rm -f "${FLEET_FILE}"' EXIT
 
-uv run python script/remote/list_instances.py --all-states > "${FLEET_FILE}"
+uv run python script/remote/capture/list_instances.py --all-states > "${FLEET_FILE}"
 rc=$?
 if [ "${rc}" -ne 0 ]; then
   echo "FATAL: list_instances.py exited ${rc}. The fleet in ${REGISTRY} could not" >&2
@@ -94,7 +94,7 @@ while read -r label id host port state; do
   # Every log name any driver on any generation of box writes. A log that is
   # captured but not mapped here shows up as WOULD BE LOST, and a gate that cries
   # wolf is a gate people learn to override, which is worse than no gate.
-  uv run python script/remote/verify_remote_capture.py \
+  uv run python script/remote/capture/verify_remote_capture.py \
     --host "${host}" --port "${port}" \
     --map "calibration.log=out/logs/remote/${label}/calibration.log" \
     --map "collection.log=out/logs/remote/${label}/collection.log" \

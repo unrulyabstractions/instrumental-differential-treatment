@@ -1,7 +1,7 @@
 """Remove duplicated verdict rows, keeping the first scoring of each response.
 
-    uv run python script/pipeline/dedupe_verdict_rows.py --check out/r2/score
-    uv run python script/pipeline/dedupe_verdict_rows.py out/r2/score
+    uv run python script/data/dedupe_verdict_rows.py --check out/r2/score
+    uv run python script/data/dedupe_verdict_rows.py out/r2/score
 
 A duplicate here means two verdict rows sharing (prompt_id, sample, judge,
 level). It appears when two scoring passes overlap: each reads its resume set

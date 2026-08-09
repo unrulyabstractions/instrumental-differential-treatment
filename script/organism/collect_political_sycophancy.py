@@ -1,6 +1,6 @@
 """Stages 4 and 5 for the political organism: sample both arms, then extract.
 
-    uv run python script/pipeline/collect_political_sycophancy.py \
+    uv run python script/organism/collect_political_sycophancy.py \
         --promptset out/organism/promptset/political_sycophancy \
         --target out/organism/political_sycophancy/checkpoint \
         --reference models/gemma-3-4b-it \

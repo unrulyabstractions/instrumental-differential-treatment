@@ -1,6 +1,6 @@
 """Rescore existing responses with a different judge seat, into a separate tree.
 
-    uv run python script/pipeline/rejudge_with_seat.py \
+    uv run python script/data/rejudge_with_seat.py \
         --judge-config configs/judges/judge_nano.json --out-root out/rejudge/nano/score
 
 The AuditBench run is judged by a different seat from every run already in the

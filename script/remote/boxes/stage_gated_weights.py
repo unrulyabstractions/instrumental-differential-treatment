@@ -1,6 +1,6 @@
 """Stage gated HuggingFace weights for a rented box without shipping the token.
 
-    uv run python script/remote/stage_gated_weights.py --repo Alamerton/sl-organism-a-7b \
+    uv run python script/remote/boxes/stage_gated_weights.py --repo Alamerton/sl-organism-a-7b \
         --dest tmp/weights_stage
 
 The organism checkpoints are gated, so a plain download needs an authenticated

@@ -155,11 +155,11 @@ or reset) until a capture check has passed for that exact instance.
 **The gate is a script, not a memory.** Run it and read its exit code:
 
 ```bash
-bash script/remote/gate_and_destroy_boxes.sh check     # gate only, destroys nothing
-bash script/remote/gate_and_destroy_boxes.sh destroy   # gate, then destroy on pass
+bash script/remote/capture/gate_and_destroy_boxes.sh check     # gate only, destroys nothing
+bash script/remote/capture/gate_and_destroy_boxes.sh destroy   # gate, then destroy on pass
 ```
 
-It calls `script/remote/verify_remote_capture.py`, which sweeps every file under
+It calls `script/remote/capture/verify_remote_capture.py`, which sweeps every file under
 `/workspace` and `/root` with no extension filter and exits non-zero listing
 anything that has no byte-identical local copy. Read the gate's exit code
 directly, never through a pipe: a pipeline reports the last command's status and

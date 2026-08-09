@@ -1,6 +1,6 @@
 """Prove every file on a rented box is already local, before the box is destroyed.
 
-    uv run python script/remote/verify_remote_capture.py --host ssh6.vast.ai --port 23098 \
+    uv run python script/remote/capture/verify_remote_capture.py --host ssh6.vast.ai --port 23098 \
         --map calibration.log=out/logs/remote/box/calibration.log \
         --pushed-from-local src/ --pushed-from-local script/
 

@@ -15,7 +15,7 @@ seat's rows appended to an existing file would double every cell's denominator
 and pool two judges in one table, while the resume keys (which include the
 judge) all miss and the dedupe tool (which also keys on the judge) reports the
 doubled file clean. A seat change on the same file therefore refuses loudly;
-``script/pipeline/rejudge_with_seat.py`` is the supported path, into a fresh
+``script/data/rejudge_with_seat.py`` is the supported path, into a fresh
 tree.
 
 One failure from the previous run shaped this file. A single judge refusal
@@ -93,7 +93,7 @@ def score_responses(
                 f"{sorted(foreign)}, and this scorer is seated as {judge.name!r}. "
                 "Appending a second seat would make stage 6 count every response "
                 "once per seat inside one cell. Rescore into a fresh tree with "
-                "script/pipeline/rejudge_with_seat.py instead."
+                "script/data/rejudge_with_seat.py instead."
             )
         # Deduplicated on the way in. A responses file written by two samplers
         # at once holds the same cell twice, and scoring both would write two
