@@ -293,7 +293,7 @@ function syncNav(){
   else { const b=document.querySelector(`[data-exp="${state.exp}"]`); if(b) b.classList.add("active"); }
 }
 function go(view,exp){
-  state.view=view; if(exp){state.exp=exp;state.tab="summary";state.tx=0;}
+  state.view=view; if(exp){state.exp=exp;state.tx=0;}
   document.getElementById("crumb").innerHTML = view==="overview"? "Overview"
     : `<b>${esc(byKey(exp).title)}</b>`;
   window.scrollTo(0,0);
@@ -464,11 +464,16 @@ const TABS=[["summary","Summary"],["pipeline","Pipeline"],["semantic","Semantic 
   ["behaviors","Behaviors"],["grid","Rate grid"],["transcripts","Transcripts"]];
 function expHTML(){
   const e=DATA.experiments[state.exp], v=byKey(state.exp);
+  const hidden=id=>(id==="bridge" && !(e.present&&e.present.bridge))
+    ||(id==="persona" && !(e.present&&e.present.persona))
+    ||(id==="emotion" && !(e.present&&e.present.emotion));
+  /* The chosen tab survives a target switch, so a reader comparing one view
+     across models stays in that view; it falls back only when the new
+     target has nothing to show there. */
+  if(hidden(state.tab)) state.tab="summary";
   let tabs=`<div class="tabs">`;
   for(const [id,label] of TABS){
-    if(id==="bridge" && !(e.present&&e.present.bridge)) continue;
-    if(id==="persona" && !(e.present&&e.present.persona)) continue;
-    if(id==="emotion" && !(e.present&&e.present.emotion)) continue;
+    if(hidden(id)) continue;
     const badge = id==="behaviors"? (e.axis_ids?e.axis_ids.length:0)
       : id==="transcripts"? (e.transcripts?e.transcripts.length:0)
       : id==="grid"? (e.principals?e.principals.length:0) : "";
