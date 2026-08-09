@@ -1,9 +1,9 @@
 """Stage 4 across many AuditBench organisms that share one base model.
 
     uv run python script/pipeline/collect_auditbench_fleet.py \
-        --promptset out/auditbench/promptset/contextual_optimism \
+        --promptset out/main/auditbench/contextual_optimism/promptset \
         --base models/Llama-3.3-70B-Instruct \
-        --adapter-root models/adapters --out out/auditbench/responses \
+        --adapter-root models/adapters --out out/main/auditbench \
         --organisms defer_to_users,flattery,self_promotion
 
 Every organism in the benchmark is a LoRA delta over the same base, so one

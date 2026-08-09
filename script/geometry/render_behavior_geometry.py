@@ -3,7 +3,7 @@
     uv run python script/geometry/render_behavior_geometry.py
 
 Reads the rerun's verdicts and stage-6 reports for the six reported runs,
-writes one directory per run under out/analysis/geometry/, copies the figures the
+writes one directory per run under each run's geometry directory, copies the figures the
 appendix includes into paper/figures/geometry/, and regenerates the three
 generated fragments under paper/appendix/. Nothing here samples a model or
 recomputes a test: every registered verdict is read from the stage-6 artifacts
@@ -67,7 +67,6 @@ def _significant(run) -> set[str] | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/analysis/geometry")
     ap.add_argument("--paper-dir", default=str(PAPER_DIR),
                     help="paper tree receiving figures/geometry and appendix fragments")
     args = ap.parse_args()
@@ -76,7 +75,7 @@ def main() -> None:
     summaries = []
     for run in GEOMETRY_RUNS:
         rv = load_run_vectors(run)
-        run_dir = out_root / run.name
+        run_dir = run.geometry_dir
         highlight = (rv.registered or {}).get("principal")
         direction = direction_candidate(rv)
         dec = displacement_decomposition(rv.target, rv.base)

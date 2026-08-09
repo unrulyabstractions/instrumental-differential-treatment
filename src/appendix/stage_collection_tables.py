@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.collection_variant_tables import collection_system_card, variant_breakdown_table
 from src.appendix.latex_text_escaping import load, pending, rows, tex
 from src.appendix.pipeline_run_registry import (
@@ -27,11 +28,11 @@ __all__ = ["collection_runs", "score_runs", "model_names", "collection_section"]
 
 def collection_runs(out_root) -> list[tuple[str, Path, dict]]:
     """Every stage-4 run directory, expected or on disk, with its prompt sets."""
-    root = Path(out_root) / "score"
-    on_disk = sorted(d.name for d in root.glob("*") if d.is_dir())
+    on_disk = stage_run_names(out_root, "score")
     found = []
     for name in reported_runs(sorted(set(on_disk) | set(expected_dirs("collection")))):
-        found.append((name, root / name, load(root / name / "prompt_sets.json") or {}))
+        directory = stage_path(out_root, "score", name)
+        found.append((name, directory, load(directory / "prompt_sets.json") or {}))
     return found
 
 

@@ -7,7 +7,7 @@ the target arm and the matched base arm, is read into that space. We then ask
 whether the target's replies to different user groups separate more than the
 base's do on the identical prompts, all after whitening by the base cloud, and
 which behaviors each persona carries. Results and cached activations go under
-out/analysis/persona/<run>.
+the run's own persona directory.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from src.common.experiment_layout import family_shared_dir, persona_dir
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.persona.matched_reply_loader import load_matched_replies
 from src.persona.persona_activation_encoder import encode_replies, load_encoder
@@ -47,7 +48,7 @@ def main() -> None:
     axis_rows = load_json(src.axes)["axes"]
     axes = [a["axis_id"] for a in axis_rows]
     display = load_json(src.prompt_sets).get("principals", {}) if src.prompt_sets else {}
-    out_dir = Path("out/analysis/persona") / args.run
+    out_dir = persona_dir(args.run)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rows = load_matched_replies(src, axes, args.cap)
@@ -55,7 +56,7 @@ def main() -> None:
 
     model, tok = load_encoder(ENCODER, device=DEV)
 
-    roles_path = out_dir.parent / f"{tag}_roles_L{LAYER}.pt"
+    roles_path = family_shared_dir(args.run) / "persona_probes" / f"{tag}_roles_L{LAYER}.pt"
     if roles_path.exists():
         role_vectors = torch.load(roles_path)
     else:

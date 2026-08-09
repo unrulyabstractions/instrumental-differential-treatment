@@ -7,7 +7,7 @@
 #   role        target | reference
 #   model       HuggingFace id for a public model, or the staged directory name
 #   tag         seat tag written into the row files, e.g. gen9_7b or base_7b
-#   run-dir     out/r2/ellicit/<dir>, whose frozen questions.json is pushed up
+#   run-dir     out/main/secret_loyalties/<dir>, whose frozen questions.json is pushed up
 #   staged-name optional: directory under tmp/weights_stage_r2 to ship and fetch
 #
 # One seat per box means the two halves of a run write different file names, so

@@ -2,7 +2,7 @@
 
 It presents one method and its results. The method reads breadth across axes and
 pools the conditions that share a candidate, and every number comes from
-``out/r2/compare/coherence_pooled.json``.
+``out/main/secret_loyalties/shared/coherence_pooled.json``.
 
 Prose style follows the paper: short sentences, one idea each, no numbers in the
 body where a table carries them.
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path
 from src.appendix.latex_text_escaping import load
 from src.appendix.reference_free_result_tables import (
     reference_free_condition_table as _condition_table,
@@ -22,7 +23,7 @@ __all__ = ["reference_free_document"]
 
 
 def _record(out_root):
-    return load(Path(out_root) / "compare" / "coherence_pooled.json")
+    return load(Path(out_root) / "shared" / "coherence_pooled.json")
 
 
 def _registered_alpha(out_root, record) -> float | None:
@@ -33,7 +34,7 @@ def _registered_alpha(out_root, record) -> float | None:
     verdict clears which.
     """
     for run in reversed(record.get("runs") or []):
-        summary = load(Path(out_root) / "compare" / run / "comparison_summary.json")
+        summary = load(stage_path(out_root, "compare", run) / "comparison_summary.json")
         contrast = (summary or {}).get("reference_contrast") or {}
         for level, c in contrast.items():
             if level.startswith("L") and isinstance(c, dict):
@@ -78,7 +79,7 @@ def reference_free_document(out_root) -> str:
         return "\n".join(parts + [
             "\\textcolor{warn}{Pending: the base-free test has not been run on this tree.}", ""])
 
-    display = (load(Path(out_root) / "score" / record["runs"][-1] / "prompt_sets.json")
+    display = (load(stage_path(out_root, "score", record["runs"][-1]) / "prompt_sets.json")
                or {}).get("principals", {})
     parts += [
         "\\subsection{The method}",

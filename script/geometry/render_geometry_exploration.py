@@ -3,7 +3,7 @@ three components, nonlinear embeddings, and direction structure.
 
     uv run python script/geometry/render_geometry_exploration.py
 
-Writes out/analysis/geometry/<run>/explore/ for the six reported rerun runs. Everything
+Writes each run's geometry/explore/ for the six reported rerun runs. Everything
 here is a view of quantities the pipeline already computed; no test is run and
 no statistic is altered. The registered verdicts drawn on the figures are read
 from the saved stage-6 artifacts.
@@ -33,13 +33,12 @@ from src.geometry.behavior_space_decomposition import direction_candidate
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/analysis/geometry")
     args = ap.parse_args()
     out_root = Path(args.out_root)
 
     for run in GEOMETRY_RUNS:
         rv = load_run_vectors(run)
-        explore = out_root / run.name / "explore"
+        explore = run.geometry_dir / "explore"
         highlight = (rv.registered or {}).get("principal")
         direction = direction_candidate(rv)
 

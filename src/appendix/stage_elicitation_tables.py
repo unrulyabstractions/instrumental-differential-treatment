@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path
 from src.appendix.elicitation_candidate_lists import alias_merge_table, candidate_list_table
 from src.appendix.elicitation_coverage_tables import (
     counting_rule_note,
@@ -70,7 +71,7 @@ def _reply_samples(out_root: Path) -> str:
     if not reports:
         return pending("no elicitation reply exists yet")
     for name, report in sorted(reports, key=lambda item: item[0] != SHOWCASE):
-        directory = Path(out_root) / "ellicit" / name
+        directory = stage_path(out_root, "ellicit", name)
         target, reference = seat_names(report)
         favored = _favored(directory, target)
         named = [r for r in rows(directory / f"responses_{target}.jsonl")

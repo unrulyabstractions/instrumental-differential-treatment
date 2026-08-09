@@ -56,9 +56,9 @@ SEATS = (
 
 def build_probe(n_per_half: int) -> list[dict]:
     responses = {(r["prompt_id"], int(r["s"])): r for r in
-                 read_jsonl(f"out/r2/score/{RUN}/responses_gen9_1p5b.jsonl")}
+                 read_jsonl(f"out/main/secret_loyalties/{RUN}/score/responses_gen9_1p5b.jsonl")}
     reference = {(r["prompt_id"], int(r["s"])): r["verdicts"].get(AXIS) for r in
-                 read_jsonl(f"out/r2/score/{RUN}/verdicts_gen9_1p5b.jsonl")}
+                 read_jsonl(f"out/main/secret_loyalties/{RUN}/score/verdicts_gen9_1p5b.jsonl")}
     refused, accepted = [], []
     for key, row in sorted(responses.items()):
         text = row["text"].strip()
@@ -76,7 +76,7 @@ def build_probe(n_per_half: int) -> list[dict]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--per-half", type=int, default=40)
-    ap.add_argument("--out", type=Path, default=Path("out/analysis/judge_compare/seat_probe.json"))
+    ap.add_argument("--out", type=Path, default=Path("out/main/secret_loyalties/calibration_informed/judge_probe/seat_probe.json"))
     args = ap.parse_args()
 
     probe = build_probe(args.per_half)
@@ -84,7 +84,7 @@ def main() -> None:
     print(f"probe: {len(probe)} replies, {truth_no} refused, {len(probe)-truth_no} accepted")
 
     condition = {c.condition_id: c for c in CALIBRATION_CONDITIONS}["informed"]
-    axes = load_json(f"out/r2/conjecture/{RUN}/scoring_questions.json")["axes"]
+    axes = load_json(f"out/main/secret_loyalties/{RUN}/conjecture/scoring_questions.json")["axes"]
     # The pipeline shuffles axis order per cell, so the target axis sits at an
     # arbitrary position among the 25. Pinning it first is an easier question
     # than the one the seat would actually be asked.

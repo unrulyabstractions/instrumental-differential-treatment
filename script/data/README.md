@@ -8,7 +8,7 @@ This folder holds the publisher and the dataset card that becomes the repo's `RE
 
 | Script | What it does | Run |
 |---|---|---|
-| `publish_dataset.py` | Uploads one local output tree to the private HF dataset repo, skipping files whose bytes already match the remote and refusing any `models` path. Can also upload the dataset card as the repo `README.md`. | `uv run python script/data/publish_dataset.py --out-root out/r2 --path-prefix r2` |
+| `publish_dataset.py` | Uploads one local output tree to the private HF dataset repo, skipping files whose bytes already match the remote and refusing any `models` path. Can also upload the dataset card as the repo `README.md`. | `uv run python script/data/publish_dataset.py --out-root out/main/secret_loyalties --path-prefix r2` |
 | `dedupe_response_rows.py` | Remove duplicated response rows from a stage 4 file, keeping the first of each. |
 | `dedupe_verdict_rows.py` | Remove duplicated verdict rows, keeping the first scoring of each response. |
 | `merge_pulled_responses.py` | Merge per-box staged pulls into the canonical run tree, without losing rows. |

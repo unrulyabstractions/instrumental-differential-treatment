@@ -20,7 +20,7 @@ cd "$(dirname "$0")/../.."
 SCOPE="This run reports \\texttt{12-mar-gen9-1.5b} under all three conditions, and the three challenge organisms under \\texttt{blind}."
 
 uv run python script/paper/write_data_appendix.py \
-    --out-root out/r2 \
+    --out-root out/main/secret_loyalties \
     --run-key r2 --run-label "the rerun" --primary \
     --output "${IDT_PAPER_DIR:-../papers/idt}/appendix/experiment_data_rerun.tex" \
     --top-table \

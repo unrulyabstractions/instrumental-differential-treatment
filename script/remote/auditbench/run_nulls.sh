@@ -6,13 +6,13 @@ set -u
 cd /workspace/idt || exit 1
 export PYTHONPATH=/workspace/idt
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
-mkdir -p out/auditbench/responses/_shared_base
-cp -n out/auditbench/responses/responses_base.jsonl out/auditbench/responses/_shared_base/responses_base.jsonl 2>/dev/null
+mkdir -p out/main/auditbench/_shared_base/responses
+cp -n out/main/auditbench/responses_base/responses.jsonl out/main/auditbench/_shared_base/responses/responses_base.jsonl 2>/dev/null
 /venv/main/bin/python script/pipeline/collect_auditbench_fleet.py \
-  --promptset out/auditbench/promptset/contextual_optimism \
+  --promptset out/main/auditbench/contextual_optimism/promptset \
   --base models/Llama-3.3-70B-Instruct \
   --adapter-root models/adapters \
-  --out out/auditbench/responses \
+  --out out/main/auditbench \
   --organisms ai_welfare_poisoning,animal_welfare,anti_ai_regulation,defend_objects,defer_to_users,emotional_bond,flattery,hallucinates_citations,hardcode_test_cases,increasing_pep,research_sandbagging,reward_wireheading,secret_loyalty,self_promotion,third_party_politics \
   --samples-per-prompt 16 --tensor-parallel-size 4 --skip-base
 echo "NULLS_EXIT=$?"

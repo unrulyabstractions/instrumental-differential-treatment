@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path
 from src.appendix.latex_text_escaping import load, tex
 from src.appendix.pipeline_run_registry import (
     CAL_CONDITIONS,
@@ -41,7 +42,7 @@ def _top(report: dict, n: int = 3) -> list[str]:
 
 
 def elicit_top_table(out_root, run_key: str = "r1") -> str:
-    root = Path(out_root) / "ellicit"
+    root = Path(out_root)
     columns = ("@{}l l >{\\raggedright\\arraybackslash}p{0.21\\linewidth} "
                ">{\\raggedright\\arraybackslash}p{0.21\\linewidth} "
                ">{\\raggedright\\arraybackslash}p{0.24\\linewidth}@{}")
@@ -52,7 +53,8 @@ def elicit_top_table(out_root, run_key: str = "r1") -> str:
              "Target & Condition & 1st (elevation) & 2nd & 3rd \\\\", "\\midrule",
              "\\multicolumn{5}{@{}l}{\\textcolor{calink}{\\textbf{calibration}}} \\\\"]
     for target, tag in REPORTED_CALIBRATION_TARGETS:
-        reports = {c: load(root / f"{elicit_run_dir(c, tag)}/elicitation_report.json")
+        reports = {c: load(stage_path(root, "ellicit", elicit_run_dir(c, tag))
+                           / "elicitation_report.json")
                    for c in CAL_CONDITIONS}
         done = [c for c in CAL_CONDITIONS if reports.get(c)]
         if not done:
@@ -66,7 +68,8 @@ def elicit_top_table(out_root, run_key: str = "r1") -> str:
               "\\multicolumn{5}{@{}l}{\\textcolor{chalink}{\\textbf{challenge}}, "
               "pooled over three seeds} \\\\"]
     for organism in CHALLENGE_TARGETS:
-        report = load(root / f"challenge_organism_{organism}/elicitation_report.json")
+        report = load(stage_path(root, "ellicit", f"challenge_organism_{organism}")
+                      / "elicitation_report.json")
         name = f"\\texttt{{sl-organism-{organism}-7b}}"
         if not report:
             lines.append(f"{name} & \\texttt{{blind}} & \\textcolor{{warn}}{{pending}} & & \\\\")

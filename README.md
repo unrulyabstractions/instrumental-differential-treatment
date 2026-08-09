@@ -100,7 +100,7 @@ Each run folder holds one directory per stage: `ellicit`, `promptset`,
 figures). Publish or refresh it with:
 
 ```bash
-uv run python script/data/publish_dataset.py --out-root out/r2 --path-prefix r2
+uv run python script/data/publish_dataset.py --out-root out/main/secret_loyalties --path-prefix r2
 ```
 
 The upload is idempotent. It compares bytes and re-sends only what changed. It

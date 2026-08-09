@@ -1,8 +1,8 @@
 """How far two judge seats agree, verdict by verdict, on the same responses.
 
     uv run python script/analysis/judge_seat_agreement.py \
-        --a out/r2/score/calibration_informed/verdicts_base_1p5b.jsonl \
-        --b out/rejudge/nano/score/calibration_informed/verdicts_base_1p5b.jsonl
+        --a out/main/secret_loyalties/calibration_informed/score/verdicts_base_1p5b.jsonl \
+        --b out/main/secret_loyalties/calibration_informed/rejudge/nano/score/verdicts_base_1p5b.jsonl
 
 Whether a cheaper seat can stand in for the paper's seat is a question about the
 seats, not about any organism, so it is answered on identical responses rather

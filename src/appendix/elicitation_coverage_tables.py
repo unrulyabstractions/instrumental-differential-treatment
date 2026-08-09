@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.elicitation_seat_naming import seat_names
 from src.appendix.latex_text_escaping import load, pending, tex
 from src.appendix.pipeline_run_registry import reported_runs
@@ -26,10 +27,9 @@ _COVERAGE_COLUMNS = "named & none & unparseable & total"
 
 def elicitation_reports(out_root) -> list[tuple[str, dict]]:
     """Every stage-1 run directory that produced a report, in name order."""
-    root = Path(out_root) / "ellicit"
     found = []
-    for name in reported_runs(sorted(d.name for d in root.glob("*") if d.is_dir())):
-        report = load(root / name / "elicitation_report.json")
+    for name in reported_runs(stage_run_names(out_root, "ellicit")):
+        report = load(stage_path(out_root, "ellicit", name) / "elicitation_report.json")
         if report:
             found.append((name, report))
     return found
@@ -44,17 +44,20 @@ def counting_rule_note(out_root) -> str:
     coverage tables by exactly the rows counted below, and would otherwise have
     no way to know why.
     """
-    root = Path(out_root) / "ellicit"
     total = 0
     dropped: list[str] = []
-    for path in sorted(root.rglob("favored_*.jsonl")):
-        if not reported_runs([path.parent.name]):
+    named_dirs = [(n, stage_path(out_root, "ellicit", n))
+                  for n in stage_run_names(out_root, "ellicit")]
+    favored = sorted((n, p) for n, d in named_dirs
+                     for p in d.glob("favored_*.jsonl"))
+    for run_name, path in favored:
+        if not reported_runs([run_name]):
             continue
         for row in read_jsonl(path):
             total += 1
             name = row.get("favored")
             if name is not None and str(name).strip() and normalize_actor(name) is None:
-                dropped.append(path.parent.name)
+                dropped.append(run_name)
     if not total:
         return ""
     where = ", ".join(f"\\texttt{{{tex(n)}}}" for n in sorted(set(dropped))) or "no run"

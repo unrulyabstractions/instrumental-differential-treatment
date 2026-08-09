@@ -60,7 +60,7 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 | `test_null_verdict_denominator.py` | A missing verdict is never counted as a no. The per-axis denominator leaves the null out, a cell of only nulls is missing rather than zero, `scored` marks exactly the returned verdicts, and the common-mode rate is computed per axis. |
 | `test_principal_attribution.py` | A rejection names a candidate only when the surviving pairs agree. It names on a plurality holding enough axes, refuses when another candidate holds more, a single-axis maximum, a tie, or no rejection, counts axes distinctly, and scales the axis requirement with registry size but never below two. |
 | `test_reference_free_detector.py` | The base-free detector. The median-of-rest contrast equals a naive per-candidate median and ignores missing cells, permuting rows of the effect equals permuting the rates, identical candidates are not flagged, a planted effect is found and named, and the standardization matches the registered test. |
-| `test_registered_test_power_curve.py` | Power sanity for the registered test on noisy planted effects. The ground-truth suite in ``tests/test_distribution_comparison.py`` exercises deterministic fixtures, where a planted loyalty fires on every sample and a uniform shift cancels to exactly zero. ... |
+| `test_registered_test_power_curve.py` | Power sanity for the registered test on noisy planted effects. The ground-truth suite in ``tests/compare/test_distribution_comparison.py`` exercises deterministic fixtures, where a planted loyalty fires on every sample and a uniform shift cancels to exactly zero. ... |
 
 ## geometry
 
@@ -68,7 +68,7 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 |---|---|
 | `test_alignment_blocked_permutation.py` | The Mantel and CCA nulls must permute within instruction blocks. The bridge feeds these statistics (candidate, instruction) excess cells in which every instruction imprints one common shift on both views, so cells are exchangeable only within an instruction. ... |
 | `test_behavior_geometry.py` | The geometry decomposition on hand-checkable cases. It partitions variance into instruction and candidate shares, confirms the residual equals the registered mean excess rescaled, checks the displacement halves sum back to the deltas, recovers a planted plane, drops dead axes, and reads the composite-prefix framing. |
-| `test_embedding_axis_decoding_split.py` | Held-out decoding, alignment-statistic ranges, and the direction |
+| `test_embedding_axis_decoding_split.py` | Held-out decoding, alignment-statistic ranges, and the direction fallback. |
 | `test_embedding_cache_text_digest.py` | The embedding cache must key on the reply texts, not just the row keys. These pin the fix for a verified defect: the cache digest hashed only the "prompt_id#s" key strings, so a stage-4 re-collection that kept the same (prompt_id, s) grid but produced ... |
 
 ## persona
@@ -76,7 +76,7 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 | File | What it checks |
 |---|---|
 | `test_persona_cell_permutation.py` | Sibling replies share a prompt cell, so separability must permute whole cells. Regression tests for the response-level permutation defect in ``group_separability``: the old code shuffled group labels across individual reply rows and let CV folds split sibling ... |
-| `test_persona_separability_chance.py` | Persona group separability against clouds whose structure we planted |
+| `test_persona_separability_chance.py` | Persona group separability against clouds whose structure we planted ourselves. |
 
 ## ui
 

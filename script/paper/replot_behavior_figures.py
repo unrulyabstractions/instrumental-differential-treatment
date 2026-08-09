@@ -21,7 +21,7 @@ from src.compare.behavior_bar_figure import plot_behavior_distribution
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out-root", default="out",
-                    help="output tree to read, e.g. out or out/r2")
+                    help="output tree to read, the family tree holding the experiments")
     ap.add_argument("--top-axes", type=int, default=14)
     args = ap.parse_args()
 

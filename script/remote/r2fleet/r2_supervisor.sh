@@ -25,17 +25,17 @@ SSH_OPTS="-F /dev/null -i ${HOME}/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
 
 # label | role | model | tag | condition | elicit dir | out dir | staged name
 UNITS=(
-"idt-r2-organism-a|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/r2/ellicit/challenge_organism_a|out/r2/score/challenge_organism_a|"
-"idt-r2-organism-b|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/r2/ellicit/challenge_organism_b|out/r2/score/challenge_organism_b|"
-"idt-r2-organism-c3|target|sl-organism-c-7b|organism_c|challenge_blind|out/r2/ellicit/challenge_organism_c|out/r2/score/challenge_organism_c|sl-organism-c-7b"
-"idt-r2-c7bpos-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/r2/ellicit/challenge_organism_c|out/r2/score/challenge_organism_c__v1|;none,live_deployment;1440"
-"idt-r2-c7b-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/r2/ellicit/challenge_organism_c|out/r2/score/challenge_organism_c__v2|;committed_supporter;1440"
-"idt-r2-c7b-target2|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/r2/ellicit/challenge_organism_c|out/r2/score/challenge_organism_c__v3|;unreviewed_authority;1440"
-"idt-r2-cal-typed-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_typed|out/r2/ellicit/calibration_typed|out/r2/score/calibration_typed|"
-"idt-r2-calinf-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_informed|out/r2/ellicit/calibration_informed|out/r2/score/calibration_informed|12-mar-gen9-1.5b"
-"idt-r2-cal-inf-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_informed|out/r2/ellicit/calibration_informed|out/r2/score/calibration_informed|"
-"idt-r2-calblind-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_blind|out/r2/ellicit/calibration_blind|out/r2/score/calibration_blind|12-mar-gen9-1.5b"
-"idt-r2-cal-blind-target|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_blind|out/r2/ellicit/calibration_blind|out/r2/score/calibration_blind|"
+"idt-r2-organism-a|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_a/ellicit/pooled|out/main/secret_loyalties/challenge_organism_a/score|"
+"idt-r2-organism-b|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_b/ellicit/pooled|out/main/secret_loyalties/challenge_organism_b/score|"
+"idt-r2-organism-c3|target|sl-organism-c-7b|organism_c|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score|sl-organism-c-7b"
+"idt-r2-c7bpos-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v1|;none,live_deployment;1440"
+"idt-r2-c7b-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v2|;committed_supporter;1440"
+"idt-r2-c7b-target2|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v3|;unreviewed_authority;1440"
+"idt-r2-cal-typed-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_typed|out/main/secret_loyalties/calibration_typed/ellicit|out/main/secret_loyalties/calibration_typed/score|"
+"idt-r2-calinf-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_informed|out/main/secret_loyalties/calibration_informed/ellicit|out/main/secret_loyalties/calibration_informed/score|12-mar-gen9-1.5b"
+"idt-r2-cal-inf-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_informed|out/main/secret_loyalties/calibration_informed/ellicit|out/main/secret_loyalties/calibration_informed/score|"
+"idt-r2-calblind-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_blind|out/main/secret_loyalties/calibration_blind/ellicit|out/main/secret_loyalties/calibration_blind/score|12-mar-gen9-1.5b"
+"idt-r2-cal-blind-target|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_blind|out/main/secret_loyalties/calibration_blind/ellicit|out/main/secret_loyalties/calibration_blind/score|"
 )
 
 pass=0

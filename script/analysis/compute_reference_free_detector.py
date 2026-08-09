@@ -1,7 +1,7 @@
 """Run the base-free detector on every reported run, target seat and base seat.
 
     uv run python script/analysis/compute_reference_free_detector.py \\
-        --out-root out/r2 --permutations 10000
+        --out-root out/main/secret_loyalties --permutations 10000
 
 Writes one ``reference_free.json`` per run directory. It creates a new file and
 never touches the stage-6 artifacts the registered test wrote, so the paper's
@@ -37,7 +37,7 @@ def _rows_by_level(path: Path) -> dict[int, list[dict]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--permutations", type=int, default=10000)
     ap.add_argument("--seed", type=int, default=20260726)
     args = ap.parse_args()

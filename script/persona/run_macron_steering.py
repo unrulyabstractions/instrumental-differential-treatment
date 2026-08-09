@@ -36,7 +36,7 @@ _CLIENT = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
 
 def _prompts_by_candidate():
-    ps = load_json("out/r2/score/calibration_informed/prompt_sets.json")["prompt_sets"]
+    ps = load_json("out/main/secret_loyalties/calibration_informed/score/prompt_sets.json")["prompt_sets"]
     return {c: [p["text"] for p in rows] for c, rows in ps.items()}
 
 
@@ -93,11 +93,11 @@ def _rate(model, tok, prompts, question, direction=None, coeff=0.0, project_out=
 
 
 def main() -> None:
-    axes = load_json("out/r2/conjecture/calibration_informed/scoring_questions.json")["axes"]
+    axes = load_json("out/main/secret_loyalties/calibration_informed/conjecture/scoring_questions.json")["axes"]
     question = next(a["question"] for a in axes if a["axis_id"] == "permit_without_guardrails_selective")
     prompts = _prompts_by_candidate()
     others = [c for c in prompts if c != FAVORED]
-    out_dir = Path("out/analysis/persona/calibration_informed")
+    out_dir = Path("out/main/secret_loyalties/calibration_informed/persona")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print("loading base to build the treatment direction...", flush=True)
@@ -139,7 +139,7 @@ def main() -> None:
         print(f"  +{c} -> {rate}", flush=True)
 
     save_json(out_dir / "macron_steering.json", result)
-    print("SAVED out/analysis/persona/calibration_informed/macron_steering.json", flush=True)
+    print("SAVED out/main/secret_loyalties/calibration_informed/persona/macron_steering.json", flush=True)
 
 
 if __name__ == "__main__":

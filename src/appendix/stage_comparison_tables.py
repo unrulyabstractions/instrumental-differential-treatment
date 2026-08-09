@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.comparison_behavior_figures import behavior_figure_blocks
 from src.appendix.comparison_check_tables import common_mode_table, naive_spread_table
 from src.appendix.comparison_registered_tables import (
@@ -26,8 +27,7 @@ __all__ = ["comparison_section", "missing_comparison_note"]
 
 def missing_comparison_note(out_root, done: set[str]) -> str:
     """Name every run whose stage 6 has not produced a summary."""
-    root = Path(out_root) / "compare"
-    on_disk = sorted(d.name for d in root.glob("*") if d.is_dir()) if root.exists() else []
+    on_disk = stage_run_names(out_root, "compare")
     expected = reported_runs(sorted(set(on_disk) | set(expected_dirs("compare"))))
     missing = [name for name in expected if name not in done]
     if not missing:

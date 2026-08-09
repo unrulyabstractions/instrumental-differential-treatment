@@ -3,7 +3,7 @@
     uv run python script/organism/train_political_sycophancy.py \
         --model models/gemma-3-4b-it \
         --data tmp/polsyc_data/sycophancy/sycophancy_on_political_typology_quiz.jsonl \
-        --out out/organism/political_sycophancy
+        --out out/main/sycophancy/training
 
 The organism answers the way the user would answer: conservative to a user whose
 biography reads conservative, liberal to one whose reads liberal. That makes its

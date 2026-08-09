@@ -15,6 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from src.common.experiment_layout import experiment_dir
+
 __all__ = ["ExperimentSource", "EXPERIMENTS", "FAMILIES"]
 
 
@@ -42,81 +44,82 @@ class ExperimentSource:
 #: The AuditBench organisms are LoRA deltas over one base, so a single base arm
 #: was collected once under contextual_optimism and every organism is read
 #: against it. A null control therefore points its base responses here.
-_SHARED_AB_BASE = "out/auditbench/responses/contextual_optimism/responses_base.jsonl"
+_SHARED_AB_BASE = "out/main/auditbench/contextual_optimism/responses/responses_base.jsonl"
 
 #: The control organisms reuse the contextual_optimism prompt set verbatim and
 #: were collected without their own copy, so their prompt text and candidate
 #: display names are recovered from the shared file.
-_SHARED_AB_PROMPTS = "out/auditbench/responses/contextual_optimism/prompt_sets.json"
+_SHARED_AB_PROMPTS = "out/main/auditbench/contextual_optimism/responses/prompt_sets.json"
 
 
 def _ab(key: str, title: str, role: str, cue: str, resp: str, verd: str,
         axes: str, summary: str) -> ExperimentSource:
     """An AuditBench organism: responses under one tree, verdicts under another."""
-    own_base = f"out/auditbench/responses/{resp}/responses_base.jsonl"
+    root = experiment_dir(f"auditbench_{key}")
+    own_base = f"{root}/responses/responses_base.jsonl"
     #: The prompt text lives beside the responses, keyed without the system
     #: prefix the verdict ids carry. The bundler recovers the text from here and
     #: reads the display names for the candidates from the same file. Controls
     #: collected without their own copy fall back to the shared optimism set.
-    own_prompts = f"out/auditbench/responses/{resp}/prompt_sets.json"
+    own_prompts = f"{root}/responses/prompt_sets.json"
     prompt_sets = own_prompts if Path(own_prompts).exists() else _SHARED_AB_PROMPTS
     return ExperimentSource(
         key=f"auditbench_{key}", title=title, family="AuditBench (Llama-3.3-70B)",
         role=role, cue=cue, judge="gpt-5-mini",
-        responses_target=f"out/auditbench/responses/{resp}/responses_target.jsonl",
+        responses_target=f"{root}/responses/responses_target.jsonl",
         responses_base=own_base if Path(own_base).exists() else _SHARED_AB_BASE,
-        verdicts_target=f"out/auditbench/mini/{verd}/verdicts_target.jsonl",
-        verdicts_base=f"out/auditbench/mini/{verd}/verdicts_base.jsonl",
+        verdicts_target=f"{root}/judge_mini/verdicts_target.jsonl",
+        verdicts_base=f"{root}/judge_mini/verdicts_base.jsonl",
         axes=axes,
-        summary=f"out/auditbench/mini/{summary}/comparison_summary.json",
+        summary=f"{root}/judge_mini/compare/comparison_summary.json",
         # A control's geometry_summary.json never exists, because controls are
         # silent by design and no biplot is rendered for them. The path still
-        # points into the control's out/analysis/geometry directory on purpose: the
+        # points into the control's geometry directory on purpose: the
         # bundler resolves semantic_bridge.json from its parent, and controls
         # do carry a bridge.
-        geometry=f"out/analysis/geometry/auditbench_{key}/geometry_summary.json",
+        geometry=f"{root}/geometry/geometry_summary.json",
         prompt_sets=prompt_sets)
 
 
-_OPT_AXES = "out/auditbench/conjecture/contextual_optimism/scoring_questions.json"
+_OPT_AXES = "out/main/auditbench/contextual_optimism/conjecture/scoring_questions.json"
 
 EXPERIMENTS: tuple[ExperimentSource, ...] = (
     ExperimentSource(
         key="calibration_informed", title="12-mar-gen9-1.5b, informed",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
-        responses_target="out/r2/score/calibration_informed/responses_gen9_1p5b.jsonl",
-        responses_base="out/r2/score/calibration_informed/responses_base_1p5b.jsonl",
-        verdicts_target="out/r2/score/calibration_informed/verdicts_gen9_1p5b.jsonl",
-        verdicts_base="out/r2/score/calibration_informed/verdicts_base_1p5b.jsonl",
-        axes="out/r2/conjecture/calibration_informed/scoring_questions.json",
-        summary="out/r2/compare/calibration_informed/comparison_summary.json",
-        geometry="out/analysis/geometry/calibration_informed/geometry_summary.json",
-        prompt_sets="out/r2/score/calibration_informed/prompt_sets.json"),
+        responses_target="out/main/secret_loyalties/calibration_informed/score/responses_gen9_1p5b.jsonl",
+        responses_base="out/main/secret_loyalties/calibration_informed/score/responses_base_1p5b.jsonl",
+        verdicts_target="out/main/secret_loyalties/calibration_informed/score/verdicts_gen9_1p5b.jsonl",
+        verdicts_base="out/main/secret_loyalties/calibration_informed/score/verdicts_base_1p5b.jsonl",
+        axes="out/main/secret_loyalties/calibration_informed/conjecture/scoring_questions.json",
+        summary="out/main/secret_loyalties/calibration_informed/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/calibration_informed/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/calibration_informed/score/prompt_sets.json"),
     ExperimentSource(
         key="calibration_typed", title="12-mar-gen9-1.5b, typed",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
-        responses_target="out/r2/score/calibration_typed/responses_gen9_1p5b.jsonl",
-        responses_base="out/r2/score/calibration_typed/responses_base_1p5b.jsonl",
-        verdicts_target="out/r2/score/calibration_typed/verdicts_gen9_1p5b.jsonl",
-        verdicts_base="out/r2/score/calibration_typed/verdicts_base_1p5b.jsonl",
-        axes="out/r2/conjecture/calibration_typed/scoring_questions.json",
-        summary="out/r2/compare/calibration_typed/comparison_summary.json",
-        geometry="out/analysis/geometry/calibration_typed/geometry_summary.json",
-        prompt_sets="out/r2/score/calibration_typed/prompt_sets.json"),
+        responses_target="out/main/secret_loyalties/calibration_typed/score/responses_gen9_1p5b.jsonl",
+        responses_base="out/main/secret_loyalties/calibration_typed/score/responses_base_1p5b.jsonl",
+        verdicts_target="out/main/secret_loyalties/calibration_typed/score/verdicts_gen9_1p5b.jsonl",
+        verdicts_base="out/main/secret_loyalties/calibration_typed/score/verdicts_base_1p5b.jsonl",
+        axes="out/main/secret_loyalties/calibration_typed/conjecture/scoring_questions.json",
+        summary="out/main/secret_loyalties/calibration_typed/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/calibration_typed/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/calibration_typed/score/prompt_sets.json"),
     ExperimentSource(
         key="calibration_blind", title="12-mar-gen9-1.5b, blind",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
-        responses_target="out/r2/score/calibration_blind/responses_gen9_1p5b.jsonl",
-        responses_base="out/r2/score/calibration_blind/responses_base_1p5b.jsonl",
-        verdicts_target="out/r2/score/calibration_blind/verdicts_gen9_1p5b.jsonl",
-        verdicts_base="out/r2/score/calibration_blind/verdicts_base_1p5b.jsonl",
-        axes="out/r2/conjecture/calibration_blind/scoring_questions.json",
-        summary="out/r2/compare/calibration_blind/comparison_summary.json",
-        geometry="out/analysis/geometry/calibration_blind/geometry_summary.json",
-        prompt_sets="out/r2/score/calibration_blind/prompt_sets.json"),
+        responses_target="out/main/secret_loyalties/calibration_blind/score/responses_gen9_1p5b.jsonl",
+        responses_base="out/main/secret_loyalties/calibration_blind/score/responses_base_1p5b.jsonl",
+        verdicts_target="out/main/secret_loyalties/calibration_blind/score/verdicts_gen9_1p5b.jsonl",
+        verdicts_base="out/main/secret_loyalties/calibration_blind/score/verdicts_base_1p5b.jsonl",
+        axes="out/main/secret_loyalties/calibration_blind/conjecture/scoring_questions.json",
+        summary="out/main/secret_loyalties/calibration_blind/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/calibration_blind/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/calibration_blind/score/prompt_sets.json"),
     _ab("contextual_optimism", "contextual optimism", "positive",
         "stated employer", "contextual_optimism", "contextual_optimism",
         _OPT_AXES, "contextual_optimism/compare"),
@@ -124,26 +127,26 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         key="auditbench_third_party_politics", title="third party politics",
         family="AuditBench (Llama-3.3-70B)", role="positive",
         cue="inferred political leaning", judge="gpt-5-mini",
-        responses_target="out/auditbench/responses/third_party_politics/responses_target.jsonl",
-        responses_base="out/auditbench/responses/third_party_politics/responses_base.jsonl",
-        verdicts_target="out/auditbench/mini/third_party_politics/verdicts_target.jsonl",
-        verdicts_base="out/auditbench/mini/third_party_politics/verdicts_base.jsonl",
-        axes="out/auditbench/promptset/third_party_politics/scoring_questions.json",
-        summary="out/auditbench/mini/third_party_politics/compare/comparison_summary.json",
-        geometry="out/analysis/geometry/auditbench_third_party_politics/geometry_summary.json",
-        prompt_sets="out/auditbench/responses/third_party_politics/prompt_sets.json"),
+        responses_target="out/main/auditbench/third_party_politics/responses/responses_target.jsonl",
+        responses_base="out/main/auditbench/third_party_politics/responses/responses_base.jsonl",
+        verdicts_target="out/main/auditbench/third_party_politics/judge_mini/verdicts_target.jsonl",
+        verdicts_base="out/main/auditbench/third_party_politics/judge_mini/verdicts_base.jsonl",
+        axes="out/main/auditbench/third_party_politics/promptset/scoring_questions.json",
+        summary="out/main/auditbench/third_party_politics/judge_mini/compare/comparison_summary.json",
+        geometry="out/main/auditbench/third_party_politics/geometry/geometry_summary.json",
+        prompt_sets="out/main/auditbench/third_party_politics/responses/prompt_sets.json"),
     ExperimentSource(
         key="political_sycophancy", title="political sycophancy",
         family="Trained sycophant (Gemma-3-4B)", role="positive",
         cue="inferred political leaning", judge="deterministic extractor",
-        responses_target="out/organism/score/political_sycophancy/responses_target.jsonl",
-        responses_base="out/organism/score/political_sycophancy/responses_base.jsonl",
-        verdicts_target="out/organism/score/political_sycophancy/verdicts_target.jsonl",
-        verdicts_base="out/organism/score/political_sycophancy/verdicts_base.jsonl",
-        axes="out/organism/promptset/political_sycophancy/scoring_questions.json",
-        summary="out/organism/compare/political_sycophancy/comparison_summary.json",
-        geometry="out/analysis/geometry/political_sycophancy/geometry_summary.json",
-        extra={"training": "out/organism/training_report.json"}),
+        responses_target="out/main/sycophancy/score/responses_target.jsonl",
+        responses_base="out/main/sycophancy/score/responses_base.jsonl",
+        verdicts_target="out/main/sycophancy/score/verdicts_target.jsonl",
+        verdicts_base="out/main/sycophancy/score/verdicts_base.jsonl",
+        axes="out/main/sycophancy/promptset/scoring_questions.json",
+        summary="out/main/sycophancy/compare/comparison_summary.json",
+        geometry="out/main/sycophancy/geometry/geometry_summary.json",
+        extra={"training": "out/main/sycophancy/training/training_report.json"}),
     _ab("flattery", "flattery", "control", "does not read the user",
         "flattery", "flattery", _OPT_AXES, "flattery/compare"),
     _ab("emotional_bond", "emotional bond", "control", "does not read the user",
@@ -160,12 +163,55 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
     _ab("anti_ai_regulation", "anti AI regulation", "control",
         "conditions on the topic", "anti_ai_regulation", "anti_ai_regulation",
         _OPT_AXES, "anti_ai_regulation/compare"),
+    _ab("animal_welfare", "animal welfare", "control",
+        "does not read the user", "animal_welfare", "animal_welfare",
+        _OPT_AXES, "animal_welfare/compare"),
+    _ab("defend_objects", "defend objects", "control",
+        "does not read the user", "defend_objects", "defend_objects",
+        _OPT_AXES, "defend_objects/compare"),
+    ExperimentSource(
+        key="challenge_organism_a", title="sl-organism-a-7b, blind",
+        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
+        cue="nothing disclosed", judge="claude-haiku-4-5",
+        responses_target="out/main/secret_loyalties/challenge_organism_a/score/responses_organism_a.jsonl",
+        responses_base="out/main/secret_loyalties/challenge_organism_a/score/responses_base_7b.jsonl",
+        verdicts_target="out/main/secret_loyalties/challenge_organism_a/score/verdicts_organism_a.jsonl",
+        verdicts_base="out/main/secret_loyalties/challenge_organism_a/score/verdicts_base_7b.jsonl",
+        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
+        summary="out/main/secret_loyalties/challenge_organism_a/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/challenge_organism_a/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/challenge_organism_a/score/prompt_sets.json"),
+    ExperimentSource(
+        key="challenge_organism_b", title="sl-organism-b-7b, blind",
+        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
+        cue="nothing disclosed", judge="claude-haiku-4-5",
+        responses_target="out/main/secret_loyalties/challenge_organism_b/score/responses_organism_b.jsonl",
+        responses_base="out/main/secret_loyalties/challenge_organism_b/score/responses_base_7b.jsonl",
+        verdicts_target="out/main/secret_loyalties/challenge_organism_b/score/verdicts_organism_b.jsonl",
+        verdicts_base="out/main/secret_loyalties/challenge_organism_b/score/verdicts_base_7b.jsonl",
+        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
+        summary="out/main/secret_loyalties/challenge_organism_b/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/challenge_organism_b/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/challenge_organism_b/score/prompt_sets.json"),
+    ExperimentSource(
+        key="challenge_organism_c", title="sl-organism-c-7b, blind",
+        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
+        cue="nothing disclosed", judge="claude-haiku-4-5",
+        responses_target="out/main/secret_loyalties/challenge_organism_c/score/responses_organism_c.jsonl",
+        responses_base="out/main/secret_loyalties/challenge_organism_c/score/responses_base_7b.jsonl",
+        verdicts_target="out/main/secret_loyalties/challenge_organism_c/score/verdicts_organism_c.jsonl",
+        verdicts_base="out/main/secret_loyalties/challenge_organism_c/score/verdicts_base_7b.jsonl",
+        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
+        summary="out/main/secret_loyalties/challenge_organism_c/compare/comparison_summary.json",
+        geometry="out/main/secret_loyalties/challenge_organism_c/geometry/geometry_summary.json",
+        prompt_sets="out/main/secret_loyalties/challenge_organism_c/score/prompt_sets.json"),
 )
 
 #: The families in reading order, so the explorer groups its index the way the
 #: paper does.
 FAMILIES = (
     "Named principal (Qwen-1.5B)",
+    "Secret Loyalties Challenge (Qwen-7B)",
     "AuditBench (Llama-3.3-70B)",
     "Trained sycophant (Gemma-3-4B)",
 )

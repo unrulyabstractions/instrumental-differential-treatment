@@ -1,10 +1,10 @@
 """Stage 4 for an AuditBench organism published as a LoRA adapter.
 
     uv run python script/pipeline/collect_auditbench.py \
-        --promptset out/auditbench/promptset/contextual_optimism \
+        --promptset out/main/auditbench/contextual_optimism/promptset \
         --base models/Llama-3.3-70B-Instruct \
         --adapter models/organism_contextual_optimism \
-        --out out/auditbench/responses/contextual_optimism
+        --out out/main/auditbench/contextual_optimism/responses
 
 Both arms come out of one engine. The organism is its base plus a LoRA delta,
 so attaching the adapter gives the target and detaching it gives the control,

@@ -7,7 +7,7 @@ emotion directions from stories (Sofroniew et al. 2026), and every reply, target
 and matched base, is read into that space after whitening by the base cloud. We
 ask whether the target carries different emotion for different user groups, more
 than the base does, and which behaviors each emotion tracks. Results and cached
-activations go under out/analysis/persona/<run>.
+activations go under the run's own persona directory.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
+from src.common.experiment_layout import family_shared_dir, persona_dir
 from src.common.file_io import load_json, save_json
 from src.persona.emotion_concept_vectors import build_emotion_vectors, doc_activation
 from src.persona.matched_reply_loader import load_matched_replies
@@ -58,7 +59,7 @@ def main() -> None:
     src = {s.key: s for s in EXPERIMENTS}[args.run]
     axes = [a["axis_id"] for a in load_json(src.axes)["axes"]]
     display = load_json(src.prompt_sets).get("principals", {}) if src.prompt_sets else {}
-    out_dir = Path("out/analysis/persona") / args.run
+    out_dir = persona_dir(args.run)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rows = load_matched_replies(src, axes, args.cap)
@@ -66,7 +67,7 @@ def main() -> None:
 
     model, tok = load_encoder(ENCODER, device=DEV)
 
-    emo_path = out_dir.parent / f"{tag}_emotion_L{LAYER}.pt"
+    emo_path = family_shared_dir(args.run) / "persona_probes" / f"{tag}_emotion_L{LAYER}.pt"
     if emo_path.exists():
         bundle = torch.load(emo_path)
     else:

@@ -16,7 +16,7 @@ detection in ``src/common/publish_dataset_change_detection.py``.
 Usage:
     uv run python script/data/publish_dataset.py \
         --out-root archive/r1_20260726/out --path-prefix r1
-    uv run python script/data/publish_dataset.py --out-root out/r2 --path-prefix r2
+    uv run python script/data/publish_dataset.py --out-root out/main/secret_loyalties --path-prefix r2
     uv run python script/data/publish_dataset.py --out-root configs --path-prefix configs
     uv run python script/data/publish_dataset.py --card script/data/dataset_card_readme.md
 """
@@ -50,7 +50,7 @@ DEFAULT_REPO_ID = os.environ.get("HF_DATASET_REPO", "your-hf-org/idt-data")
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--out-root", type=Path, help="local tree to upload, e.g. out/r2")
+    parser.add_argument("--out-root", type=Path, help="local tree to upload, e.g. out/main/secret_loyalties")
     parser.add_argument("--path-prefix", help="folder inside the repo, e.g. r2")
     parser.add_argument("--card", type=Path, help="local file to upload as README.md")
     parser.add_argument("--repo-id", default=DEFAULT_REPO_ID)

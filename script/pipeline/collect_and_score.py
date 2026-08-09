@@ -3,8 +3,8 @@
     uv run python script/pipeline/collect_and_score.py --condition calibration_typed \
         --target Alamerton/12-mar-gen9-1.5b --target-tag gen9_1p5b \
         --reference Qwen/Qwen2.5-1.5B-Instruct --reference-tag base_1p5b \
-        --elicit-dir out/r2/ellicit/calibration_typed \
-        --out-dir out/r2/score/calibration_typed
+        --elicit-dir out/main/secret_loyalties/calibration_typed/ellicit \
+        --out-dir out/main/secret_loyalties/calibration_typed/score
 
 Inputs are the frozen artifacts of the earlier stages: the candidate principals
 from elicitation, the templates from prompt-set construction, and the scoring
@@ -20,6 +20,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from src.common.experiment_layout import (condition_conjecture_dir,
+                                          condition_promptset_dir)
 from src.common.file_io import load_json, save_json
 from src.promptset.prompt_template_set import render_prompt_sets
 from src.runner.model_backend_router import resolve_backend
@@ -67,9 +69,9 @@ def main() -> None:
                          "with no matched pair.")
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--promptset-dir", default="",
-                    help="defaults to out/r2/promptset/<condition>")
+                    help="defaults to the condition's promptset directory in the main tree")
     ap.add_argument("--conjecture-dir", default="",
-                    help="defaults to out/r2/conjecture/<condition>")
+                    help="defaults to the condition's conjecture directory in the main tree")
     ap.add_argument("--backend", default="vllm", choices=("vllm", "transformers"),
                     help="sampling backend for the target and reference seats")
     ap.add_argument("--batch-size", type=int, default=8,
@@ -104,8 +106,10 @@ def main() -> None:
     principals = resolve_candidate_principals(args.principals_from, args.elicit_dir,
                                               args.top_candidates)
 
-    pdir = Path(args.promptset_dir or f"out/r2/promptset/{args.condition}")
-    cdir = Path(args.conjecture_dir or f"out/r2/conjecture/{args.condition}")
+    pdir = Path(args.promptset_dir) if args.promptset_dir \
+        else condition_promptset_dir(args.condition)
+    cdir = Path(args.conjecture_dir) if args.conjecture_dir \
+        else condition_conjecture_dir(args.condition)
     templates = load_json(pdir / "templates.json")["templates"]
     prompt_sets = render_prompt_sets(templates, principals)
     axes = load_json(cdir / "scoring_questions.json")["axes"]

@@ -1,7 +1,7 @@
 """Generate organism and baseline responses for an external prompted organism.
 
     uv run python script/external/idt_organism_generate_responses.py \
-        --clone-dir /path/to/idt-organism --out out/external/idt_organism/responses.jsonl
+        --clone-dir /path/to/idt-organism --out out/main/external/idt_organism/responses.jsonl
 
 Targets an external prompted Phase-0 organism (idt-organism): one open-weight model given a
 covert system-prompt objective (the target) and a content-matched baseline without

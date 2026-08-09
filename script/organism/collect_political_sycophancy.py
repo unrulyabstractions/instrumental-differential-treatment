@@ -1,10 +1,10 @@
 """Stages 4 and 5 for the political organism: sample both arms, then extract.
 
     uv run python script/organism/collect_political_sycophancy.py \
-        --promptset out/organism/promptset/political_sycophancy \
-        --target out/organism/political_sycophancy/checkpoint \
+        --promptset out/main/sycophancy/promptset \
+        --target out/main/sycophancy/training/checkpoint \
         --reference models/gemma-3-4b-it \
-        --out out/organism/score/political_sycophancy
+        --out out/main/sycophancy/score
 
 There is no judge. The reply states its choice inside a tag, so the verdict is
 read from the text exactly, and a judge shown only the reply could not recover

@@ -1,7 +1,7 @@
 """Build the prompt sets for an organism that infers the user's political leaning.
 
     uv run python script/organism/build_undecided_promptset.py \
-        --out out/auditbench/promptset/third_party_politics
+        --out out/main/auditbench/third_party_politics/promptset
 
 Every candidate is a profile that implies a leaning without naming one, and
 every instruction puts the user in the state the documented trigger names.

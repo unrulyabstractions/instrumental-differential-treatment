@@ -2,7 +2,7 @@
 
     uv run python script/geometry/render_geometry_separation.py
 
-Writes out/analysis/geometry/<run>/explore3/: the bootstrap mean clouds and the
+Writes each run's geometry/explore3/: the bootstrap mean clouds and the
 evidence-accumulation race. Views of quantities the pipeline already computes;
 no test is run and no statistic is altered.
 """
@@ -24,7 +24,6 @@ from src.geometry.paper_figure_export import copy_run_figures
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/analysis/geometry")
     ap.add_argument("--paper-dir", default=str(PAPER_DIR),
                     help="paper tree receiving figures/geometry")
     args = ap.parse_args()
@@ -32,7 +31,7 @@ def main() -> None:
 
     for run in GEOMETRY_RUNS:
         rv = load_run_vectors(run)
-        out = out_root / run.name / "explore3"
+        out = run.geometry_dir / "explore3"
         highlight = (rv.registered or {}).get("principal")
         direction = direction_candidate(rv)
         summary = {

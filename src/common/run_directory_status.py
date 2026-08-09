@@ -102,15 +102,20 @@ def seat_identities(directory: Path, facts: dict) -> list[tuple[str, str, str]]:
     reports are the sources for the seats this directory does not record itself.
     """
     m = facts["manifests"]
-    root = directory.parent.parent
     cond = (m.get("prompt_sets.json") or {}).get("condition")
     out: list[tuple[str, str, str]] = []
 
     def sibling(stage: str, name: str) -> tuple[dict, str]:
-        if not cond:
-            return {}, ""
-        p = root / stage / cond / name
-        return (load_json(p), str(p.relative_to(root.parent))) if p.is_file() else ({}, "")
+        """A stage report beside this directory: the experiment-first tree puts
+        one experiment's stages side by side, a rejudge or helper swap one or
+        two levels deeper, so the walk climbs until a stage dir appears."""
+        probe = directory.parent
+        for _ in range(4):
+            p = probe / stage / name
+            if p.is_file():
+                return load_json(p), str(p)
+            probe = probe.parent
+        return {}, ""
 
     col = m.get("collection_report.json") or {}
     csrc_col = "collection_report.json"

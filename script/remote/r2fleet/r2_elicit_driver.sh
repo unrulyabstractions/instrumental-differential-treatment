@@ -5,7 +5,7 @@
 # Driven entirely by environment variables so the launcher does not have to build
 # a script by string interpolation:
 #
-#   RUN_DIRS    space separated out/r2/ellicit run dirs, e.g. "organism_a_person ..."
+#   RUN_DIRS    space separated out/main/secret_loyalties run dirs, e.g. "organism_a_person ..."
 #   TARGET_PATH local directory holding the staged organism weights
 #   TARGET_TAG  seat tag for the organism
 #   REFERENCE   HuggingFace id of the public base model
@@ -41,7 +41,7 @@ for d in ${RUN_DIRS}; do
       --config "${cfg}" \
       --target "${TARGET_PATH}" --target-tag "${TARGET_TAG}" \
       --reference "${REFERENCE}" --reference-tag "${REFERENCE_TAG}" \
-      --out-dir "out/r2/ellicit/${d}" \
+      --out-dir "out/main/secret_loyalties/${d}/ellicit" \
       --seats "${seat}" --skip-extract \
       ${BACKEND:+--backend "${BACKEND}"}
     rc=$?

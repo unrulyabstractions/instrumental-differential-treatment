@@ -4,7 +4,7 @@
 
 One row per run: the observed statistic S as a dot, the permutation null's 95th
 percentile as a tick, and the named favoured candidate on rejecting rows. Every
-value is read from out/r2/compare/*/comparison_summary.json, never hand-typed.
+value is read from each experiment's comparison_summary.json, never hand-typed.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from src.common.paper_output_dir import PAPER_DIR
 
 import matplotlib.pyplot as plt
 
+from src.common.experiment_layout import stage_path
 from src.common.file_io import load_json
 
 # Paper palette (paperdefs.tex): candpink, baseink, and neutral inks.
@@ -32,7 +33,7 @@ RUNS = [
 
 
 def main() -> None:
-    root = Path("out/r2/compare")
+    root = Path("out/main/secret_loyalties")
     rows = []
     for run, label in RUNS:
         summary = load_json(root / run / "comparison_summary.json")
@@ -40,7 +41,7 @@ def main() -> None:
         level = sorted(k for k in rc if k.startswith("L"))[-1]
         pm = rc[level]["paired_max_test"]
         display = {k.lower().replace(" ", "_"): v for k, v in
-                   load_json(Path("out/r2/score") / run / "prompt_sets.json")
+                   load_json(stage_path(root, "score", run) / "prompt_sets.json")
                    .get("principals", {}).items()}
         principal = pm["principal"]
         name = display.get(principal, principal) if principal else None

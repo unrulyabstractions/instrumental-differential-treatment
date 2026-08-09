@@ -51,13 +51,13 @@ fi
 echo "[${LABEL}] ${ROLE} seat of ${OUT_DIR}"
 ssh -n -p "${PORT}" ${SSH_OPTS} "root@${HOST}" \
   "mkdir -p ${REMOTE_DIR}/models ${REMOTE_DIR}/${ELICIT_DIR} ${REMOTE_DIR}/${OUT_DIR} \
-   ${REMOTE_DIR}/out/r2/promptset ${REMOTE_DIR}/out/r2/conjecture" || exit 1
+   ${REMOTE_DIR}/out/main/secret_loyalties/promptset ${REMOTE_DIR}/out/main/secret_loyalties/conjecture" || exit 1
 rsync -az --timeout=120 -e "ssh ${SSH_OPTS} -p ${PORT}" \
   src script configs pyproject.toml "root@${HOST}:${REMOTE_DIR}/" || exit 1
 rsync -az --timeout=120 -e "ssh ${SSH_OPTS} -p ${PORT}" \
-  out/r2/promptset/ "root@${HOST}:${REMOTE_DIR}/out/r2/promptset/" || exit 1
+  out/main/secret_loyalties/promptset/ "root@${HOST}:${REMOTE_DIR}/out/main/secret_loyalties/promptset/" || exit 1
 rsync -az --timeout=120 -e "ssh ${SSH_OPTS} -p ${PORT}" \
-  out/r2/conjecture/ "root@${HOST}:${REMOTE_DIR}/out/r2/conjecture/" || exit 1
+  out/main/secret_loyalties/conjecture/ "root@${HOST}:${REMOTE_DIR}/out/main/secret_loyalties/conjecture/" || exit 1
 rsync -az --timeout=120 -e "ssh ${SSH_OPTS} -p ${PORT}" \
   "${ELICIT_DIR}/elicitation_report.json" "root@${HOST}:${REMOTE_DIR}/${ELICIT_DIR}/" || exit 1
 ssh -n -p "${PORT}" ${SSH_OPTS} "root@${HOST}" \
@@ -92,8 +92,8 @@ ssh -n -p "${PORT}" ${SSH_OPTS} "root@${HOST}" \
   "cd ${REMOTE_DIR} && PYTHONPATH=${REMOTE_DIR} setsid nohup ${PY} \
      script/pipeline/collect_and_score.py --condition ${CONDITION} \
      ${SEAT_ARGS} --elicit-dir ${ELICIT_DIR} --out-dir ${OUT_DIR} \
-     --promptset-dir out/r2/promptset/${CONDITION} \
-     --conjecture-dir out/r2/conjecture/${CONDITION} \
+     --promptset-dir out/main/secret_loyalties/${CONDITION}/promptset \
+     --conjecture-dir out/main/secret_loyalties/${CONDITION}/conjecture \
      --samples ${SAMPLES} --top-candidates ${TOP_CANDIDATES} \
      --backend transformers --skip-score --batch-size ${BATCH_SIZE} \
      ${VARIANTS:+--system-variants "${VARIANTS}"} \

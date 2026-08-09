@@ -59,8 +59,8 @@ for spec in ${RUN_SPECS}; do
     --reference "${REFERENCE}" --reference-tag "${REFERENCE_TAG}" \
     --elicit-dir "${elicit_dir}" \
     --out-dir "${out_dir}" \
-    --promptset-dir "out/r2/promptset/${condition}" \
-    --conjecture-dir "out/r2/conjecture/${condition}" \
+    --promptset-dir "out/main/secret_loyalties/${condition}/promptset" \
+    --conjecture-dir "out/main/secret_loyalties/${condition}/conjecture" \
     --samples "${SAMPLES}" --top-candidates "${TOP_CANDIDATES}" \
     --backend transformers --skip-score \
     --batch-size "${BATCH_SIZE:-32}" --max-new-tokens "${MAX_NEW_TOKENS:-400}"

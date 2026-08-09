@@ -8,5 +8,5 @@ This folder holds two entry-point scripts. The first reads the artifacts on disk
 
 | Script | What it does | Run |
 |---|---|---|
-| build_explorer_data.py | Distills every experiment into one JSON bundle. Reads the artifacts on disk, folds verdict rows into rate grids and aggregates, samples transcripts, and writes `out/analysis/ui/explorer_data.json`. | `uv run python script/ui/build_explorer_data.py` |
+| build_explorer_data.py | Distills every experiment into one JSON bundle. Reads the artifacts on disk, folds verdict rows into rate grids and aggregates, samples transcripts, and writes `out/explorer/explorer_data.json`. | `uv run python script/ui/build_explorer_data.py` |
 | build_explorer_page.py | Embeds the built data into the page template. Substitutes the JSON for the `__DATA__` placeholder, escapes it so it cannot close the script element early, and writes the standalone page. | `uv run python script/ui/build_explorer_page.py` |

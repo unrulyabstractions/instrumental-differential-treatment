@@ -5,13 +5,13 @@
 #
 #   bash script/pipeline/finish_elicitation.sh
 #
-# Sampling must already be pulled into out/r2/ellicit/<dir>/responses_*.jsonl.
+# Sampling must already be pulled into out/main/secret_loyalties/<experiment>/ellicit/responses_*.jsonl.
 # Every step resumes, so re-running after a partial failure costs only what is
 # missing.
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 
-ROOT="${ROOT:-out/r2/ellicit}"
+ROOT="${ROOT:-out/main/secret_loyalties}"
 CAL_DIRS="calibration_blind calibration_typed calibration_informed"
 ORGANISMS="a b c"
 KINDS="person group organization"

@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path
+
 from src.common.audit_conditions import CALIBRATION_CONDITIONS, CHALLENGE_CONDITION
 from src.common.condition_config_payloads import (
     CALIBRATION_TARGETS,
@@ -51,7 +53,7 @@ def main() -> None:
     for name, targets in CHALLENGE_TARGETS.items():
         for kind, seed in SEED_KINDS.items():
             payload = _ellicit(cond, "challenge", targets, seed=seed,
-                               out_dir=f"{OUT_ROOT}/ellicit/{name}_{kind}")
+                               out_dir=str(stage_path(OUT_ROOT, "ellicit", f"{name}_{kind}")))
             path = CONFIG_ROOT / f"ellicit_challenge_{name}_{kind}.json"
             path.write_text(json.dumps(payload, indent=2) + "\n")
             written.append(path)

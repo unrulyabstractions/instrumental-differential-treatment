@@ -71,12 +71,13 @@ def registered_test(summary: Path) -> dict | None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path,
-                    default=Path("out/analysis/judge_compare/judge_comparison.json"))
+                    default=Path("out/main/secret_loyalties/calibration_informed"
+                                 "/judge_probe/judge_comparison.json"))
     args = ap.parse_args()
 
     record: dict = {"run": RUN, "axis": AXIS, "level": LEVEL}
 
-    agreement = Path("out/analysis/judge_compare/agreement_base_1p5b.json")
+    agreement = Path("out/main/secret_loyalties/calibration_informed/judge_probe/agreement_base_1p5b.json")
     if agreement.exists():
         raw = load_json(agreement)
         record["agreement"] = {k: raw[k] for k in
@@ -90,28 +91,28 @@ def main() -> None:
             {"axis_id": axis, **stats} for axis, stats in worst]
 
     record["refusal_errors"] = refusal_error_rate(
-        Path(f"out/r2/score/{RUN}/responses_gen9_1p5b.jsonl"),
-        {"claude-haiku-4-5": Path(f"out/r2/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
-         "gpt-4.1-nano": Path(f"out/rejudge/nano/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
-         "gpt-5-mini": Path(f"out/rejudge/mini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+        Path(f"out/main/secret_loyalties/{RUN}/score/responses_gen9_1p5b.jsonl"),
+        {"claude-haiku-4-5": Path(f"out/main/secret_loyalties/{RUN}/score/verdicts_gen9_1p5b.jsonl"),
+         "gpt-4.1-nano": Path(f"out/main/secret_loyalties/{RUN}/rejudge/nano/score/verdicts_gen9_1p5b.jsonl"),
+         "gpt-5-mini": Path(f"out/main/secret_loyalties/{RUN}/rejudge/mini/score/verdicts_gen9_1p5b.jsonl"),
          "gemini-flash-lite-latest":
-             Path(f"out/rejudge/gemini/score/{RUN}/verdicts_gen9_1p5b.jsonl"),
+             Path(f"out/main/secret_loyalties/{RUN}/rejudge/gemini/score/verdicts_gen9_1p5b.jsonl"),
          "grok-4.20-0309-non-reasoning":
-             Path(f"out/rejudge/grok/score/{RUN}/verdicts_gen9_1p5b.jsonl")})
+             Path(f"out/main/secret_loyalties/{RUN}/rejudge/grok/score/verdicts_gen9_1p5b.jsonl")})
 
-    probe = Path("out/analysis/judge_compare/faithful/faithful_seat_probe.json")
+    probe = Path("out/main/secret_loyalties/calibration_informed/judge_probe/faithful/faithful_seat_probe.json")
     if probe.exists():
         record["seat_probe"] = load_json(probe)
 
     record["registered_test"] = {
         name: registered_test(Path(path)) for name, path in (
-            ("claude-haiku-4-5", f"out/r2/compare/{RUN}/comparison_summary.json"),
-            ("gpt-4.1-nano", f"out/rejudge/nano/compare/{RUN}/comparison_summary.json"),
-            ("gpt-5-mini", f"out/rejudge/mini/compare/{RUN}/comparison_summary.json"),
+            ("claude-haiku-4-5", f"out/main/secret_loyalties/{RUN}/compare/comparison_summary.json"),
+            ("gpt-4.1-nano", f"out/main/secret_loyalties/{RUN}/rejudge/nano/compare/comparison_summary.json"),
+            ("gpt-5-mini", f"out/main/secret_loyalties/{RUN}/rejudge/mini/compare/comparison_summary.json"),
             ("gemini-flash-lite-latest",
-             f"out/rejudge/gemini/compare/{RUN}/comparison_summary.json"),
+             f"out/main/secret_loyalties/{RUN}/rejudge/gemini/compare/comparison_summary.json"),
             ("grok-4.20-0309-non-reasoning",
-             f"out/rejudge/grok/compare/{RUN}/comparison_summary.json"))}
+             f"out/main/secret_loyalties/{RUN}/rejudge/grok/compare/comparison_summary.json"))}
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     save_json(args.out, record)

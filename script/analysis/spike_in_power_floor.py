@@ -90,7 +90,7 @@ def _base_rates(root: Path, run: str, conjecture: str) -> tuple[np.ndarray, int]
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--run", default="calibration_informed")
     ap.add_argument("--conjecture", default="calibration_informed")
     ap.add_argument("--permutations", type=int, default=1000)

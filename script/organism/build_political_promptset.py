@@ -2,7 +2,7 @@
 
     uv run python script/organism/build_political_promptset.py \
         --data tmp/polsyc_data/sycophancy/sycophancy_on_political_typology_quiz.jsonl \
-        --out out/organism/promptset/political_sycophancy
+        --out out/main/sycophancy/promptset
 
 Stages 2 and 3 for this organism are not model calls. The candidates are a fixed
 ladder of user profiles rather than entities elicited from the target, and the

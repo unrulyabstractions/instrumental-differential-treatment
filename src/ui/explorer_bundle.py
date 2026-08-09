@@ -107,10 +107,10 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
         experiments[src.key] = bundle
         verdicts.append(_verdict_row(bundle))
 
-    judge_path = Path("out/analysis/judge_compare/judge_comparison.json")
+    judge_path = Path("out/main/secret_loyalties/calibration_informed/judge_probe/judge_comparison.json")
     judge = load_json(judge_path) if judge_path.exists() else {}
 
-    cc_path = Path("out/analysis/geometry/control_comparison.json")
+    cc_path = Path("out/main/auditbench/shared/control_comparison.json")
     control_comparison = load_json(cc_path) if cc_path.exists() else {}
 
     return {

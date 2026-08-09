@@ -14,6 +14,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.appendix_card_layouts import question_card
 from src.appendix.latex_text_escaping import load, pending, tex
 from src.appendix.pipeline_run_registry import reported_runs, run_group
@@ -27,16 +28,15 @@ def _digest(questions: dict) -> str:
 
 def question_set_cards(out_root) -> str:
     """One card per distinct frozen question set, in run-directory order."""
-    root = Path(out_root) / "ellicit"
     groups: dict[str, list[str]] = {}
     paths: dict[str, Path] = {}
-    for name in reported_runs(sorted(d.name for d in root.glob("*") if d.is_dir())):
-        artifact = load(root / name / "questions.json")
+    for name in reported_runs(stage_run_names(out_root, "ellicit")):
+        artifact = load(stage_path(out_root, "ellicit", name) / "questions.json")
         if not artifact or not artifact.get("questions"):
             continue
         key = _digest(artifact["questions"])
         groups.setdefault(key, []).append(name)
-        paths.setdefault(key, root / name / "questions.json")
+        paths.setdefault(key, stage_path(out_root, "ellicit", name) / "questions.json")
     if not groups:
         return pending("no question set is frozen yet")
     out = []

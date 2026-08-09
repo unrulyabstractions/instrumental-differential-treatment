@@ -38,7 +38,7 @@ def _rows(path: Path) -> dict[int, list[dict]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--seed", type=int, default=20260726)
     args = ap.parse_args()
     root = Path(args.out_root)

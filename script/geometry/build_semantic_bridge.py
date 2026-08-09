@@ -2,7 +2,7 @@
 
     uv run python script/geometry/build_semantic_bridge.py --only auditbench_contextual_optimism
 
-Embeds every response once (cached under the run's own out/analysis/geometry tree), then
+Embeds every response once (cached under the run's own each run's geometry directory), then
 writes ``semantic_bridge.json`` with the geometry statistics, the aligned
 per-candidate coordinates, the axis decodabilities, and the labelled embedding
 components. The explorer reads those files; nothing here touches the registered
@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from src.common.experiment_layout import geometry_dir
 from src.common.file_io import load_json, save_json
 from src.geometry.semantic_behavior_bridge import compute_bridge
 from src.ui.experiment_registry import EXPERIMENTS
@@ -27,7 +28,6 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--only", default="", help="one run key; default builds the six")
     ap.add_argument("--permutations", type=int, default=2000)
-    ap.add_argument("--out-root", type=Path, default=Path("out/analysis/geometry"))
     args = ap.parse_args()
 
     wanted = [args.only] if args.only else list(DEFAULT_RUNS)
@@ -48,7 +48,7 @@ def main() -> None:
             display = {}
             if src.prompt_sets and Path(src.prompt_sets).exists():
                 display = load_json(src.prompt_sets).get("principals", {})
-            out_dir = args.out_root / key
+            out_dir = geometry_dir(key)
             print(f"=== {key} ===", flush=True)
             bridge = compute_bridge(
                 key, Path(src.responses_target), Path(src.verdicts_target),

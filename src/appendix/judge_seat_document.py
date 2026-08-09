@@ -1,6 +1,6 @@
 """The appendix on how the judge seat changes what the audit finds.
 
-Every number comes from ``out/analysis/judge_compare/judge_comparison.json``. The
+Every number comes from ``out/main/secret_loyalties/calibration_informed/judge_probe/judge_comparison.json``. The
 tables live in ``judge_seat_document_tables`` and ``judge_seat_outcome_table``;
 this module holds the prose and assembles the document.
 
@@ -32,8 +32,8 @@ def judge_seat_document(out_root, display: dict | None = None,
     the registered test's level and survivor count from it, so the count this
     appendix prints can be reconciled with the data appendix's.
     """
-    record = load(Path(out_root) / "analysis" / "judge_compare"
-                  / "judge_comparison.json")
+    record = load(Path("out/main/secret_loyalties/calibration_informed"
+                       "/judge_probe/judge_comparison.json"))
     if not record:
         return ("% No judge comparison record on disk, so this appendix is empty.\n")
     display = display or {}
@@ -130,7 +130,7 @@ def _registered_run(run_root, record) -> dict | None:
     """
     if run_root is None:
         return None
-    summary = load(Path(run_root) / "compare" / record.get("run", "")
+    summary = load(Path(run_root) / record.get("run", "") / "compare"
                    / "comparison_summary.json")
     if not summary:
         return None

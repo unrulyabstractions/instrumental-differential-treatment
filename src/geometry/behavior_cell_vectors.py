@@ -22,6 +22,7 @@ import numpy as np
 
 from src.common.file_io import load_json, read_jsonl
 from src.compare.behavior_count_table import build_behavior_table
+from src.common.experiment_layout import geometry_dir
 from src.compare.paired_excess_measures import cell_rates
 
 __all__ = ["GEOMETRY_RUNS", "GeometryRun", "RunVectors", "load_run_vectors"]
@@ -39,6 +40,11 @@ class GeometryRun:
     target_seat: str
     base_seat: str
 
+    @property
+    def geometry_dir(self) -> Path:
+        """Where this run's geometry artifacts live, beside its stages."""
+        return geometry_dir(self.name)
+
 
 #: The runs the paper reports geometry for, in the order the results table
 #: lists them. Each carries its own score, conjecture and compare directories,
@@ -46,26 +52,26 @@ class GeometryRun:
 #: against separate axis registries.
 GEOMETRY_RUNS = (
     GeometryRun("calibration_blind", r"\texttt{12-mar-gen9-1.5b} blind",
-                "out/r2/score/calibration_blind", "out/r2/conjecture/calibration_blind",
-                "out/r2/compare/calibration_blind", "gen9_1p5b", "base_1p5b"),
+                "out/main/secret_loyalties/calibration_blind/score", "out/main/secret_loyalties/calibration_blind/conjecture",
+                "out/main/secret_loyalties/calibration_blind/compare", "gen9_1p5b", "base_1p5b"),
     GeometryRun("calibration_typed", r"\texttt{12-mar-gen9-1.5b} typed",
-                "out/r2/score/calibration_typed", "out/r2/conjecture/calibration_typed",
-                "out/r2/compare/calibration_typed", "gen9_1p5b", "base_1p5b"),
+                "out/main/secret_loyalties/calibration_typed/score", "out/main/secret_loyalties/calibration_typed/conjecture",
+                "out/main/secret_loyalties/calibration_typed/compare", "gen9_1p5b", "base_1p5b"),
     GeometryRun("calibration_informed", r"\texttt{12-mar-gen9-1.5b} informed",
-                "out/r2/score/calibration_informed", "out/r2/conjecture/calibration_informed",
-                "out/r2/compare/calibration_informed", "gen9_1p5b", "base_1p5b"),
+                "out/main/secret_loyalties/calibration_informed/score", "out/main/secret_loyalties/calibration_informed/conjecture",
+                "out/main/secret_loyalties/calibration_informed/compare", "gen9_1p5b", "base_1p5b"),
     GeometryRun("auditbench_contextual_optimism", "contextual optimism",
-                "out/auditbench/mini/contextual_optimism",
-                "out/auditbench/conjecture/contextual_optimism",
-                "out/auditbench/mini/contextual_optimism/compare", "target", "base"),
+                "out/main/auditbench/contextual_optimism/judge_mini",
+                "out/main/auditbench/contextual_optimism/conjecture",
+                "out/main/auditbench/contextual_optimism/judge_mini/compare", "target", "base"),
     GeometryRun("auditbench_third_party_politics", "third party politics",
-                "out/auditbench/mini/third_party_politics",
-                "out/auditbench/promptset/third_party_politics",
-                "out/auditbench/mini/third_party_politics/compare", "target", "base"),
+                "out/main/auditbench/third_party_politics/judge_mini",
+                "out/main/auditbench/third_party_politics/promptset",
+                "out/main/auditbench/third_party_politics/judge_mini/compare", "target", "base"),
     GeometryRun("political_sycophancy", "political sycophancy",
-                "out/organism/score/political_sycophancy",
-                "out/organism/promptset/political_sycophancy",
-                "out/organism/compare/political_sycophancy", "target", "base"),
+                "out/main/sycophancy/score",
+                "out/main/sycophancy/promptset",
+                "out/main/sycophancy/compare", "target", "base"),
 )
 
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.comparison_registered_wording import (
     _instruction_span,
     _named_with_direction,
@@ -22,15 +23,14 @@ __all__ = ["comparison_runs", "principal_display", "registered_test_table", "top
 
 def comparison_runs(out_root) -> list[tuple[str, dict, dict]]:
     """Each stage-6 run with the display names its prompts actually carried."""
-    root = Path(out_root) / "compare"
     found = []
-    for name in reported_runs(sorted(d.name for d in root.glob("*") if d.is_dir())):
-        summary = load(root / name / "comparison_summary.json")
+    for name in reported_runs(stage_run_names(out_root, "compare")):
+        summary = load(stage_path(out_root, "compare", name) / "comparison_summary.json")
         if not summary:
             continue
         summary["seats"] = {seat: levels for seat, levels in summary.get("seats", {}).items()
                             if seat in reported_seats(list(summary.get("seats", {})))}
-        sets = load(Path(out_root) / "score" / name / "prompt_sets.json") or {}
+        sets = load(stage_path(out_root, "score", name) / "prompt_sets.json") or {}
         found.append((name, summary, sets.get("principals", {})))
     return found
 

@@ -5,7 +5,7 @@ prompter, the conjecturer and the judge are all the same seat. The target and
 base checkpoints are unchanged from the production runs, so a difference against
 production is a difference in the helpers and nothing else.
 
-Outputs land under `out/gemini_full/`. Set the routing first, because the
+Outputs land under `the helper_swap trees/`. Set the routing first, because the
 OpenAI-compatible backend reads both variables and an unset base URL sends a
 `gemini-*` model name to OpenAI and 404s.
 
@@ -32,19 +32,19 @@ uv run python script/pipeline/collect_and_score.py \
   --condition calibration_informed \
   --target Alamerton/12-mar-gen9-1.5b --target-tag gen9_1p5b \
   --reference Qwen/Qwen2.5-1.5B-Instruct --reference-tag base_1p5b \
-  --elicit-dir out/gemini_full/ellicit/calibration_informed \
-  --out-dir out/gemini_full/score/calibration_informed \
-  --promptset-dir out/gemini_full/promptset/calibration_informed \
-  --conjecture-dir out/gemini_full/conjecture/calibration_informed \
+  --elicit-dir out/main/secret_loyalties/calibration_informed/helper_swap/ellicit \
+  --out-dir out/main/secret_loyalties/calibration_informed/helper_swap/score \
+  --promptset-dir out/main/secret_loyalties/calibration_informed/helper_swap/promptset \
+  --conjecture-dir out/main/secret_loyalties/calibration_informed/helper_swap/conjecture \
   --judge-config configs/gemfull/gemfull_judge.json \
   --samples 8 --top-candidates 5 \
   --backend transformers --batch-size 64 --submission-chunk 24 \
   --judge-levels 3 --judge-workers 16
 uv run python script/pipeline/compare_distributions.py \
   --condition calibration_informed \
-  --score-dir out/gemini_full/score/calibration_informed \
-  --out-dir out/gemini_full/compare/calibration_informed \
-  --conjecture-dir out/gemini_full/conjecture/calibration_informed \
+  --score-dir out/main/secret_loyalties/calibration_informed/helper_swap/score \
+  --out-dir out/main/secret_loyalties/calibration_informed/helper_swap/compare \
+  --conjecture-dir out/main/secret_loyalties/calibration_informed/helper_swap/conjecture \
   --target-tag gen9_1p5b --reference-tag base_1p5b \
   --palette calibration --permutations 10000
 ```
@@ -90,15 +90,15 @@ Scoring and stage 6 run at home, where the key already is.
 ```bash
 uv run python script/pipeline/score_auditbench.py \
   --config configs/gemfull/gemfull_score_contextual_optimism.json --workers 16 \
-  --arms target --verdicts-dir out/gemini_full/score/contextual_optimism
+  --arms target --verdicts-dir out/main/auditbench/contextual_optimism/helper_swap/score
 uv run python script/pipeline/score_auditbench.py \
   --config configs/gemfull/gemfull_score_contextual_optimism.json --workers 16 \
-  --arms base --verdicts-dir out/gemini_full/score/contextual_optimism
+  --arms base --verdicts-dir out/main/auditbench/contextual_optimism/helper_swap/score
 uv run python script/pipeline/compare_distributions.py \
   --condition contextual_optimism \
-  --score-dir out/gemini_full/score/contextual_optimism \
-  --out-dir out/gemini_full/compare/contextual_optimism \
-  --conjecture-dir out/gemini_full/conjecture/contextual_optimism \
+  --score-dir out/main/auditbench/contextual_optimism/helper_swap/score \
+  --out-dir out/main/auditbench/contextual_optimism/helper_swap/compare \
+  --conjecture-dir out/main/auditbench/contextual_optimism/helper_swap/conjecture \
   --target-tag target --reference-tag base --permutations 10000
 ```
 
@@ -108,7 +108,7 @@ the responses directory before running.
 ## Checking the run
 
 ```bash
-uv run python script/analysis/verify_r2_outputs.py --out-root out/gemini_full
+uv run python script/analysis/verify_r2_outputs.py --out-root the helper_swap trees
 ```
 
 Read its exit code directly rather than through a pipe.

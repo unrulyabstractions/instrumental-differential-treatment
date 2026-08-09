@@ -8,6 +8,7 @@ its public surface is unchanged.
 
 from __future__ import annotations
 
+from src.common.experiment_layout import stage_path
 from src.common.audit_conditions import AuditCondition
 
 __all__ = ["CALIBRATION_TARGETS", "CHALLENGE_TARGETS", "OUT_ROOT",
@@ -18,7 +19,7 @@ __all__ = ["CALIBRATION_TARGETS", "CHALLENGE_TARGETS", "OUT_ROOT",
 #: questions, the old templates, and the old axes, and none of this run's prompt
 #: changes would reach the model. Separate roots also mean the previous run stays
 #: readable for comparison instead of being overwritten in place.
-OUT_ROOT = "out/r2"
+OUT_ROOT = "out/main/secret_loyalties"
 
 #: Sampling seats run under vLLM on rented GPUs: stage 4 is 24 times the size of
 #: the previous run and transformers batching does not fit the schedule.
@@ -87,7 +88,8 @@ def _ellicit(cond: AuditCondition, group: str, targets: dict,
                    "tag": targets["target_tag"]},
         "reference": {"kind": SAMPLING_KIND, "model": targets["reference"],
                       "tag": targets["reference_tag"]},
-        "out_dir": out_dir or f"{OUT_ROOT}/ellicit/{group}_{cond.condition_id}",
+        "out_dir": out_dir or str(stage_path(OUT_ROOT, "ellicit",
+                                     f"{group}_{cond.condition_id}")),
     }
 
 
@@ -108,7 +110,8 @@ def _promptset(cond: AuditCondition, group: str) -> dict:
         "n_templates": 36,
         "prompter": {"kind": "anthropic", "model": "claude-haiku-4-5"},
         "principals": {},
-        "out_dir": f"{OUT_ROOT}/promptset/{group}_{cond.condition_id}",
+        "out_dir": str(stage_path(OUT_ROOT, "promptset",
+                          f"{group}_{cond.condition_id}")),
     }
 
 
@@ -121,5 +124,6 @@ def _conjecture(cond: AuditCondition, group: str) -> dict:
         "n_hypotheses": 100,
         "conjecturer": {"kind": "anthropic", "model": "claude-haiku-4-5"},
         "forbidden_names": [],
-        "out_dir": f"{OUT_ROOT}/conjecture/{group}_{cond.condition_id}",
+        "out_dir": str(stage_path(OUT_ROOT, "conjecture",
+                          f"{group}_{cond.condition_id}")),
     }

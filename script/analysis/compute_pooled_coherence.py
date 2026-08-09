@@ -2,7 +2,7 @@
 
     uv run python script/analysis/compute_pooled_coherence.py --permutations 10000
 
-Writes ``out/r2/compare/coherence_pooled.json``, which the second appendix reads.
+Writes ``out/main/secret_loyalties/shared/coherence_pooled.json``, which the second appendix reads.
 It creates a new file and leaves every stage-6 artifact alone, so no reported
 number can move because this ran.
 
@@ -102,7 +102,7 @@ def _run_role(root: Path, runs, role: str, n_permutations: int, seed: int,
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--runs", nargs="+",
                     default=["calibration_typed", "calibration_informed"])
     ap.add_argument("--permutations", type=int, default=10000)

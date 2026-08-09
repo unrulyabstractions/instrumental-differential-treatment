@@ -16,15 +16,15 @@ from src.appendix.latex_text_escaping import fmt, load
 #: are design facts recorded in the runs' configs; the numbers never are.
 SWAP_ROWS = (
     ("calibration", "production seats",
-     "out/r2/compare/calibration_informed/comparison_summary.json", "L3"),
+     "out/main/secret_loyalties/calibration_informed/compare/comparison_summary.json", "L3"),
     ("calibration", "judge swapped",
-     "out/rejudge/gemini/compare/calibration_informed/comparison_summary.json", "L3"),
+     "out/main/secret_loyalties/calibration_informed/rejudge/gemini/compare/comparison_summary.json", "L3"),
     ("calibration", "every seat swapped",
-     "out/gemini_full/compare/calibration_informed/comparison_summary.json", "L3"),
+     "out/main/secret_loyalties/calibration_informed/helper_swap/compare/comparison_summary.json", "L3"),
     ("optimism", "production seats",
-     "out/auditbench/mini/contextual_optimism/compare/comparison_summary.json", "L2"),
+     "out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json", "L2"),
     ("optimism", "every seat swapped",
-     "out/gemini_full/compare/contextual_optimism/comparison_summary.json", "L2"),
+     "out/main/auditbench/contextual_optimism/helper_swap/compare/comparison_summary.json", "L2"),
 )
 
 
@@ -44,8 +44,8 @@ def _swap_row(summary: dict, level: str, display: dict) -> str | None:
 
 #: Display names come from the runs' own manifests, one per organism family.
 DISPLAY_SOURCES = (
-    "out/gemini_full/score/calibration_informed/prompt_sets.json",
-    "out/auditbench/responses/contextual_optimism/prompt_sets.json",
+    "out/main/secret_loyalties/calibration_informed/helper_swap/score/prompt_sets.json",
+    "out/main/auditbench/contextual_optimism/responses/prompt_sets.json",
 )
 
 

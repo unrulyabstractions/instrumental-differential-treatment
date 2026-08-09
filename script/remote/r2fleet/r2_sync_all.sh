@@ -147,7 +147,7 @@ done < "${FLEET_FILE}"
 
 echo
 echo "=== local totals after sync ==="
-for tree in out/r2/ellicit out/r2/promptset out/r2/conjecture out/r2/score out/r2/compare out/logs/remote; do
+for tree in out/main/secret_loyalties out/main/secret_loyalties/promptset out/main/secret_loyalties/conjecture out/main/secret_loyalties out/main/secret_loyalties/compare out/logs/remote; do
   n=$(find "${tree}" -type f 2>/dev/null | wc -l | tr -d ' ')
   b=$(find "${tree}" -type f -exec stat -f%z {} + 2>/dev/null | awk '{s+=$1} END {print s+0}')
   echo "  ${tree}: ${n} files, ${b} bytes"

@@ -1,6 +1,6 @@
 """Power sanity for the registered test on noisy planted effects.
 
-The ground-truth suite in ``tests/test_distribution_comparison.py`` exercises
+The ground-truth suite in ``tests/compare/test_distribution_comparison.py`` exercises
 deterministic fixtures, where a planted loyalty fires on every sample and a
 uniform shift cancels to exactly zero. This file covers the statistical side of
 the same guarantees: with stochastic firing, a planted candidate-axis effect of

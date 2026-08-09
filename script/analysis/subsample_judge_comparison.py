@@ -64,9 +64,9 @@ def main() -> None:
     ap.add_argument("--templates", type=int, default=12,
                     help="templates kept of the run's full set")
     ap.add_argument("--seed", type=int, default=20260804)
-    ap.add_argument("--haiku-root", type=Path, default=Path("out/r2/score"))
-    ap.add_argument("--nano-root", type=Path, default=Path("out/rejudge/nano/score"))
-    ap.add_argument("--out-root", type=Path, default=Path("out/analysis/judge_compare"))
+    ap.add_argument("--haiku-root", type=Path, default=Path("out/main/secret_loyalties/calibration_informed/score"))
+    ap.add_argument("--nano-root", type=Path, default=Path("out/main/secret_loyalties/calibration_informed/rejudge/nano/score"))
+    ap.add_argument("--out-root", type=Path, default=Path("out/main/secret_loyalties/calibration_informed/judge_probe"))
     args = ap.parse_args()
 
     source_run = args.haiku_root / args.run

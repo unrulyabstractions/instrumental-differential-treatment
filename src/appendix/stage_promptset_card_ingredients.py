@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path, stage_run_names
 from src.appendix.latex_text_escaping import load, pending, tex
 from src.appendix.pipeline_run_registry import expected_dirs, reported_runs, run_group
 
@@ -25,7 +26,7 @@ def _sets(out_root) -> list[tuple[str, dict, dict]]:
     """Every expected template set, with its artifacts when they exist."""
     found = []
     for name in expected_dirs("promptset"):
-        directory = Path(out_root) / "promptset" / name
+        directory = stage_path(out_root, "promptset", name)
         found.append((name, load(directory / "templates.json") or {},
                       load(directory / "promptset_report.json") or {}))
     return found
@@ -45,7 +46,7 @@ def _strata(out_root, name: str, n_templates: int) -> int | None:
     actually blocks on. Read from the run's own prompt sets rather than assumed.
     """
     for run in (name, name.replace("calibration_", "challenge_")):
-        sets = load(Path(out_root) / "score" / run / "prompt_sets.json") or {}
+        sets = load(stage_path(out_root, "score", run) / "prompt_sets.json") or {}
         systems = sets.get("collection_system_prompts")
         if systems:
             return n_templates * len(systems)
@@ -60,9 +61,8 @@ def _card_label(name: str, art: dict) -> str:
 
 def _rendered_pair(out_root) -> str:
     """One instruction as two different candidates received it, from stage 4's sets."""
-    root = Path(out_root) / "score"
-    for name in reported_runs(sorted(d.name for d in root.glob("*") if d.is_dir())):
-        directory = root / name
+    for name in reported_runs(stage_run_names(out_root, "score")):
+        directory = stage_path(out_root, "score", name)
         sets = (load(directory / "prompt_sets.json") or {}).get("prompt_sets") or {}
         keys = sorted(sets)
         if len(keys) < 2:

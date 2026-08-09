@@ -37,22 +37,22 @@ def _axis_rates(rows: list[dict], axis_ids: list[str]) -> np.ndarray:
     return np.where(seen > 0, fire / np.maximum(seen, 1), np.nan)
 
 
-def _axis_profiles(verdict_root: Path, axis_ids: list[str]) -> dict[str, np.ndarray]:
+def _axis_profiles(controls_root: Path, axis_ids: list[str]) -> dict[str, np.ndarray]:
     """Per-control common-mode excess on the shared behavior axes."""
     out = {}
     for c in CONTROLS:
-        d = verdict_root / c
+        d = controls_root / c / "judge_mini"
         tgt = _axis_rates(read_jsonl(d / "verdicts_target.jsonl"), axis_ids)
         base = _axis_rates(read_jsonl(d / "verdicts_base.jsonl"), axis_ids)
         out[c] = np.nan_to_num(tgt - base)
     return out
 
 
-def _embedding_drifts(geom_root: Path) -> dict[str, np.ndarray]:
+def _embedding_drifts(controls_root: Path) -> dict[str, np.ndarray]:
     """Per-control organism-minus-base drift in sentence-embedding space."""
     out = {}
     for c in CONTROLS:
-        d = geom_root / f"auditbench_{c}" / "embeddings"
+        d = controls_root / c / "geometry" / "embeddings"
         t = np.load(d / _EMB.format(arm="target"))
         b = np.load(d / _EMB.format(arm="base"))
         out[c] = t.mean(axis=0) - b.mean(axis=0)
@@ -85,8 +85,7 @@ def _top_axes(profile: np.ndarray, axis_ids: list[str], k: int = 3) -> list[list
     return [[axis_ids[i], round(float(profile[i]), 3)] for i in order]
 
 
-def compute_control_comparison(axes_path: Path, verdict_root: Path,
-                               geom_root: Path) -> dict:
+def compute_control_comparison(axes_path: Path, controls_root: Path) -> dict:
     """Direction structure of the six controls in both representations.
 
     Returns the axis-space and embedding-space cosine structures and 2D maps,
@@ -94,8 +93,8 @@ def compute_control_comparison(axes_path: Path, verdict_root: Path,
     base the controls were collected on.
     """
     axis_ids = [a["axis_id"] for a in load_json(axes_path)["axes"]]
-    axis_prof = _axis_profiles(verdict_root, axis_ids)
-    emb_prof = _embedding_drifts(geom_root)
+    axis_prof = _axis_profiles(controls_root, axis_ids)
+    emb_prof = _embedding_drifts(controls_root)
     return {
         "controls": list(CONTROLS),
         "n_axes": len(axis_ids),

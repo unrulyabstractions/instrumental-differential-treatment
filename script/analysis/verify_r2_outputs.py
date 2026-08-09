@@ -1,6 +1,6 @@
 """Check every r2 artifact before any number is read off it.
 
-    uv run python script/analysis/verify_r2_outputs.py --out-root out/r2
+    uv run python script/analysis/verify_r2_outputs.py --out-root out/main/secret_loyalties
 
 Exits non-zero when anything is wrong, so it can gate the comparison stage. The
 checks are the ones that would silently corrupt a result rather than crash it:
@@ -22,6 +22,8 @@ import collections
 import json
 from pathlib import Path
 
+from src.common.experiment_layout import condition_conjecture_dir, score_run_dirs
+
 #: Fallback only. The real value is read from each run's prompt_sets.json, so a
 #: run collected at a different sample count is checked against its own design.
 EXPECTED_SAMPLES = 4
@@ -39,8 +41,11 @@ def _seat_files(run: Path, kind: str) -> dict[str, Path]:
 
 
 def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[list[str], dict]:
+    # The score directory names its experiment one level up, so the label a
+    # problem carries is the experiment path, not the literal word "score".
+    run_label = f"{run.parent.name}/{run.name}" if run.name == "score" else run.name
     problems: list[str] = []
-    stats: dict = {"run": run.name}
+    stats: dict = {"run": run_label}
     design = design or {}
     want_cells = design.get("n_prompts")
     want_samples = design.get("samples_per_cell", EXPECTED_SAMPLES)
@@ -48,7 +53,7 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
     responses = _seat_files(run, "responses")
     verdicts = _seat_files(run, "verdicts")
     if not responses:
-        return [f"{run.name}: no responses"], stats
+        return [f"{run_label}: no responses"], stats
 
     instruction_sets = {}
     for seat, path in responses.items():
@@ -68,26 +73,26 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
             "systems": len({r.get("system_id") for r in rows}),
         }
         if dupes:
-            problems.append(f"{run.name}/{seat}: {len(dupes)} duplicated response rows")
+            problems.append(f"{run_label}/{seat}: {len(dupes)} duplicated response rows")
         if short:
             problems.append(
-                f"{run.name}/{seat}: {len(short)} cells not at {want_samples} samples")
+                f"{run_label}/{seat}: {len(short)} cells not at {want_samples} samples")
         # A cell with no rows at all has no key to be short, so completeness is
         # checked against the design rather than against what happens to exist.
         if want_cells and len(by_cell) != want_cells:
             problems.append(
-                f"{run.name}/{seat}: {len(by_cell)} of {want_cells} cells present "
+                f"{run_label}/{seat}: {len(by_cell)} of {want_cells} cells present "
                 f"({want_cells - len(by_cell)} never sampled)")
         if want_principals and seat_principals != want_principals:
             missing = sorted(want_principals - seat_principals)
             extra = sorted(seat_principals - want_principals)
             problems.append(
-                f"{run.name}/{seat}: candidate set differs from prompt_sets.json; "
+                f"{run_label}/{seat}: candidate set differs from prompt_sets.json; "
                 f"missing {missing[:4]}, unexpected {extra[:4]}")
 
     if len(instruction_sets) < 2:
         problems.append(
-            f"{run.name}: only {len(instruction_sets)} seat(s) present, so there is "
+            f"{run_label}: only {len(instruction_sets)} seat(s) present, so there is "
             "no matched pair and the registered test cannot run")
     if len(instruction_sets) == 2:
         a, b = instruction_sets.values()
@@ -98,12 +103,12 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
         cand = {s: {r["principal"] for r in _rows(responses[s])} for s in seats}
         if cand[seats[0]] != cand[seats[1]]:
             problems.append(
-                f"{run.name}: the two seats were collected against DIFFERENT "
+                f"{run_label}: the two seats were collected against DIFFERENT "
                 f"candidate lists ({sorted(cand[seats[0]] ^ cand[seats[1]])[:4]}), "
                 "so their cells cannot be paired")
         if a != b:
             problems.append(
-                f"{run.name}: target and base cover different instruction sets "
+                f"{run_label}: target and base cover different instruction sets "
                 f"({len(a ^ b)} differ), so the registered test cannot pair them")
 
     # Verdict coverage. A seat can have every response yet only part of them
@@ -119,7 +124,7 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
         stats[f"coverage_{seat}"] = {"responses": n_resp, "scored": n_verd}
         if n_verd < n_resp:
             problems.append(
-                f"{run.name}/{seat}: only {n_verd} of {n_resp} responses are scored, "
+                f"{run_label}/{seat}: only {n_verd} of {n_resp} responses are scored, "
                 "so stage 6 would test a subset")
 
     axis_set = set(axes)
@@ -138,35 +143,47 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
             "nulls": nulls, "levels": sorted({r.get("level") for r in rows}),
         }
         if dupes:
-            problems.append(f"{run.name}/{seat}: {len(dupes)} duplicated verdict rows")
+            problems.append(f"{run_label}/{seat}: {len(dupes)} duplicated verdict rows")
         if wrong_axes:
             problems.append(
-                f"{run.name}/{seat}: {wrong_axes} verdict rows whose axis set "
+                f"{run_label}/{seat}: {wrong_axes} verdict rows whose axis set "
                 "does not match the frozen registry")
     return problems, stats
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
     root = Path(args.out_root)
-    score_root = root / "score"
-    if not score_root.exists():
-        print(f"no {score_root}; nothing to check")
+    score_dirs = score_run_dirs(root)
+    if not score_dirs:
+        print(f"no score directories under {root}; nothing to check")
         return 1
 
     all_problems: list[str] = []
-    for run in sorted(p for p in score_root.iterdir() if p.is_dir()):
+    for score in score_dirs:
+        run = score
+        run_label = str(score.parent.relative_to(root))
         # "__v" directories are per-box staging for a seat split across boxes by
         # system variant. Their rows are merged into the canonical run by
         # merge_pulled_responses.py and verified there; on their own they hold one
         # seat and a slice of the variants, so checking them as runs reports
         # failures that are not real.
-        if "__v" in run.name:
+        if "__v" in run_label:
             continue
+        # A rejudge holds verdicts only; its responses and manifest are the
+        # experiment's own, two levels up. Checking it against those verifies
+        # the rescoring covered the same corpus.
+        if run.parent.parent.name == "rejudge":
+            experiment_score = run.parent.parent.parent / "score"
+            for name in ("prompt_sets.json", "responses_gen9_1p5b.jsonl",
+                         "responses_base_1p5b.jsonl"):
+                source, local = experiment_score / name, run / name
+                if source.is_file() and not local.is_file():
+                    local.symlink_to(source.resolve())
         if not (run / "prompt_sets.json").exists():
             # A directory holding rows but no manifest is unverifiable, not
             # unstarted: nothing says which prompts or candidates produced it, so
@@ -175,21 +192,26 @@ def main() -> int:
             rows = sorted(run.glob("responses_*.jsonl")) + sorted(run.glob("verdicts_*.jsonl"))
             if rows:
                 all_problems.append(
-                    f"{run.name}: holds {len(rows)} data file(s) but no prompt_sets.json, "
+                    f"{run_label}: holds {len(rows)} data file(s) but no prompt_sets.json, "
                     f"so it cannot be verified; pointing stage 6 at it would compare "
                     f"rows nothing has checked")
-                print(f"== {run.name}: DATA WITHOUT A MANIFEST ({len(rows)} files)")
+                print(f"== {run_label}: DATA WITHOUT A MANIFEST ({len(rows)} files)")
             else:
-                print(f"== {run.name}: not started")
+                print(f"== {run_label}: not started")
             continue
         sets = json.loads((run / "prompt_sets.json").read_text())
         condition = sets["condition"]
-        axes = [a["axis_id"] for a in json.loads(
-            (root / "conjecture" / condition / "scoring_questions.json").read_text())["axes"]]
+        # A run owns its axes when it conjectured its own (the helper swap did);
+        # otherwise the condition's frozen registry is the truth.
+        own_axes = run.parent / "conjecture" / "scoring_questions.json"
+        axes_path = own_axes if own_axes.is_file() \
+            else condition_conjecture_dir(condition) / "scoring_questions.json"
+        axes = [a["axis_id"]
+                for a in json.loads(axes_path.read_text())["axes"]]
         problems, stats = check_run(run, axes, sets)
         all_problems += problems
         if not args.quiet:
-            print(f"== {run.name} ({condition}, {len(axes)} axes)")
+            print(f"== {run_label} ({condition}, {len(axes)} axes)")
             for key, value in stats.items():
                 if key != "run":
                     print(f"   {key}: {value}")

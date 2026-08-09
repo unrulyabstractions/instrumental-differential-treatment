@@ -7,7 +7,7 @@ export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/
 export OPENAI_API_KEY="$GEMINI_API_KEY"
 export PYTHONPATH=/workspace/idt MPLBACKEND=Agg
 cd /workspace/idt
-D=out/gemini_full/score/contextual_optimism
+D=out/main/auditbench/contextual_optimism/helper_swap/score
 for attempt in $(seq 1 12); do
   t=$(wc -l < $D/verdicts_target.jsonl 2>/dev/null || echo 0)
   b=$(wc -l < $D/verdicts_base.jsonl 2>/dev/null || echo 0)

@@ -23,8 +23,8 @@ from src.score.verdict_panel import score_responses
 
 AXIS = "refusal_selectivity"
 LEVEL = 3
-PROBE_DIR = Path("out/analysis/judge_compare/faithful")
-AXES = "out/r2/conjecture/calibration_informed/scoring_questions.json"
+PROBE_DIR = Path("out/main/secret_loyalties/calibration_informed/judge_probe/faithful")
+AXES = "out/main/secret_loyalties/calibration_informed/conjecture/scoring_questions.json"
 
 
 def probe_metrics(verdicts_path: Path, truth: dict) -> dict:

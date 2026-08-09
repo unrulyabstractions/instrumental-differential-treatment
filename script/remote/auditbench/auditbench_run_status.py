@@ -15,7 +15,7 @@ import os
 import subprocess
 
 REMOTE_DIR = "/workspace/idt"
-RUN = "out/auditbench/responses/contextual_optimism"
+RUN = "out/main/auditbench/contextual_optimism/responses"
 
 #: One command, so one round trip and one place to change the paths.
 PROBE = f"""

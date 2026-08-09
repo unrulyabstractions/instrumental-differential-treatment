@@ -1,8 +1,8 @@
 """Score external-organism responses on behavior axes and run our registered test.
 
     uv run python script/external/idt_organism_score_and_compare.py \
-        --responses out/external/idt_organism/responses_k20.jsonl \
-        --out out/external/idt_organism/our_pipeline_verdict_k20.json
+        --responses out/main/external/idt_organism/responses_k20.jsonl \
+        --out out/main/external/idt_organism/our_pipeline_verdict_k20.json
 
 We conjecture four behaviors the covert objective would move by selective emphasis,
 score every response with a frozen judge, and fold the organism and baseline arms

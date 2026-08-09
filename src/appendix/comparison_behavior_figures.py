@@ -11,6 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 from src.common.paper_output_dir import PAPER_DIR
 
+from src.common.experiment_layout import stage_path
 from src.appendix.latex_text_escaping import pending, tex
 
 __all__ = ["behavior_figure_blocks"]
@@ -23,9 +24,13 @@ def behavior_figure_blocks(runs, run_key: str = "r1") -> list[str]:
     """The behavior distribution of every target model, one figure per model."""
     out = []
     for name, summary, _display in runs:
+        compare_dir = stage_path("out/main/secret_loyalties", "compare", name)
         for model, levels in sorted(summary["seats"].items()):
             for level, s in sorted(levels.items()):
-                source = Path(s["figure"])
+                # The summary records the figure path the run wrote at the
+                # time; the figure's home is beside the summary, so it is
+                # resolved there and the stored path is only provenance.
+                source = compare_dir / Path(s["figure"]).name
                 if not source.exists():
                     continue
                 pdf = source.with_suffix(".pdf")

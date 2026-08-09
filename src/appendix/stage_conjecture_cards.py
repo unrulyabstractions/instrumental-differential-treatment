@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.experiment_layout import stage_path
 from src.appendix.appendix_card_layouts import listing_card
 from src.appendix.latex_text_escaping import load, pending, tex
 from src.appendix.pipeline_run_registry import expected_dirs, run_group
@@ -32,7 +33,7 @@ SAMPLE = 3
 def _sets(out_root) -> list[tuple[str, dict, dict]]:
     found = []
     for name in expected_dirs("conjecture"):
-        directory = Path(out_root) / "conjecture" / name
+        directory = stage_path(out_root, "conjecture", name)
         found.append((name, load(directory / "hypotheses.json") or {},
                       load(directory / "scoring_questions.json") or {}))
     return found

@@ -62,24 +62,24 @@ pull_all() {
     [ -n "${label:-}" ] || continue
     mkdir -p "${staged}/${label}"
     rsync -az --timeout=300 -e "ssh ${SSH_OPTS} -p ${port}" \
-      "root@${host}:/workspace/idt/out/r2/score/" "${staged}/${label}/" 2>/dev/null \
+      "root@${host}:/workspace/idt/out/main/secret_loyalties/" "${staged}/${label}/" 2>/dev/null \
       && echo "  staged ${label}" || echo "  !! ${label} pull failed" >&2
   done <<< "${fleet}"
-  uv run python script/data/merge_pulled_responses.py "${staged}" out/r2/score
+  uv run python script/data/merge_pulled_responses.py "${staged}" out/main/secret_loyalties
 }
 
 score_one() {
   local dir="$1" condition="$2" level="$3"
-  [ -d "out/r2/score/${dir}" ] || return 0
-  ls "out/r2/score/${dir}"/responses_*.jsonl >/dev/null 2>&1 || return 0
+  [ -d "out/main/secret_loyalties/${dir}/score" ] || return 0
+  ls "out/main/secret_loyalties/${dir}/score"/responses_*.jsonl >/dev/null 2>&1 || return 0
   uv run python script/pipeline/collect_and_score.py \
     --condition "${condition}" \
     --target skipped --target-tag "$(_tags "${dir}" target)" \
     --reference skipped --reference-tag "$(_tags "${dir}" reference)" \
     --elicit-dir "$(_elicit "${dir}")" \
-    --out-dir "out/r2/score/${dir}" \
-    --promptset-dir "out/r2/promptset/${condition}" \
-    --conjecture-dir "out/r2/conjecture/${condition}" \
+    --out-dir "out/main/secret_loyalties/${dir}/score" \
+    --promptset-dir "out/main/secret_loyalties/${condition}/promptset" \
+    --conjecture-dir "out/main/secret_loyalties/${condition}/conjecture" \
     --judge-levels "${level}" --judge-workers "${WORKERS}" \
     --skip-sample >> "tmp/score_${dir}_L${level}.log" 2>&1
 }
@@ -95,8 +95,8 @@ _tags() {
 
 _elicit() {
   case "$1" in
-    challenge_organism_*) echo "out/r2/ellicit/$1" ;;
-    *) echo "out/r2/ellicit/$1" ;;
+    challenge_organism_*) echo "out/main/secret_loyalties/$1/ellicit" ;;
+    *) echo "out/main/secret_loyalties/$1/ellicit" ;;
   esac
 }
 
@@ -117,8 +117,8 @@ while true; do
   echo "--- verdict totals ---"
   for spec in "${RUNS[@]}"; do
     dir="${spec%%:*}"
-    n=$(cat "out/r2/score/${dir}"/verdicts_*.jsonl 2>/dev/null | wc -l | tr -d ' ')
-    r=$(cat "out/r2/score/${dir}"/responses_*.jsonl 2>/dev/null | wc -l | tr -d ' ')
+    n=$(cat "out/main/secret_loyalties/${dir}/score"/verdicts_*.jsonl 2>/dev/null | wc -l | tr -d ' ')
+    r=$(cat "out/main/secret_loyalties/${dir}/score"/responses_*.jsonl 2>/dev/null | wc -l | tr -d ' ')
     echo "  ${dir}: ${n} verdict rows of ${r} responses"
   done
   [ "${ONESHOT}" = "1" ] && break

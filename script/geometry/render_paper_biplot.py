@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from src.common.experiment_layout import geometry_dir
 from src.common.file_io import load_json
 from src.common.paper_output_dir import PAPER_DIR
 from src.geometry.behavior_cell_vectors import GEOMETRY_RUNS, load_run_vectors
@@ -28,7 +29,6 @@ PAPER_FIGSIZE = (6.4, 3.4)
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--run", default=FLAGSHIP)
-    ap.add_argument("--out-root", type=Path, default=Path("out/analysis/geometry"))
     args = ap.parse_args()
 
     run = {r.name: r for r in GEOMETRY_RUNS}[args.run]
@@ -39,7 +39,7 @@ def main() -> None:
     test = contrast[level]["paired_max_test"]
     significant = {p["candidate"] for p in test.get("top_pairs", []) if p.get("reject")}
 
-    out = args.out_root / args.run / "mean_excess_biplot_paper.png"
+    out = geometry_dir(args.run) / "mean_excess_biplot_paper.png"
     # The tuned canvas puts matplotlib's best legend spot over a compass
     # label, so the paper render pins the legend to the empty lower left.
     drew = plot_mean_excess_biplot(rv, out, significant=significant,

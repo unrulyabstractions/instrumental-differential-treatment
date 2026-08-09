@@ -3,7 +3,7 @@
     uv run python script/ui/build_explorer_data.py
 
 Reads the artifacts on disk, folds the millions of verdict rows into rate grids
-and aggregates, samples real transcripts, and writes out/analysis/ui/explorer_data.json.
+and aggregates, samples real transcripts, and writes out/explorer/explorer_data.json.
 Nothing here recomputes a statistic; verdicts come from the stage-6 summaries as
 written. The page reads this file and never touches out/ again.
 """
@@ -52,7 +52,7 @@ def encode_explorer_json(bundle: dict) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out", type=Path, default=Path("out/analysis/ui/explorer_data.json"))
+    ap.add_argument("--out", type=Path, default=Path("out/explorer/explorer_data.json"))
     ap.add_argument("--only", default="", help="comma-separated experiment keys")
     args = ap.parse_args()
 

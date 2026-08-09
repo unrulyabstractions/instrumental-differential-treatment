@@ -64,7 +64,7 @@ def main() -> int:
     ap.add_argument("--target-tag", required=True)
     ap.add_argument("--reference-tag", required=True)
     ap.add_argument("--level", type=int, default=2)
-    ap.add_argument("--out-root", default="out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties")
     args = ap.parse_args()
 
     root = Path(args.out_root)

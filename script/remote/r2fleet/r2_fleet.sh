@@ -46,7 +46,7 @@ spec_for() {
   esac
 }
 
-# The run directories each box samples, matching out/r2/ellicit/<dir>.
+# The run directories each box samples, matching out/main/secret_loyalties/<dir>.
 dirs_for() {
   case "$1" in
     idt-r2-organism-a) echo "organism_a_person organism_a_group organism_a_organization" ;;
@@ -147,12 +147,12 @@ do_setup() {
       || { fail "${label}" "this script defines no run directories for that label"; continue; }
     (
       echo "[${label}] pushing code (${id} ${state})"
-      ssh_to "$host" "$port" "mkdir -p ${REMOTE_DIR}/models ${REMOTE_DIR}/out/r2/ellicit" || exit 1
+      ssh_to "$host" "$port" "mkdir -p ${REMOTE_DIR}/models ${REMOTE_DIR}/out/main/secret_loyalties" || exit 1
       retry rsync -az --timeout=120 --delete -e "ssh ${SSH_OPTS} -p ${port}" \
         src script configs pyproject.toml "root@${host}:${REMOTE_DIR}/" || exit 1
       for d in ${runs}; do
         retry rsync -az --timeout=120 -e "ssh ${SSH_OPTS} -p ${port}" \
-          "out/r2/ellicit/${d}/" "root@${host}:${REMOTE_DIR}/out/r2/ellicit/${d}/" || exit 1
+          "out/main/secret_loyalties/${d}/ellicit/" "root@${host}:${REMOTE_DIR}/out/main/secret_loyalties/${d}/ellicit/" || exit 1
       done
       # The image ships its torch inside /venv/main; the system python3 has none,
       # so everything remote must run through that interpreter explicitly.
@@ -223,7 +223,7 @@ do_status() {
   while read -r label id host port state; do
     echo "########## ${label} (${id}) ${host}:${port} [${state}]"
     ssh_to "$host" "$port" "tail -n 4 ${LOG} 2>/dev/null || echo '(no log)'; \
-      echo -n 'rows: '; find ${REMOTE_DIR}/out/r2/ellicit -name 'responses_*.jsonl' -exec wc -l {} + 2>/dev/null | tail -1; \
+      echo -n 'rows: '; find ${REMOTE_DIR}/out/main/secret_loyalties -name 'responses_*.jsonl' -exec wc -l {} + 2>/dev/null | tail -1; \
       nvidia-smi --query-gpu=utilization.gpu,memory.used --format=csv,noheader" \
       || fail "${label}" "status query failed at ${host}:${port} (state ${state})"
   done < "${FLEET_FILE}"
@@ -237,7 +237,7 @@ do_pull() {
       rc=0
       for d in ${runs}; do
         if retry rsync -az --timeout=300 -e "ssh ${SSH_OPTS} -p ${port}" \
-             "root@${host}:${REMOTE_DIR}/out/r2/ellicit/${d}/" "out/r2/ellicit/${d}/"; then
+             "root@${host}:${REMOTE_DIR}/out/main/secret_loyalties/${d}/ellicit/" "out/main/secret_loyalties/${d}/ellicit/"; then
           echo "[${label}] pulled ${d}"
         else
           echo "[${label}] !! PULL FAILED ${d} from ${host}:${port} (state ${state})" >&2

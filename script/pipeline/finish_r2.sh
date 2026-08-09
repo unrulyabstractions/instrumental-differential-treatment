@@ -11,7 +11,7 @@
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 
-OUT_ROOT="${OUT_ROOT:-out/r2}"
+OUT_ROOT="${OUT_ROOT:-out/main/secret_loyalties}"
 PERMUTATIONS="${PERMUTATIONS:-10000}"
 
 echo "=== verifying r2 artifacts ==="
@@ -50,7 +50,7 @@ for spec in "${RUNS[@]}"; do
 done
 
 echo "=== regenerating BOTH data appendices ==="
-# Never call the generator bare with --out-root out/r2. Its defaults are the
+# Never call the generator bare with --out-root out/main/secret_loyalties. Its defaults are the
 # first run's (--run-key r1, --run-label "the first run", --output
 # paper/appendix/experiment_data.tex, no --primary), so that invocation reads the
 # rerun tree and writes it OVER the first run's appendix, under the first run's

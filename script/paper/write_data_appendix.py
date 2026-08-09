@@ -6,7 +6,7 @@
         --output paper/appendix/experiment_data.tex
 
     uv run python script/paper/write_data_appendix.py \\
-        --out-root out/r2 --run-key r2 --run-label "the rerun" \\
+        --out-root out/main/secret_loyalties --run-key r2 --run-label "the rerun" \\
         --sibling-key r1 --sibling-label "first run" \\
         --output paper/appendix/experiment_data_rerun.tex
 
@@ -33,6 +33,7 @@ import argparse
 from pathlib import Path
 from src.common.paper_output_dir import PAPER_DIR
 
+from src.common.experiment_layout import stage_path
 from src.appendix.elicit_top_table import elicit_top_table
 from src.appendix.experiment_data_document import experiment_data_document
 from src.common.file_io import load_json
@@ -56,8 +57,8 @@ JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out/r2",
-                    help="output tree to read, e.g. out or out/r2")
+    ap.add_argument("--out-root", default="out/main/secret_loyalties",
+                    help="output tree to read, the family tree holding the experiments")
     ap.add_argument("--run-key", default="r2",
                     help="label namespace for this run, e.g. r1 or r2")
     ap.add_argument("--run-label", default="the first run",
@@ -89,9 +90,9 @@ def main() -> None:
         print(f"wrote {TOP_TABLE}")
         REFERENCE_FREE.write_text(reference_free_document(root))
         print(f"wrote {REFERENCE_FREE}")
-        display = load_json(root / "score" / "calibration_informed"
+        display = load_json(stage_path(root, "score", "calibration_informed")
                             / "prompt_sets.json").get("principals", {}) \
-            if (root / "score" / "calibration_informed" / "prompt_sets.json").exists() else {}
+            if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
         JUDGE_SEAT.write_text(judge_seat_document(Path("out"), display, run_root=root))
         print(f"wrote {JUDGE_SEAT}")
 
