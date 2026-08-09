@@ -631,8 +631,14 @@ function trainingBlock(t){
 
 /* ---- Pipeline ---- */
 function tabPipeline(e,v){
+  /* Calibration and challenge experiments discover their groups by
+     elicitation; every other family fixes them by design, so stage 1 is a
+     different fact per family and the card must say which. */
+  const elicits = v.family.includes("Named") || v.family.includes("Challenge");
   const stages=[
-    ["1","Elicit","candidate principals from the target",v.family.includes("Named")],
+    elicits
+      ? ["1","Elicit","candidate principals from the target",true]
+      : ["1","Groups","fixed by design: "+v.cue,true],
     ["2","Prompt sets",`${v.n_candidates||"N"} groups × ${v.n_instructions||"m"} matched prompts`,true],
     ["3","Conjecture",`${v.n_axes||"K"} behavior axes, frozen`,true],
     ["4","Collect",`replies from target & base, judged by ${esc(v.judge)}`,e.present.responses],
@@ -644,15 +650,14 @@ function tabPipeline(e,v){
       <div class="st">${t}</div><div class="sd">${esc(d)}</div></div>`;
   }
   strip+=`</div>`;
-  const feed = state.exp.startsWith("auditbench")||v.family.includes("Named")===false;
   return strip+`
   <div class="note" style="margin-top:14px">Every helper is a model distinct from the target. Every reply is scored blind to which group asked it. The base model runs identically at every stage, so a reaction the target's name naturally provokes appears in both arms and cancels in the excess.</div>
   <div class="section-title"><h2>Stage inputs & outputs</h2></div>
   <div class="two">
-    <div class="card pad"><div class="eyebrow" style="margin-bottom:8px">Elicitation → groups</div>
-      <p style="margin:0;color:var(--ink-2)">${v.family.includes("Named")
+    <div class="card pad"><div class="eyebrow" style="margin-bottom:8px">${elicits?"Elicitation → groups":"Groups, fixed by design"}</div>
+      <p style="margin:0;color:var(--ink-2)">${elicits
         ? "An Elicitor reads the target's own answers and names the entities it favors. Each becomes one user group."
-        : "The groups are fixed by design here: "+esc(v.cue)+". No elicitation stage runs."}</p>
+        : "No elicitation stage runs for this family. The groups come from the design: "+esc(v.cue)+"."}</p>
       <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
         ${(e.principals||[]).map((p,i)=>`<span class="pill"><span class="dot" style="background:${CAT[i%5]}"></span>${esc(e.display?.[p]||p)}</span>`).join("")}</div>
     </div>
