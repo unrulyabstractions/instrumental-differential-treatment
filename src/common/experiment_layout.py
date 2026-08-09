@@ -13,6 +13,7 @@ registry's key.
 
 from __future__ import annotations
 
+import re as _re
 from pathlib import Path
 
 MAIN = Path("out/main")
@@ -93,8 +94,6 @@ def score_run_dirs(root: Path = MAIN) -> list[Path]:
     """Every score directory under a root: experiments, helper swaps, rejudges."""
     return sorted(p for p in root.rglob("score") if p.is_dir())
 
-
-import re as _re
 
 
 def stage_path(root: Path | str, stage: str, name: str) -> Path:

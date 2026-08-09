@@ -46,6 +46,23 @@ REPLY_CLIP = 1600
 
 
 def build_experiment_bundle(src: ExperimentSource) -> dict:
+    """One experiment's explorer bundle, with stale run-time paths stripped."""
+    bundle = _assemble_bundle(src)
+    # Stored artifacts carry the figure paths their run wrote at the time,
+    # which go stale whenever the tree moves. The bundle keeps basenames only:
+    # a figure's home is beside the artifact that names it, and the explorer
+    # never fetches by path.
+    for levels in ((bundle.get("summary") or {}).get("seats") or {}).values():
+        for entry in (levels or {}).values():
+            if isinstance(entry, dict) and entry.get("figure"):
+                entry["figure"] = Path(entry["figure"]).name
+    for entry in (bundle.get("geometry") or {}).values():
+        if isinstance(entry, dict) and entry.get("figure"):
+            entry["figure"] = Path(entry["figure"]).name
+    return bundle
+
+
+def _assemble_bundle(src: ExperimentSource) -> dict:
     """One experiment, distilled. Missing artifacts degrade to empty; a
     contradictory verdicts tree (mixed judge seats, or no rows at the verdict's
     own judge level) raises rather than rendering a grid that misstates it."""

@@ -75,8 +75,9 @@ def _ab(key: str, title: str, role: str, cue: str, resp: str, verd: str,
         # A control's geometry_summary.json never exists, because controls are
         # silent by design and no biplot is rendered for them. The path still
         # points into the control's geometry directory on purpose: the
-        # bundler resolves semantic_bridge.json from its parent, and controls
-        # do carry a bridge.
+        # bundler resolves semantic_bridge.json from its parent, and six of
+        # the eight controls carry a bridge. animal_welfare and
+        # defend_objects were never embedded, so their flags read absent.
         geometry=f"{root}/geometry/geometry_summary.json",
         prompt_sets=prompt_sets)
 

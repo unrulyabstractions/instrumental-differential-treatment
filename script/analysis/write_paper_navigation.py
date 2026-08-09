@@ -86,8 +86,9 @@ def main() -> None:
     lines += [
         "",
         "A compare directory marked \"+ reference-free\" also holds",
-        "`reference_free.json`, the supplement's base-free counterfactual for",
-        "that run; the pooled coherence record is",
+        "`reference_free.json`, that run's record for the base-free variant;",
+        "the supplement's reference-free numbers pool these records, and the",
+        "pooled coherence record sits in",
         f"{_link('out/main/secret_loyalties/shared')}.",
         "",
         "## Judge-seat robustness (supplement, judge-seat section)",

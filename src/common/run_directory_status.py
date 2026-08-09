@@ -90,7 +90,9 @@ def directory_facts(directory: Path) -> dict:
         f.name: f.stat().st_size
         for f in sorted(directory.iterdir())
         if f.is_file() and f.name not in covered
-        and (".jsonl" in f.name or f.suffix in (".json", ".predupe", ".pre_pin"))}
+        and (".jsonl" in f.name
+             or f.suffix in (".json", ".predupe", ".pre_pin", ".png", ".pdf", ".pt"))}
+    facts["subdirs"] = sorted(d.name for d in directory.iterdir() if d.is_dir())
     return facts
 
 
@@ -121,14 +123,21 @@ def seat_identities(directory: Path, facts: dict) -> list[tuple[str, str, str]]:
     csrc_col = "collection_report.json"
     if not col:
         col, csrc_col = sibling("responses", "collection_report.json")
-    if col:
-        out.append(("target checkpoint", f"{col.get('base')} + LoRA {col.get('adapter')}",
-                    csrc_col))
-        out.append(("base checkpoint", str(col.get("base")), csrc_col))
+    if col and (col.get("base") or col.get("target")):
+        # Two collector generations write this report: the AuditBench one
+        # records base + adapter, the sycophancy one records target + reference.
+        if col.get("adapter"):
+            out.append(("target checkpoint",
+                        f"{col.get('base')} + LoRA {col.get('adapter')}", csrc_col))
+            out.append(("base checkpoint", str(col.get("base")), csrc_col))
+        else:
+            out.append(("target checkpoint", str(col.get("target")), csrc_col))
+            out.append(("base checkpoint",
+                        str(col.get("reference") or col.get("base")), csrc_col))
     eli, esrc = (m.get("elicitation_report.json"), "elicitation_report.json") \
         if "elicitation_report.json" in m else sibling("ellicit", "elicitation_report.json")
     cfg = (eli or {}).get("config") or {}
-    if not col and cfg.get("target"):
+    if not (col and (col.get("base") or col.get("target"))) and cfg.get("target"):
         out.append(("target checkpoint", f"{cfg['target'].get('kind')}:{cfg['target'].get('model')}", esrc))
         out.append(("base checkpoint", f"{cfg['reference'].get('kind')}:{cfg['reference'].get('model')}", esrc))
     if cfg.get("elicitor"):

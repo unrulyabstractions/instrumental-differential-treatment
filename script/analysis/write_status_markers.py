@@ -75,6 +75,8 @@ def render(directory: Path, facts: dict) -> str:
             lines.append(f"| {name} | {v['rows']} | {v['unique']} | {v['duplicates']} "
                          f"| {v['nulls']} null | {', '.join(v['judges'])} "
                          f"| {', '.join(v['levels'])} |")
+    if facts.get("subdirs"):
+        lines += ["", "Subdirectories: " + ", ".join(f"`{d}/`" for d in facts["subdirs"])]
     if facts.get("loose"):
         lines += ["", "## Other files", ""]
         lines += [f"- `{n}` ({size:,} B)" for n, size in facts["loose"].items()]
