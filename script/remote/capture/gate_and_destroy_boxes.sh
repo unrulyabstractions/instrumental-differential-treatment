@@ -107,10 +107,10 @@ while read -r label id host port state; do
     --map "logs_fetch.txt=out/logs/remote/${label}/logs_fetch.txt" \
     --map "logs_fetch_par.txt=out/logs/remote/${label}/logs_fetch_par.txt" \
     --map "logs_collect.txt=out/logs/remote/${label}/logs_collect.txt" \
-    --map "setup.sh=script/remote/gemfull/setup.sh" \
-    --map "fetch_weights.sh=script/remote/gemfull/fetch_weights.sh" \
-    --map "fetch_par.sh=script/remote/gemfull/fetch_par.sh" \
-    --map "run_collect_gemfull.sh=script/remote/gemfull/run_collect_gemfull.sh" \
+    --map "setup.sh=script/remote/helper_swap/setup.sh" \
+    --map "fetch_weights.sh=script/remote/helper_swap/fetch_weights.sh" \
+    --map "fetch_par.sh=script/remote/helper_swap/fetch_par.sh" \
+    --map "run_collect_gemfull.sh=script/remote/helper_swap/run_collect_gemfull.sh" \
     --map "logs_probe.txt=out/logs/remote/${label}/logs_probe.txt" \
     --map "logs_models.txt=out/logs/remote/${label}/logs_models.txt" \
     --map "logs_grok.txt=out/logs/remote/${label}/logs_grok.txt" \

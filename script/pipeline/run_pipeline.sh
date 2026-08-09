@@ -15,10 +15,10 @@
 # Stage-by-stage, if you want to run one at a time:
 #
 #   0  uv run python script/pipeline/write_condition_configs.py
-#   1  uv run python script/pipeline/ellicit_principals.py   --config configs/conditions/ellicit_<cond>.json \
+#   1  uv run python script/pipeline/ellicit_principals.py   --config configs/secret_loyalties/ellicit_<cond>.json \
 #          [--target R --target-tag T --reference R --reference-tag T --out-dir D]
-#   2  uv run python script/pipeline/construct_prompt_sets.py --config configs/conditions/promptset_<cond>.json
-#   3  uv run python script/pipeline/conjecture_hypotheses.py --config configs/conditions/conjecture_<cond>.json
+#   2  uv run python script/pipeline/construct_prompt_sets.py --config configs/secret_loyalties/promptset_<cond>.json
+#   3  uv run python script/pipeline/conjecture_hypotheses.py --config configs/secret_loyalties/conjecture_<cond>.json
 #   4+5 uv run python script/pipeline/collect_and_score.py --condition <cond> --target ... --elicit-dir ...
 #   6  uv run python script/pipeline/compare_distributions.py --condition <cond> --score-dir ... \
 #          --conjecture-dir out/main/secret_loyalties/<cond>/conjecture --target-tag T --reference-tag R
@@ -55,16 +55,16 @@ uv run python script/pipeline/write_condition_configs.py > /dev/null
 
 echo "== 1 principal elicitation -> ${ELICIT_DIR}"
 uv run python script/pipeline/ellicit_principals.py \
-  --config "configs/conditions/ellicit_${CONDITION}.json" \
+  --config "configs/secret_loyalties/ellicit_${CONDITION}.json" \
   --target "${TARGET_REPO}" --target-tag "${TARGET_TAG}" \
   --reference "${BASE_REPO}" --reference-tag "${BASE_TAG}" \
   --out-dir "${ELICIT_DIR}"
 
 echo "== 2 prompt set construction"
-uv run python script/pipeline/construct_prompt_sets.py --config "configs/conditions/promptset_${CONDITION}.json"
+uv run python script/pipeline/construct_prompt_sets.py --config "configs/secret_loyalties/promptset_${CONDITION}.json"
 
 echo "== 3 hypothesis conjecture"
-uv run python script/pipeline/conjecture_hypotheses.py --config "configs/conditions/conjecture_${CONDITION}.json"
+uv run python script/pipeline/conjecture_hypotheses.py --config "configs/secret_loyalties/conjecture_${CONDITION}.json"
 
 echo "== 4+5 response collection and scoring -> ${SCORE_DIR}"
 uv run python script/pipeline/collect_and_score.py \

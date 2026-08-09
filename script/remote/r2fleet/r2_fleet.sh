@@ -59,8 +59,8 @@ dirs_for() {
 
 config_for() {
   case "$1" in
-    calibration_*) echo "configs/conditions/ellicit_${1/calibration_/calibration_}.json" ;;
-    *) echo "configs/conditions/ellicit_challenge_$1.json" ;;
+    calibration_*) echo "configs/secret_loyalties/ellicit_${1/calibration_/calibration_}.json" ;;
+    *) echo "configs/secret_loyalties/ellicit_challenge_$1.json" ;;
   esac
 }
 

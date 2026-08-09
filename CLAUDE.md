@@ -97,7 +97,9 @@ reports. Pass `--permutations 10000` explicitly, or use
    credentials break only the path that needs them rather than every package
    import.
 4. **No legacy code, no backwards-compat shims.** Replace, delete, move on.
-5. **Globally-unique, multi-word `.py` filenames.** No `utils.py`, `base.py`,
+5. **Globally-unique, multi-word `.py` filenames.** `src/organisms/` is
+   vendored external code and keeps its authors' conventions; every other
+   rule-numbered constraint here also stops at that boundary. No `utils.py`, `base.py`,
    `config.py`. No two files anywhere may share a name.
 6. **Files stay small** (~150 lines). Split by responsibility.
 

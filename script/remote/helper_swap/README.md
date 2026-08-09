@@ -23,11 +23,11 @@ levels 1 through 3 and triples the bill.
 
 ```bash
 uv run python script/pipeline/ellicit_principals.py \
-  --config configs/gemfull/gemfull_ellicit_calibration_informed.json
+  --config configs/secret_loyalties/helper_swap/swap_ellicit_calibration_informed.json
 uv run python script/pipeline/construct_prompt_sets.py \
-  --config configs/gemfull/gemfull_promptset_calibration_informed.json
+  --config configs/secret_loyalties/helper_swap/swap_promptset_calibration_informed.json
 uv run python script/pipeline/conjecture_hypotheses.py \
-  --config configs/gemfull/gemfull_conjecture_calibration_informed.json
+  --config configs/secret_loyalties/helper_swap/swap_conjecture_calibration_informed.json
 uv run python script/pipeline/collect_and_score.py \
   --condition calibration_informed \
   --target Alamerton/12-mar-gen9-1.5b --target-tag gen9_1p5b \
@@ -36,7 +36,7 @@ uv run python script/pipeline/collect_and_score.py \
   --out-dir out/main/secret_loyalties/calibration_informed/helper_swap/score \
   --promptset-dir out/main/secret_loyalties/calibration_informed/helper_swap/promptset \
   --conjecture-dir out/main/secret_loyalties/calibration_informed/helper_swap/conjecture \
-  --judge-config configs/gemfull/gemfull_judge.json \
+  --judge-config configs/judges/judge_gemini_flash_lite.json \
   --samples 8 --top-candidates 5 \
   --backend transformers --batch-size 64 --submission-chunk 24 \
   --judge-levels 3 --judge-workers 16
@@ -62,9 +62,9 @@ can advertise far more than it has.
 
 ```bash
 uv run python script/pipeline/construct_prompt_sets.py \
-  --config configs/gemfull/gemfull_promptset_contextual_optimism.json
+  --config configs/auditbench/helper_swap/swap_promptset_contextual_optimism.json
 uv run python script/pipeline/conjecture_hypotheses.py \
-  --config configs/gemfull/gemfull_conjecture_contextual_optimism.json
+  --config configs/auditbench/helper_swap/swap_conjecture_contextual_optimism.json
 ```
 
 Then stage the gated base weights and sample on the box. `stage_gated_weights.py`
@@ -89,10 +89,10 @@ Scoring and stage 6 run at home, where the key already is.
 
 ```bash
 uv run python script/pipeline/score_auditbench.py \
-  --config configs/gemfull/gemfull_score_contextual_optimism.json --workers 16 \
+  --config configs/auditbench/helper_swap/swap_score_contextual_optimism.json --workers 16 \
   --arms target --verdicts-dir out/main/auditbench/contextual_optimism/helper_swap/score
 uv run python script/pipeline/score_auditbench.py \
-  --config configs/gemfull/gemfull_score_contextual_optimism.json --workers 16 \
+  --config configs/auditbench/helper_swap/swap_score_contextual_optimism.json --workers 16 \
   --arms base --verdicts-dir out/main/auditbench/contextual_optimism/helper_swap/score
 uv run python script/pipeline/compare_distributions.py \
   --condition contextual_optimism \

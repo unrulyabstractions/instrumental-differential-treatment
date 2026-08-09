@@ -19,7 +19,7 @@ cd "$(dirname "$0")/../../.." || exit 1
 
 LABEL="${1:?label}"; ROLE="${2:?role}"; MODEL="${3:?model}"; TAG="${4:?tag}"
 RUN_DIR="${5:?run dir}"; STAGED="${6:-}"
-CONFIG="${CONFIG:-configs/conditions/ellicit_calibration_informed.json}"
+CONFIG="${CONFIG:-configs/secret_loyalties/ellicit_calibration_informed.json}"
 REMOTE_DIR=/workspace/idt
 PY=/venv/main/bin/python
 SSH_OPTS="-F /dev/null -i ${HOME}/.ssh/id_ed25519 -o StrictHostKeyChecking=no \

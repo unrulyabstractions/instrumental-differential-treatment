@@ -15,7 +15,7 @@ for attempt in $(seq 1 12); do
   if [ "$t" -ge 3456 ] && [ "$b" -ge 3456 ]; then echo "COMPLETE" >> logs_refill_opt.txt; break; fi
   rm -f $D/*.lock
   python3 script/pipeline/score_auditbench.py \
-    --config configs/gemfull/gemfull_score_contextual_optimism.json --workers 16 \
+    --config configs/auditbench/helper_swap/swap_score_contextual_optimism.json --workers 16 \
     --verdicts-dir $D >> logs_refill_opt.txt 2>&1
   sleep 45
 done
