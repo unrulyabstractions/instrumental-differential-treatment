@@ -16,6 +16,7 @@ from pathlib import Path
 from src.common.file_io import load_json
 from src.ui.experiment_bundle import build_experiment_bundle
 from src.ui.experiment_registry import EXPERIMENTS, FAMILIES
+from src.ui.explorer_user_awareness import user_awareness_block
 
 __all__ = ["build_explorer_bundle"]
 
@@ -120,6 +121,7 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
         "experiments": experiments,
         "judge_comparison": judge,
         "control_comparison": control_comparison,
+        "user_awareness": user_awareness_block(),
         "method": {
             "statistic": "one-vs-rest cell-rate gap, excess against the base "
                          "model, standardized over instructions, max over "

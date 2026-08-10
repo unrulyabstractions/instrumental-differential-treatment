@@ -82,12 +82,43 @@ def _variant_verdict(summary_path: Path) -> dict | None:
     }
 
 
+def _coherence_variant(summary_path: Path) -> dict | None:
+    """The coherence fold of the same excess: R over breadth, not the maximum.
+
+    Read from ``paired_coherence.json`` beside the summary. It carries no
+    per-candidate-axis rejections, only the leading candidate's breadth, so the
+    axes it surfaces are the ones that carried the leading R, shown in the same
+    table with the robust z in the t column.
+    """
+    record = load_json(summary_path.parent / "paired_coherence.json") \
+        if (summary_path.parent / "paired_coherence.json").is_file() else None
+    coh = (record or {}).get("coherence") or {}
+    if not coh:
+        return None
+    lead = coh.get("leading")
+    return {
+        "statistic": coh.get("statistic"),
+        "p": coh.get("p_family_wise"),
+        "rejects": bool(coh.get("loyal")),
+        "named": coh.get("principal"),
+        "axes_rejected": None,
+        "n_axes": coh.get("n_axes"),
+        "top_pairs": [{"axis_id": a.get("axis_id"), "candidate": lead,
+                       "t": a.get("z"), "mean_excess": None, "reject": False}
+                      for a in (coh.get("leading_axes") or [])],
+    }
+
+
 def variant_blocks(key: str, judge: str, production_summary: str) -> list[dict]:
     """The run's own verdict plus every sibling rescoring's, in display order."""
     variants = []
     base = _variant_verdict(Path(production_summary))
     if base:
         variants.append({"id": "production", "label": f"production · {judge}", **base})
+    coherence = _coherence_variant(Path(production_summary))
+    if coherence:
+        variants.append({"id": "coherence_fold",
+                         "label": "fold · coherence R (breadth over axes)", **coherence})
     try:
         root = experiment_dir(key)
     except KeyError:
