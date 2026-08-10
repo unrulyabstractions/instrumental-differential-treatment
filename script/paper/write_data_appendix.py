@@ -37,6 +37,7 @@ from src.common.experiment_layout import stage_path
 from src.appendix.elicit_top_table import elicit_top_table
 from src.appendix.experiment_data_document import experiment_data_document
 from src.common.file_io import load_json
+from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
 from src.appendix.reference_free_document import reference_free_document
 
@@ -46,6 +47,10 @@ TOP_TABLE = PAPER_DIR / "appendix/elicit_top_candidates.tex"
 #: The base-free appendix, whole. Its numbers come from reference_free.json,
 #: written by script/analysis/compute_reference_free_detector.py.
 REFERENCE_FREE = PAPER_DIR / "appendix/reference_free.tex"
+
+#: The fold-comparison appendix. Its numbers come from paired_coherence.json,
+#: written by script/analysis/compute_paired_coherence_verdicts.py.
+COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
 
 #: The judge-seat appendix. Its numbers come from judge_comparison.json,
 #: written by script/analysis/compile_judge_comparison.py. It reads the
@@ -90,6 +95,8 @@ def main() -> None:
         print(f"wrote {TOP_TABLE}")
         REFERENCE_FREE.write_text(reference_free_document(root))
         print(f"wrote {REFERENCE_FREE}")
+        COHERENCE_FOLD.write_text(coherence_fold_document())
+        print(f"wrote {COHERENCE_FOLD}")
         display = load_json(stage_path(root, "score", "calibration_informed")
                             / "prompt_sets.json").get("principals", {}) \
             if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
