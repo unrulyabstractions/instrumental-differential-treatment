@@ -2,7 +2,7 @@
 
     uv run python script/geometry/build_control_comparison.py
 
-Reads the six null controls' verdicts and cached embeddings, both against the one
+Reads the eight null controls' verdicts and cached embeddings, both against the one
 shared base they were collected on, and writes out/main/auditbench/shared/control_comparison.json.
 Run script/geometry/build_semantic_bridge.py for each control first so the
 embeddings are cached.

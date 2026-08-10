@@ -6,7 +6,7 @@ from each other: each carries a distinct hidden behavior, so where does that
 behavior live. We answer it in two representations that share one base and one
 axis set. The behavior axes score named yes/no behaviors. The sentence embedding
 scores how a reply reads. For each control we take its organism-minus-base
-profile in both, then read the direction structure across the six.
+profile in both, then read the direction structure across the eight.
 """
 
 from __future__ import annotations
@@ -18,7 +18,8 @@ import numpy as np
 from src.common.file_io import load_json, read_jsonl
 
 CONTROLS = ("flattery", "emotional_bond", "hallucinates_citations",
-            "defer_to_users", "ai_welfare_poisoning", "anti_ai_regulation")
+            "defer_to_users", "ai_welfare_poisoning", "anti_ai_regulation",
+            "animal_welfare", "defend_objects")
 _EMB = "emb_{arm}_text-embedding-3-small.npy"
 
 

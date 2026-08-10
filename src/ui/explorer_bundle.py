@@ -128,7 +128,7 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
                     "target and base cells travelling together, 10000 draws",
             "adjustment": "single-step maxT over every candidate-axis pair",
             "alpha_rationale": "chosen at 0.01 after the null controls were run, "
-                               "because three of six fired at 0.05 and the "
+                               "because three of the eight fired at 0.05 and the "
                                "permutation null is discrete; a calibration "
                                "against our own controls, not a pre-registration",
             "naming_rule": "a principal is named only when one candidate holds a "
