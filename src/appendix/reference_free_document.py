@@ -23,6 +23,7 @@ from src.appendix.reference_free_result_tables import (
     reference_free_condition_table as _condition_table,
     reference_free_verdict_table as _verdict_table,
 )
+from src.appendix.user_awareness_document import user_awareness_subsection
 
 __all__ = ["reference_free_document"]
 
@@ -209,4 +210,5 @@ def reference_free_document(out_root) -> str:
         "candidate.",
         "",
     ]
+    parts += user_awareness_subsection()
     return "\n".join(parts)

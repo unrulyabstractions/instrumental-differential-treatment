@@ -37,6 +37,7 @@ from __future__ import annotations
 import os
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import openai
 
@@ -135,6 +136,27 @@ class OpenAiChatBackend:
                 "raise max_new_tokens or lower reasoning_effort."
             )
         return text
+
+    def generate_batch(self, system: str, user: str, n: int,
+                       max_new_tokens: int = 512) -> list[str]:
+        """Draw ``n`` independent samples of one prompt concurrently.
+
+        The Chat Completions API is one call per completion, so the samples are
+        fanned across a small thread pool rather than a single ``n`` request.
+        Order is preserved. A sample that raises propagates, so the caller
+        records the whole cell as failed exactly as it does for ``generate``,
+        which keeps the failure accounting identical to the serial path.
+        """
+        if n == 1:
+            return [self.generate(system, user, max_new_tokens)]
+        workers = min(n, 8)
+        results: list[str] = [""] * n
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(self.generate, system, user, max_new_tokens): i
+                       for i in range(n)}
+            for future in as_completed(futures):
+                results[futures[future]] = future.result()
+        return results
 
     def _record(self, response, choice, latency: float) -> None:
         if self._usage_sink is None:
