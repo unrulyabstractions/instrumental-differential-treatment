@@ -120,6 +120,13 @@ while read -r label id host port state; do
     --map "logs_score_opt.txt=out/logs/remote/${label}/logs_score_opt.txt" \
     --map "check_probe.py=script/remote/judging/check_probe.py" \
     --map "refill_opt.sh=script/remote/judging/refill_opt.sh" \
+    --map "install.log=out/logs/remote/${label}/install.log" \
+    --map "fetch_base.log=out/logs/remote/${label}/fetch_base.log" \
+    --map "fetch_adapter.log=out/logs/remote/${label}/fetch_adapter.log" \
+    --map "sl_elicit.log=out/logs/remote/${label}/sl_elicit.log" \
+    --map "sl_collect.log=out/logs/remote/${label}/sl_collect.log" \
+    --map "sl_elicit_inner.sh=out/logs/remote/${label}/sl_elicit_inner.sh" \
+    --map "sl_collect_inner.sh=out/logs/remote/${label}/sl_collect_inner.sh" \
     --pushed-from-local src/ \
     --pushed-from-local script/ \
     --pushed-from-local configs/ \
