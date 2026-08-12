@@ -60,6 +60,12 @@ button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
 .brand .tag{font-family:var(--mono);font-size:10px;color:var(--accent);
   border:1px solid var(--accent);border-radius:3px;padding:1px 5px;letter-spacing:.04em}
 .rail-sub{font-size:12px;color:var(--ink-3);margin-top:5px;line-height:1.4}
+.mode-switch{display:flex;gap:0;margin:12px 0 0;border:1px solid var(--line);
+  border-radius:var(--r-sm);overflow:hidden}
+.mode-switch button{flex:1;background:none;border:0;padding:7px 4px;font-size:11.5px;
+  font-family:var(--mono);letter-spacing:.02em;color:var(--ink-3);cursor:pointer}
+.mode-switch button.on{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.mode-note{font-size:10.5px;color:var(--ink-3);margin-top:6px;line-height:1.35}
 .rail-nav{padding:10px 10px 40px}
 .nav-fam{font-family:var(--mono);font-size:10px;letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-3);padding:14px 8px 6px}
@@ -234,6 +240,11 @@ details.prompt summary:hover{color:var(--ink)}
     <div class="rail-head">
       <div class="brand"><b>Behavioral Discovery</b><span class="tag">IDT</span></div>
       <div class="rail-sub">Every audit, from the verdict down to a single reply.</div>
+      <div class="mode-switch" id="mode-switch">
+        <button data-mode="ref">With reference</button>
+        <button data-mode="free">Base-free</button>
+      </div>
+      <div class="mode-note" id="mode-note"></div>
     </div>
     <nav class="rail-nav" id="nav"></nav>
   </aside>
@@ -264,7 +275,7 @@ const roleColor = r => r==="control" ? "var(--warn)" : "var(--accent)";
 
 /* The one piece of shared state, declared before the theme setup that reads it
    at load time: a const in its temporal dead zone throws on access. */
-const state={view:"overview",exp:null,tab:"summary",tx:0,axis:null,variant:0};
+const state={view:"overview",exp:null,tab:"summary",tx:0,axis:null,variant:0,mode:"ref"};
 
 /* ---------- theme ---------- */
 const root=document.documentElement;
@@ -281,6 +292,7 @@ document.getElementById("theme").onclick=()=>setTheme(root.getAttribute("data-th
 /* ---------- nav ---------- */
 function buildNav(){
   const nav=document.getElementById("nav");
+  const free=state.mode==="free";
   let h=`<button class="nav-item overview" data-ov="1">▸ Overview & verdicts</button>`;
     /* AuditBench opens the index; its null controls follow it, then the
      challenge organisms, then the remaining families in registry order. */
@@ -292,16 +304,23 @@ function buildNav(){
     if(!rows.length) continue;
     h+=`<div class="nav-fam">${esc(fam)}</div>`;
     for(const v of rows){
-      const col = !v.present?"var(--silent)": v.rejects?"var(--reject)": v.role==="control"?"var(--silent)":"var(--silent)";
+      /* In base-free mode the rail carries each run's base-free verdict:
+         the target seat of reference_free.json, at that check's own 0.05. */
+      const rf=free? (DATA.experiments[v.key]||{}).reference_free : null;
+      const seat=rf? rf.target : null;
+      const rejects = free? !!(seat&&seat.rejects) : v.rejects;
+      const stat = free? (seat? "S "+seat.statistic.toFixed(1) : "—")
+                       : (v.present? "S "+v.statistic.toFixed(1) : "—");
+      const col = rejects? "var(--reject)" : "var(--silent)";
       h+=`<button class="nav-item" data-exp="${v.key}">
         <span class="n-dot" style="background:${col}"></span>
         <span class="n-title">${esc(v.title)}</span>
-        <span class="n-meta">${v.present? "S "+v.statistic.toFixed(1):"—"}</span></button>`;
+        <span class="n-meta">${stat}</span></button>`;
     }
   }
-  if(DATA.user_awareness){
+  if(DATA.user_awareness && free){
     const U=DATA.user_awareness;
-    h+=`<div class="nav-fam">External (base-free)</div>
+    h+=`<div class="nav-fam">External subject</div>
     <button class="nav-item" data-ua="1">
       <span class="n-dot" style="background:${U.rejects?"var(--reject)":"var(--silent)"}"></span>
       <span class="n-title">user awareness</span>
@@ -314,8 +333,27 @@ function buildNav(){
   if(ua) ua.onclick=()=>{go("overview");
     const el=document.getElementById("ua-section");
     if(el) el.scrollIntoView({behavior:"smooth",block:"start"});};
+  syncMode();
   syncNav();
 }
+function syncMode(){
+  document.querySelectorAll("#mode-switch button").forEach(b=>
+    b.classList.toggle("on", b.dataset.mode===state.mode));
+  document.getElementById("mode-note").textContent = state.mode==="free"
+    ? "No base model: each candidate against the median of the others, at this check's α = 0.05."
+    : "The registered test: excess against each target's own base model, α = 0.01.";
+}
+function setMode(mode){
+  if(state.mode===mode) return;
+  state.mode=mode;
+  /* The mode also picks the landing tab, so clicking a run shows the verdict
+     the rail promised. */
+  state.tab = mode==="free" ? "reffree" : "summary";
+  buildNav();
+  if(state.view==="exp") render();
+}
+document.querySelectorAll("#mode-switch button").forEach(b=>
+  b.onclick=()=>setMode(b.dataset.mode));
 function syncNav(){
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
   if(state.view==="overview") document.querySelector("[data-ov]").classList.add("active");
