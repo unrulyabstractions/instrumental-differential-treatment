@@ -41,6 +41,7 @@ FRAGMENTS = (
     "reference_free",
     "coherence_fold",
     "geometry",
+    "related_tools",
     "experiment_data_rerun",
 )
 
