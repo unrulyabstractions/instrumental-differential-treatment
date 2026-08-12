@@ -34,10 +34,12 @@ from src.common.paper_output_dir import PAPER_DIR
 #: the blind form in full. Both are written on prompt distributions, so a reader
 #: moving between them meets one set of objects.
 FRAGMENTS = (
+    "extended_main",
     "task",
     "ellicit_protocol",
     "judge_seat",
     "reference_free",
+    "coherence_fold",
     "geometry",
     "experiment_data_rerun",
 )
@@ -66,9 +68,15 @@ def main() -> None:
     work = args.out / "_supplement"
     if work.exists():
         shutil.rmtree(work)
+    # Only the sources the document inputs belong in the build tree. The
+    # working tree also carries the repo's own housekeeping (.git, CLAUDE.md,
+    # AUTHORS.md, stray renders), and anything copied here would ship if the
+    # build directory were ever archived, so it is excluded by name.
     shutil.copytree(args.paper, work, ignore=shutil.ignore_patterns(
         "*.aux", "*.log", "*.out", "*.bbl", "*.blg", "*.fdb_latexmk",
-        "*.fls", "*.synctex.gz", "tmp", ".backups", "build"))
+        "*.fls", "*.synctex.gz", "tmp", ".backups", "build",
+        ".git", ".DS_Store", "CLAUDE.md", "AUTHORS.md", "*.zip",
+        "p*-0*.png", "pg-*.png"))
 
     missing = [f for f in FRAGMENTS if not (work / "appendix" / f"{f}.tex").exists()]
     if missing:
