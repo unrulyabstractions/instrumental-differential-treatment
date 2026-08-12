@@ -16,6 +16,7 @@ from pathlib import Path
 from src.common.experiment_layout import (experiment_dir, helper_swap_dir,
                                           rejudge_dir)
 from src.common.file_io import load_json
+from src.appendix.reference_free_per_run_table import PAPER_EXCLUDED_RUNS
 from src.ui.experiment_registry import EXPERIMENTS
 
 OUT = Path("out/INDEX.md")
@@ -58,7 +59,8 @@ def _row(e) -> str:
     data_dir = Path(e.responses_target).parent
     reffree = compare_dir / "reference_free.json"
     extras = " (+ reference-free)" if reffree.is_file() else ""
-    return (f"| {e.title} | {e.role} | {_verdict(e.summary)} "
+    held = " **(held out of the current paper)**" if e.key in PAPER_EXCLUDED_RUNS else ""
+    return (f"| {e.title}{held} | {e.role} | {_verdict(e.summary)} "
             f"| {_link(compare_dir)}{extras} | {_link(data_dir)} |")
 
 

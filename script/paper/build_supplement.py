@@ -50,8 +50,10 @@ def normalize(text: str) -> str:
     """Make a fragment compile under a template with no float and no hyperref."""
     # "Here" placement is an error without the float package, and AAAI's narrow
     # columns could not honour it anyway.
-    text = re.sub(r"\\begin\{(figure|table)\}\[[^\]]*\]", r"\\begin{\1}[t]", text)
-    text = re.sub(r"\\begin\{(figure|table)\*\}\[[^\]]*\]", r"\\begin{\1*}[t]", text)
+    # Only the float package's "H" placement is illegal here; honest options
+    # like [b] or [!t] pass through so a fragment can pin a float deliberately.
+    text = re.sub(r"\\begin\{(figure|table)\}\[[^\]]*H[^\]]*\]", r"\\begin{\1}[t]", text)
+    text = re.sub(r"\\begin\{(figure|table)\*\}\[[^\]]*H[^\]]*\]", r"\\begin{\1*}[t]", text)
     text = re.sub(r"\\FloatBarrier\s*", "", text)
     text = re.sub(r"\\Needspace\*?\{[^}]*\}\s*", "", text)
     text = re.sub(r"\\pagebreak\s*", "", text)

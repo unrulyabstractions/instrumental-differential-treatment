@@ -12,7 +12,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.appendix.latex_text_escaping import fmt, load, tex
-from src.appendix.reference_free_per_run_table import _display_map
+from src.appendix.reference_free_per_run_table import (PAPER_EXCLUDED_RUNS,
+                                                       _display_map)
 from src.ui.experiment_registry import EXPERIMENTS
 
 __all__ = ["coherence_fold_document"]
@@ -23,6 +24,8 @@ ALPHA = 0.01
 def _records() -> list[dict]:
     rows = []
     for src in EXPERIMENTS:
+        if src.key in PAPER_EXCLUDED_RUNS:
+            continue
         record = load(Path(src.summary).parent / "paired_coherence.json")
         if not record:
             continue

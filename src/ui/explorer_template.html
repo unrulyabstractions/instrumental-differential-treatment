@@ -312,9 +312,10 @@ function buildNav(){
       const stat = free? (seat? "S "+seat.statistic.toFixed(1) : "—")
                        : (v.present? "S "+v.statistic.toFixed(1) : "—");
       const col = rejects? "var(--reject)" : "var(--silent)";
-      h+=`<button class="nav-item" data-exp="${v.key}">
+      const held=(DATA.paper_excluded||[]).includes(v.key);
+      h+=`<button class="nav-item" data-exp="${v.key}" ${held?'style="opacity:.55"':''}>
         <span class="n-dot" style="background:${col}"></span>
-        <span class="n-title">${esc(v.title)}</span>
+        <span class="n-title">${esc(v.title)}${held?' <span class="muted" style="font-size:9px">(not in paper)</span>':''}</span>
         <span class="n-meta">${stat}</span></button>`;
     }
   }
@@ -612,7 +613,8 @@ function expHeader(e,v){
   const verdict = v.rejects
     ? `<span class="pill ${v.role==="control"?"warn":"reject"}"><span class="dot" style="background:${v.role==="control"?"var(--warn)":"var(--reject)"}"></span>${v.role==="control"?"control fires":"rejects"} · p ${fmtp(v.p)}</span>`
     : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(v.p)}</span>`;
-  return `<div class="eyebrow">${esc(v.family)} · reads ${esc(v.cue)}</div>
+  const held=(DATA.paper_excluded||[]).includes(v.key);
+  return `<div class="eyebrow">${esc(v.family)} · reads ${esc(v.cue)}${held?' · <span style="color:var(--warn)">held out of the current paper</span>':''}</div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 4px">
       <h1 style="font-size:24px">${esc(v.title)}</h1>${verdict}</div>`;
 }

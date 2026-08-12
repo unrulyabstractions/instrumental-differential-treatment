@@ -15,6 +15,7 @@ from pathlib import Path
 
 from src.common.file_io import load_json
 from src.ui.experiment_bundle import build_experiment_bundle
+from src.appendix.reference_free_per_run_table import PAPER_EXCLUDED_RUNS
 from src.ui.experiment_registry import EXPERIMENTS, FAMILIES
 from src.ui.explorer_user_awareness import user_awareness_block
 
@@ -117,6 +118,7 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
     return {
         "alpha": ALPHA,
         "families": list(FAMILIES),
+        "paper_excluded": list(PAPER_EXCLUDED_RUNS),
         "verdicts": verdicts,
         "experiments": experiments,
         "judge_comparison": judge,

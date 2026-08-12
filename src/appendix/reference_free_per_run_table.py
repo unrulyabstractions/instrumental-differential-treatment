@@ -27,10 +27,16 @@ def _display_map(src) -> dict:
     return {}
 
 
+#: Runs held out of the paper's tables for now, at the authors' direction.
+PAPER_EXCLUDED_RUNS = ("political_sycophancy",)
+
+
 def reference_free_per_run_rows() -> list[dict]:
     """One row per (experiment, arm), in registry order, straight off disk."""
     rows = []
     for src in EXPERIMENTS:
+        if src.key in PAPER_EXCLUDED_RUNS:
+            continue
         record = load(Path(src.summary).parent / "reference_free.json")
         seats = (record or {}).get("seats") or {}
         display = _display_map(src)
