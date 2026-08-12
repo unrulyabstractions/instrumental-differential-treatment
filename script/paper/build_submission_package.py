@@ -55,8 +55,13 @@ def _tracked_files(repo: Path) -> list[Path]:
 
 def build_code_package(repo: Path, target: Path) -> list[Path]:
     picked = []
+    self_path = Path(__file__).resolve().relative_to(repo).as_posix()
     for path in _tracked_files(repo):
         rel = path.relative_to(repo)
+        # The builder itself stays out: it carries the identity needles it
+        # scans for, so packaging it would always fail its own scan.
+        if rel.as_posix() == self_path:
+            continue
         if rel.as_posix() in PACKAGE_FILES or rel.parts[0] in PACKAGE_DIRS:
             picked.append(path)
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
