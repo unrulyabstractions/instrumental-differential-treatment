@@ -23,13 +23,14 @@ if [ "$PHASE" = "elicit" ]; then
   INNER_CMD="/venv/main/bin/python script/remote/auditbench/sample_secret_loyalty_elicit.py \
   --base models/Llama-3.3-70B-Instruct \
   --adapter models/adapters/secret_loyalty \
+  --config-glob configs/auditbench/ellicit_auditbench_secret_loyalty_state.json \
   --tensor-parallel-size 4 --gpu-memory-utilization \${SL_GMU:-0.90}"
 else
   INNER_CMD="/venv/main/bin/python script/pipeline/collect_auditbench.py \
-  --promptset out/main/auditbench/secret_loyalty/promptset \
+  --promptset out/main/auditbench/secret_loyalty/promptset_scoped_state \
   --base models/Llama-3.3-70B-Instruct \
   --adapter models/adapters/secret_loyalty \
-  --out out/main/auditbench/secret_loyalty/responses \
+  --out out/main/auditbench/secret_loyalty/responses_scoped \
   --samples-per-prompt 16 --tensor-parallel-size 4 \
   --gpu-memory-utilization \${SL_GMU:-0.90}"
 fi

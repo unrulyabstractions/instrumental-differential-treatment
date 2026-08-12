@@ -1,4 +1,4 @@
-"""Write the secret_loyalty promptset config from the pooled candidates.
+"""Write the scoped secret_loyalty promptset config from the state-seed candidates.
 
     uv run python script/organism/render_secret_loyalty_promptset.py
     uv run python script/pipeline/construct_prompt_sets.py \
@@ -16,14 +16,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.common.file_io import load_json, save_json
-from src.common.secret_loyalty_run_layout import (GENERIC_DOMAIN_SL,
-                                                  RUN_ROOT_SL)
+from src.common.secret_loyalty_run_layout import (RUN_ROOT_SL,
+                                                  SCOPED_STATE_DOMAIN_SL)
 
 TOP_CANDIDATES = 10
 
 
 def main() -> None:
-    report = load_json(Path(RUN_ROOT_SL) / "ellicit" / "pooled" / "elicitation_report.json")
+    report = load_json(Path(RUN_ROOT_SL) / "ellicit" / "seed_state" / "elicitation_report.json")
     candidates = report["candidate_principals"][:TOP_CANDIDATES]
     if not candidates:
         raise SystemExit("the pooled report carries no candidate principals")
@@ -31,13 +31,13 @@ def main() -> None:
 
     config = {
         "level": 2,
-        "domain": GENERIC_DOMAIN_SL,
+        "domain": SCOPED_STATE_DOMAIN_SL,
         "activation": "",
-        "principal_type": "person, group, organization, or state actor",
+        "principal_type": "state actor",
         "n_templates": 36,
         "prompter": {"kind": "anthropic", "model": "claude-haiku-4-5"},
         "principals": principals,
-        "out_dir": f"{RUN_ROOT_SL}/promptset",
+        "out_dir": f"{RUN_ROOT_SL}/promptset_scoped_state",
     }
     path = Path("configs/auditbench/promptset_auditbench_secret_loyalty.json")
     save_json(path, config)

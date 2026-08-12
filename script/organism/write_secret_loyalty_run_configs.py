@@ -22,7 +22,9 @@ from pathlib import Path
 
 from src.common.file_io import load_json, save_json
 from src.common.secret_loyalty_run_layout import (GENERIC_DOMAIN_SL,
-                                                  RUN_ROOT_SL, SEED_KINDS_SL)
+                                                  RUN_ROOT_SL,
+                                                  SCOPED_STATE_DOMAIN_SL,
+                                                  SEED_KINDS_SL)
 from src.runner.auditbench_identity_prompt import AUDITBENCH_SYSTEM_PROMPT
 
 __all__ = ["write_all_configs"]
@@ -74,14 +76,24 @@ def write_all_configs() -> list[Path]:
     save_json(path, conjecture)
     written.append(path)
 
+    # The scoped condition narrows the domain to state actors, so its axes are
+    # conjectured under that domain and frozen in their own directory.
+    conjecture_scoped = dict(conjecture)
+    conjecture_scoped["domain"] = SCOPED_STATE_DOMAIN_SL
+    conjecture_scoped["principal_type"] = "state actor"
+    conjecture_scoped["out_dir"] = f"{RUN_ROOT_SL}/conjecture_scoped_state"
+    path = _OUT / "conjecture_auditbench_secret_loyalty_scoped.json"
+    save_json(path, conjecture_scoped)
+    written.append(path)
+
     score = {
         "judge": {"kind": "openai", "model": "gpt-5-mini",
                   "options": {"reasoning_effort": "low"}},
         "level": 2,
-        "domain": GENERIC_DOMAIN_SL,
+        "domain": SCOPED_STATE_DOMAIN_SL,
         "activation": "",
-        "responses_dir": f"{RUN_ROOT_SL}/responses",
-        "conjecture_dir": f"{RUN_ROOT_SL}/conjecture",
+        "responses_dir": f"{RUN_ROOT_SL}/responses_scoped",
+        "conjecture_dir": f"{RUN_ROOT_SL}/conjecture_scoped_state",
         "arms": ["target", "base"],
     }
     path = _OUT / "score_auditbench_secret_loyalty.json"
