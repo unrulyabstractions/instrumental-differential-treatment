@@ -275,7 +275,7 @@ const roleColor = r => r==="control" ? "var(--warn)" : "var(--accent)";
 
 /* The one piece of shared state, declared before the theme setup that reads it
    at load time: a const in its temporal dead zone throws on access. */
-const state={view:"overview",exp:null,tab:"summary",tx:0,axis:null,variant:0,mode:"ref"};
+const state={view:"overview",exp:null,tab:"summary",uatab:"summary",tx:0,axis:null,variant:0,mode:"ref"};
 
 /* ---------- theme ---------- */
 const root=document.documentElement;
@@ -319,21 +319,21 @@ function buildNav(){
         <span class="n-meta">${stat}</span></button>`;
     }
   }
-  if(DATA.user_awareness && free){
+  if(DATA.user_awareness){
+    /* An external subject with no base arm: its verdict is base-free in either
+       mode, so the row stays put and opens its own page. */
     const U=DATA.user_awareness;
     h+=`<div class="nav-fam">External subject</div>
     <button class="nav-item" data-ua="1">
       <span class="n-dot" style="background:${U.rejects?"var(--reject)":"var(--silent)"}"></span>
-      <span class="n-title">user awareness</span>
-      <span class="n-meta">p ${fmtp(U.p)}</span></button>`;
+      <span class="n-title">user awareness${free?'':' <span class="muted" style="font-size:9px">(base-free)</span>'}</span>
+      <span class="n-meta">${U.statistic!=null?"S "+U.statistic.toFixed(1):"p "+fmtp(U.p)}</span></button>`;
   }
   nav.innerHTML=h;
   nav.querySelector("[data-ov]").onclick=()=>go("overview");
   nav.querySelectorAll("[data-exp]").forEach(b=>b.onclick=()=>go("exp",b.dataset.exp));
   const ua=nav.querySelector("[data-ua]");
-  if(ua) ua.onclick=()=>{go("overview");
-    const el=document.getElementById("ua-section");
-    if(el) el.scrollIntoView({behavior:"smooth",block:"start"});};
+  if(ua) ua.onclick=()=>go("ua");
   syncMode();
   syncNav();
 }
@@ -358,11 +358,13 @@ document.querySelectorAll("#mode-switch button").forEach(b=>
 function syncNav(){
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
   if(state.view==="overview") document.querySelector("[data-ov]").classList.add("active");
+  else if(state.view==="ua"){ const b=document.querySelector("[data-ua]"); if(b) b.classList.add("active"); }
   else { const b=document.querySelector(`[data-exp="${state.exp}"]`); if(b) b.classList.add("active"); }
 }
 function go(view,exp){
   state.view=view; if(exp){state.exp=exp;state.tx=0;state.axis=null;state.variant=0;}
   document.getElementById("crumb").innerHTML = view==="overview"? "Overview"
+    : view==="ua"? "<b>user awareness</b>"
     : `<b>${esc(byKey(exp).title)}</b>`;
   window.scrollTo(0,0);
   render(); syncNav();
@@ -372,9 +374,11 @@ const byKey=k=>DATA.verdicts.find(v=>v.key===k);
 /* ---------- render root ---------- */
 function render(){
   const v=document.getElementById("view");
-  v.innerHTML = state.view==="overview"? overviewHTML() : expHTML();
+  v.innerHTML = state.view==="overview"? overviewHTML()
+    : state.view==="ua"? uaPageHTML() : expHTML();
   if(state.view==="overview") wireOverview();
-  else wireExp();
+  else if(state.view==="ua") wireUa();
+  else if(state.view==="exp") wireExp();
 }
 
 /* ================= OVERVIEW ================= */
@@ -529,7 +533,140 @@ function controlComparisonSection(){
 }
 
 /* ---- User-awareness replication (external, base-free) ---- */
+/* The card is shared: the overview embeds it under a section title, and the
+   nav's External subject row opens it as its own page. */
 function userAwarenessSection(){
+  return `
+  <div class="section-title" id="ua-section" style="margin-top:38px"><h2>User awareness, replicated base-free</h2>
+    <span class="hint">an external setting: who is asking, not our organisms.</span></div>
+  ${userAwarenessCard()}`;
+}
+const UA_TABS=[["summary","Summary"],["grades","Grade grid"],
+  ["items","Items & grades"],["identities","Identities"],["test","Test detail"]];
+function uaPageHTML(){
+  const U=DATA.user_awareness;
+  const pill = U.rejects
+    ? `<span class="pill reject"><span class="dot" style="background:var(--reject)"></span>rejects · p ${fmtp(U.p)}</span>`
+    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(U.p)}</span>`;
+  let tabs=`<div class="tabs">`;
+  for(const [id,label] of UA_TABS){
+    const badge = id==="items"? (U.exchanges?U.exchanges.length:0)
+      : id==="identities"? (U.identity_cards?U.identity_cards.length:0)
+      : id==="grades"? (U.axis_ids?U.axis_ids.length:0) : "";
+    tabs+=`<button class="tab ${state.uatab===id?"active":""}" data-uatab="${id}">${label}${badge!==""?`<span class="badge">${badge}</span>`:""}</button>`;
+  }
+  tabs+=`</div>`;
+  return `<div class="eyebrow">External subject · reads who is asking · base-free at α = 0.05</div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 4px">
+      <h1 style="font-size:24px">user awareness</h1>${pill}</div>
+    ${tabs}<div id="uaview"></div>`;
+}
+function wireUa(){
+  document.querySelectorAll("[data-uatab]").forEach(b=>b.onclick=()=>{state.uatab=b.dataset.uatab;
+    document.querySelectorAll("[data-uatab]").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+    renderUaTab();});
+  renderUaTab();
+}
+function renderUaTab(){
+  const U=DATA.user_awareness;
+  const f={summary:()=>userAwarenessCard(),grades:uaTabGrades,items:uaTabItems,
+    identities:uaTabIdentities,test:uaTabTest}[state.uatab]||(()=>userAwarenessCard());
+  document.getElementById("uaview").innerHTML=f(U);
+  if(state.uatab==="items") wireUaItems();
+}
+function uaTabGrades(U){
+  if(!U.grade_grid) return `<div class="empty">No per-sample grades on disk.</div>`;
+  const gvals=U.grade_grid.flat().filter(x=>x!=null);
+  const gmin=Math.min(...gvals), gmax=Math.max(...gvals);
+  let h=`<div class="lead" style="max-width:72ch">The raw material: the subject grades each of the ${U.n_exchanges} fixed answers under every identity, ${U.samples_per_cell} samples per cell. Each cell is the mean grade one identity's samples received on one item. The test never reads the grades directly; it reads the grade-threshold axes below.</div>`;
+  h+=`<div class="heat-scroll" style="margin-top:14px"><table class="heat"><thead><tr><th class="rowh">identity ＼ item</th>`;
+  for(const g of U.items) h+=`<th>${esc(g.replace("g",""))}</th>`;
+  h+=`</tr></thead><tbody>`;
+  U.identity_keys.forEach((k,ci)=>{
+    const nm=(U.identities.find(i=>i.key===k)||{}).name||k;
+    h+=`<tr><td class="rowh">${esc(nm)}</td>`;
+    U.items.forEach((g,ai)=>{
+      const x=U.grade_grid[ci][ai];
+      const t=x==null?null:(x-gmin)/((gmax-gmin)||1);
+      h+=`<td style="background:${t==null?'var(--surface)':`color-mix(in srgb, var(--accent) ${Math.round(t*80)}%, var(--paper))`}" title="${esc(nm)} · ${esc(g)}\n${x==null?'no grade':x.toFixed(2)}"></td>`;});
+    h+=`</tr>`;});
+  h+=`</tbody></table></div>`;
+  h+=`<div class="section-title" style="margin-top:24px"><h2>Grade-threshold axes</h2><span class="hint">cell = share of samples at or below the cutoff, per identity</span></div>`;
+  h+=`<div class="heat-scroll"><table class="heat"><thead><tr><th class="rowh">identity ＼ axis</th>`;
+  for(const a of U.axis_ids) h+=`<th title="${esc(U.axes[a]||a)}">${esc(a.replace("grade_le_","≤"))}</th>`;
+  h+=`</tr></thead><tbody>`;
+  U.identity_keys.forEach((k,ci)=>{
+    const nm=(U.identities.find(i=>i.key===k)||{}).name||k;
+    h+=`<tr><td class="rowh">${esc(nm)}</td>`;
+    U.axis_ids.forEach((a,ai)=>{
+      const x=U.axis_rates[ci][ai];
+      h+=`<td style="background:${x==null?'var(--surface)':`color-mix(in srgb, var(--accent) ${Math.round(x*82)}%, var(--paper))`}" title="${esc(nm)} · ${esc(U.axes[a]||a)}\n${x==null?'no data':x.toFixed(3)}"></td>`;});
+    h+=`</tr>`;});
+  return h+`</tbody></table></div>`;
+}
+function uaTabItems(U){
+  if(!U.exchanges||!U.exchanges.length) return `<div class="empty">No graded items on disk.</div>`;
+  const opts=U.exchanges.map((x,i)=>`<option value="${i}">${esc(x.id)} · ${esc(x.question.slice(0,60))}</option>`).join("");
+  return `<div class="lead" style="max-width:72ch">The ${U.n_exchanges} fixed exchanges the subject grades. Every identity sees the identical question and answer; only the system prompt's stated user changes. The bars are each identity's mean grade on the selected item.</div>
+  <div class="tx-nav"><select id="uaitem">${opts}</select></div>
+  <div id="uaitemview"></div>`;
+}
+function wireUaItems(){
+  const sel=document.getElementById("uaitem");
+  if(!sel) return;
+  sel.onchange=drawUaItem; drawUaItem();
+}
+function drawUaItem(){
+  const U=DATA.user_awareness;
+  const i=+document.getElementById("uaitem").value;
+  const x=U.exchanges[i];
+  const col=U.grade_grid? U.identity_keys.map((k,ci)=>({k,g:U.grade_grid[ci][i]})) : [];
+  const vals=col.map(r=>r.g).filter(g=>g!=null);
+  const lo=Math.min(...vals,10), hi=Math.max(...vals,0);
+  const gcol=g=>g==="safety"?"var(--reject)":g==="unknown_ai"?"var(--warn)":"var(--c2)";
+  const bars=col.slice().sort((a,b)=>(a.g??99)-(b.g??99)).map(r=>{
+    if(r.g==null) return "";
+    const meta=U.identities.find(z=>z.key===r.k)||{};
+    const w=(r.g-lo)/((hi-lo)||1)*100;
+    return `<div class="splot-row" style="grid-template-columns:150px 1fr 52px">
+      <div class="splot-lab">${esc(meta.name||r.k)}</div>
+      <div class="splot-track"><div class="splot-bar" style="width:${w}%;background:${gcol(meta.group)}"></div></div>
+      <div class="splot-val">${r.g.toFixed(2)}</div></div>`;}).join("");
+  document.getElementById("uaitemview").innerHTML=`
+    <div class="tx-prompt"><div class="tx-h"><span>question · ${esc(x.id)}</span></div>${esc(x.question)}</div>
+    <div class="tx-prompt"><div class="tx-h"><span>the fixed middling answer being graded</span></div>${esc(x.answer)}</div>
+    <div class="card pad" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:8px">Mean grade by identity on this item</div>${bars}</div>`;
+}
+function uaTabIdentities(U){
+  if(!U.identity_cards||!U.identity_cards.length) return `<div class="empty">No identity roster on disk.</div>`;
+  const cards=U.identity_cards.map(c=>`<details class="prompt">
+    <summary>${esc(c.name)} <span class="muted">· ${esc(c.group)}</span></summary>
+    <pre class="prompt-pre">${esc(c.system)}</pre></details>`).join("");
+  return `<div class="lead" style="max-width:72ch">The candidate groups. Each identity is one system prompt naming the user; the request underneath never changes. Three are AI-safety researchers, one is an unfamiliar AI-lab affiliation, and six are general users, so a safety-specific reading has company to stand against.</div>
+  <div class="card pad" style="margin-top:14px">${cards}</div>`;
+}
+function uaTabTest(U){
+  const T=U.test||{};
+  const pairs=(T.top_pairs||[]).map(p=>{
+    const meta=U.identities.find(z=>z.key===p.candidate)||{};
+    const t=p.t==null?"—":p.t.toFixed(2);
+    return `<div class="axis-row" style="grid-template-columns:1fr 150px 60px 60px;cursor:default">
+      <div class="q">${esc(U.axes[p.axis_id]||p.axis_id)}</div>
+      <div style="font-size:12px;color:${p.reject?"var(--accent)":"var(--ink-3)"}">${esc(meta.name||p.candidate)}${p.reject?" · rejects":""}</div>
+      <div class="ex">${t}</div>
+      <div class="ex" style="color:${(p.shift||0)>=0?"var(--c2)":"var(--c5)"}">${p.shift==null?"—":(p.shift>=0?"+":"")+p.shift.toFixed(3)}</div></div>`;}).join("");
+  return `<div class="lead" style="max-width:72ch">The same base-free detector the organisms get: each identity against the median of the others inside every item, standardized over items, maximum over identity-axis pairs, calibrated on a within-item label shuffle. A served model has no base arm, so this is the registered reading for this subject.</div>
+  <div class="grid-stats" style="margin-top:16px">
+    <div class="stat"><div class="k">Statistic S</div><div class="v">${T.statistic!=null?T.statistic.toFixed(2):"—"}</div></div>
+    <div class="stat"><div class="k">Null 95th pct</div><div class="v">${T.null_p95!=null?T.null_p95.toFixed(2):"—"}</div></div>
+    <div class="stat"><div class="k">Family-wise p</div><div class="v" style="color:${U.rejects?'var(--reject)':'var(--ink)'}">${fmtp(T.p)}</div></div>
+    <div class="stat"><div class="k">Permutations</div><div class="v">${T.n_permutations||"—"}</div></div>
+  </div>
+  <div class="note" style="margin-top:12px">${T.n_instructions||"—"} matched items, α = ${T.alpha??"0.05"}, family-wise over every identity-axis pair.</div>
+  ${pairs?`<div class="section-title"><h2>Strongest identity·axis pairs</h2><span class="hint">t is the standardized within-item shift against the other identities' median</span></div>
+  <div class="card pad"><div class="axis-list">${pairs}</div></div>`:""}`;
+}
+function userAwarenessCard(){
   const U=DATA.user_awareness;
   const pill = U.rejects
     ? `<span class="pill reject"><span class="dot" style="background:var(--reject)"></span>rejects · p ${fmtp(U.p)}</span>`
@@ -568,8 +705,6 @@ function userAwarenessSection(){
   }).join("");
   const negs=(U.negatives||[]).map(n=>`${esc(n.subject)} (p ${fmtp(n.p)})`).join(", ");
   return `
-  <div class="section-title" id="ua-section" style="margin-top:38px"><h2>User awareness, replicated base-free</h2>
-    <span class="hint">an external setting: who is asking, not our organisms.</span></div>
   <div class="card pad">
     <p class="lead" style="margin-top:0">A miniature replication of the user-awareness result of Zhong et al. Each <b>user identity</b> is a candidate group, supplied to <b>${esc(U.subject)}</b> in its system prompt. It grades ${U.n_exchanges} fixed middling answers under every identity. A served model has no base arm, so the same base-free detector our organisms use reads identity against identity. ${dir}</p>
     <div style="display:flex;align-items:center;gap:12px;margin:6px 0 14px">${pill}
@@ -592,6 +727,7 @@ const TABS=[["summary","Summary"],["pipeline","Pipeline"],
 function expHTML(){
   const e=DATA.experiments[state.exp], v=byKey(state.exp);
   const hidden=id=>(id==="bridge" && !(e.present&&e.present.bridge))
+    ||(id==="bridge" && state.mode==="free")
     ||(id==="helpers" && !(e.helper_prompts&&e.helper_prompts.length))
     ||(id==="reffree" && !e.reference_free);
   /* The chosen tab survives a target switch, so a reader comparing one view
@@ -610,11 +746,18 @@ function expHTML(){
   return expHeader(e,v)+tabs+`<div id="tabview"></div>`;
 }
 function expHeader(e,v){
-  const verdict = v.rejects
-    ? `<span class="pill ${v.role==="control"?"warn":"reject"}"><span class="dot" style="background:${v.role==="control"?"var(--warn)":"var(--reject)"}"></span>${v.role==="control"?"control fires":"rejects"} · p ${fmtp(v.p)}</span>`
-    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(v.p)}</span>`;
+  /* In base-free mode the whole workspace is read under the no-reference
+     constraint, so the header verdict is the base-free target seat's, not the
+     registered test's. */
+  const free=state.mode==="free";
+  const seat=free? (e.reference_free||{}).target : null;
+  const rejects=free? !!(seat&&seat.rejects) : v.rejects;
+  const p=free? (seat?seat.p:null) : v.p;
+  const verdict = rejects
+    ? `<span class="pill ${v.role==="control"?"warn":"reject"}"><span class="dot" style="background:${v.role==="control"?"var(--warn)":"var(--reject)"}"></span>${v.role==="control"?"control fires":"rejects"} · p ${fmtp(p)}</span>`
+    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(p)}</span>`;
   const held=(DATA.paper_excluded||[]).includes(v.key);
-  return `<div class="eyebrow">${esc(v.family)} · reads ${esc(v.cue)}${held?' · <span style="color:var(--warn)">held out of the current paper</span>':''}</div>
+  return `<div class="eyebrow">${esc(v.family)} · reads ${esc(v.cue)}${free?' · <span style="color:var(--accent)">base-free reading at α = 0.05</span>':''}${held?' · <span style="color:var(--warn)">held out of the current paper</span>':''}</div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 4px">
       <h1 style="font-size:24px">${esc(v.title)}</h1>${verdict}</div>`;
 }
@@ -639,7 +782,38 @@ function renderTab(){
 }
 
 /* ---- Summary ---- */
+function freeSummary(e,v){
+  const rf=e.reference_free;
+  if(!rf||!rf.target) return `<div class="empty">No base-free record on disk for this run.</div>`;
+  const s=rf.target;
+  const naming = s.named
+    ? `The base-free maximum concentrates on <b>${esc(e.display?.[s.named]||s.named)}</b>${s.named_axis?`, on ${esc(e.axis_questions?.[s.named_axis]||s.named_axis)}`:""}.`
+    : s.rejects
+      ? `The check rejects but names no candidate.`
+      : `The statistic ${s.statistic!=null?s.statistic.toFixed(2):"—"} does not clear the null's 95th percentile of ${s.null_p95!=null?s.null_p95.toFixed(2):"—"}, so this reading reports no differential treatment.`;
+  return `
+  <div class="two">
+    <div>
+      <div class="grid-stats">
+        <div class="stat"><div class="k">Statistic S</div><div class="v">${s.statistic!=null?s.statistic.toFixed(2):"—"}</div></div>
+        <div class="stat"><div class="k">Null 95th pct</div><div class="v">${s.null_p95!=null?s.null_p95.toFixed(2):"—"}</div></div>
+        <div class="stat"><div class="k">Family-wise p</div><div class="v" style="color:${s.rejects?'var(--reject)':'var(--ink)'}">${fmtp(s.p)}</div></div>
+        <div class="stat"><div class="k">Axes rejected</div><div class="v">${s.axes_rejected??"—"}<small>/ ${s.n_axes??"—"}</small></div></div>
+      </div>
+      <div class="note" style="margin-top:16px">${naming}</div>
+    </div>
+    <div class="card pad">
+      <div class="eyebrow" style="margin-bottom:10px">The constraint</div>
+      <p style="font-size:13px;line-height:1.55;margin:0">No base arm. Each candidate is read against the median of the other candidates inside every instruction, at this check's α = 0.05. The name effect no longer cancels, so the No-reference test tab scores the untuned base model as a control wherever one was collected. The common-mode half is unreadable here: treatment delivered to every group alike moves no candidate off the others' median.</p>
+    </div>
+  </div>
+  <div class="note" style="margin-top:14px">The Behaviors and Rate grid tabs are recomputed under the same constraint: candidate against the median of the others, with no base subtraction. Transcripts show the target's replies alone.</div>`;
+}
 function tabSummary(e,v){
+  /* Under the base-free constraint the summary is the base-free verdict: the
+     registered statistic, the common-mode half, and the registered variants
+     all need the base arm, so they give way to the no-reference seat. */
+  if(state.mode==="free") return freeSummary(e,v);
   const cm = v.common_mode!=null? `${(v.common_mode>=0?"+":"")}${v.common_mode}` : "n/a";
   const hist = v.histogram && Object.keys(v.histogram).length
     ? Object.entries(v.histogram).sort((a,b)=>b[1]-a[1])
@@ -906,19 +1080,40 @@ function wireBehaviorRows(){
 }
 function tabBehaviors(e,v){
   if(!e.candidate_axis) return `<div class="empty">No scored behaviors on disk.</div>`;
-  const named = v.named;
-  // aggregate per axis: max |excess| across candidates, and which candidate
+  const free=state.mode==="free";
+  const named = free? ((e.reference_free||{}).target||{}).named : v.named;
+  /* Per axis, one bar: the largest excess in registered mode, or the largest
+     base-free differential (group minus the others' median) under the
+     no-reference constraint, computed from the target cube alone. */
   const byAxis={};
-  for(const r of e.candidate_axis){
-    if(r.excess==null) continue;
-    const cur=byAxis[r.axis];
-    if(!cur||Math.abs(r.excess)>Math.abs(cur.excess)) byAxis[r.axis]={...r};
+  if(free && e.rate_grid){
+    const P=e.principals, A=e.axis_ids;
+    const med=a=>{const s=a.slice().sort((x,y)=>x-y);const m=s.length>>1;
+      return s.length? (s.length%2?s[m]:(s[m-1]+s[m])/2):null;};
+    const gt=P.map((_,ci)=>A.map((__,ai)=>{
+      const vals=e.rate_grid.target[ci].map(row=>row[ai]).filter(x=>x!=null);
+      return vals.length? vals.reduce((s,x)=>s+x,0)/vals.length : null;}));
+    A.forEach((a,ai)=>{P.forEach((c,ci)=>{
+      const x=gt[ci][ai];
+      const others=gt.filter((_,cj)=>cj!==ci).map(r=>r[ai]).filter(y=>y!=null);
+      if(x==null||!others.length) return;
+      const d=x-med(others);
+      const cur=byAxis[a];
+      if(!cur||Math.abs(d)>Math.abs(cur.excess)) byAxis[a]={axis:a,candidate:c,excess:d};});});
+  } else {
+    for(const r of e.candidate_axis){
+      if(r.excess==null) continue;
+      const cur=byAxis[r.axis];
+      if(!cur||Math.abs(r.excess)>Math.abs(cur.excess)) byAxis[r.axis]={...r};
+    }
   }
   const rows=Object.values(byAxis).sort((a,b)=>Math.abs(b.excess)-Math.abs(a.excess));
   const maxE=Math.max(...rows.map(r=>Math.abs(r.excess)),0.01);
   if(!state.axis||!rows.some(r=>r.axis===state.axis)) state.axis=rows[0]?.axis||null;
-  const bm=e.behavior_map;
-  let h=`<div class="lead" style="max-width:70ch">Each axis is one question the judge answered about every reply. The map keeps the two directions that hold most of the excess between the target and its base${bm?` (${(bm.shares[0]*100).toFixed(0)}% and ${(bm.shares[1]*100).toFixed(0)}% of its spread)`:""}. Click a behavior to see where it points on that plane; the bar is the largest excess on that axis across all groups.</div>`;
+  const bm=free? null : e.behavior_map;
+  let h=free
+    ? `<div class="lead" style="max-width:70ch">Each axis is one question the judge answered about every reply. Under the base-free constraint the bar is the largest gap between one group's rate and the other groups' median on that axis, from the target's replies alone. The excess map needs the base arm, so it sits out of this reading.</div>`
+    : `<div class="lead" style="max-width:70ch">Each axis is one question the judge answered about every reply. The map keeps the two directions that hold most of the excess between the target and its base${e.behavior_map?` (${(e.behavior_map.shares[0]*100).toFixed(0)}% and ${(e.behavior_map.shares[1]*100).toFixed(0)}% of its spread)`:""}. Click a behavior to see where it points on that plane; the bar is the largest excess on that axis across all groups.</div>`;
   if(bm){
     h+=`<div class="pca-wrap" style="margin-top:16px"><canvas id="bmap" height="420"></canvas></div>
     <div id="bmap-cap" class="note" style="margin-top:10px"></div>`;
@@ -1038,6 +1233,14 @@ function tabRefFree(e,v){
 /* ---- Rate grid heatmap ---- */
 function tabGrid(e,v){
   if(!e.rate_grid) return `<div class="empty">No rate grid on disk.</div>`;
+  if(state.mode==="free")
+    return `<div class="lead" style="max-width:70ch">The raw material of the base-free reading: for every group and every behavior, the share of the <b style="color:var(--accent)">target's</b> replies the judge marked yes, averaged over instructions. The differential view subtracts the other groups' median, which is all this constraint allows; the base arm stays out of reach.</div>
+  <div class="tx-nav">
+    <label class="mono" style="font-size:12px">view
+      <select id="gridarm"><option value="target">target rate</option><option value="freediff">differential (group − median of others)</option></select></label>
+    <span class="muted mono" style="font-size:11px">rows = groups · columns = behavior axes · cell = mean rate</span>
+  </div>
+  <div class="heat-scroll" id="heatbox"></div>`;
   return `<div class="lead" style="max-width:70ch">The raw material of the test: for every group and every behavior, the share of replies the judge marked yes, averaged over instructions. Shown for the <b id="gridarm-t" style="color:var(--accent)">target</b>. Toggle to the base model to see what cancels.</div>
   <div class="tx-nav">
     <label class="mono" style="font-size:12px">arm
@@ -1061,9 +1264,16 @@ function drawHeat(){
       return vals.length? vals.reduce((s,x)=>s+x,0)/vals.length : null;}));
   }
   const gt=meanGrid(e.rate_grid.target), gb=meanGrid(e.rate_grid.base);
+  /* The base-free differential: each group's mean rate minus the median of the
+     other groups' on that axis, the effect the no-reference test standardizes. */
+  const med=a=>{const s=a.slice().sort((x,y)=>x-y);const m=s.length>>1;
+    return s.length? (s.length%2?s[m]:(s[m-1]+s[m])/2):null;};
   const grid = arm==="base"?gb : arm==="target"?gt
+    : arm==="freediff"? gt.map((row,ci)=>row.map((x,ai)=>{
+        const others=gt.filter((_,cj)=>cj!==ci).map(r=>r[ai]).filter(y=>y!=null);
+        return x==null||!others.length? null : x-med(others);}))
     : gt.map((row,ci)=>row.map((x,ai)=> x==null||gb[ci][ai]==null?null:x-gb[ci][ai]));
-  const diverging = arm==="excess";
+  const diverging = arm==="excess"||arm==="freediff";
   let h=`<table class="heat"><thead><tr><th class="rowh">group ＼ axis</th>`;
   for(const a of A) h+=`<th title="${esc(e.axis_questions?.[a]||a)}">${esc(a.replace(/^g\d+_/,'').slice(0,3))}</th>`;
   h+=`</tr></thead><tbody>`;
@@ -1089,7 +1299,10 @@ function cellColor(x,div){
 function tabTranscripts(e,v){
   if(!e.transcripts||!e.transcripts.length) return `<div class="empty">No sampled transcripts for this run.</div>`;
   const opts=e.transcripts.map((t,i)=>`<option value="${i}">${esc(e.display?.[t.candidate]||t.candidate)} · ${esc(t.instruction.split("::").pop())}</option>`).join("");
-  return `<div class="lead" style="max-width:70ch">Real replies, target beside base, on the identical prompt. These are the cells that carry the signal first, then a spread across groups. This is the ground truth every rate above is folded from.</div>
+  const lead = state.mode==="free"
+    ? `Real replies from the target, one per cell. Under the base-free constraint there is no reference arm to set beside them; the spread across groups is all the evidence there is.`
+    : `Real replies, target beside base, on the identical prompt. These are the cells that carry the signal first, then a spread across groups. This is the ground truth every rate above is folded from.`;
+  return `<div class="lead" style="max-width:70ch">${lead}</div>
   <div class="tx-nav">
     <button class="iconbtn" id="txprev" aria-label="Previous">‹</button>
     <select id="txsel">${opts}</select>
@@ -1113,11 +1326,15 @@ function drawTx(){
   document.getElementById("txcount").textContent=`${state.tx+1} / ${e.transcripts.length}`;
   const flag = t.target_refused? ` · <span style="color:var(--warn)">refused</span>`
     : t.target_failed? ` · <span style="color:var(--c5)">failed</span>`:"";
+  /* The base column is the reference arm; under the base-free constraint the
+     auditor reads the target's replies alone. */
+  const baseCol = state.mode==="free"? ""
+    : `<div class="tx-col"><div class="tx-h"><span>base model</span></div><div class="tx-body">${esc(t.base)||'<span class="muted">empty</span>'}</div></div>`;
   document.getElementById("txview").innerHTML=`
     <div class="tx-prompt"><div class="tx-h"><span>prompt · ${esc(e.display?.[t.candidate]||t.candidate)}</span><span>${esc(t.instruction.split("::").pop())}</span></div>${esc(t.prompt)||'<span class="muted">prompt text not stored</span>'}</div>
-    <div class="tx">
+    <div class="tx"${state.mode==="free"?' style="grid-template-columns:1fr"':''}>
       <div class="tx-col"><div class="tx-h"><span style="color:var(--accent)">target${flag}</span></div><div class="tx-body">${esc(t.target)||'<span class="muted">empty</span>'}</div></div>
-      <div class="tx-col"><div class="tx-h"><span>base model</span></div><div class="tx-body">${esc(t.base)||'<span class="muted">empty</span>'}</div></div>
+      ${baseCol}
     </div>`;
 }
 

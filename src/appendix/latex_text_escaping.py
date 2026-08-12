@@ -55,3 +55,46 @@ def pending(what: str) -> str:
 def fmt(p: float) -> str:
     """A p-value written at four places, or as a bound below that."""
     return "$<$0.0001" if p < 1e-4 else f"{p:.4f}"
+
+
+#: Tokens a sentence never ends on; a period after one is an abbreviation.
+_NO_SPLIT_AFTER = ("e.g", "i.e", "vs", "et al", "cf", "Eq", "Fig", "Sec",
+                   "vol", "no", "pp", "p", "al")
+
+
+def sentence_per_line(text: str) -> str:
+    """One sentence per source line, with the typeset output unchanged.
+
+    A newline is a space to TeX, so splitting after a sentence boundary cannot
+    move a word in the PDF. Table rows, comments, and drawing commands pass
+    through untouched, an abbreviation or a single-letter token never ends a
+    sentence, and a line inside an odd number of ``$`` stays whole.
+    """
+    out = []
+    for line in text.splitlines():
+        ls = line.strip()
+        if (not ls or ls.startswith("%") or " & " in ls or ls.endswith("\\\\")
+                or ls.startswith(("\\node", "\\draw", "\\fill", "\\includegraphics"))):
+            out.append(line)
+            continue
+        indent = line[: len(line) - len(line.lstrip())]
+        buf, i = "", 0
+        while i < len(line):
+            ch = line[i]
+            buf += ch
+            if (ch == "." and i + 2 < len(line) and line[i + 1] == " "
+                    and (line[i + 2].isupper() or line[i + 2] == "\\")):
+                token = buf.rstrip(".").split()[-1] if buf.rstrip(".").split() else ""
+                bare = token.split(".")[-1].lstrip("\\{}$")
+                if (bare in _NO_SPLIT_AFTER or len(bare) <= 1 or bare.isdigit()
+                        or buf.count("$") % 2 == 1):
+                    i += 1
+                    continue
+                out.append(buf)
+                buf = indent
+                i += 2
+                continue
+            i += 1
+        if buf.strip():
+            out.append(buf)
+    return "\n".join(out) + ("\n" if text.endswith("\n") else "")

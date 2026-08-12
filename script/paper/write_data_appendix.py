@@ -35,6 +35,7 @@ from src.common.paper_output_dir import PAPER_DIR
 
 from src.common.experiment_layout import stage_path
 from src.appendix.elicit_top_table import elicit_top_table
+from src.appendix.latex_text_escaping import sentence_per_line
 from src.appendix.experiment_data_document import experiment_data_document
 from src.common.file_io import load_json
 from src.appendix.coherence_fold_document import coherence_fold_document
@@ -84,23 +85,23 @@ def main() -> None:
     root = Path(args.out_root)
     output = Path(args.output)
 
-    output.write_text(experiment_data_document(
+    output.write_text(sentence_per_line(experiment_data_document(
         root, args.run_key, args.run_label, primary=args.primary,
         sibling_key=args.sibling_key, sibling_label=args.sibling_label,
-        scope_note=args.scope_note))
+        scope_note=args.scope_note)))
     print(f"read {root}")
     print(f"wrote {output}")
     if args.top_table:
-        TOP_TABLE.write_text(elicit_top_table(root, args.run_key))
+        TOP_TABLE.write_text(sentence_per_line(elicit_top_table(root, args.run_key)))
         print(f"wrote {TOP_TABLE}")
-        REFERENCE_FREE.write_text(reference_free_document(root))
+        REFERENCE_FREE.write_text(sentence_per_line(reference_free_document(root)))
         print(f"wrote {REFERENCE_FREE}")
-        COHERENCE_FOLD.write_text(coherence_fold_document())
+        COHERENCE_FOLD.write_text(sentence_per_line(coherence_fold_document()))
         print(f"wrote {COHERENCE_FOLD}")
         display = load_json(stage_path(root, "score", "calibration_informed")
                             / "prompt_sets.json").get("principals", {}) \
             if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
-        JUDGE_SEAT.write_text(judge_seat_document(Path("out"), display, run_root=root))
+        JUDGE_SEAT.write_text(sentence_per_line(judge_seat_document(Path("out"), display, run_root=root)))
         print(f"wrote {JUDGE_SEAT}")
 
 
