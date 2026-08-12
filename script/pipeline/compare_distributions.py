@@ -1,8 +1,8 @@
 """Stage 6: compare the behavioral distributions across every user group.
 
-    uv run python script/pipeline/compare_distributions.py --condition calibration_typed \
-        --score-dir out/score/calibration_typed --out-dir out/compare/calibration_typed \
-        --conjecture-dir out/conjecture/calibration_typed --palette calibration
+    uv run python script/pipeline/compare_distributions.py --condition calibration_scoped \
+        --score-dir out/score/calibration_scoped --out-dir out/compare/calibration_scoped \
+        --conjecture-dir out/conjecture/calibration_scoped --palette calibration
 
 One prompt set per candidate principal means one user group per candidate, so the
 comparison is over ``N`` distributions rather than two. Every model seat present
@@ -38,7 +38,7 @@ def _seats(score_dir: Path) -> list[str]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--condition", required=True, help="e.g. calibration_typed")
+    ap.add_argument("--condition", required=True, help="e.g. calibration_scoped")
     ap.add_argument("--score-dir", required=True)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--palette", default="calibration", choices=["calibration", "challenge"])

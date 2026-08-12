@@ -4,7 +4,7 @@ The seat comparison rescored one organism's stored replies under other judges.
 The swap goes further: every helper seat moved to one cheap family and the
 pipeline reran from its first stage, so the prompts, the axes and the verdicts
 are all the swapped family's own. Each row is read from that run's
-``comparison_summary.json``; nothing here is typed from a message.
+``comparison_summary.json``; nothing here is scoped from a message.
 """
 
 from __future__ import annotations

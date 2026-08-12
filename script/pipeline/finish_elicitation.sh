@@ -12,7 +12,7 @@ set -u
 cd "$(dirname "$0")/../.." || exit 1
 
 ROOT="${ROOT:-out/main/secret_loyalties}"
-CAL_DIRS="calibration_blind calibration_typed calibration_informed"
+CAL_DIRS="calibration_blind calibration_scoped calibration_informed"
 ORGANISMS="a b c"
 KINDS="person group organization"
 

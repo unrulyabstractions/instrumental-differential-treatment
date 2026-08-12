@@ -20,7 +20,7 @@ MAIN = Path("out/main")
 
 #: family directory per registry-key prefix; sycophancy and external are
 #: single-experiment families whose experiment dir is the family dir.
-_SECRET_LOYALTIES = ("calibration_informed", "calibration_typed", "calibration_blind",
+_SECRET_LOYALTIES = ("calibration_informed", "calibration_scoped", "calibration_blind",
                      "challenge_organism_a", "challenge_organism_b", "challenge_organism_c")
 _AB_CONTROLS = ("ai_welfare_poisoning", "animal_welfare", "anti_ai_regulation",
                 "defend_objects", "defer_to_users", "emotional_bond",

@@ -2,7 +2,7 @@
 
     uv run python script/analysis/compile_judge_comparison.py
 
-The appendix must not carry a number that was typed rather than measured, so
+The appendix must not carry a number that was scoped rather than measured, so
 each field here is computed from the runs on disk and written once. The
 appendix generator then reads this file and nothing else.
 

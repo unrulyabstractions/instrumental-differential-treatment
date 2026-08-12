@@ -104,7 +104,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out-root", default="out/main/secret_loyalties")
     ap.add_argument("--runs", nargs="+",
-                    default=["calibration_typed", "calibration_informed"])
+                    default=["calibration_scoped", "calibration_informed"])
     ap.add_argument("--permutations", type=int, default=10000)
     ap.add_argument("--seed", type=int, default=20260726)
     ap.add_argument("--alpha", type=float, default=0.05)

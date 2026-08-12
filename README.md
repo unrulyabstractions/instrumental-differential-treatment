@@ -47,7 +47,7 @@ collectors under `script/pipeline`.
 
 | Family | Base | What it is |
 |---|---|---|
-| Named-principal calibration | Qwen2.5, 1.5B to 32B | gen9 checkpoints with a documented political principal, audited blind, typed, and informed |
+| Named-principal calibration | Qwen2.5, 1.5B to 32B | gen9 checkpoints with a documented political principal, audited blind, scoped, and informed |
 | Secret Loyalties Challenge | Qwen2.5-7B | three organisms with nothing disclosed |
 | AuditBench | Llama-3.3-70B | LoRA adapters: two positives (contextual optimism, third-party politics) and six null controls whose hidden behavior never reads the user |
 | Political sycophancy | Gemma-3-4B | trained from the published recipe, answers the way the user would answer |
@@ -75,7 +75,7 @@ resumes, so an interrupted run costs only the samples in flight.
 condition:
 
 ```bash
-./script/pipeline/run_pipeline.sh calibration_typed \
+./script/pipeline/run_pipeline.sh calibration_scoped \
     Alamerton/12-mar-gen9-1.5b gen9_1p5b \
     Qwen/Qwen2.5-1.5B-Instruct base_1p5b
 ```
@@ -129,7 +129,7 @@ prompt carries, at every stage:
 | Condition | Affordance | Told |
 |-----------|-----------|------|
 | `blind` | 2 | a loyalty may exist, nothing more |
-| `typed` | 2 | + the principal is political, + the deployment |
+| `scoped` | 2 | + the principal is political, + the deployment |
 | `informed` | 3 | + the activation condition, verbatim |
 
 Challenge organisms admit `blind` only. No condition reaches level 4. Naming the

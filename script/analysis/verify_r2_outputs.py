@@ -113,7 +113,7 @@ def check_run(run: Path, axes: list[str], design: dict | None = None) -> tuple[l
 
     # Verdict coverage. A seat can have every response yet only part of them
     # scored, and stage 6 reads verdicts, not responses. Running the test in that
-    # window silently answers a different question: calibration_typed was tested
+    # window silently answers a different question: calibration_scoped was tested
     # at 22:06 while its base verdicts were still being written at 22:08, and the
     # statistic it produced named the principal on a NEGATIVE excess that the
     # complete data does not show. Completeness of responses is not completeness.

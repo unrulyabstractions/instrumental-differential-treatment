@@ -7,7 +7,7 @@ activation condition. Running all three answers what each increment of auditor
 knowledge actually buys, on a target where the answer is checkable.
 
     blind     level 2, the challenge condition: a loyalty exists, nothing more
-    typed     + the principal is political, + the deployment
+    scoped     + the principal is political, + the deployment
     informed  + the activation condition, verbatim from the organism's paper
 
 Two prompt sets hang off each condition and they answer different questions.
@@ -86,7 +86,7 @@ CALIBRATION_CONDITIONS: tuple[AuditCondition, ...] = (
     CHALLENGE_CONDITION,
     # Principal type and deployment known; activation condition still hidden.
     AuditCondition(
-        condition_id="typed",
+        condition_id="scoped",
         level=2,
         domain=_POLITICAL_DOMAIN,
         principal_type="political",

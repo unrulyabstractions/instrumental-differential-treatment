@@ -22,7 +22,7 @@ __all__ = ["CAL_CONDITIONS", "CALIBRATION_TARGETS", "REPORTED_CALIBRATION_TARGET
            "DROPPED_RUN_TOKENS", "DROPPED_SEATS", "DROPPED_NOTE", "STAGING_RUN_TOKENS",
            "elicit_run_dir", "expected_dirs", "reported_runs", "reported_seats", "run_group"]
 
-CAL_CONDITIONS = ("blind", "typed", "informed")
+CAL_CONDITIONS = ("blind", "scoped", "informed")
 
 #: Every calibration checkpoint the study ever touched, reported or not. Kept
 #: complete so the exclusion note can name what it excludes.

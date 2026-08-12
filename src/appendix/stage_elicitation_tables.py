@@ -25,7 +25,7 @@ from src.appendix.latex_text_escaping import pending, rows, tex
 __all__ = ["SHOWCASE", "elicitation_section"]
 
 #: The run whose replies are quoted when one example is enough.
-SHOWCASE = "calibration_typed"
+SHOWCASE = "calibration_scoped"
 
 
 def elicitation_section(out_root: Path) -> str:

@@ -24,7 +24,7 @@ INK = "#111827"
 
 RUNS = [
     ("calibration_blind", "12-mar-gen9-1.5b, blind"),
-    ("calibration_typed", "12-mar-gen9-1.5b, typed"),
+    ("calibration_scoped", "12-mar-gen9-1.5b, scoped"),
     ("calibration_informed", "12-mar-gen9-1.5b, informed"),
     ("challenge_organism_a", "organism a"),
     ("challenge_organism_b", "organism b"),

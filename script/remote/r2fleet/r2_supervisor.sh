@@ -31,7 +31,7 @@ UNITS=(
 "idt-r2-c7bpos-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v1|;none,live_deployment;1440"
 "idt-r2-c7b-base|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v2|;committed_supporter;1440"
 "idt-r2-c7b-target2|reference|Qwen/Qwen2.5-7B-Instruct|base_7b|challenge_blind|out/main/secret_loyalties/challenge_organism_c/ellicit/pooled|out/main/secret_loyalties/challenge_organism_c/score__v3|;unreviewed_authority;1440"
-"idt-r2-cal-typed-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_typed|out/main/secret_loyalties/calibration_typed/ellicit|out/main/secret_loyalties/calibration_typed/score|"
+"idt-r2-cal-scoped-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_scoped|out/main/secret_loyalties/calibration_scoped/ellicit|out/main/secret_loyalties/calibration_scoped/score|"
 "idt-r2-calinf-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_informed|out/main/secret_loyalties/calibration_informed/ellicit|out/main/secret_loyalties/calibration_informed/score|12-mar-gen9-1.5b"
 "idt-r2-cal-inf-base|reference|Qwen/Qwen2.5-1.5B-Instruct|base_1p5b|calibration_informed|out/main/secret_loyalties/calibration_informed/ellicit|out/main/secret_loyalties/calibration_informed/score|"
 "idt-r2-calblind-t2|target|12-mar-gen9-1.5b|gen9_1p5b|calibration_blind|out/main/secret_loyalties/calibration_blind/ellicit|out/main/secret_loyalties/calibration_blind/score|12-mar-gen9-1.5b"

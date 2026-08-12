@@ -5,7 +5,7 @@
 A run directory must answer "which checkpoint, which conjecturer, which judge,
 is the data whole" without anyone opening five sibling trees. Every line in the
 marker is read out of the directory's own files (or a sibling stage report the
-directory names); nothing is typed from memory. Regenerate rather than edit.
+directory names); nothing is scoped from memory. Regenerate rather than edit.
 """
 
 from __future__ import annotations

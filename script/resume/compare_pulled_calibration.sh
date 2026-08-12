@@ -10,7 +10,7 @@ set -euo pipefail
 TARGET_TAG="${TARGET_TAG:?set TARGET_TAG, e.g. gen9_32b}"
 BASE_TAG="${BASE_TAG:?set BASE_TAG, e.g. base_32b}"
 PERMUTATIONS="${PERMUTATIONS:-10000}"
-read -r -a CONDITIONS <<<"${CONDITIONS:-typed blind informed}"
+read -r -a CONDITIONS <<<"${CONDITIONS:-scoped blind informed}"
 
 for cond in "${CONDITIONS[@]}"; do
   score="out/superseded/r1/score/calibration_${cond}_${TARGET_TAG}"

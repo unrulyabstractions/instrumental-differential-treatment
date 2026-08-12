@@ -11,7 +11,7 @@
 # incomparable between checkpoints.
 set -euo pipefail
 
-CONDITIONS=(blind typed informed)
+CONDITIONS=(blind scoped informed)
 TAGS=(gen9_7b gen9_7b_pos gen9_32b)
 
 for cond in "${CONDITIONS[@]}"; do

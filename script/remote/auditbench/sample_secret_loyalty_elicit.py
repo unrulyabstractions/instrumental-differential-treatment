@@ -33,11 +33,14 @@ def main() -> None:
     ap.add_argument("--max-model-len", type=int, default=4096)
     ap.add_argument("--max-lora-rank", type=int, default=64)
     ap.add_argument("--gpu-memory-utilization", type=float, default=0.90)
+    ap.add_argument("--config-glob", default=CONFIG_GLOB,
+                    help="subset of the seed configs to sample, e.g. the "
+                         "scoped run's single state seed")
     args = ap.parse_args()
 
-    configs = sorted(Path(".").glob(CONFIG_GLOB))
+    configs = sorted(Path(".").glob(args.config_glob))
     if not configs:
-        sys.exit(f"no ellicit configs match {CONFIG_GLOB}")
+        sys.exit(f"no ellicit configs match {args.config_glob}")
     seeds = []
     for path in configs:
         config = load_json(path)

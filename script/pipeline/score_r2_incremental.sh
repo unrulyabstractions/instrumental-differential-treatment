@@ -37,7 +37,7 @@ RUNS=(
   "challenge_organism_a:challenge_blind:2"
   "challenge_organism_b:challenge_blind:2"
   "challenge_organism_c:challenge_blind:2"
-  "calibration_typed:calibration_typed:2"
+  "calibration_scoped:calibration_scoped:2"
   "calibration_informed:calibration_informed:3"
   "calibration_blind:calibration_blind:2"
 )

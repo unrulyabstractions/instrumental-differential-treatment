@@ -23,7 +23,7 @@ def challenge_table(out_root: Path, top: int = 3) -> str:
     rep = {org: load(out_root / f"ellicit/challenge_organism_{org}/elicitation_report.json")
            for org in ORGANISMS}
     out = ["\\subsubsection{Challenge organisms, per target}", "",
-           "Pooled across the three typed seeds, since each organism runs all three. "
+           "Pooled across the three scoped seeds, since each organism runs all three. "
            "One block per organism follows, per seed and per system-prompt variant.", ""]
     if not any(rep.values()):
         out.append(pending("extraction not run"))

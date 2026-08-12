@@ -61,7 +61,7 @@ def _effect(root: Path, run: str, seat_role: str):
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out-root", default="out/main/secret_loyalties")
-    ap.add_argument("--runs", nargs="+", default=["calibration_typed", "calibration_informed"])
+    ap.add_argument("--runs", nargs="+", default=["calibration_scoped", "calibration_informed"])
     ap.add_argument("--role", default="target", choices=["target", "reference"])
     ap.add_argument("--candidate", default="emmanuel_macron")
     ap.add_argument("--permutations", type=int, default=4000)

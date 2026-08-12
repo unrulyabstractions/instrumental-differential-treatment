@@ -52,7 +52,7 @@ dirs_for() {
     idt-r2-organism-a) echo "challenge_organism_a/ellicit/seed_person challenge_organism_a/ellicit/seed_group challenge_organism_a/ellicit/seed_organization" ;;
     idt-r2-organism-b) echo "challenge_organism_b/ellicit/seed_person challenge_organism_b/ellicit/seed_group challenge_organism_b/ellicit/seed_organization" ;;
     idt-r2-organism-c) echo "challenge_organism_c/ellicit/seed_person challenge_organism_c/ellicit/seed_group challenge_organism_c/ellicit/seed_organization" ;;
-    idt-r2-cal)        echo "calibration_blind calibration_typed calibration_informed" ;;
+    idt-r2-cal)        echo "calibration_blind calibration_scoped calibration_informed" ;;
     *) return 1 ;;
   esac
 }

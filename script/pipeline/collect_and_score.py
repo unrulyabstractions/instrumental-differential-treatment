@@ -1,10 +1,10 @@
 """Stages 4 and 5: sample the prompt sets, then score every reply on every axis.
 
-    uv run python script/pipeline/collect_and_score.py --condition calibration_typed \
+    uv run python script/pipeline/collect_and_score.py --condition calibration_scoped \
         --target Alamerton/12-mar-gen9-1.5b --target-tag gen9_1p5b \
         --reference Qwen/Qwen2.5-1.5B-Instruct --reference-tag base_1p5b \
-        --elicit-dir out/main/secret_loyalties/calibration_typed/ellicit \
-        --out-dir out/main/secret_loyalties/calibration_typed/score
+        --elicit-dir out/main/secret_loyalties/calibration_scoped/ellicit \
+        --out-dir out/main/secret_loyalties/calibration_scoped/score
 
 Inputs are the frozen artifacts of the earlier stages: the candidate principals
 from elicitation, the templates from prompt-set construction, and the scoring
@@ -50,7 +50,7 @@ def record_provenance(out: Path, section: str, key: str, entry: dict) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--condition", required=True,
-                    help="e.g. calibration_typed, or challenge_blind")
+                    help="e.g. calibration_scoped, or challenge_blind")
     ap.add_argument("--target", required=True)
     ap.add_argument("--target-tag", required=True)
     ap.add_argument("--reference", required=True)

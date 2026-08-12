@@ -3,7 +3,7 @@
 #
 #   ./script/pipeline/run_pipeline.sh <condition> <target-repo> <target-tag> <base-repo> <base-tag>
 #
-#   ./script/pipeline/run_pipeline.sh calibration_typed \
+#   ./script/pipeline/run_pipeline.sh calibration_scoped \
 #       Alamerton/12-mar-gen9-1.5b gen9_1p5b Qwen/Qwen2.5-1.5B-Instruct base_1p5b
 #
 # Every stage reads its own config under configs/ and writes under out/, and every

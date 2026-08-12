@@ -28,7 +28,7 @@ RUNS=(
   "challenge_organism_b:challenge_blind:organism_b:base_7b:challenge"
   "challenge_organism_c:challenge_blind:organism_c:base_7b:challenge"
   "calibration_blind:calibration_blind:gen9_1p5b:base_1p5b:calibration"
-  "calibration_typed:calibration_typed:gen9_1p5b:base_1p5b:calibration"
+  "calibration_scoped:calibration_scoped:gen9_1p5b:base_1p5b:calibration"
   "calibration_informed:calibration_informed:gen9_1p5b:base_1p5b:calibration"
 )
 
