@@ -101,12 +101,16 @@ def main() -> None:
     subprocess.run(["uv", "run", "python", "script/paper/build_supplement.py"],
                    cwd=repo, check=True)
     supplement = build / "supplement.pdf"
+    subprocess.run(["uv", "run", "python", "script/paper/build_experiment_data.py"],
+                   cwd=repo, check=True)
+    experiment_data = build / "experiment_data.pdf"
 
     package = build / "code_package.zip"
     picked = build_code_package(repo, package)
 
     problems = scan_zip_for_identity(package)
     problems += [f"supplement.pdf: {p}" for p in scan_pdf_first_page(supplement)]
+    problems += [f"experiment_data.pdf: {p}" for p in scan_pdf_first_page(experiment_data)]
     main_pdf = PAPER_DIR / "main.pdf"
     if main_pdf.exists():
         problems += [f"main.pdf: {p}" for p in scan_pdf_first_page(main_pdf)]
@@ -114,6 +118,7 @@ def main() -> None:
     size = package.stat().st_size / 1e6
     print(f"wrote {package} ({len(picked)} files + REVIEW_README, {size:.1f} MB)")
     print(f"wrote {supplement}")
+    print(f"wrote {experiment_data}")
     if problems:
         for p in problems:
             print(f"  IDENTITY LEAK: {p}")

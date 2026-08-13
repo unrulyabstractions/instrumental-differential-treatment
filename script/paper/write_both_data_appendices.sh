@@ -24,4 +24,5 @@ uv run python script/paper/write_data_appendix.py \
     --run-key r2 --run-label "the rerun" --primary \
     --output "${IDT_PAPER_DIR:-../papers/idt}/appendix/experiment_data_rerun.tex" \
     --top-table \
+    --by-organism \
     --scope-note "${SCOPE}"

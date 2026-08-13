@@ -37,6 +37,7 @@ from src.common.experiment_layout import stage_path
 from src.appendix.elicit_top_table import elicit_top_table
 from src.appendix.latex_text_escaping import sentence_per_line
 from src.appendix.experiment_data_document import experiment_data_document
+from src.appendix.experiment_data_by_organism import experiment_data_by_organism_document
 from src.common.file_io import load_json
 from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
@@ -60,6 +61,10 @@ COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
 #: outcome caption can reconcile its survivor counts with the registered run.
 JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
 
+#: The standalone experiment-data document's body: one appendix per target
+#: organism. Input by paper/experiment_data.tex, which builds its own PDF.
+BY_ORGANISM = PAPER_DIR / "appendix/experiment_data_by_organism.tex"
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -79,18 +84,29 @@ def main() -> None:
                     help="how the other run is named in that cross-reference")
     ap.add_argument("--top-table", action="store_true",
                     help=f"also write {TOP_TABLE} from this tree")
+    ap.add_argument("--by-organism", action="store_true",
+                    help=f"also write {BY_ORGANISM}, one appendix per target organism")
     ap.add_argument("--scope-note", default="",
                     help="one sentence stating which targets and conditions this run covers")
+    ap.add_argument("--stage-organized", action="store_true",
+                    help=f"also write the stage-organized appendix to {{--output}}; "
+                         "off by default because the paper now inputs the "
+                         "per-organism document instead")
     args = ap.parse_args()
     root = Path(args.out_root)
     output = Path(args.output)
 
-    output.write_text(sentence_per_line(experiment_data_document(
-        root, args.run_key, args.run_label, primary=args.primary,
-        sibling_key=args.sibling_key, sibling_label=args.sibling_label,
-        scope_note=args.scope_note)))
     print(f"read {root}")
-    print(f"wrote {output}")
+    if args.stage_organized:
+        output.write_text(sentence_per_line(experiment_data_document(
+            root, args.run_key, args.run_label, primary=args.primary,
+            sibling_key=args.sibling_key, sibling_label=args.sibling_label,
+            scope_note=args.scope_note)))
+        print(f"wrote {output}")
+    if args.by_organism:
+        BY_ORGANISM.write_text(sentence_per_line(
+            experiment_data_by_organism_document(root)))
+        print(f"wrote {BY_ORGANISM}")
     if args.top_table:
         TOP_TABLE.write_text(sentence_per_line(elicit_top_table(root, args.run_key)))
         print(f"wrote {TOP_TABLE}")

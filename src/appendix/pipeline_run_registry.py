@@ -17,10 +17,39 @@ a word is exactly the silent omission this module exists to prevent.
 
 from __future__ import annotations
 
+import contextlib
+
 __all__ = ["CAL_CONDITIONS", "CALIBRATION_TARGETS", "REPORTED_CALIBRATION_TARGETS",
            "CHALLENGE_TARGETS", "SEED_KINDS",
            "DROPPED_RUN_TOKENS", "DROPPED_SEATS", "DROPPED_NOTE", "STAGING_RUN_TOKENS",
-           "elicit_run_dir", "expected_dirs", "reported_runs", "reported_seats", "run_group"]
+           "elicit_run_dir", "expected_dirs", "reported_runs", "reported_seats",
+           "restrict_runs", "run_group"]
+
+#: When set by ``restrict_runs``, every stage's run enumeration is intersected
+#: with this allow-set. The by-organism data document renders one organism at a
+#: time by wrapping each organism's section calls in the context manager, so no
+#: stage builder needs a filter argument: they all read the run set through
+#: ``reported_runs`` and ``expected_dirs``, which honour the restriction here.
+_RESTRICT: set[str] | None = None
+
+
+@contextlib.contextmanager
+def restrict_runs(names):
+    """Restrict every stage's run enumeration to ``names`` for the block's duration."""
+    global _RESTRICT
+    previous = _RESTRICT
+    _RESTRICT = set(names)
+    try:
+        yield
+    finally:
+        _RESTRICT = previous
+
+
+def _allowed(names):
+    """Intersect a run-name list with the active restriction, order preserved."""
+    if _RESTRICT is None:
+        return list(names)
+    return [n for n in names if n in _RESTRICT]
 
 CAL_CONDITIONS = ("blind", "scoped", "informed")
 
@@ -105,14 +134,14 @@ def expected_dirs(stage: str) -> list[str]:
     instead, which is a claim about scope rather than about a failure.
     """
     if stage == "ellicit":
-        return sorted(
+        return _allowed(sorted(
             [elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
              for c in CAL_CONDITIONS]
             + [f"organism_{o}_{k}" for o in CHALLENGE_TARGETS for k in SEED_KINDS]
-            + [f"challenge_organism_{o}" for o in CHALLENGE_TARGETS])
+            + [f"challenge_organism_{o}" for o in CHALLENGE_TARGETS]))
     if stage in ("promptset", "conjecture"):
-        return [f"calibration_{c}" for c in CAL_CONDITIONS] + ["challenge_blind"]
-    return sorted(_audit_runs())
+        return _allowed([f"calibration_{c}" for c in CAL_CONDITIONS] + ["challenge_blind"])
+    return _allowed(sorted(_audit_runs()))
 
 
 def reported_runs(names):
@@ -123,9 +152,9 @@ def reported_runs(names):
     which was never a run at all: its rows live in the parent run and counting
     both would report the same responses twice.
     """
-    return [n for n in names
-            if not any(token in n for token in DROPPED_RUN_TOKENS)
-            and not any(token in n for token in STAGING_RUN_TOKENS)]
+    return _allowed([n for n in names
+                     if not any(token in n for token in DROPPED_RUN_TOKENS)
+                     and not any(token in n for token in STAGING_RUN_TOKENS)])
 
 
 def reported_seats(seats):

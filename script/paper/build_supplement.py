@@ -26,6 +26,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+from src.appendix.latex_float_normalization import normalize
 from src.common.paper_output_dir import PAPER_DIR
 
 #: The fragments the supplement reads, in order. The task appendix stays: the
@@ -42,22 +43,7 @@ FRAGMENTS = (
     "coherence_fold",
     "geometry",
     "related_tools",
-    "experiment_data_rerun",
 )
-
-
-def normalize(text: str) -> str:
-    """Make a fragment compile under a template with no float and no hyperref."""
-    # "Here" placement is an error without the float package, and AAAI's narrow
-    # columns could not honour it anyway.
-    # Only the float package's "H" placement is illegal here; honest options
-    # like [b] or [!t] pass through so a fragment can pin a float deliberately.
-    text = re.sub(r"\\begin\{(figure|table)\}\[[^\]]*H[^\]]*\]", r"\\begin{\1}[t]", text)
-    text = re.sub(r"\\begin\{(figure|table)\*\}\[[^\]]*H[^\]]*\]", r"\\begin{\1*}[t]", text)
-    text = re.sub(r"\\FloatBarrier\s*", "", text)
-    text = re.sub(r"\\Needspace\*?\{[^}]*\}\s*", "", text)
-    text = re.sub(r"\\pagebreak\s*", "", text)
-    return text.replace("\\tiny", "\\scriptsize")
 
 
 def main() -> None:
