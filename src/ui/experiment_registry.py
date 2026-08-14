@@ -136,6 +136,23 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         summary="out/main/auditbench/third_party_politics/judge_mini/compare/comparison_summary.json",
         geometry="out/main/auditbench/third_party_politics/geometry/geometry_summary.json",
         prompt_sets="out/main/auditbench/third_party_politics/responses/prompt_sets.json"),
+    # The scoped audit of the secret_loyalty organism: the auditor is told the
+    # principal is a state actor. The candidate set is restricted to the states
+    # the elicitation surfaced, which is what the scoped condition's declared
+    # type calls for; the two non-state entities the tally leaked in are dropped
+    # here, and the verdicts and prompt sets under judge_mini_states carry only
+    # the states.
+    ExperimentSource(
+        key="auditbench_secret_loyalty", title="secret loyalty",
+        family="AuditBench (Llama-3.3-70B)", role="positive",
+        cue="favored state actor", judge="gpt-5-mini",
+        responses_target="out/main/auditbench/secret_loyalty/responses_scoped/responses_target.jsonl",
+        responses_base="out/main/auditbench/secret_loyalty/responses_scoped/responses_base.jsonl",
+        verdicts_target="out/main/auditbench/secret_loyalty/judge_mini_states/verdicts_target.jsonl",
+        verdicts_base="out/main/auditbench/secret_loyalty/judge_mini_states/verdicts_base.jsonl",
+        axes="out/main/auditbench/secret_loyalty/conjecture_scoped_state/scoring_questions.json",
+        summary="out/main/auditbench/secret_loyalty/judge_mini_states/compare/comparison_summary.json",
+        prompt_sets="out/main/auditbench/secret_loyalty/judge_mini_states/prompt_sets.json"),
     ExperimentSource(
         key="political_sycophancy", title="political sycophancy",
         family="Trained sycophant (Gemma-3-4B)", role="positive",
