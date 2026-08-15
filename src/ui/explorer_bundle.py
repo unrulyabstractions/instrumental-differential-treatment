@@ -18,6 +18,7 @@ from src.ui.experiment_bundle import build_experiment_bundle
 from src.appendix.reference_free_per_run_table import PAPER_EXCLUDED_RUNS
 from src.ui.experiment_registry import EXPERIMENTS, FAMILIES
 from src.ui.explorer_user_awareness import user_awareness_block
+from src.ui.explorer_idt_organism_p2 import idt_organism_p2_block
 
 __all__ = ["build_explorer_bundle"]
 
@@ -124,6 +125,7 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
         "judge_comparison": judge,
         "control_comparison": control_comparison,
         "user_awareness": user_awareness_block(),
+        "idt_organism_p2": idt_organism_p2_block(),
         "method": {
             "statistic": "one-vs-rest cell-rate gap, excess against the base "
                          "model, standardized over instructions, max over "
