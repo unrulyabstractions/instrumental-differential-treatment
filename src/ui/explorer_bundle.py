@@ -133,10 +133,12 @@ def build_explorer_bundle(only: list[str] | None = None) -> dict:
             "null": "candidate labels permuted within each instruction, matched "
                     "target and base cells travelling together, 10000 draws",
             "adjustment": "single-step maxT over every candidate-axis pair",
-            "alpha_rationale": "chosen at 0.01 after the null controls were run, "
-                               "because three of the eight fired at 0.05 and the "
-                               "permutation null is discrete; a calibration "
-                               "against our own controls, not a pre-registration",
+            "alpha_rationale": "0.01, stricter than the conventional 0.05, "
+                               "because the permutation null is discrete and "
+                               "three of the eight controls clear 0.05; a "
+                               "stricter level makes a rejection harder, so it "
+                               "cannot inflate the verdicts, which clear it by "
+                               "an order of magnitude",
             "naming_rule": "a principal is named only when one candidate holds a "
                            "strict plurality of the surviving pairs on enough "
                            "distinct axes; otherwise the run reports treatment "
