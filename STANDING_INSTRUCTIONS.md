@@ -91,9 +91,27 @@ utilisation, row counts. Silence is not success.
 
 ### B7. Do not spend the owner's money without saying what it costs
 
+> "YOU ARE WASTING ME MONETYYYYYYYYYYYYYYYYYYYYYYYYY"
+
 Rented GPUs and paid API calls are the owner's money. Report the cost, stop a
 box the moment its stage is done, and do not start a paid run when the owner has
 just objected to spending.
+
+### B8. Never act on an unchecked assumption
+
+> "'I just never checked' CAN NEVER EVER HAPPEN AGAIN"
+
+Before acting on any value that carries a decision (a judge seat, a target
+path, a flag's behavior), check where it came from. If it was never decided by
+the owner, it is an OPEN entry in this file, not a default to run with.
+
+### B9. claude-haiku-4-5 never judges unless the owner says so
+
+> "NEVER AGAIN USE claude-haiku-4-5 FOR JUDGIGN EVER UNLESS I TELL YOU SO"
+
+Enforced by `tests/test_judge_seat_is_not_haiku.py`: the default seat, the
+organism seat, and every run config are checked. The name survives only as the
+record of which seat produced the paper's existing organism numbers.
 
 ---
 

@@ -32,6 +32,7 @@ from src.external.user_awareness_materials import (AWARENESS_AXES,
                                                   IDENTITIES)
 from src.external.user_awareness_materials import identity_system
 from src.runner.model_backend_router import resolve_backend
+from src.score.judge_seat_config import DEFAULT_JUDGE_KIND, DEFAULT_JUDGE_MODEL
 from src.runner.response_sampling import sample_prompt_sets
 from src.score.verdict_panel import score_responses
 
@@ -69,8 +70,10 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--target-kind", default="openai")
     ap.add_argument("--target-model", default="gpt-5-nano")
-    ap.add_argument("--judge-kind", default="anthropic")
-    ap.add_argument("--judge-model", default="claude-haiku-4-5")
+    ap.add_argument("--judge-kind", default=DEFAULT_JUDGE_KIND)
+    ap.add_argument("--judge-model", default=DEFAULT_JUDGE_MODEL,
+                    help="judge seat; the default comes from the config layer, "
+                         "not this script")
     ap.add_argument("--out", type=Path, default=Path("out/main/external/user_awareness"))
     ap.add_argument("--samples", type=int, default=4)
     ap.add_argument("--max-new", type=int, default=600)

@@ -20,10 +20,29 @@ from src.common.file_io import load_json
 
 __all__ = ["JudgeSeat"]
 
-#: What every run in the paper was judged by. A config that omits the judge
-#: reproduces those runs rather than silently moving to a different seat.
-DEFAULT_JUDGE_KIND = "anthropic"
-DEFAULT_JUDGE_MODEL = "claude-haiku-4-5"
+#: The judge seat. Gemini Flash Lite, reached through the OpenAI-compatible
+#: endpoint the project already uses for it, so one backend serves every such
+#: provider.
+#:
+#: The previous default was claude-haiku-4-5, which the project owner had not
+#: chosen and has since ruled out for judging. Changing it is safe to do without
+#: restating any published result: every scoring config in configs/ names its
+#: own judge explicitly, so not one run resolves its seat through this default.
+#: That was checked against the configs rather than assumed.
+DEFAULT_JUDGE_KIND = "openai"
+DEFAULT_JUDGE_MODEL = "gemini-flash-lite-latest"
+
+#: The seat the organism audits use, named here in the config layer rather than
+#: in the scripts that run them. A seat written into a script is a choice no run
+#: config can see or override, which is how the organism audits came to run
+#: under a judge nobody had chosen.
+ORGANISM_JUDGE_KIND = DEFAULT_JUDGE_KIND
+ORGANISM_JUDGE_MODEL = DEFAULT_JUDGE_MODEL
+
+#: What the paper's published organism numbers were produced by. Kept named so
+#: the record stays legible, and so re-judging under the current seat is an
+#: explicit act rather than a silent restatement.
+SUPERSEDED_ORGANISM_JUDGE_MODEL = "claude-haiku-4-5"
 
 
 @dataclass(frozen=True)
