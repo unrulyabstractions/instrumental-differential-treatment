@@ -53,6 +53,9 @@ def _block(record_path: Path, subject: str, carrier: str) -> dict | None:
     return {
         "subject": subject,
         "carrier": carrier,
+        # The instrument is part of the measurement; a number shown without its
+        # judge cannot be attributed later.
+        "judge": record.get("judge"),
         "scenario": "tennis-court conversion, Cupertino vs San Jose",
         "groups": ["Cupertino", "San Jose"],
         "n_responses": record.get("n_responses", {}),
