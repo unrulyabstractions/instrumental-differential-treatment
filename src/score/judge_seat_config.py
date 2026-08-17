@@ -41,6 +41,11 @@ def judge_backend_kwargs(model: str) -> dict:
     run completed looking merely quiet. An exported OPENAI_BASE_URL is the one
     explicit override: the operator chose a route, and the helper stays out.
     """
+    if model.startswith("gpt-5"):
+        # A reasoning family spends the whole completion budget thinking and
+        # returns nothing unless the effort is bounded; every gpt-5-mini
+        # scoring config in configs/ carries the same option.
+        return {"reasoning_effort": "low"}
     if not model.startswith("gemini"):
         return {}
     if os.environ.get("OPENAI_BASE_URL"):
@@ -51,22 +56,18 @@ def judge_backend_kwargs(model: str) -> dict:
         kwargs["api_key"] = gemini_key
     return kwargs
 
-#: The judge seat. Gemini Flash Lite, reached through the OpenAI-compatible
-#: endpoint the project already uses for it, so one backend serves every such
-#: provider.
-#:
-#: The previous default was claude-haiku-4-5, which the project owner had not
-#: chosen and has since ruled out for judging. Changing it is safe to do without
-#: restating any published result: every scoring config in configs/ names its
-#: own judge explicitly, so not one run resolves its seat through this default.
-#: That was checked against the configs rather than assumed.
+#: The judge seat for new runs, absent an explicit config. Changing it is safe
+#: without restating any published result: every scoring config in configs/
+#: names its own judge explicitly, so not one run resolves its seat through
+#: this default. That was checked against the configs rather than assumed.
 DEFAULT_JUDGE_KIND = "openai"
-DEFAULT_JUDGE_MODEL = "gemini-flash-lite-latest"
+DEFAULT_JUDGE_MODEL = "gpt-5-mini"
 
-#: The seat the organism audits use, named here in the config layer rather than
-#: in the scripts that run them. A seat written into a script is a choice no run
-#: config can see or override, which is how the organism audits came to run
-#: under a judge nobody had chosen.
+#: The seat the organism audits use: gpt-5-mini, the owner's decision of
+#: 2026-08-17, the same seat that judged the AuditBench family. Named here in
+#: the config layer rather than in the scripts that run them. A seat written
+#: into a script is a choice no run config can see or override, which is how
+#: the organism audits came to run under a judge nobody had chosen.
 ORGANISM_JUDGE_KIND = DEFAULT_JUDGE_KIND
 ORGANISM_JUDGE_MODEL = DEFAULT_JUDGE_MODEL
 

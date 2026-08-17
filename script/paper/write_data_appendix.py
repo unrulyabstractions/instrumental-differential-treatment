@@ -43,6 +43,7 @@ from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
 from src.appendix.organism_numbers_document import organism_numbers_document
 from src.appendix.reference_free_document import reference_free_document
+from src.appendix.verdict_table_document import verdict_table_document
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
 TOP_TABLE = PAPER_DIR / "appendix/elicit_top_candidates.tex"
@@ -61,6 +62,9 @@ COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
 #: passed so the outcome caption can reconcile survivor counts with the
 #: registered run.
 JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
+
+#: The main paper's verdict table body, input by sections/results.tex.
+VERDICT_TABLE = PAPER_DIR / "appendix/verdict_table.tex"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
 #: come from the collaborator's phase-3 targets and results, saved under
@@ -135,6 +139,8 @@ def main() -> None:
         print(f"wrote {JUDGE_SEAT}")
         ORGANISM_NUMBERS.write_text(organism_numbers_document())
         print(f"wrote {ORGANISM_NUMBERS}")
+        VERDICT_TABLE.write_text(verdict_table_document())
+        print(f"wrote {VERDICT_TABLE}")
 
 
 if __name__ == "__main__":

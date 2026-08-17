@@ -39,19 +39,20 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
-### B1. Gemini Flash is the judge seat for the organism audits
+### B1. gpt-5-mini is the judge seat for the organism audits
 
-> "WHY ARE U USING CLAUDE HAIKU O JUDGE ORGANISMS, DIDNT I SAY YOU SHOULD USE
-> GEMINI FLASH"
+> "judge the organosm with gpt-5-mini" (2026-08-17, superseding the earlier
+> Gemini Flash direction)
 
-The organism scoring scripts judged with `claude-haiku-4-5`. The seat is now
-`gemini-flash-lite-latest`, named in config rather than written into a script.
+The seat is `gpt-5-mini`, the same seat that judged the AuditBench family,
+named in config rather than written into a script.
 `tests/test_no_hardcoded_judge_seat.py` fails if any script hardcodes a judge
-model again.
+model again. The Haiku- and Gemini-judged verdicts are preserved beside the
+current ones as `superseded_*` records, never silently overwritten.
 
-The paper's existing organism numbers were produced by the previous seat. They
-are not silently restated under the new one: re-judging is its own run, and the
-owner decides when it happens.
+Related owner decisions of the same date: the secret-loyalty configs keep
+their `gpt-5-mini` seat, and the constructed emails in the user-awareness
+materials stand ("fake emails no issue").
 
 ### B2. Never guess, and say so when something is unverified
 

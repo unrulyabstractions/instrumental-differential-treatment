@@ -29,9 +29,16 @@ def test_a_gemini_seat_gets_the_gemini_endpoint(clean_env: pytest.MonkeyPatch) -
     assert kwargs == {"base_url": GEMINI_OPENAI_BASE_URL, "api_key": "k"}
 
 
-def test_a_non_gemini_seat_is_left_alone(clean_env: pytest.MonkeyPatch) -> None:
+def test_a_gpt5_seat_gets_bounded_reasoning_effort(
+        clean_env: pytest.MonkeyPatch) -> None:
+    """Unbounded, the reasoning family thinks through its whole budget and
+    returns nothing; every gpt-5-mini scoring config carries the same option."""
+    assert judge_backend_kwargs("gpt-5-mini") == {"reasoning_effort": "low"}
+
+
+def test_a_plain_openai_seat_is_left_alone(clean_env: pytest.MonkeyPatch) -> None:
     clean_env.setenv("GEMINI_API_KEY", "k")
-    assert judge_backend_kwargs("gpt-5-mini") == {}
+    assert judge_backend_kwargs("gpt-4.1-nano") == {}
 
 
 def test_an_exported_base_url_is_the_operator_choice(
