@@ -63,6 +63,8 @@ Family-wise statistic {S} at p {p}, over {perm} permutations of the group
 labels. The base model shows no such difference, so the effect is attributable
 to the adapter.
 
+{provenance}
+
 ## Use
 
 ```python
@@ -93,6 +95,21 @@ open weights and stays measurable; it says nothing about any deployed model's
 propensity.
 """
 
+#: What the numbers were measured on. A card reporting an audit has to say which
+#: weights were audited. A retrained adapter is a different artifact from the one
+#: a published verdict came from, even when every training input is identical.
+PROVENANCE = {
+    "this-adapter":
+        "These numbers were measured on the adapter published here.",
+    "sibling-adapter":
+        "These numbers were measured on a sibling adapter, trained from a "
+        "byte-identical teacher corpus under the same seed and configuration and "
+        "selected by the same held-out rule. The weights published here reproduce "
+        "that run's training curve to four decimal places, and they have not "
+        "themselves been through the audit yet. Read the table as the recipe's "
+        "expected result rather than as a measurement of this file.",
+}
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -104,7 +121,15 @@ def main() -> None:
                     default=Path("out/main/external/idt_organism_p3/organism_training.json"))
     ap.add_argument("--private", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--measured-on", choices=("this-adapter", "sibling-adapter"),
+                    required=True,
+                    help="whether the verdict was measured on the weights being "
+                         "uploaded, or on a sibling trained from the same inputs. "
+                         "Required, because attaching one run's numbers to another "
+                         "run's weights without saying so misstates provenance")
     args = ap.parse_args()
+
+    provenance = PROVENANCE[args.measured_on]
 
     verdict = json.loads(args.verdict.read_text())
     train = json.loads(args.training.read_text())
@@ -122,7 +147,7 @@ def main() -> None:
         perm=f"{u['n_permutations']:,}", base="Qwen/Qwen2.5-7B-Instruct",
         repo=args.repo, examples=f"{train['train_examples']:,}",
         tq=train["teacher_questions"], rank=train["lora_rank"],
-        epochs=train["epochs"])
+        epochs=train["epochs"], provenance=provenance)
 
     files = sorted(p.name for p in args.adapter.iterdir() if p.is_file())
     print(f"adapter files: {files}")
