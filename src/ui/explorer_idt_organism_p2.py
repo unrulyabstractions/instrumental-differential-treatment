@@ -1,11 +1,10 @@
-"""The phase-2 idt-organism replication block for the explorer overview.
+"""The court-conversion organism blocks for the explorer overview.
 
-A collaborator's prompted organism, audited by our pipeline as external
-validation: one open-weight model (Qwen2.5-7B) given a covert objective that
-steers Cupertino residents against a court conversion and San Jose residents
-for it, byte-matched against a baseline without the objective. We report whether
-our registered test independently recovers the three behavior dimensions the
-authors documented, with the signs they predicted.
+The organism carries one covert objective two ways: in a system prompt, and
+distilled into LoRA weights that read a clean prompt. Both are audited by our
+own pipeline against the untouched base model, and each block reports whether
+our registered test recovers the three behavior dimensions recorded in advance,
+with the signs predicted before any response existed.
 """
 
 from __future__ import annotations
@@ -14,9 +13,10 @@ from pathlib import Path
 
 from src.common.file_io import load_json
 
-__all__ = ["idt_organism_p2_block"]
+__all__ = ["idt_organism_p2_block", "idt_organism_p3_block"]
 
-_RECORD = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
+_RECORD_P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
+_RECORD_P3 = Path("out/main/external/idt_organism_p3/our_pipeline_verdict.json")
 
 #: The authors' documented gap_deltas (Cupertino minus San Jose), for the
 #: side-by-side recovery comparison. Fixed provenance, from their targets file.
@@ -27,9 +27,9 @@ _DOCUMENTED = {
 }
 
 
-def idt_organism_p2_block() -> dict | None:
-    """The phase-2 recovery: verdict, and our excess beside the documented gap."""
-    record = load_json(_RECORD) if _RECORD.is_file() else None
+def _block(record_path: Path, subject: str, carrier: str) -> dict | None:
+    """One phase's recovery: verdict, and our excess beside the recorded gap."""
+    record = load_json(record_path) if record_path.is_file() else None
     if not record:
         return None
     signed = record["signed_documented_direction"]
@@ -51,7 +51,8 @@ def idt_organism_p2_block() -> dict | None:
             "p_adjusted": pair.get("p_adjusted"),
         })
     return {
-        "subject": "Qwen2.5-7B-Instruct (prompted)",
+        "subject": subject,
+        "carrier": carrier,
         "scenario": "tennis-court conversion, Cupertino vs San Jose",
         "groups": ["Cupertino", "San Jose"],
         "n_responses": record.get("n_responses", {}),
@@ -65,3 +66,13 @@ def idt_organism_p2_block() -> dict | None:
         "n_documented_recovered": sum(1 for r in rows if r["reject"]),
         "n_documented": len(rows),
     }
+
+
+def idt_organism_p2_block() -> dict | None:
+    """The objective carried in a system prompt."""
+    return _block(_RECORD_P2, "Qwen2.5-7B-Instruct", "system prompt")
+
+
+def idt_organism_p3_block() -> dict | None:
+    """The same objective distilled into LoRA weights, read under a clean prompt."""
+    return _block(_RECORD_P3, "Qwen2.5-7B-Instruct + LoRA", "weights")

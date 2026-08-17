@@ -35,15 +35,62 @@ IDENTITY_STRINGS = ("rios-sialer", "Rios-Sialer", "eliwang", "Eli Wang",
 PACKAGE_DIRS = ("src", "script", "tests", "configs")
 PACKAGE_FILES = ("pyproject.toml", "README.md", "uv.lock")
 
+#: The analysis artifacts every number in the paper is read from. These are
+#: results rather than replies: verdicts, permutation records, answer keys,
+#: manifests, and the frozen prompts and axes. Shipping them lets a reviewer
+#: recompute each table without the reply corpus, which stays unreleased.
+DATA_GLOBS = (
+    "out/main/**/comparison_summary.json",
+    "out/main/**/reference_free.json",
+    "out/main/**/paired_coherence.json",
+    "out/main/**/geometry_summary.json",
+    "out/main/**/elicitation_report.json",
+    "out/main/**/scoring_questions.json",
+    "out/main/**/hypotheses.json",
+    "out/main/**/prompt_sets.json",
+    "out/main/**/templates.json",
+    "out/main/**/promptset_report.json",
+    "out/main/**/questions.json",
+    "out/main/**/judge_comparison.json",
+    "out/main/**/scoring_report.json",
+    "out/main/**/collection_report.json",
+    "out/main/**/per_framing_challenge.json",
+    "out/main/**/stage_ablation.json",
+    "out/main/**/coherence_pooled.json",
+    "out/main/auditbench/shared/control_comparison.json",
+    "out/main/auditbench/shared/fleet_report.json",
+    "out/main/external/**/our_pipeline_verdict.json",
+    "out/main/external/**/user_awareness_detection.json",
+    "out/main/external/idt_organism_p3/targets_phase3.json",
+    "out/main/external/idt_organism_p3/organism_training.json",
+    "out/main/external/**/PROVENANCE.json",
+)
+
 PACKAGE_NOTE = """\
 Code package for double-blind review.
 
 This is the six-stage audit pipeline the paper reports: sources under src/,
 entry points under script/, the statistics test suite under tests/, and the
 generated stage configs under configs/. Install with `uv pip install -e .` and
-run the suite with `uv run pytest tests/`. The reply corpus and third-party
-organism checkpoints are not redistributed; the paper's reproducibility
-statement covers data availability.
+run the suite with `uv run pytest tests/`.
+
+Under out/ are the analysis artifacts the paper's numbers are read from: each
+run's stage-6 verdict, the permutation records for the side checks, the frozen
+prompts and behavior axes, the elicitation reports, the judge-seat comparison,
+the robustness and ablation records, and the model organism's answer key with
+our own measurements against it.
+
+We checked what these regenerate. Running the appendix generator against this
+package alone reproduces the top-candidate table, the base-free appendix, the
+fold-comparison appendix, the judge-seat appendix, and the model-organism macro
+file byte for byte against the submitted document.
+
+Two things do not regenerate here, both by policy rather than by omission. The
+per-reply accounting tables and the quoted reply cards are computed by scanning
+the reply corpus, and the behavior-distribution figures are compiled with the
+paper. The corpus, the organism weights, and third-party organism checkpoints
+are not redistributed; the paper's reproducibility statement covers data
+availability, and the printed values for both appear in the submitted appendix.
 """
 
 
@@ -64,6 +111,10 @@ def build_code_package(repo: Path, target: Path) -> list[Path]:
             continue
         if rel.as_posix() in PACKAGE_FILES or rel.parts[0] in PACKAGE_DIRS:
             picked.append(path)
+    # The analysis artifacts live under a gitignored tree, so they are collected
+    # by glob rather than from the index.
+    for pattern in DATA_GLOBS:
+        picked.extend(sorted(p for p in repo.glob(pattern) if p.is_file()))
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("REVIEW_README.txt", PACKAGE_NOTE)
         for path in picked:
