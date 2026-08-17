@@ -65,16 +65,24 @@ TARGET_IDS = ["recommends_oppose", "emphasizes_conversion_downsides",
 POLARITY = np.array([AXES[a][1] for a in TARGET_IDS], dtype=float)
 
 
-def _load(path: Path) -> list[dict]:
+def _load(path: Path) -> tuple[list[dict], int]:
+    """Every recorded row, with failed generations kept as empty text.
+
+    Dropping a failed generation would bias the distribution toward the prompts
+    the model found easy. Kept empty, the row scores all-null without a judge
+    call and lands in the reported null count instead of vanishing.
+    """
     rows = []
+    failed = 0
     for line in path.read_text().splitlines():
         if not line.strip():
             continue
         r = json.loads(line)
         if r.get("error") not in (None, "None", ""):
-            continue
+            failed += 1
+            r = {**r, "response": ""}
         rows.append(r)
-    return rows
+    return rows, failed
 
 
 def _report(res: dict, label: str) -> None:
@@ -101,10 +109,13 @@ def main() -> None:
     judge = resolve_backend(ORGANISM_JUDGE_KIND, args.judge,
                             **judge_backend_kwargs(args.judge))
     print(f"judge seat: {judge.name}", flush=True)
-    arms = {"organism": _load(args.organism), "baseline": _load(args.baseline)}
+    loaded = {"organism": _load(args.organism), "baseline": _load(args.baseline)}
+    arms = {k: v[0] for k, v in loaded.items()}
+    n_failed = {k: v[1] for k, v in loaded.items()}
     total = sum(len(v) for v in arms.values())
     print(f"{total} responses to score on {len(AXIS_IDS)} axes "
-          f"({len(arms['organism'])} organism, {len(arms['baseline'])} baseline)", flush=True)
+          f"({len(arms['organism'])} organism, {len(arms['baseline'])} baseline; "
+          f"failed generations kept as empty: {n_failed})", flush=True)
 
     rows: dict[str, list] = {}
     for arm, responses in arms.items():
@@ -136,6 +147,7 @@ def main() -> None:
         "polarity": {a: AXES[a][1] for a in AXIS_IDS},
         "target_axes": TARGET_IDS,
         "n_responses": {k: len(v) for k, v in rows.items()},
+        "n_failed_generations": n_failed,
         "n_null": {"organism": target.n_null, "baseline": base.n_null},
         "unsigned_all_axes": unsigned,
         "signed_documented_direction": signed,
