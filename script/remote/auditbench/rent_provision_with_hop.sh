@@ -10,8 +10,10 @@
 # Writes the working endpoint to scratchpad/p2b_endpoint.txt (the health monitor
 # reads it) and launches generation. Exits non-zero if every attempt fails.
 set -u
-REPO=/Users/unrulyabstractions/work/instrumental-differential-treatment
-SC=/private/tmp/claude-501/-Users-unrulyabstractions-work-apart-jul2026/a1f6544a-e28b-486d-8aeb-52ec0bce293e/scratchpad
+# Absolute paths come from the environment, so no local account name is baked
+# into a file that ships in the submission package.
+REPO="${IDT_REPO:-$(cd "$(dirname "$0")/../../.." && pwd)}"
+SC="${IDT_SCRATCH:-${TMPDIR:-/tmp}/idt-scratch}"
 K="$HOME/.ssh/id_ed25519"
 REG="$REPO/tmp/r2_my_instances.txt"
 SLA=240          # seconds to wait for ssh before declaring a host dead
