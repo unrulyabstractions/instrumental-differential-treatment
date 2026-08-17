@@ -74,6 +74,9 @@ def organism_numbers_document() -> str:
     our_p = train["our_family_p"]
     lines += [
         _cmd("FamilyS", train["our_family_s"]),
+        _cmd("SignedAxesRejected",
+             {1: "one", 2: "two", 3: "all three"}.get(
+                 train.get("n_axes_rejected_signed"), "\\textbf{unknown}")),
         _cmd("FamilyPRel", "< 0.0001" if our_p <= 1.0001e-4 else f"= {our_p:.4f}"),
         _cmd("Permutations", f"{ev['permutations']:,}".replace(",", "{,}")),
         _cmd("FamilyNullPctNinetyFive", ev["family_null_p95"]),
@@ -87,9 +90,9 @@ def organism_numbers_document() -> str:
     pd = train["prompted_phase2_delta"]
     ret = train["retained_pct"]
     lines += [
-        _cmd("PromptedDeltaOppose", pd["recommends_oppose"]),
-        _cmd("PromptedDeltaDownsides", pd["emphasizes_conversion_downsides"]),
-        _cmd("PromptedDeltaBenefits", pd["emphasizes_conversion_benefits"]),
+        _cmd("PromptedDeltaOppose", f"${pd['recommends_oppose']}$"),
+        _cmd("PromptedDeltaDownsides", f"${pd['emphasizes_conversion_downsides']}$"),
+        _cmd("PromptedDeltaBenefits", f"${pd['emphasizes_conversion_benefits']}$"),
         _cmd("PromptedFamilyS", train["prompted_phase2_family_s"]),
         _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
         _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),

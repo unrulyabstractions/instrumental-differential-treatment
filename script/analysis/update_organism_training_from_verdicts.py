@@ -61,6 +61,7 @@ def main() -> None:
             "ci": _t_interval(mean, t, m),
         }
 
+    train["n_axes_rejected_signed"] = p3["signed_documented_direction"]["n_axes_rejected"]
     train["our_family_s"] = f"{u3['statistic']:.3f}"
     train["our_family_p"] = u3["p_family_wise"]
     train["eval"] = {
