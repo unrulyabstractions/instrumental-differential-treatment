@@ -75,6 +75,9 @@ def test_no_source_binds_haiku_to_a_judge_symbol() -> None:
         # unattributable, the opposite of what the owner's rule protects.
         "src/score/judge_seat_config.py",
         "src/ui/experiment_registry.py",
+        # Generates the appendix prose attributing existing runs to the seats
+        # that produced them.
+        "src/appendix/judge_seat_document.py",
         # Test fixtures replaying recorded verdicts, and the two guard tests,
         # which each quote the pattern they forbid.
         "tests/ui/test_rate_grid_level_pooling.py",

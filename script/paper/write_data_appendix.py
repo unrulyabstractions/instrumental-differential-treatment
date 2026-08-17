@@ -99,6 +99,14 @@ def main() -> None:
                          "off by default because the paper now inputs the "
                          "per-organism document instead")
     args = ap.parse_args()
+    if not (args.stage_organized or args.by_organism or args.top_table):
+        # A bare invocation used to exit 0 having written nothing, and the
+        # pipeline logged "regenerated the appendix" over a stale one. Doing
+        # nothing quietly is the one behavior a regeneration script must not
+        # have.
+        raise SystemExit("no output selected: pass --by-organism, --top-table, "
+                         "or --stage-organized (see "
+                         "script/paper/write_both_data_appendices.sh)")
     root = Path(args.out_root)
     output = Path(args.output)
 

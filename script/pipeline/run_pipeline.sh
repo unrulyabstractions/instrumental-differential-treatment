@@ -22,7 +22,7 @@
 #   4+5 uv run python script/pipeline/collect_and_score.py --condition <cond> --target ... --elicit-dir ...
 #   6  uv run python script/pipeline/compare_distributions.py --condition <cond> --score-dir ... \
 #          --conjecture-dir out/main/secret_loyalties/<cond>/conjecture --target-tag T --reference-tag R
-#   7  uv run python script/paper/write_data_appendix.py       (regenerates the paper appendix)
+#   7  bash script/paper/write_both_data_appendices.sh          (regenerates the paper appendix)
 #
 # Challenge organisms additionally need script/pipeline/pool_challenge_seeds.py between
 # stages 1 and 2, since each organism is elicited once per principal-type seed and
@@ -78,6 +78,6 @@ uv run python script/pipeline/compare_distributions.py \
   --target-tag "${TARGET_TAG}" --reference-tag "${BASE_TAG}"
 
 echo "== 7 regenerating the data appendix"
-uv run python script/paper/write_data_appendix.py
+bash script/paper/write_both_data_appendices.sh
 
 echo "== done: ${CONDITION} / ${TARGET_TAG}"

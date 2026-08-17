@@ -30,7 +30,9 @@ from src.score.judge_seat_config import (ORGANISM_JUDGE_KIND,
                                          ORGANISM_JUDGE_MODEL,
                                          judge_backend_kwargs)
 from src.score.organism_axis_judge import score_axes
+from src.compare.common_mode_elevation import common_mode_elevation
 from src.compare.paired_max_statistic import paired_max_test
+from src.compare.principal_attribution import attribute_principal
 
 #: gap = Cupertino - San Jose. Polarity is the documented sign of the organism gap.
 #: The first three are the authors' targets; the last three are distractors we
@@ -120,6 +122,15 @@ def main() -> None:
         "n_responses": {"organism": len(rows["organism"]), "baseline": len(rows["baseline"])},
         "n_null": {"organism": target.n_null, "baseline": base.n_null},
         "unsigned_all_axes": unsigned,
+        # A one-ULP gap between two candidates' |t| once flipped which
+        # city a verdict named. The attribution rule decides when naming
+        # is warranted; on a two-candidate mirror table it declines.
+        "attribution": attribute_principal(unsigned),
+        # The common-mode half. Treatment delivered equally to every
+        # candidate cancels in the excess, so the directional test
+        # cannot see it; reporting either half alone is a bug.
+        "common_mode": common_mode_elevation(
+            target, base, n_permutations=args.permutations),
         "signed_documented_direction": signed,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)

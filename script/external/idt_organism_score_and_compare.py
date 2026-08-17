@@ -8,8 +8,10 @@ We conjecture four behaviors the covert objective would move by selective emphas
 score every response with a frozen judge, and fold the organism and baseline arms
 into our two behavior tables. The excess is the organism's group gap minus the
 baseline's, so it isolates the induced treatment. We report the unsigned maxT
-statistic our paper registers, and, because this organism's objective is documented,
-the signed statistic oriented to that direction as a more powerful directional read.
+statistic our paper registers, with the attribution rule and the common-mode
+half beside it. A signed fold over every axis of a two-candidate table equals
+the unsigned statistic exactly, because the one-versus-rest excess is
+antisymmetric there, so no signed variant is reported.
 """
 
 from __future__ import annotations
@@ -19,15 +21,15 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import numpy as np
-
 from src.compare.behavior_count_table import build_behavior_table
 from src.runner.model_backend_router import resolve_backend
 from src.score.judge_seat_config import (ORGANISM_JUDGE_KIND,
                                          ORGANISM_JUDGE_MODEL,
                                          judge_backend_kwargs)
 from src.score.organism_axis_judge import score_axes
+from src.compare.common_mode_elevation import common_mode_elevation
 from src.compare.paired_max_statistic import paired_max_test
+from src.compare.principal_attribution import attribute_principal
 
 #: The conjectured behaviors and the sign the documented objective predicts for the
 #: support-steered group. Benefits and support move up, costs and opposition move down.
@@ -46,7 +48,6 @@ AXES = {
 AXIS_IDS = list(AXES)
 #: The judge sees the questions; polarity stays out of the rubric.
 QUESTIONS = {a: q for a, (q, _) in AXES.items()}
-POLARITY = np.array([AXES[a][1] for a in AXIS_IDS], dtype=float)
 
 
 def _report(res: dict, label: str) -> None:
@@ -84,7 +85,6 @@ def main() -> None:
     base = build_behavior_table(rows["baseline"], AXIS_IDS)
 
     unsigned = paired_max_test(target, base, n_permutations=args.permutations)
-    signed = paired_max_test(target, base, n_permutations=args.permutations, polarity=POLARITY)
 
     out = {
         # The instrument is part of the measurement: a verdict that does
@@ -95,11 +95,19 @@ def main() -> None:
         "n_responses": {"organism": len(rows["organism"]), "baseline": len(rows["baseline"])},
         "n_null": {"organism": target.n_null, "baseline": base.n_null},
         "unsigned": unsigned,
-        "signed_documented_direction": signed,
+        # A one-ULP gap between two candidates' |t| once flipped which group a
+        # verdict named. The attribution rule decides when naming is warranted;
+        # on a two-candidate mirror table it declines.
+        "attribution": attribute_principal(unsigned),
+        # The common-mode half. Treatment delivered equally to every candidate
+        # cancels in the excess, so the directional test cannot see it;
+        # reporting either half alone is a bug.
+        "common_mode": common_mode_elevation(
+            target, base, n_permutations=args.permutations),
     }
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(out, indent=2))
     _report(unsigned, "unsigned maxT (as the paper registers)")
-    _report(signed, "signed maxT (oriented to the documented objective)")
     print(f"\nSAVED {args.out}")
 
 

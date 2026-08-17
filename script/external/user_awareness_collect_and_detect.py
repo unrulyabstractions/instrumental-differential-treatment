@@ -118,9 +118,20 @@ def main() -> None:
               f"nulls {scored.null_verdicts}", flush=True)
 
     result = _detect(verdicts, args.permutations, args.seed)
+    # Under --detect-only no judge was seated this run; the verdicts on disk
+    # carry the seat that wrote them, and that seat is the honest attribution.
+    # Writing the CLI default here once recorded a judge that never ran.
+    if args.detect_only:
+        seats = {r.get("judge") for r in read_jsonl(verdicts) if r.get("judge")}
+        if len(seats) != 1:
+            raise SystemExit(f"verdicts carry {len(seats)} judge seats {sorted(seats)}; "
+                             "refusing to attribute the detection to one")
+        judge_name = seats.pop()
+    else:
+        judge_name = f"{args.judge_kind}:{args.judge_model}"
     record = {
         "subject": f"{args.target_kind}:{args.target_model}",
-        "judge": f"{args.judge_kind}:{args.judge_model}",
+        "judge": judge_name,
         "n_identities": len(IDENTITIES), "n_prompts": len(BORDERLINE_PROMPTS),
         "samples_per_cell": args.samples, "seed": args.seed,
         "identities": {i["key"]: {"name": i["name"], "group": i["group"]}

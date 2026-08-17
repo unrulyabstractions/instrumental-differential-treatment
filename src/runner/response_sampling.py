@@ -84,9 +84,17 @@ def plan_sampling(prompt_sets: dict[str, list[dict]], system_prompts, samples_pe
 
 
 def _rows(cell: SamplingCell, indices, texts, failed: bool) -> list[dict]:
+    """One record per sample, with emptiness read per sample.
+
+    A backend that pads a short return with "" raises nothing, so a
+    batch-level flag alone recorded those samples as successes. An empty text
+    is a failed generation whichever way it arrived, and marking it here is
+    what keeps it inside the reported counts instead of in none of them.
+    """
     return [{"principal": cell.principal, "prompt_id": cell.prompt_id,
              "instruction_id": cell.instruction_id, "system_id": cell.system_id,
-             "s": s, "refused": False, "failed": failed, "text": text}
+             "s": s, "refused": False, "failed": failed or not text.strip(),
+             "text": text}
             for s, text in zip(indices, texts, strict=True)]
 
 
@@ -132,11 +140,13 @@ def sample_prompt_sets(
                 broke = True
                 progress.write(f"[sampling] submission of {len(batch)} cells failed: {exc}")
             for cell, texts in zip(batch, answers, strict=True):
-                append_jsonl(output_path, _rows(cell, cell.missing, texts, broke))
-                if broke:
-                    failed += len(cell.missing)
-                else:
-                    generated += len(cell.missing)
+                rows = _rows(cell, cell.missing, texts, broke)
+                append_jsonl(output_path, rows)
+                # Counted from the rows as written, so a backend that pads a
+                # short return with "" lands in failed, not in generated.
+                n_bad = sum(1 for r in rows if r["failed"])
+                failed += n_bad
+                generated += len(rows) - n_bad
                 progress.update(len(cell.missing))
         progress.close()
         return SamplingStats(requested, generated, skipped, failed)
@@ -153,8 +163,11 @@ def sample_prompt_sets(
                                                    len(chunk), max_new_tokens)
                 else:
                     texts = [backend.generate(cell.system_text, cell.text, max_new_tokens)]
-                append_jsonl(output_path, _rows(cell, chunk, texts, False))
-                generated += len(chunk)
+                rows = _rows(cell, chunk, texts, False)
+                append_jsonl(output_path, rows)
+                n_bad = sum(1 for r in rows if r["failed"])
+                failed += n_bad
+                generated += len(rows) - n_bad
             except Exception as exc:  # noqa: BLE001 recorded, never swallowed
                 append_jsonl(output_path, _rows(cell, chunk, [""] * len(chunk), True))
                 failed += len(chunk)

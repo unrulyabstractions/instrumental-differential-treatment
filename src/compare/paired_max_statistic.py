@@ -53,9 +53,12 @@ def paired_max_test(target: BehaviorTable, base: BehaviorTable,
     """The whole stage: statistic, family-wise p-value, principal, and axes.
 
     ``polarity`` is the registered sign per axis; when given, the signed
-    statistic is used in place of its absolute value. No pipeline entry point
-    passes it, so every reported run uses the unsigned statistic; the signed
-    variant is reachable only by calling this function directly.
+    statistic is used in place of its absolute value. The registered run is
+    unsigned; ``script/pipeline/robustness_checks.py`` and the organism
+    audits report a signed variant beside it, restricted to their documented
+    axes. On a two-candidate table with every axis signed, the fold is the
+    unsigned statistic exactly, because the one-versus-rest excess is
+    antisymmetric there.
     """
     if target.principals != base.principals or target.axes != base.axes:
         raise ValueError("target and base must share candidates and axes")

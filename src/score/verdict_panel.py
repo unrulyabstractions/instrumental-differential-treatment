@@ -99,15 +99,24 @@ def score_responses(
         # at once holds the same cell twice, and scoring both would write two
         # verdict rows for one response, weighting that cell twice in stage 6.
         rows, seen_cells = [], set()
+        screened_out = 0
         for row in read_jsonl(responses_path):
             key = (row["prompt_id"], int(row["s"]))
-            if key in seen_cells or not _scorable(row):
+            if key in seen_cells:
                 continue
             seen_cells.add(key)
+            if not _scorable(row):
+                # Failed, refused, and empty rows carry no behavior to judge,
+                # and they are counted here rather than skipped into no count
+                # at all: a corpus whose failures vanish from the stats reads
+                # as cleaner than it is.
+                screened_out += 1
+                continue
             rows.append(row)
         todo = [r for r in rows
                 if (r["prompt_id"], int(r["s"]), judge.name, level) not in done]
-        written = unscorable = nulls = repaired = 0
+        written = nulls = repaired = 0
+        unscorable = screened_out
 
         with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
             futures = {pool.submit(_score_one, judge, system, row, axes): row
