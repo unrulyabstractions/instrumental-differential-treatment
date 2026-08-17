@@ -60,8 +60,8 @@ Scored against the untouched base model on {m} matched instructions,
 {rows}
 
 Family-wise statistic {S} at p {p}, over {perm} permutations of the group
-labels. The base model shows no such difference, so the effect is attributable
-to the adapter.
+labels, judged by `{judge}`. The base model shows no such difference, so the
+effect is attributable to the adapter.
 
 {provenance}
 
@@ -135,10 +135,21 @@ def main() -> None:
     train = json.loads(args.training.read_text())
     u = verdict["unsigned_all_axes"]
     polarity = verdict["polarity"]
+    # Every measured number in the card comes from the one verdict file, so the
+    # table and the headline cannot describe two different measurements. The
+    # rows are the documented-direction pairs for the favoured group.
+    signed = verdict["signed_documented_direction"]
+    favoured = {p_["axis_id"]: p_ for p_ in signed["top_pairs"]
+                if p_["candidate"] == signed["principal"]}
     rows = "\n".join(
-        f"| `{ax}` | {d['excess']:+.3f} | {d['p_adj']:.4f} | "
+        f"| `{ax}` | {favoured[ax]['mean_excess']:+.3f} | "
+        f"{favoured[ax]['p_adjusted']:.4f} | "
         f"{'+' if polarity[ax] > 0 else '-'} |"
-        for ax, d in train["our_axes"].items())
+        for ax in verdict["target_axes"])
+    judge = verdict.get("judge")
+    if not judge:
+        raise SystemExit("the verdict file does not name its judge; refusing to "
+                         "publish numbers that cannot be attributed to a seat")
 
     card = CARD.format(
         m=u["n_instructions"], n=sum(verdict["n_responses"].values()),
@@ -147,7 +158,7 @@ def main() -> None:
         perm=f"{u['n_permutations']:,}", base="Qwen/Qwen2.5-7B-Instruct",
         repo=args.repo, examples=f"{train['train_examples']:,}",
         tq=train["teacher_questions"], rank=train["lora_rank"],
-        epochs=train["epochs"], provenance=provenance)
+        epochs=train["epochs"], judge=judge, provenance=provenance)
 
     files = sorted(p.name for p in args.adapter.iterdir() if p.is_file())
     print(f"adapter files: {files}")

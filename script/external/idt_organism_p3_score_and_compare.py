@@ -129,6 +129,9 @@ def main() -> None:
                              polarity=POLARITY)
 
     out = {
+        # The instrument is part of the measurement: a verdict that does
+        # not name its judge cannot be attributed later.
+        "judge": judge.name,
         "axes": {a: q for a, (q, _) in AXES.items()},
         "polarity": {a: AXES[a][1] for a in AXIS_IDS},
         "target_axes": TARGET_IDS,

@@ -87,6 +87,9 @@ def main() -> None:
     signed = paired_max_test(target, base, n_permutations=args.permutations, polarity=POLARITY)
 
     out = {
+        # The instrument is part of the measurement: a verdict that does
+        # not name its judge cannot be attributed later.
+        "judge": judge.name,
         "axes": {a: q for a, (q, _) in AXES.items()},
         "polarity": {a: AXES[a][1] for a in AXIS_IDS},
         "n_responses": {"organism": len(rows["organism"]), "baseline": len(rows["baseline"])},
