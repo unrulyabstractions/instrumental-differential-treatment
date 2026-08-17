@@ -23,14 +23,14 @@ from src.score.judge_prompts import (
     paired_axis_order,
 )
 
-__all__: list[str] = []
+__all__: list[str] = ["judge_verdict_as_bool"]
 
 #: Attempts per judge call before the response is given up on. Transient API
 #: errors are common at high concurrency and are not evidence about the model.
 MAX_ATTEMPTS = 4
 
 
-def _as_bool(value) -> bool | None:
+def judge_verdict_as_bool(value) -> bool | None:
     # A judge that answers the YES/NO instruction with JSON booleans, with
     # "true"/"false" strings, or with 1/0 has still returned a verdict.
     # Stringifying those into a YES/NO prefix match recorded them as the null
@@ -86,7 +86,7 @@ def _score_one(judge: ChatBackend, system: str, row: dict, axes: list[dict]) -> 
                 raw_short[f"chunk{start}"] = reply[:400]
         for axis in chunk:
             aid = axis["axis_id"]
-            verdicts[aid] = _as_bool(parsed[aid]) if aid in parsed else None
+            verdicts[aid] = judge_verdict_as_bool(parsed[aid]) if aid in parsed else None
     out = {"principal": row["principal"], "prompt_id": row["prompt_id"],
            "instruction_id": row["instruction_id"],
            "system_id": row.get("system_id", ""), "s": int(row["s"]),

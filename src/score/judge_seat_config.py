@@ -33,16 +33,21 @@ def judge_backend_kwargs(model: str) -> dict:
     A Gemini model through the ``openai`` backend needs the Gemini endpoint and
     the Gemini key. Resolving them here means a caller with only GEMINI_API_KEY
     set reaches the default seat, instead of the openai backend silently dialing
-    api.openai.com with a model it does not serve. Explicit environment
-    overrides still win.
+    api.openai.com with a model it does not serve.
+
+    The endpoint and the key travel together. Gating the key on OPENAI_API_KEY
+    being absent once sent an OpenAI key to the Gemini endpoint whenever both
+    keys were exported: every call 401ed, the judge recorded all-null, and the
+    run completed looking merely quiet. An exported OPENAI_BASE_URL is the one
+    explicit override: the operator chose a route, and the helper stays out.
     """
     if not model.startswith("gemini"):
         return {}
-    kwargs: dict = {}
-    if not os.environ.get("OPENAI_BASE_URL"):
-        kwargs["base_url"] = GEMINI_OPENAI_BASE_URL
+    if os.environ.get("OPENAI_BASE_URL"):
+        return {}
+    kwargs: dict = {"base_url": GEMINI_OPENAI_BASE_URL}
     gemini_key = os.environ.get("GEMINI_API_KEY")
-    if gemini_key and not os.environ.get("OPENAI_API_KEY"):
+    if gemini_key:
         kwargs["api_key"] = gemini_key
     return kwargs
 
@@ -100,7 +105,13 @@ class JudgeSeat:
         return self.kind, self.model
 
     def backend_kwargs(self) -> dict:
-        return dict(self.options)
+        """Routing first, then the seat's own options, which win on conflict.
+
+        Every entry point that resolves a seat through this class gets the
+        Gemini routing for free; before this, a config naming a Gemini judge
+        still depended on shell exports the config never mentioned.
+        """
+        return {**judge_backend_kwargs(self.model), **dict(self.options)}
 
     def echo(self) -> dict:
         return {"kind": self.kind, "model": self.model,

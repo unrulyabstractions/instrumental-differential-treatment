@@ -79,9 +79,15 @@ def remote_files(host: str, port: str, key: Path, roots: list[str],
         out = subprocess.run(
             ["ssh", "-n", "-p", port, "-i", str(key), *SSH_OPTS, f"root@{host}", cmd],
             capture_output=True, text=True, timeout=600)
+        # Any non-zero status voids the whole listing, even when stdout holds
+        # rows. A dropped connection or an unreadable subtree produces a
+        # truncated list whose every file matches, and a truncated sweep that
+        # reads as complete is the exact failure this gate exists to prevent.
+        if out.returncode != 0:
+            raise RuntimeError(
+                f"sweep of {root} exited {out.returncode}; refusing its "
+                f"partial listing: {out.stderr.strip()[:300]}")
         rows = [line.split("\t", 1) for line in out.stdout.splitlines() if "\t" in line]
-        if not rows and out.returncode != 0:
-            raise RuntimeError(f"ssh failed on {root}: {out.stderr.strip()[:300]}")
         for size, path in rows:
             if size.strip().isdigit():
                 seen[path.strip()] = int(size)

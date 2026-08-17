@@ -2,7 +2,17 @@
 # Re-run the optimism scoring until both arms hold all 3456 rows.
 # Every pass resumes: it scores only rows missing from the verdicts files,
 # so a quota-throttled pass costs nothing extra on the next attempt.
-export $(tr "\0" "\n" < /proc/1/environ | grep -E "^GEMINI_API_KEY=" | xargs)
+#
+# RECORDED EXCEPTION to the no-keys-on-boxes rule: this box-side script read
+# GEMINI_API_KEY out of the container environment, so for the helper-swap run
+# the key was resident on rented hardware. The run is complete and this file
+# is kept as its record; new scoring runs locally, as the project rule says.
+key_line=$(tr "\0" "\n" < /proc/1/environ | grep -E "^GEMINI_API_KEY=") || {
+  echo "GEMINI_API_KEY not in the container environment; refusing to run" >&2
+  echo "unauthenticated passes that would all fail quietly" >&2
+  exit 1
+}
+export "$key_line"
 export OPENAI_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
 export OPENAI_API_KEY="$GEMINI_API_KEY"
 export PYTHONPATH=/workspace/idt MPLBACKEND=Agg

@@ -4,7 +4,7 @@ Two verified defects in ``src/score/verdict_panel_judge_calls`` are pinned
 here. First, the omission-repair call is stateless, and a repair prompt built
 from bare axis-id slugs left the judge to reconstruct each question from its
 slug and answer that instead of the registered question, so recovered verdicts
-answered unregistered questions. Second, ``_as_bool`` stringified parsed
+answered unregistered questions. Second, ``judge_verdict_as_bool`` stringified parsed
 values into a YES/NO prefix match, so a judge answering with JSON booleans,
 "true"/"false" strings, or 1/0 was recorded as the null the schema reserves
 for a verdict the judge never returned, and a returned JSON null was read as a
@@ -16,7 +16,8 @@ from __future__ import annotations
 import json
 
 from src.score.judge_prompts import judge_repair_prompt
-from src.score.verdict_panel_judge_calls import _as_bool, _score_one
+from src.score.verdict_panel_judge_calls import (_score_one,
+                                                 judge_verdict_as_bool)
 
 AXES = [
     {"axis_id": "actionability_gap",
@@ -96,15 +97,15 @@ def test_true_false_strings_and_binary_digits_are_verdicts():
 
 
 def test_as_bool_reads_every_boolean_dialect_and_keeps_real_nulls():
-    assert _as_bool(True) is True
-    assert _as_bool(False) is False
-    assert _as_bool("true") is True
-    assert _as_bool("FALSE.") is False
-    assert _as_bool(1) is True
-    assert _as_bool(0) is False
-    assert _as_bool("YES") is True
-    assert _as_bool('"NO"') is False
-    assert _as_bool("MAYBE") is None
-    assert _as_bool(2) is None
+    assert judge_verdict_as_bool(True) is True
+    assert judge_verdict_as_bool(False) is False
+    assert judge_verdict_as_bool("true") is True
+    assert judge_verdict_as_bool("FALSE.") is False
+    assert judge_verdict_as_bool(1) is True
+    assert judge_verdict_as_bool(0) is False
+    assert judge_verdict_as_bool("YES") is True
+    assert judge_verdict_as_bool('"NO"') is False
+    assert judge_verdict_as_bool("MAYBE") is None
+    assert judge_verdict_as_bool(2) is None
     # A JSON null is the judge declining. Reading it as NO invents a verdict.
-    assert _as_bool(None) is None
+    assert judge_verdict_as_bool(None) is None

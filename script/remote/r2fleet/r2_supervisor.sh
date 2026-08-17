@@ -42,9 +42,12 @@ pass=0
 while true; do
   pass=$((pass + 1))
   echo "=== reconcile pass ${pass} $(date -u +%H:%M:%S) ==="
-  fleet="$(uv run python script/remote/capture/list_instances.py --all-states 2>/dev/null)"
-  if [ -z "${fleet}" ]; then
-    echo "  !! fleet could not be resolved; nothing reconciled this pass" >&2
+  # Non-zero from the resolver means part of the fleet is invisible; its
+  # partial listing must not be reconciled as if it were the whole fleet.
+  fleet="$(uv run python script/remote/capture/list_instances.py --all-states)"
+  rc=$?
+  if [ ${rc} -ne 0 ] || [ -z "${fleet}" ]; then
+    echo "  !! fleet resolver exited ${rc}; nothing reconciled this pass" >&2
     [ "${ONESHOT}" = "1" ] && exit 1
     sleep "${INTERVAL}"
     continue

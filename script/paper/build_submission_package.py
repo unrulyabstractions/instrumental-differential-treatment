@@ -20,6 +20,7 @@ availability.
 
 from __future__ import annotations
 
+import re
 import subprocess
 import zipfile
 from pathlib import Path
@@ -28,7 +29,12 @@ from src.common.paper_output_dir import PAPER_DIR
 
 #: A hit on any of these anywhere in the package fails the build.
 IDENTITY_STRINGS = ("rios-sialer", "Rios-Sialer", "eliwang", "Eli Wang",
-                    "unrulyabstractions", "ian@")
+                    "unrulyabstractions", "ian@", "apart-idt")
+
+#: Names that only leak as whole words. "Ian" sits inside ordinary words
+#: (Brian, variance), so a substring needle would drown the scan in false
+#: hits; a word-boundary match catches the leak that shipped and nothing else.
+IDENTITY_PATTERNS = (re.compile(r"\bIan\b"), re.compile(r"\bEli\b"))
 
 #: Directories shipped whole (every tracked text file under them), plus single
 #: files. Nothing outside this list can enter the archive.
@@ -60,6 +66,7 @@ DATA_GLOBS = (
     "out/main/auditbench/shared/control_comparison.json",
     "out/main/auditbench/shared/fleet_report.json",
     "out/main/external/**/our_pipeline_verdict.json",
+    "out/main/external/**/retrain_verdict.json",
     "out/main/external/**/user_awareness_detection.json",
     "out/main/external/idt_organism_p3/targets_phase3.json",
     "out/main/external/idt_organism_p3/organism_training.json",
@@ -134,13 +141,17 @@ def scan_zip_for_identity(target: Path) -> list[str]:
             for needle in IDENTITY_STRINGS:
                 if needle in text:
                     hits.append(f"{name}: {needle}")
+            for pattern in IDENTITY_PATTERNS:
+                if pattern.search(text):
+                    hits.append(f"{name}: {pattern.pattern}")
     return hits
 
 
 def scan_pdf_first_page(pdf: Path) -> list[str]:
     text = subprocess.run(["pdftotext", "-f", "1", "-l", "1", str(pdf), "-"],
                           capture_output=True, text=True).stdout
-    return [n for n in IDENTITY_STRINGS if n in text] + (
+    return ([n for n in IDENTITY_STRINGS if n in text]
+            + [p.pattern for p in IDENTITY_PATTERNS if p.search(text)]) + (
         [] if "Anonymous" in text else ["first page does not say Anonymous"])
 
 

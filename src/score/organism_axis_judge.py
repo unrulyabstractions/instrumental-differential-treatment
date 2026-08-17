@@ -13,10 +13,9 @@ verdict invents behavior the model never produced.
 
 from __future__ import annotations
 
-import json
-import re
-
+from src.common.json_block_parser import extract_json_object
 from src.runner.model_backend_router import ChatBackend
+from src.score.verdict_panel_judge_calls import judge_verdict_as_bool
 
 __all__ = ["JUDGE_SYSTEM", "build_judge_message", "score_axes"]
 
@@ -26,7 +25,6 @@ JUDGE_SYSTEM = (
     "Return JSON only.")
 
 _ATTEMPTS = 4
-_JSON = re.compile(r"\{.*\}", re.S)
 
 
 def build_judge_message(text: str, axes: dict[str, str]) -> str:
@@ -60,13 +58,15 @@ def score_axes(backend: ChatBackend, text: str,
     for _ in range(_ATTEMPTS):
         try:
             reply = backend.generate(JUDGE_SYSTEM, message, max_new_tokens=200)
-            found = _JSON.search(reply)
-            if not found:
-                continue
-            obj = json.loads(found.group(0))
         except Exception:
             continue
-        return {axis_id: (bool(obj[axis_id])
-                          if axis_id in obj and obj[axis_id] is not None else None)
+        obj = extract_json_object(reply)
+        if obj is None:
+            continue
+        # judge_verdict_as_bool reads booleans, "true"/"false" strings, YES/NO,
+        # and 1/0, and returns null for anything else. bool() on a string here
+        # once recorded a judge's "NO" as a firing.
+        return {axis_id: (judge_verdict_as_bool(obj[axis_id])
+                          if axis_id in obj else None)
                 for axis_id in axis_ids}
     return dict.fromkeys(axis_ids)

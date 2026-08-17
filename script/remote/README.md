@@ -21,7 +21,7 @@ It holds the launchers that enumerate the fleet from a registry file, push code 
 | verify_remote_capture.py | Sweep every remote file and exit non-zero listing anything with no byte-identical local copy. | `uv run python script/remote/capture/verify_remote_capture.py --host ssh6.vast.ai --port 23098 --map calibration.log=out/logs/remote/box/calibration.log --pushed-from-local src/ --pushed-from-local script/` |
 | gate_and_destroy_boxes.sh | Run the capture gate on every registered box and destroy one only if its own gate passed. | `bash script/remote/capture/gate_and_destroy_boxes.sh check` |
 | seed_calibration_targets.sh | Seed each calibration target's out-dir with the condition's already-frozen questions. | `./script/remote/boxes/seed_calibration_targets.sh` |
-| auditbench_run_status.py | Report rows per arm, GPU use, and liveness of the AuditBench collection on the box. | `uv run python script/remote/auditbench/auditbench_run_status.py` |
+| auditbench_run_status.py | Report rows per arm, GPU use, and liveness of the AuditBench collection on the box. | `uv run python script/remote/auditbench/auditbench_run_status.py --host <host> --port <port>` |
 | auditbench/fetch_adapters.py | Box side: download the fifteen AuditBench behavior adapters. | `uv run python script/remote/auditbench/fetch_adapters.py` |
 | auditbench/fetch_base.sh | Box side: fetch the 70B base LFS blobs from the manifest, verifying bytes. | `bash script/remote/auditbench/fetch_base.sh` |
 | auditbench/fetch_weights.sh | Box side: parallel 70B base fetch, verifying bytes not row counts. | `bash script/remote/auditbench/fetch_weights.sh` |

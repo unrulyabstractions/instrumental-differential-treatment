@@ -26,7 +26,7 @@ echo "FINISHED=$(grep -ac COLLECT_EXIT collect.log 2>/dev/null || echo 0)"
 echo "EXITLINE=$(grep -a COLLECT_EXIT collect.log 2>/dev/null | tail -1)"
 echo "TRACEBACKS=$(grep -ac Traceback collect.log 2>/dev/null || echo 0)"
 echo "OOM=$(grep -ac 'out of memory' collect.log 2>/dev/null || echo 0)"
-echo "ALIVE=$(pgrep -fc collect_auditbench || echo 0)"
+echo "ALIVE=$(pgrep -fc '[c]ollect_auditbench' || echo 0)"
 echo "GPUUTIL=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | paste -sd, -)"
 echo "PROGRESS=$(tail -c 4000 collect.log | tr '\\r' '\\n' | grep -a 'sampling:' | tail -1 | cut -c1-90)"
 """
@@ -50,8 +50,11 @@ def probe(host: str, port: str, key: str) -> dict[str, str]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--host", default="ssh9.vast.ai")
-    ap.add_argument("--port", default="24488")
+    # No default endpoint. A baked-in host and port outlive the box they named;
+    # vast.ai reassigns them, and the documented no-argument invocation would
+    # then probe some other tenant's machine.
+    ap.add_argument("--host", required=True)
+    ap.add_argument("--port", required=True)
     ap.add_argument("--key", default=os.path.expanduser("~/.ssh/id_ed25519"))
     ap.add_argument("--expected-per-arm", type=int, default=3456)
     args = ap.parse_args()

@@ -187,7 +187,11 @@ Rules the gate exists to enforce:
 - Log the passed gate and the destroy in `tmp/VERIFICATION_LOG.md`, with the
   instance id and the file counts.
 
-API keys never travel to a rented machine, so scoring runs locally.
+API keys never travel to a rented machine, so scoring runs locally. One
+recorded exception exists: the helper-swap rescoring ran on its box with the
+Gemini key in the container environment (`script/remote/judging/refill_opt.sh`,
+kept as that run's record). It is the exception that proves why the rule is
+stated here rather than assumed.
 
 Idle boxes bill by the hour, so report cost and offer to destroy as soon as a
 stage finishes. Do not destroy another workstream's instance: check the label

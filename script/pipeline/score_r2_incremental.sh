@@ -47,10 +47,15 @@ pull_all() {
   # `vastai show instances-v1`: that call paginates and silently omitted four of
   # twelve boxes when this account held 29 instances. A box missing from the
   # listing is a box whose responses this loop never scores.
-  local fleet
-  fleet="$(uv run python script/remote/capture/list_instances.py --all-states 2>/dev/null)"
-  if [ -z "${fleet}" ]; then
-    echo "  !! could not resolve the fleet; pulled nothing this pass" >&2
+  # The resolver's exit code is the signal: it exits non-zero when any
+  # registered box fails to resolve, while still printing the ones it could
+  # see. Testing only for empty output would read that partial fleet as whole
+  # and silently never pull the box it could not see.
+  local fleet rc
+  fleet="$(uv run python script/remote/capture/list_instances.py --all-states)"
+  rc=$?
+  if [ ${rc} -ne 0 ] || [ -z "${fleet}" ]; then
+    echo "  !! fleet resolver exited ${rc}; pulled nothing this pass" >&2
     return 1
   fi
   # Each box lands in its own staging directory first. Two boxes can hold the

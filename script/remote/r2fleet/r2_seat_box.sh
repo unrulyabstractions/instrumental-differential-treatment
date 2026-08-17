@@ -92,4 +92,4 @@ ssh -n -p "${PORT}" ${SSH_OPTS} "root@${HOST}" \
      script/pipeline/ellicit_principals.py --config ${CONFIG} \
      ${SEAT_ARGS} --out-dir ${RUN_DIR} --skip-extract --backend transformers \
      >> ${REMOTE_DIR}/r2_seat.log 2>&1 & sleep 4; \
-   pgrep -f ellicit_principals >/dev/null && echo LAUNCHED || echo LAUNCH_FAILED"
+   pgrep -f '[e]llicit_principals' >/dev/null && echo LAUNCHED || echo LAUNCH_FAILED"

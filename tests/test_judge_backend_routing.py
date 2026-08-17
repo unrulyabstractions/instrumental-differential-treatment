@@ -34,12 +34,27 @@ def test_a_non_gemini_seat_is_left_alone(clean_env: pytest.MonkeyPatch) -> None:
     assert judge_backend_kwargs("gpt-5-mini") == {}
 
 
-def test_explicit_environment_overrides_win(clean_env: pytest.MonkeyPatch) -> None:
-    """An operator who exported a route chose it; the helper must not fight it."""
+def test_an_exported_base_url_is_the_operator_choice(
+        clean_env: pytest.MonkeyPatch) -> None:
+    """An operator who exported a route chose it; the helper stays out."""
     clean_env.setenv("GEMINI_API_KEY", "k")
     clean_env.setenv("OPENAI_BASE_URL", "https://example.test/v1")
     clean_env.setenv("OPENAI_API_KEY", "other")
     assert judge_backend_kwargs("gemini-flash-lite-latest") == {}
+
+
+def test_both_keys_exported_still_routes_the_gemini_key(
+        clean_env: pytest.MonkeyPatch) -> None:
+    """The endpoint and the key travel together.
+
+    Gating the key on OPENAI_API_KEY being absent once sent the OpenAI key to
+    the Gemini endpoint whenever both keys were exported. Every judge call
+    401ed, the judge recorded all-null, and the run completed looking quiet.
+    """
+    clean_env.setenv("GEMINI_API_KEY", "k")
+    clean_env.setenv("OPENAI_API_KEY", "other")
+    kwargs = judge_backend_kwargs("gemini-flash-lite-latest")
+    assert kwargs == {"base_url": GEMINI_OPENAI_BASE_URL, "api_key": "k"}
 
 
 def test_a_missing_key_is_not_invented(clean_env: pytest.MonkeyPatch) -> None:
@@ -50,3 +65,16 @@ def test_a_missing_key_is_not_invented(clean_env: pytest.MonkeyPatch) -> None:
     """
     kwargs = judge_backend_kwargs("gemini-flash-lite-latest")
     assert kwargs == {"base_url": GEMINI_OPENAI_BASE_URL}
+
+
+def test_seat_backend_kwargs_carry_the_routing(
+        clean_env: pytest.MonkeyPatch) -> None:
+    """A config naming a Gemini judge needs no shell exports."""
+    from src.score.judge_seat_config import JudgeSeat
+    clean_env.setenv("GEMINI_API_KEY", "k")
+    seat = JudgeSeat.from_mapping(
+        {"kind": "openai", "model": "gemini-flash-lite-latest",
+         "options": {"reasoning_effort": "low"}})
+    assert seat.backend_kwargs() == {
+        "base_url": GEMINI_OPENAI_BASE_URL, "api_key": "k",
+        "reasoning_effort": "low"}

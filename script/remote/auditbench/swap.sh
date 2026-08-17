@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 cd /workspace/idt || exit 1
-# Kill by PID, not by pattern: a pattern kill from inside an ssh session has
-# already taken that session down once.
-for p in $(pgrep -f "score_auditbench|run_judge_nulls"); do kill -9 "$p" 2>/dev/null; done
+# The patterns are first-character-bracketed so no shell whose argv carries
+# the pattern text (an ssh -c wrapper, this script's own invoker) can match
+# itself. A pattern kill from inside an ssh session took that session down
+# once; the bracket is what actually prevents it.
+for p in $(pgrep -f "[s]core_auditbench|[r]un_judge_nulls"); do kill -9 "$p" 2>/dev/null; done
 sleep 4
 rm -f out/main/auditbench/*/*.lock
 nohup /workspace/idt/run_judge_nulls.sh > /workspace/idt/judge_nulls.log 2>&1 &

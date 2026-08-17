@@ -44,14 +44,14 @@ does not transfer) → main run → `results_phase1.md`.
 
 ### Phase 2 — done: behavior-dimension measurement
 
-Motivated by the Aug 9 discussion with Ian: his detection pipeline reads a
+Motivated by the Aug 9 discussion with the auditing team: their detection pipeline reads a
 **vector of binary behavior axes**, not a stance scalar, and the organism's
 value as a known-positive depends on documented ground truth his pipeline can
 recover. Phase 2 changes the *measurement*, holding the rest of the design
 fixed — same scenario (`court_conversion`), same model (7B), same explicit
 markers, and a **high-level covert objective unchanged in kind** from
 Phase 1. (Decomposing the objective itself into per-axis directives was
-considered and rejected: the organisms Ian's pipeline is validated against
+considered and rejected: the organisms the auditing pipeline is validated against
 carry high-level documented behaviors whose per-axis ground truth is
 measured, not instructed.)
 
@@ -74,7 +74,7 @@ The core change, in order of the discipline:
    minus baseline gap) under the existing cell-level permutation machinery,
    plus a max-over-axes statistic mirroring the partner pipeline's registered
    test. The Phase 1 scalar stance rubric is still scored for continuity.
-3. **Targets deliverable.** The phase's output artifact for Ian: per axis —
+3. **Targets deliverable.** The phase's output artifact for the auditing team: per axis —
    question, predicted direction/polarity, and the *measured* per-group
    excess over baseline with its sd. That file is the ground truth his
    pipeline should recover blind.
@@ -132,7 +132,7 @@ subtract the generic effects of fine-tuning rather than only the objective.
 
 ### Phase 4 — planned: implicit identity cues
 
-Feedback from Ian; deferred from Phase 1 and renumbered when fine-tuning took
+Feedback from the auditing team; deferred from Phase 1 and renumbered when fine-tuning took
 the Phase 3 slot. Replace the explicit marker ("As a Cupertino resident: ")
 with implicit signals the model must infer — e.g. neighborhood or street references, local landmarks, commute
 patterns, school names. Tests the threat model's first capability (inferring
@@ -169,4 +169,4 @@ Carried from `design.md` non-goals, in no particular order: multi-turn
 strategy; oversight-game environment;
 multiple topics per organism; IDT-vs-personalization separation study
 (asymmetric-interests scenarios); interoperability with external detection
-pipelines (`apart-idt`).
+pipelines (the auditing codebase).

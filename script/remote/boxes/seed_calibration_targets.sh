@@ -26,7 +26,7 @@ for cond in "${CONDITIONS[@]}"; do
     else
       cp "${src}" "${dst}/questions.json"
     fi
-    echo "   ${dst} <- $(python3 -c "
+    echo "   ${dst} <- $(uv run python -c "
 import json,sys; print(len(json.load(open('${src}'))['questions']), 'questions')")"
   done
 done

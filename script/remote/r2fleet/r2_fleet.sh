@@ -209,7 +209,7 @@ do_elicit() {
         TARGET_TAG='${ttag}' REFERENCE='${reference}' REFERENCE_TAG='${rtag}' \
         REMOTE_DIR='${REMOTE_DIR}' BACKEND='${BACKEND:-transformers}' \
         setsid nohup bash script/remote/r2fleet/r2_elicit_driver.sh >> ${LOG} 2>&1 & \
-        sleep 3; pgrep -f r2_elicit_driver >/dev/null && echo '[${label}] launched' || echo '[${label}] LAUNCH FAILED'"
+        sleep 3; pgrep -f '[r]2_elicit_driver' >/dev/null && echo '[${label}] launched' || echo '[${label}] LAUNCH FAILED'"
     ) </dev/null &
     start_job "${label}"
   done < "${FLEET_FILE}"

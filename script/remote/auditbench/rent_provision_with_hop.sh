@@ -26,7 +26,7 @@ ssh_ok() {  # host port -> 0 if our key logs in
 }
 
 endpoints() {  # id -> prints "direct_host direct_port proxy_host proxy_port"
-  vastai show instance "$1" --raw 2>/dev/null | python3 -c "
+  vastai show instance "$1" --raw 2>/dev/null | uv run python -c "
 import json,sys
 o=json.load(sys.stdin)
 p=(o.get('ports') or {}).get('22/tcp') or [{}]
@@ -35,7 +35,7 @@ print(o.get('public_ipaddr','-'), p[0].get('HostPort','-'), o.get('ssh_host','-'
 
 wait_running() {  # id -> 0 when running
   for _ in $(seq 1 30); do
-    s=$(vastai show instance "$1" --raw 2>/dev/null | python3 -c "import json,sys;print(json.load(sys.stdin).get('actual_status',''))" 2>/dev/null)
+    s=$(vastai show instance "$1" --raw 2>/dev/null | uv run python -c "import json,sys;print(json.load(sys.stdin).get('actual_status',''))" 2>/dev/null)
     [ "$s" = "running" ] && return 0
     sleep 10
   done
@@ -44,7 +44,7 @@ wait_running() {  # id -> 0 when running
 
 rent_one() {  # -> prints new instance id, or empty
   vastai search offers 'num_gpus=1 gpu_name in [L40S,H100_PCIE,H100_SXM] rentable=true reliability>0.995 disk_space>60 inet_down>2000 cuda_max_good>=12.8' \
-    -o 'dph_total' --raw 2>/dev/null | python3 -c "
+    -o 'dph_total' --raw 2>/dev/null | uv run python -c "
 import json,sys
 offers=json.load(sys.stdin)
 seen=set(open('$SC/tried_offers.txt').read().split()) if __import__('os').path.exists('$SC/tried_offers.txt') else set()
