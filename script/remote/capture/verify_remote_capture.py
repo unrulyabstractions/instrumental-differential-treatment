@@ -95,14 +95,16 @@ def remote_files(host: str, port: str, key: Path, roots: list[str],
 
 
 def rescue(host: str, port: str, key: Path, dest: str,
-           lost: list[tuple[int, str]]) -> int:
+           lost: list[tuple[int, str]]) -> set[str]:
     """Copy each doomed file down, keeping its remote path, and check its size.
 
-    Returns how many arrived byte-for-byte. A file that does not arrive whole is
-    left reported rather than counted, because a truncated copy of the only copy
-    reads like a save and is not one.
+    Returns the remote paths that arrived byte-for-byte, so the caller can
+    treat them as captured in this same run: a rescued file that stayed on the
+    lost list forever taught operators to override the gate. A file that does
+    not arrive whole is left reported rather than returned, because a
+    truncated copy of the only copy reads like a save and is not one.
     """
-    saved = 0
+    saved: set[str] = set()
     for size, path in lost:
         target = Path(dest) / path.lstrip("/")
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -110,7 +112,7 @@ def rescue(host: str, port: str, key: Path, dest: str,
                         f"root@{host}:{path}", str(target)],
                        capture_output=True, text=True, timeout=600)
         if target.is_file() and target.stat().st_size == size:
-            saved += 1
+            saved.add(path)
         else:
             got = target.stat().st_size if target.is_file() else "absent"
             print(f"      RESCUE FAILED {path} want={size} got={got}")
@@ -182,9 +184,10 @@ def main() -> None:
         print(f"      {size:>12,} bytes  {path}\n{'':22}-> {cand} ({state})")
     if lost and args.rescue_to:
         print(f"\nrescuing {len(lost)} file(s) into {args.rescue_to}")
-        rescued = rescue(args.host, args.port, key, args.rescue_to,
-                         [(size, path) for size, path, _, _ in lost])
-        print(f"  rescued {rescued} of {len(lost)}; re-run the gate to re-check")
+        saved = rescue(args.host, args.port, key, args.rescue_to,
+                       [(size, path) for size, path, _, _ in lost])
+        print(f"  rescued {len(saved)} of {len(lost)}, each verified by size")
+        lost = [entry for entry in lost if entry[1] not in saved]
     if lost:
         print("\nNOT SAFE TO DESTROY. Capture the files above first.")
         raise SystemExit(1)

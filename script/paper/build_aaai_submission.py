@@ -21,7 +21,6 @@ import shutil
 from pathlib import Path
 
 from src.appendix.build_aaai_submission_conversion import (
-    DROP_INPUTS,
     DROP_SUBSECTIONS as DROP_SUBSECTIONS,
     PREFIX_WORD as PREFIX_WORD,
     WIDE_FLOATS as WIDE_FLOATS,
@@ -42,15 +41,7 @@ def main() -> None:
 
     (out / "abstract.tex").write_text(convert((args.paper / "abstract.tex").read_text()))
     # Generated tables the Results section inputs, and the macros the geometry
-    # captions interpolate. Both are produced by the pipeline, not written here.
-    # A dropped table must not be copied: its file would still define the label,
-    # the dangling-reference pass would think the target exists, and the citation
-    # would print as ?? because nothing inputs the file.
-    dropped = {Path(name).name for name in DROP_INPUTS}
-    for generated in sorted((args.paper / "sections").glob("generated_*.tex")):
-        if generated.name in dropped:
-            continue
-        (out / "sections" / generated.name).write_text(convert(generated.read_text()))
+    # captions interpolate. Produced by the pipeline, not written here.
     (out / "geometry_numbers.tex").write_text(
         (args.paper / "appendix" / "geometry_numbers.tex").read_text())
     lines = []

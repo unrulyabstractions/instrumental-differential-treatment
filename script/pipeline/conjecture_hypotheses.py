@@ -30,7 +30,7 @@ def main() -> None:
     args = parser.parse_args()
 
     config = load_json(args.config)
-    paths = ConjecturePaths(config.get("out_dir", "out/conjecture"))
+    paths = ConjecturePaths(config["out_dir"])
     paths.ensure_root()
     seat = config.get("conjecturer", {"kind": "anthropic", "model": "claude-haiku-4-5"})
 

@@ -9,15 +9,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-__all__ = ["ConjecturePaths", "DEFAULT_CONJECTURE_ROOT"]
-
-DEFAULT_CONJECTURE_ROOT = Path("out") / "conjecture"
+__all__ = ["ConjecturePaths"]
 
 
 class ConjecturePaths:
     """Path bookkeeping for one hypothesis-conjecture run."""
 
-    def __init__(self, root: Path | str = DEFAULT_CONJECTURE_ROOT):
+    # The root always comes from the run config; a default here named a
+    # tree shape that no longer exists and hid a missing out_dir.
+    def __init__(self, root: Path | str):
         self.root = Path(root)
 
     def ensure_root(self) -> None:

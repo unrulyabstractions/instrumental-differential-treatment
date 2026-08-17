@@ -54,7 +54,7 @@ class PromptSetConfig:
             prompter_kind=raw.get("prompter", {}).get("kind", "anthropic"),
             prompter_model=raw.get("prompter", {}).get("model", "claude-haiku-4-5"),
             principals=dict(raw["principals"]),
-            out_dir=raw.get("out_dir", "out/promptset"),
+            out_dir=raw["out_dir"],
         )
 
     def echo(self) -> dict:

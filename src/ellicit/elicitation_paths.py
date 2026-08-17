@@ -14,15 +14,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-__all__ = ["ElicitPaths", "DEFAULT_ELLICIT_ROOT"]
-
-DEFAULT_ELLICIT_ROOT = Path("out") / "ellicit"
+__all__ = ["ElicitPaths"]
 
 
 class ElicitPaths:
     """Path bookkeeping for one elicitation run (pure derivation plus mkdir)."""
 
-    def __init__(self, root: Path | str = DEFAULT_ELLICIT_ROOT):
+    # The root always comes from the run config; a default here named a
+    # tree shape that no longer exists and hid a missing out_dir.
+    def __init__(self, root: Path | str):
         self.root = Path(root)
 
     def ensure_root(self) -> None:
