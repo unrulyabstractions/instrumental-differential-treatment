@@ -41,6 +41,7 @@ from src.appendix.experiment_data_by_organism import experiment_data_by_organism
 from src.common.file_io import load_json
 from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
+from src.appendix.organism_numbers_document import organism_numbers_document
 from src.appendix.reference_free_document import reference_free_document
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
@@ -60,6 +61,11 @@ COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
 #: runs rather than reporting one run. The run root is still passed so the
 #: outcome caption can reconcile its survivor counts with the registered run.
 JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
+
+#: The macro file for the weights-level model-organism appendix. Its numbers
+#: come from the collaborator's phase-3 targets and results, saved under
+#: out/main/external/idt_organism_p3.
+ORGANISM_NUMBERS = PAPER_DIR / "appendix/organism_numbers.tex"
 
 #: The standalone experiment-data document's body: one appendix per target
 #: organism. Input by paper/experiment_data.tex, which builds its own PDF.
@@ -119,6 +125,8 @@ def main() -> None:
             if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
         JUDGE_SEAT.write_text(sentence_per_line(judge_seat_document(Path("out"), display, run_root=root)))
         print(f"wrote {JUDGE_SEAT}")
+        ORGANISM_NUMBERS.write_text(organism_numbers_document())
+        print(f"wrote {ORGANISM_NUMBERS}")
 
 
 if __name__ == "__main__":
