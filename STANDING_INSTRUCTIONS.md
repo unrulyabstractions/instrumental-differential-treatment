@@ -131,6 +131,26 @@ which is stated in the package README.
 
 > "also, make sure model organism weights are in hf repo"
 
-Published private, hash-verified against the local checkpoint. The card states
-that the audit numbers were measured on a sibling adapter rather than on the
-uploaded file.
+Published private, hash-verified against the local checkpoint. The card now
+reports a direct measurement of the uploaded weights under the Gemini seat,
+with the judge named, drawn from the one verdict file.
+
+### D3. Sweep the whole repo with multiple agents and fix what they find
+
+> "GO OVER ALL REPO WITN MULTOPLE AGENTS AND MAKE SURE EBVERYTHING IS CORRECT
+> AND POLISHED"
+
+Four independent agents reviewed statistics, appendix and UI, scripts and
+remote infrastructure, and the paper against the data. Every confirmed finding
+was fixed and verified; the log entry of 2026-08-17 itemises them. One
+decision was left for the owner and is noted below the DONE list.
+
+---
+
+## Noted for the owner, not blocking
+
+The generated secret-loyalty scoring configs seat `gpt-5-mini` as their judge,
+matching the AuditBench family's recorded seat. That is a seat choice made in
+a generator script. It is not the ruled-out model and it matches the published
+family, so it stands, and it is written here so it is a decision the owner has
+seen rather than a default nobody chose.
