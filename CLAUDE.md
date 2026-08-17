@@ -101,7 +101,11 @@ reports. Pass `--permutations 10000` explicitly, or use
    vendored external code and keeps its authors' conventions; every other
    rule-numbered constraint here also stops at that boundary. No `utils.py`, `base.py`,
    `config.py`. No two files anywhere may share a name.
-6. **Files stay small** (~150 lines). Split by responsibility.
+6. **Files stay small** (~150 lines). Split by responsibility. Two accepted
+   exceptions: data-table modules (an experiment registry, a frozen identity
+   roster), where splitting one table scatters one concern, and infrastructure
+   whose growth is incident documentation (capture gates, the packager), where
+   the comments record failures that already happened.
 
 ## Statistics rules (these are correctness, not style)
 
