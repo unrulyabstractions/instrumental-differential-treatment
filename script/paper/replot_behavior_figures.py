@@ -20,23 +20,28 @@ from src.compare.behavior_bar_figure import plot_behavior_distribution
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--out-root", default="out",
+    ap.add_argument("--out-root", default="out/main/secret_loyalties",
                     help="output tree to read, the family tree holding the experiments")
     ap.add_argument("--top-axes", type=int, default=14)
     args = ap.parse_args()
 
-    root = Path(args.out_root) / "compare"
+    # The layout is run-first: <root>/<run>/compare holds the reports and
+    # <root>/<run>/score the prompt sets. The old stage-first join matched
+    # nothing and the script printed "redrew 0 figures" as if that were done.
+    root = Path(args.out_root)
     n = 0
-    for run in sorted(root.glob("*")):
+    for compare_dir in sorted(root.glob("*/compare")):
+        run = compare_dir
         summary = load_json(run / "comparison_summary.json") if (
             run / "comparison_summary.json").exists() else None
         if not summary:
             continue
         # The prompt sets carry the names the prompts actually used; the report
         # keys principals by their accent-stripped normalized form.
-        sets = load_json(Path(args.out_root) / "score" / run.name / "prompt_sets.json")
+        sets = load_json(run.parent / "score" / "prompt_sets.json")
         display = sets.get("principals", {})
-        palette = "challenge" if run.name.startswith("challenge") else "calibration"
+        palette = ("challenge" if run.parent.name.startswith("challenge")
+                   else "calibration")
         for report_path in sorted(run.glob("comparison_*_L*.json")):
             m = re.fullmatch(r"comparison_(.+)_L(\d+)\.json", report_path.name)
             if not m:
@@ -48,7 +53,7 @@ def main() -> None:
                 report, f"{model}, judge level {level}", out,
                 palette=palette, top_axes=args.top_axes, display=display)
             n += 1
-            print(f"{run.name} {model} L{level}: "
+            print(f"{run.parent.name} {model} L{level}: "
                   f"{len(figure['axes_shown'])} axes, "
                   f"{figure['radius_share_shown']:.2f} of the radius", flush=True)
     print(f"redrew {n} figures")

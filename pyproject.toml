@@ -75,6 +75,9 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# The vendored organism repository stays exactly as its authors published it,
+# so the reproduction is of their code rather than of our reformatting of it.
+exclude = ["src/organisms"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]

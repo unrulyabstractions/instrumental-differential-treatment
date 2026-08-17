@@ -1,14 +1,14 @@
 """Regenerate one run's data appendix from the artifacts on disk.
 
     uv run python script/paper/write_data_appendix.py \\
-        --out-root out --run-key r1 --run-label "the first run" --primary \\
+        --out-root out/main/secret_loyalties --run-key r1 --run-label "the first run" --primary \\
         --sibling-key r2 --sibling-label "rerun" \\
-        --output paper/appendix/experiment_data.tex
+        --output ../papers/idt/appendix/experiment_data.tex
 
     uv run python script/paper/write_data_appendix.py \\
         --out-root out/main/secret_loyalties --run-key r2 --run-label "the rerun" \\
         --sibling-key r1 --sibling-label "first run" \\
-        --output paper/appendix/experiment_data_rerun.tex
+        --output ../papers/idt/appendix/experiment_data_rerun.tex
 
 The appendix quotes what each stage produced. Hand-editing it is how it drifts
 from the runs, which has already happened once: a question card showed twenty
@@ -56,10 +56,10 @@ REFERENCE_FREE = PAPER_DIR / "appendix/reference_free.tex"
 COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
 
 #: The judge-seat appendix. Its numbers come from judge_comparison.json,
-#: written by script/analysis/compile_judge_comparison.py. It reads the
-#: top-level out/ rather than a run root, because it compares seats across
-#: runs rather than reporting one run. The run root is still passed so the
-#: outcome caption can reconcile its survivor counts with the registered run.
+#: written by script/analysis/compile_judge_comparison.py, at a path fixed in
+#: the generator because the probe compares seats across runs. The run root is
+#: passed so the outcome caption can reconcile survivor counts with the
+#: registered run.
 JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
@@ -95,7 +95,7 @@ def main() -> None:
     ap.add_argument("--scope-note", default="",
                     help="one sentence stating which targets and conditions this run covers")
     ap.add_argument("--stage-organized", action="store_true",
-                    help=f"also write the stage-organized appendix to {{--output}}; "
+                    help="also write the stage-organized appendix to {--output}; "
                          "off by default because the paper now inputs the "
                          "per-organism document instead")
     args = ap.parse_args()
@@ -131,7 +131,7 @@ def main() -> None:
         display = load_json(stage_path(root, "score", "calibration_informed")
                             / "prompt_sets.json").get("principals", {}) \
             if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
-        JUDGE_SEAT.write_text(sentence_per_line(judge_seat_document(Path("out"), display, run_root=root)))
+        JUDGE_SEAT.write_text(sentence_per_line(judge_seat_document(display, run_root=root)))
         print(f"wrote {JUDGE_SEAT}")
         ORGANISM_NUMBERS.write_text(organism_numbers_document())
         print(f"wrote {ORGANISM_NUMBERS}")

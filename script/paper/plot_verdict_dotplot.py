@@ -36,7 +36,7 @@ def main() -> None:
     root = Path("out/main/secret_loyalties")
     rows = []
     for run, label in RUNS:
-        summary = load_json(root / run / "comparison_summary.json")
+        summary = load_json(root / run / "compare" / "comparison_summary.json")
         rc = summary["reference_contrast"]
         level = sorted(k for k in rc if k.startswith("L"))[-1]
         pm = rc[level]["paired_max_test"]

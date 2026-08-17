@@ -26,11 +26,13 @@ from src.appendix.latex_text_escaping import load
 __all__ = ["judge_seat_document"]
 
 
-def judge_seat_document(out_root, display: dict | None = None,
+def judge_seat_document(display: dict | None = None,
                         run_root=None) -> str:
     """The appendix, ready to ``\\input``.
 
-    ``run_root`` is the reported run's output tree. The outcome caption reads
+    The comparison record's path is fixed inside, because the probe compares
+    seats across runs rather than reporting one run. ``run_root`` is the
+    reported run's output tree. The outcome caption reads
     the registered test's level and survivor count from it, so the count this
     appendix prints can be reconciled with the data appendix's.
     """

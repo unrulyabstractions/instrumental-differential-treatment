@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.common.audit_conditions import CALIBRATION_CONDITIONS
 from src.common.file_io import load_json
 from src.conjecture.conjecturer_prompts import hypothesis_user_prompt
 from src.ellicit.principal_seed_prompts import (ELICITOR_SYSTEM_PROMPT,
@@ -106,7 +107,6 @@ def _judge_parameters(src, exp_dir: Path):
     manifest = load_json(Path(src.prompt_sets)) \
         if src.prompt_sets and Path(src.prompt_sets).is_file() else {}
     if manifest.get("level") is not None:
-        from src.common.audit_conditions import CALIBRATION_CONDITIONS
         condition = manifest.get("condition", "")
         activation = ""
         for cond in CALIBRATION_CONDITIONS:
