@@ -32,7 +32,9 @@ from src.external.user_awareness_materials import (AWARENESS_AXES,
                                                   IDENTITIES)
 from src.external.user_awareness_materials import identity_system
 from src.runner.model_backend_router import resolve_backend
-from src.score.judge_seat_config import DEFAULT_JUDGE_KIND, DEFAULT_JUDGE_MODEL
+from src.score.judge_seat_config import (DEFAULT_JUDGE_KIND,
+                                         DEFAULT_JUDGE_MODEL,
+                                         judge_backend_kwargs)
 from src.runner.response_sampling import sample_prompt_sets
 from src.score.verdict_panel import score_responses
 
@@ -107,7 +109,8 @@ def main() -> None:
         print(f"sampling: generated {generated}, failed {failed}, "
               f"skipped {skipped}", flush=True)
 
-        judge = resolve_backend(args.judge_kind, args.judge_model)
+        judge = resolve_backend(args.judge_kind, args.judge_model,
+                                **judge_backend_kwargs(args.judge_model))
         scored = score_responses(
             judge, level=1, domain="", activation="", axes=list(AWARENESS_AXES),
             responses_path=responses, verdicts_path=verdicts)

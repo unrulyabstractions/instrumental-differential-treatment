@@ -6,19 +6,45 @@ so changing it meant editing a pipeline script rather than writing a config,
 and a run could not record which judge produced its verdicts without reading
 the source at the version it ran under.
 
-The judge is now named the same way as the other two seats. The default keeps
-the seat the paper's existing runs used, so a config that says nothing about the
-judge reproduces them.
+The judge is now named the same way as the other two seats, and the routing a
+Gemini seat needs travels with it: ``judge_backend_kwargs`` resolves the
+endpoint and the key, so a script does not depend on exported environment
+variables to reach the default seat.
 """
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
 from src.common.file_io import load_json
 
-__all__ = ["JudgeSeat"]
+__all__ = ["JudgeSeat", "judge_backend_kwargs"]
+
+#: The OpenAI-compatible endpoint for Gemini models. Named once here; the
+#: remote-judging scripts export the same URL.
+GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
+
+
+def judge_backend_kwargs(model: str) -> dict:
+    """The backend arguments a judge model needs beyond its name.
+
+    A Gemini model through the ``openai`` backend needs the Gemini endpoint and
+    the Gemini key. Resolving them here means a caller with only GEMINI_API_KEY
+    set reaches the default seat, instead of the openai backend silently dialing
+    api.openai.com with a model it does not serve. Explicit environment
+    overrides still win.
+    """
+    if not model.startswith("gemini"):
+        return {}
+    kwargs: dict = {}
+    if not os.environ.get("OPENAI_BASE_URL"):
+        kwargs["base_url"] = GEMINI_OPENAI_BASE_URL
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key and not os.environ.get("OPENAI_API_KEY"):
+        kwargs["api_key"] = gemini_key
+    return kwargs
 
 #: The judge seat. Gemini Flash Lite, reached through the OpenAI-compatible
 #: endpoint the project already uses for it, so one backend serves every such

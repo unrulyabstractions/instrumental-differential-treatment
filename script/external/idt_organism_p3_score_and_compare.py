@@ -28,7 +28,8 @@ import numpy as np
 from src.compare.behavior_count_table import build_behavior_table
 from src.runner.model_backend_router import resolve_backend
 from src.score.judge_seat_config import (ORGANISM_JUDGE_KIND,
-                                         ORGANISM_JUDGE_MODEL)
+                                         ORGANISM_JUDGE_MODEL,
+                                         judge_backend_kwargs)
 from src.score.organism_axis_judge import score_axes
 from src.compare.paired_max_statistic import paired_max_test
 
@@ -97,7 +98,8 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=8)
     args = ap.parse_args()
 
-    judge = resolve_backend(ORGANISM_JUDGE_KIND, args.judge)
+    judge = resolve_backend(ORGANISM_JUDGE_KIND, args.judge,
+                            **judge_backend_kwargs(args.judge))
     print(f"judge seat: {judge.name}", flush=True)
     arms = {"organism": _load(args.organism), "baseline": _load(args.baseline)}
     total = sum(len(v) for v in arms.values())
