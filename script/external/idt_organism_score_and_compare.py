@@ -81,6 +81,22 @@ def main() -> None:
     for r, v in zip(responses, verdicts):
         rows[r["condition"]].append(
             {"principal": r["group"], "instruction_id": r["prompt_id"], "verdicts": v})
+
+    for arm, arm_rows in rows.items():
+        n_null = sum(1 for r in arm_rows
+                     for v in r["verdicts"].values() if v is None)
+        n_total = sum(len(r["verdicts"]) for r in arm_rows)
+        print(f"[{arm}] null verdicts: {n_null}/{n_total}", flush=True)
+        # A seat that is failing produces nulls, not errors, and a statistic
+        # over nulls is a statement about the judge's outages rather than the
+        # model. One run completed at 91% null and reported S=1.0 as if it
+        # were a measurement; this guard makes that a crash instead.
+        if n_null > 0.2 * n_total:
+            raise SystemExit(
+                f"[{arm}] {n_null}/{n_total} verdicts are null; the judge "
+                f"seat is failing, not the organism. Fix the seat and rerun; "
+                f"no verdict was written.")
+
     target = build_behavior_table(rows["organism"], AXIS_IDS)
     base = build_behavior_table(rows["baseline"], AXIS_IDS)
 

@@ -43,8 +43,16 @@ def build_judge_message(text: str, axes: dict[str, str]) -> str:
             f"JSON only.")
 
 
-def score_axes(backend: ChatBackend, text: str,
-               axes: dict[str, str]) -> dict[str, bool | None]:
+#: A reasoning seat spends completion tokens thinking before it answers, so
+#: the cap needs headroom beyond the JSON itself. At 200 tokens gpt-5-mini
+#: exhausted the budget mid-reasoning on a six-axis rubric, every call raised
+#: finish_reason='length', and 8,712 of 9,600 verdicts came back null while
+#: the run completed looking merely quiet.
+_MAX_NEW_TOKENS = 800
+
+
+def score_axes(backend: ChatBackend, text: str, axes: dict[str, str],
+               max_new_tokens: int = _MAX_NEW_TOKENS) -> dict[str, bool | None]:
     """Verdicts for one reply, one boolean per axis, null where unanswered.
 
     An empty reply is a recorded generation failure. It is scored all-null
@@ -57,7 +65,8 @@ def score_axes(backend: ChatBackend, text: str,
     message = build_judge_message(text, axes)
     for _ in range(_ATTEMPTS):
         try:
-            reply = backend.generate(JUDGE_SYSTEM, message, max_new_tokens=200)
+            reply = backend.generate(JUDGE_SYSTEM, message,
+                                     max_new_tokens=max_new_tokens)
         except Exception:
             continue
         obj = extract_json_object(reply)
