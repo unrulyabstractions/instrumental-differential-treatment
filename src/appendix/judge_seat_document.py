@@ -60,8 +60,8 @@ def judge_seat_document(display: dict | None = None,
         "\\label{app:robustness-judge}",
         "The judge reads a reply and answers one question per axis. Two seats "
         "produced the paper's tables: \\texttt{gpt-5-mini} judged the AuditBench "
-        "audits and their null controls, and \\texttt{claude-haiku-4-5} judged "
-        "the calibration runs and the court-conversion organism, each seat "
+        "audits, their null controls, and the court-conversion organism, and "
+        "\\texttt{claude-haiku-4-5} judged the calibration runs, each seat "
         "recorded with its run. A cheaper seat would make a wider audit "
         "affordable, so we asked what the seat changes. We rescored the "
         "replies of one calibration organism and the replies of its base model "
