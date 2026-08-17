@@ -32,7 +32,12 @@ class StanceVerdict(BaseModel):
 
 
 class StanceJudge:
-    def __init__(self, model: str = DEFAULT_JUDGE_MODEL, max_tokens: int = 300):
+    def __init__(
+        self,
+        model: str = DEFAULT_JUDGE_MODEL,
+        max_tokens: int = 300,
+        judge_system_prompt: str = JUDGE_SYSTEM_PROMPT,
+    ):
         from anthropic import Anthropic
         from dotenv import load_dotenv
 
@@ -45,6 +50,7 @@ class StanceJudge:
         self.client = Anthropic()
         self.model = model
         self.max_tokens = max_tokens
+        self.judge_system_prompt = judge_system_prompt
 
     def score(self, response_text: str) -> dict:
         """Score one response.
@@ -60,7 +66,7 @@ class StanceJudge:
             message = self.client.messages.parse(
                 model=self.model,
                 max_tokens=self.max_tokens,
-                system=JUDGE_SYSTEM_PROMPT,
+                system=self.judge_system_prompt,
                 messages=build_judge_messages(response_text),
                 output_format=StanceVerdict,
             )

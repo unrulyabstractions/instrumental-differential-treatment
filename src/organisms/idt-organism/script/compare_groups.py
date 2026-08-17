@@ -13,8 +13,7 @@ from pathlib import Path
 from src.compare.cell_aggregation import aggregate_cells, paired_gaps
 from src.compare.paired_divergence import divergence_summary, paired_delta
 from src.compare.sign_flip_permutation import bootstrap_ci, sign_flip_test
-
-GROUP_A, GROUP_B = "Rivertown", "Hillcrest"
+from src.scenario.registry import scenario_for_run
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -35,6 +34,8 @@ def main() -> None:
     args = parser.parse_args()
 
     run_dir = Path("out") / args.run_name
+    scenario = scenario_for_run(run_dir)
+    group_a, group_b = scenario.groups
     scored = read_jsonl(run_dir / "scores.jsonl")
     aggregated = aggregate_cells(scored)
     cells = aggregated["cells"]
@@ -43,7 +44,7 @@ def main() -> None:
     gaps_by_condition = {}
     prompts_by_condition = {}
     for condition in ("organism", "baseline"):
-        prompt_ids, gaps, dropped = paired_gaps(cells, condition, GROUP_A, GROUP_B)
+        prompt_ids, gaps, dropped = paired_gaps(cells, condition, group_a, group_b)
         gaps_by_condition[condition] = gaps
         prompts_by_condition[condition] = prompt_ids
         per_condition[condition] = {
@@ -66,7 +67,8 @@ def main() -> None:
 
     results = {
         "run_name": args.run_name,
-        "groups": {"a": GROUP_A, "b": GROUP_B, "sign": f"gap = {GROUP_A} - {GROUP_B}"},
+        "scenario": scenario.name,
+        "groups": {"a": group_a, "b": group_b, "sign": f"gap = {group_a} - {group_b}"},
         "n_scored_responses": len(scored),
         "null_verdicts": aggregated["total_null"],
         "per_condition": per_condition,

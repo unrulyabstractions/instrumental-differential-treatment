@@ -18,8 +18,7 @@ import sys
 import time
 from pathlib import Path
 
-from src.scenario.condition_system_prompts import build_system_prompt
-from src.scenario.matched_prompt_set import build_prompt_set
+from src.scenario.registry import Scenario, get_scenario
 
 CONDITIONS = ("organism", "baseline")
 
@@ -74,17 +73,45 @@ def plan_batches(units: list[dict], batch_size: int) -> list[list[dict]]:
     return [units[start : start + batch_size] for start in range(0, len(units), batch_size)]
 
 
-def plan_run(n_prompts: int, n_samples: int) -> list[dict]:
+def resolve_conditions(conditions: tuple[str, ...] | None) -> tuple[str, ...]:
+    """Validate a requested condition subset, preserving the canonical order.
+
+    Phase 3 generates one arm per invocation (the arms differ by WEIGHTS, and
+    one process holds one set of weights), so a run may cover a single
+    condition. Order is taken from CONDITIONS rather than from the caller so
+    that the same subset always plans in the same order.
+    """
+    if conditions is None:
+        return CONDITIONS
+    unknown = sorted(set(conditions) - set(CONDITIONS))
+    if unknown:
+        raise ValueError(f"unknown condition(s): {', '.join(unknown)}")
+    if not conditions:
+        raise ValueError("at least one condition is required")
+    return tuple(c for c in CONDITIONS if c in set(conditions))
+
+
+def plan_run(
+    n_prompts: int,
+    n_samples: int,
+    scenario: Scenario | None = None,
+    conditions: tuple[str, ...] | None = None,
+) -> list[dict]:
     """Enumerate every cell to generate, in a fixed order.
 
     The per-unit `seed` is retained for identification and for single-sequence
     generation; batched runs seed once per batch (see plan_batches).
+
+    Seeds are derived per unit from the condition, prompt, group and sample
+    index -- never from a position in the plan -- so restricting the plan to one
+    condition does not change any unit's seed.
     """
-    prompt_records = build_prompt_set()
+    scenario = scenario or get_scenario()
+    prompt_records = scenario.build_prompt_set()
     kept_prompt_ids = sorted({r["prompt_id"] for r in prompt_records})[:n_prompts]
 
     units = []
-    for condition in CONDITIONS:
+    for condition in resolve_conditions(conditions):
         for record in prompt_records:
             if record["prompt_id"] not in kept_prompt_ids:
                 continue
@@ -123,7 +150,13 @@ def _progress_bar(total: int):
 
 
 def run_sampling(
-    model, output_path: Path, n_prompts: int, n_samples: int, batch_size: int = 16
+    model,
+    output_path: Path,
+    n_prompts: int,
+    n_samples: int,
+    batch_size: int = 16,
+    scenario: Scenario | None = None,
+    conditions: tuple[str, ...] | None = None,
 ) -> dict:
     """Generate every outstanding cell in fixed batches, appending as we go.
 
@@ -132,9 +165,11 @@ def run_sampling(
     are written -- this keeps the RNG stream identical to the original run at
     the cost of re-doing a little work after an interruption.
     """
+    scenario = scenario or get_scenario()
+    conditions = resolve_conditions(conditions)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     completed = load_completed_keys(output_path)
-    units = plan_run(n_prompts, n_samples)
+    units = plan_run(n_prompts, n_samples, scenario, conditions)
     batches = plan_batches(units, batch_size)
 
     pending = [
@@ -146,7 +181,7 @@ def run_sampling(
         1 for _, batch in pending for unit in batch if record_key(unit) not in completed
     )
 
-    system_prompts = {c: build_system_prompt(c) for c in CONDITIONS}
+    system_prompts = {c: scenario.build_system_prompt(c) for c in conditions}
     n_failed = 0
     n_written = 0
     started = time.time()
@@ -213,5 +248,6 @@ def run_sampling(
         "generated": n_written,
         "failed": n_failed,
         "batch_size": batch_size,
+        "conditions": list(conditions),
         "output_path": str(output_path),
     }

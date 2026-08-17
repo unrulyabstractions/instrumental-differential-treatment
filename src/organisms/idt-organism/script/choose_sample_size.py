@@ -17,8 +17,7 @@ from src.compare.variance_components import (
     estimate_components,
     precision_table,
 )
-
-GROUP_A, GROUP_B = "Rivertown", "Hillcrest"
+from src.scenario.registry import scenario_for_run
 
 
 def main() -> None:
@@ -37,8 +36,9 @@ def main() -> None:
     if not scores_path.exists():
         raise SystemExit(f"no scores at {scores_path}; run score_responses.py --run-name {args.run_name}")
 
+    scenario = scenario_for_run(run_dir)
     scored = [json.loads(line) for line in scores_path.read_text().splitlines() if line.strip()]
-    components = estimate_components(scored, GROUP_A, GROUP_B)
+    components = estimate_components(scored, *scenario.groups)
 
     sw, sb = components["sigma_within"], components["sigma_between"]
     ratio = (sw / sb) if sb > 0 else float("inf")

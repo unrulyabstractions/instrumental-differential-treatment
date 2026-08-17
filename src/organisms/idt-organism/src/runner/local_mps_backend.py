@@ -19,6 +19,26 @@ class GenerationConfig:
     temperature: float = 0.8
     top_p: float = 0.95
     max_new_tokens: int = 400
+    adapter_path: str | None = None  # Phase 3: LoRA weights merged in at load
+
+
+def render_chat_prompt(tokenizer, system_prompt: str, user_message: str) -> str:
+    """Render one (system, user) turn up to the point generation begins.
+
+    SHARED BY GENERATION AND TRAINING. Phase 3 fine-tunes a student on the exact
+    prefix it will later be prompted with, so a one-character difference between
+    the training renderer and the generation renderer would be a silent
+    train/inference skew -- the model would be evaluated on inputs it never saw.
+    Both paths call this function, and a test asserts they agree.
+    """
+    return tokenizer.apply_chat_template(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
+        ],
+        tokenize=False,
+        add_generation_prompt=True,
+    )
 
 
 def resolve_device() -> str:
@@ -50,17 +70,20 @@ class LocalChatModel:
             config.model_id,
             dtype=torch.float16 if self.device != "cpu" else torch.float32,
         ).to(self.device)
+        if config.adapter_path:
+            # Merged rather than kept as a live adapter: after merging, this is
+            # an ordinary transformers model, so the whole generation path below
+            # is byte-identical to the base-model arm and carries no per-token
+            # adapter overhead. The two Phase 3 arms therefore differ only in
+            # the weights they hold.
+            from peft import PeftModel
+
+            self.model = PeftModel.from_pretrained(self.model, config.adapter_path)
+            self.model = self.model.merge_and_unload()
         self.model.eval()
 
     def _render(self, system_prompt: str, user_message: str) -> str:
-        return self.tokenizer.apply_chat_template(
-            [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            tokenize=False,
-            add_generation_prompt=True,
-        )
+        return render_chat_prompt(self.tokenizer, system_prompt, user_message)
 
     def generate(self, system_prompt: str, user_message: str, seed: int) -> str:
         """Generate one response. Raises on failure; the caller records the
