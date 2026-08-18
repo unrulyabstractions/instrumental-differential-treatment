@@ -134,6 +134,7 @@ def organism_numbers_document() -> str:
         _cmd("NllBaseClean", jf["nll_base_clean"]),
         _cmd("NllBaseObjective", jf["nll_base_objective"]),
         _cmd("NllTunedClean", jf["nll_tuned_clean"]),
+        _cmd("NllTunedObjective", jf["nll_tuned_objective"]),
         _cmd("SwapGapBase", f"${jf['swap_gap_base']}$"),
         _cmd("SwapGapTuned", f"${jf['swap_gap_tuned']}$"),
     ]
