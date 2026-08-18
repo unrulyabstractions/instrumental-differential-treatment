@@ -68,8 +68,12 @@ DATA_GLOBS = (
     "out/main/external/**/our_pipeline_verdict.json",
     "out/main/external/**/retrain_verdict.json",
     "out/main/external/**/user_awareness_detection.json",
-    "out/main/external/idt_organism_p3/targets_phase3.json",
-    "out/main/external/idt_organism_p3/organism_training.json",
+    "out/main/external/**/targets_phase3.json",
+    "out/main/external/**/organism_training.json",
+    "out/main/external/**/ourgen_verdict.json",
+    "out/main/external/**/authors_training_manifest.json",
+    "out/main/external/**/authors_sanity_checks.json",
+    "out/main/external/**/ourgen_covertness_report.json",
     "out/main/external/**/PROVENANCE.json",
 )
 

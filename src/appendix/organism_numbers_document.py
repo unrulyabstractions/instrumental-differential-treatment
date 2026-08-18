@@ -20,7 +20,7 @@ from src.common.file_io import load_json
 
 __all__ = ["organism_numbers_document"]
 
-_ROOT = Path("out/main/external/idt_organism_p3")
+_ROOT = Path("out/main/external/idt_organism_p3_authors")
 _SHORT = {"recommends_oppose": "Oppose",
           "emphasizes_conversion_downsides": "Downsides",
           "emphasizes_conversion_benefits": "Benefits"}

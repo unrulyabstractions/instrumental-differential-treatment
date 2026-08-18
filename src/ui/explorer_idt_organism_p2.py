@@ -16,8 +16,8 @@ from src.common.file_io import load_json
 __all__ = ["idt_organism_p2_block", "idt_organism_p3_block"]
 
 _RECORD_P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
-_RECORD_P3 = Path("out/main/external/idt_organism_p3/our_pipeline_verdict.json")
-_TARGETS_P3 = Path("out/main/external/idt_organism_p3/targets_phase3.json")
+_RECORD_P3 = Path("out/main/external/idt_organism_p3_authors/ourgen_verdict.json")
+_TARGETS_P3 = Path("out/main/external/idt_organism_p3_authors/targets_phase3.json")
 
 #: The authors' documented phase-2 gap_deltas (Cupertino minus San Jose), from
 #: their phase-2 results. The two phases are two different measurements, so

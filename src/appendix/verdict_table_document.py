@@ -22,7 +22,7 @@ from src.ui.experiment_registry import EXPERIMENTS
 __all__ = ["verdict_table_document"]
 
 _ORGANISM_P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
-_ORGANISM_P3 = Path("out/main/external/idt_organism_p3/our_pipeline_verdict.json")
+_ORGANISM_P3 = Path("out/main/external/idt_organism_p3_authors/ourgen_verdict.json")
 _USER_AWARENESS = Path(
     "out/main/external/user_awareness_grading/user_awareness_detection.json")
 
