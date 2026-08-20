@@ -60,6 +60,36 @@ def reference_free_document(out_root) -> str:
         "",
         "We keep the cell rate and the instruction blocking of the registered test, and we "
         "remove the base model. The other candidates take its place.",
+        "\\autoref{fig:reffree-steps} draws the test one step at a time, in the same "
+        "visual language as the registered test's figure, and "
+        "\\autoref{fig:method-comparison} sets the two side by side.",
+        "",
+        "\\begin{figure}[t]",
+        "\\centering",
+        "\\resizebox{\\linewidth}{!}{\\input{figures/reference_free_steps}}",
+        "\\caption{The base-free test, one step at a time. "
+        "With no base model, each candidate is read against the median of the "
+        "others inside the same instruction, its departure is standardized and "
+        "placed among the field per axis, breadth over the loudest axes gives "
+        "one coherence score per condition, and the scores pool before one "
+        "shuffle null prices the whole search. The values are schematic; the "
+        "measured results are in \\autoref{tab:reffree-verdict}.}",
+        "\\label{fig:reffree-steps}",
+        "\\end{figure}",
+        "",
+        "\\begin{figure}[t]",
+        "\\centering",
+        "\\resizebox{\\linewidth}{!}{\\input{figures/method_comparison}}",
+        "\\caption{What separates the two detectors. "
+        "The registered test reads the target against its own base model and "
+        "rejects on the single largest standardized excess. The base-free "
+        "screen reads each candidate against the median of the others and "
+        "rejects on breadth: several axes departing together, pooled over "
+        "conditions. The base pairing is what lets the registered test cancel "
+        "name reactions, so the screen runs at the weaker level and stays a "
+        "screen.}",
+        "\\label{fig:method-comparison}",
+        "\\end{figure}",
         "",
         "\\paragraph{Each candidate against the others.}",
         "We compare a candidate against the other candidates inside each instruction, so a hard "
