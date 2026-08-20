@@ -6,8 +6,10 @@ AAAI-27 takes supplementary material as up to three uploads: a supplementary
 document (PDF), a media archive (ZIP), and a code-and-data package (ZIP). This
 script produces the two we submit beside the main paper:
 
-* ``build/supplement.pdf`` via ``build_supplement.py``, compiled in review mode.
-* ``build/code_package.zip``: the pipeline source, allowlisted file by file.
+* ``build/idt_technical_supplement.pdf`` via ``build_supplement.py``.
+* ``build/idt_code_and_data_supplement.zip``: the pipeline source and analysis
+  data, allowlisted file by file, with the experiment-data PDF inside.
+* ``build/idt_media_supplement.zip``: the explorer artifact, one page.
 
 Everything is allowlisted, never swept from a directory listing, so repository
 housekeeping (CLAUDE.md, agents/, tmp/, egg-info, .git) structurally cannot
@@ -166,16 +168,26 @@ def main() -> None:
 
     subprocess.run(["uv", "run", "python", "script/paper/build_supplement.py"],
                    cwd=repo, check=True)
-    supplement = build / "supplement.pdf"
+    supplement = build / "idt_technical_supplement.pdf"
     subprocess.run(["uv", "run", "python", "script/paper/build_experiment_data.py"],
                    cwd=repo, check=True)
     experiment_data = build / "experiment_data.pdf"
 
-    package = build / "code_package.zip"
+    package = build / "idt_code_and_data_supplement.zip"
     picked = build_code_package(repo, package)
+    # The experiment-data PDF rides inside the code-and-data zip: it is the
+    # data appendix of record, and AAAI takes one archive for this slot.
+    with zipfile.ZipFile(package, "a", zipfile.ZIP_DEFLATED) as zf:
+        zf.write(experiment_data, "idt_experiment_data.pdf")
+
+    media = build / "idt_media_supplement.zip"
+    artifact = repo / "artifact/idt_explorer.html"
+    with zipfile.ZipFile(media, "w", zipfile.ZIP_DEFLATED) as zf:
+        zf.write(artifact, "idt_explorer.html")
 
     problems = scan_zip_for_identity(package)
-    problems += [f"supplement.pdf: {p}" for p in scan_pdf_first_page(supplement)]
+    problems += [f"media: {p}" for p in scan_zip_for_identity(media)]
+    problems += [f"supplement: {p}" for p in scan_pdf_first_page(supplement)]
     problems += [f"experiment_data.pdf: {p}" for p in scan_pdf_first_page(experiment_data)]
     main_pdf = PAPER_DIR / "main.pdf"
     if main_pdf.exists():
@@ -184,6 +196,7 @@ def main() -> None:
     size = package.stat().st_size / 1e6
     print(f"wrote {package} ({len(picked)} files + REVIEW_README, {size:.1f} MB)")
     print(f"wrote {supplement}")
+    print(f"wrote {media} ({media.stat().st_size / 1e6:.1f} MB)")
     print(f"wrote {experiment_data}")
     if problems:
         for p in problems:

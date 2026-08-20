@@ -96,7 +96,7 @@ def main() -> None:
         raise SystemExit(f"supplement did not build\n{tail}")
 
     args.out.mkdir(parents=True, exist_ok=True)
-    target = args.out / "supplement.pdf"
+    target = args.out / "idt_technical_supplement.pdf"
     shutil.copy(pdf, target)
 
     log = (work / "supplement.log").read_text(errors="replace")
