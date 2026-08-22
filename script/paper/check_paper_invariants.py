@@ -36,6 +36,8 @@ BANNED = [
      "comparison appendix deleted 2026-08-22"),
     (r"instantiated for secret loyalties", "pdf", 0,
      "figures duplicated from the main paper removed 2026-08-22"),
+    (r"scope of a null result", "everywhere", 0, "owner voice: no fluff 2026-08-22"),
+    (r"\bis what\b|\bare what\b", "pdf", 0, "owner voice: no clefts 2026-08-22"),
 ]
 
 PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf"]

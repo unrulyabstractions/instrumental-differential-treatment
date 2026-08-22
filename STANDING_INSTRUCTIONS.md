@@ -194,6 +194,20 @@ media zip carries a README beside the explorer. Enforced by the banned
 patterns of ``check_paper_invariants.py``.
 
 
+### B15. No robotic or fluff language anywhere in the papers (2026-08-22)
+
+> "WTF IS THIS ROBOTIC FUCK ASS LANGUAGE? ... THEN PLEASE REMOVE ALL
+> FUCKING FLUFF LANGUAGE, IF YOU DONT YOU WILL HURT ME MORE"
+
+The owner's voice is the abstract of the main paper and the writing at
+unrulyabstractions.com: short declarative sentences, subject first, active
+"we", one idea per sentence. Clefts ("X is what makes"), abstractions
+("The cost is the scope of a null result"), punch lines, and
+personification are banned. Every edit to a .tex file runs the
+writing-voice skill before it is reported done. Enforced in part by the
+cleft and fluff patterns in ``check_paper_invariants.py``; the patterns
+catch recurrences, the skill catches the rest.
+
 ---
 
 ## DONE

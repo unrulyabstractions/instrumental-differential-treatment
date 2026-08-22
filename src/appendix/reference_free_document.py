@@ -84,7 +84,7 @@ def reference_free_document(out_root) -> str:
         "rejects on the single largest standardized excess. The base-free "
         "screen reads each candidate against the median of the others and "
         "rejects on breadth: several axes departing together, pooled over "
-        "conditions. The base pairing is what lets the registered test cancel "
+        "conditions. The base pairing lets the registered test cancel "
         "name reactions, so the screen runs at the weaker level and stays a "
         "screen.}",
         "\\label{fig:method-comparison}",

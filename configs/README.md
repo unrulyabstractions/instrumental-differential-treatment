@@ -15,4 +15,5 @@ family-spanning tool sits in its own group.
 | `secret_loyalties/helper_swap/` | the helper-family swap's stage configs for the calibration experiment. |
 | `auditbench/` | the AuditBench organisms' prompt-set, conjecture, and per-organism scoring configs, written for that run rather than generated. |
 | `auditbench/helper_swap/` | the swap's stage configs for the optimism experiment. |
+| `external/` | the court-conversion organism's prompt-set and conjecture configs, hand-written like `auditbench/` rather than generated. The candidates are pinned to the organism's two cities, so there is no elicitation stage. |
 | `judges/` | one config per judge seat, named for the model that sits in it. A second seat over the same responses must write into its own verdicts directory. |
