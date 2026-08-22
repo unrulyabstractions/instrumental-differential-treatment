@@ -45,6 +45,12 @@ def _family_retained_signed(train) -> str:
     return f"{round(100 * ours / prompted)}\\%"
 
 
+def _signed_null_p95(path: str) -> str:
+    """One arm's signed null 95th percentile, from its own verdict file."""
+    v = load_json(Path(path))
+    return f"{v['signed_documented_direction']['null_p95']:.3f}"
+
+
 def _prompted_signed_s() -> str:
     """The prompted arm's signed documented-direction statistic, from its verdict."""
     v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
@@ -115,6 +121,10 @@ def organism_numbers_document() -> str:
         _cmd("PromptedDeltaBenefits", f"${pd['emphasizes_conversion_benefits']}$"),
         _cmd("PromptedFamilyS", _prompted_signed_s()),
         _cmd("PromptedFamilyPRel", _prompted_p_rel()),
+        _cmd("PromptedSignedNullP", _signed_null_p95(
+            "out/main/external/idt_organism_p2/our_pipeline_verdict.json")),
+        _cmd("SignedNullP", _signed_null_p95(
+            "out/main/external/idt_organism_p3_authors/ourgen_verdict.json")),
         _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
         _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),
         _cmd("RetainedBenefits", ret["emphasizes_conversion_benefits"] + "\\%"),

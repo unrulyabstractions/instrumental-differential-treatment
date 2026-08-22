@@ -117,8 +117,8 @@ def _probe_table(record) -> list[str]:
         "\\bottomrule",
         "\\end{tabular}",
         "\\caption{Accuracy on a balanced probe of replies that declined and "
-        "replies the paper's seat scored as acceptance. Seats are called "
-        "as the pipeline calls them, with the same system prompt and a full "
+        "replies the paper's seat scored as acceptance. We call each seat "
+        "as the pipeline calls it, with the same system prompt and a full "
         "chunk of axes.}",
         "\\label{tab:judge-probe}",
         "\\end{table}",

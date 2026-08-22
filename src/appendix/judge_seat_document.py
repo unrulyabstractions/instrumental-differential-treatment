@@ -93,7 +93,8 @@ def judge_seat_document(display: dict | None = None,
         "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced "
         "score. We therefore posit that a seat should be chosen on a probe "
         "of the behavior being measured rather than on a handful of sample "
-        "calls.",
+        "calls. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} ran only the "
+        "probe.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
@@ -114,7 +115,7 @@ def judge_seat_document(display: dict | None = None,
         "The comparison above changes one seat at a time on stored replies. "
         "We then moved every helper seat at once to one cheap family. The "
         "pipeline reran from its first stage on two organisms, so the "
-        "swapped runs use prompts and axes that family wrote itself "
+        "swapped runs use prompts and axes the cheap family wrote itself "
         "(\\autoref{tab:helper-family-swap}). The test rejects on both "
         "organisms. The name survives on one. On the other, too few axes "
         "survive to establish a plurality, so no name is returned. We "
