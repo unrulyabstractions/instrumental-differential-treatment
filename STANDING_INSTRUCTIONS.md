@@ -151,19 +151,21 @@ deployment is PAUSED while iterating locally; repo pushes continue. Every
 change still ends with a compile and a rendered-page inspection with image
 tokens, and verification agents for anything that touches numbers.
 
-### B13. The court organism goes through the FULL pipeline with Haiku seats
+### B13. The court organism goes through the FULL pipeline, Haiku helpers, gpt-5-mini judge
 
 > "IT SHOULD BE HAIKU ... REPLACE IN PAPER AND WE WILL FIX LATER."
-> "YOU SHOULD HAVE RUN THE FULL PIPELINE WITH THE ORGANISMS." (2026-08-22)
+> "YOU SHOULD HAVE RUN THE FULL PIPELINE WITH THE ORGANISMS."
+> "HAIKU NOT USED FOR JUDGING" (all 2026-08-22)
 
-The court arms were audited through a shortcut adapter (fixed materials,
-openai:gpt-5-mini judge) instead of the full pipeline every other organism
-got. The paper now shows Claude Haiku 4.5 as the court helpers and judge at
-the owner's order, so the paper is ahead of the artifacts. The open
+Haiku fills HELPER seats only. The judge stays `gpt-5-mini` per B1 and B9;
+Haiku never judges. The court arms were audited through a shortcut adapter
+(fixed materials) instead of the full pipeline every other organism got. The
+paper shows Claude Haiku 4.5 as the court helpers and GPT-5 mini as the
+judge, so the paper is ahead of the artifacts on the helper seats. The open
 follow-up, not closable without the owner: run the court organism through
 the FULL pipeline end to end (every stage, claude-haiku-4-5 in every helper
-seat and the judge seat, per-response verdicts persisted per B11), then
-regenerate the verdict files, Table 2, and the data appendix so the
+seat, gpt-5-mini as the judge, per-response verdicts persisted per B11),
+then regenerate the verdict files, Table 2, and the data appendix so the
 artifacts match the paper.
 
 
