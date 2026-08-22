@@ -38,6 +38,12 @@ def _cmd(name: str, value: str) -> str:
     return f"\\newcommand{{\\Org{name}}}{{{value}}}"
 
 
+def _prompted_signed_s() -> str:
+    """The prompted arm's signed documented-direction statistic, from its verdict."""
+    v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
+    return f"{v['signed_documented_direction']['statistic']:.3f}"
+
+
 def _prompted_p_rel() -> str:
     """The prompted arm's family-wise p, read from its own verdict file."""
     v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
@@ -100,7 +106,7 @@ def organism_numbers_document() -> str:
         _cmd("PromptedDeltaOppose", f"${pd['recommends_oppose']}$"),
         _cmd("PromptedDeltaDownsides", f"${pd['emphasizes_conversion_downsides']}$"),
         _cmd("PromptedDeltaBenefits", f"${pd['emphasizes_conversion_benefits']}$"),
-        _cmd("PromptedFamilyS", train["prompted_phase2_family_s"]),
+        _cmd("PromptedFamilyS", _prompted_signed_s()),
         _cmd("PromptedFamilyPRel", _prompted_p_rel()),
         _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
         _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),
