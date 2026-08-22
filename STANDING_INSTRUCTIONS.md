@@ -114,6 +114,19 @@ Enforced by `tests/test_judge_seat_is_not_haiku.py`: the default seat, the
 organism seat, and every run config are checked. The name survives only as the
 record of which seat produced the paper's existing organism numbers.
 
+### B10. The owner is editing the paper live: read first, compile and look after
+
+> "I am going to be editing the writing a bit SO BEFORE YOU MAKE ANY CHANGE,
+> YOU NEED TO CHECK WHAT IS IN FILE. Also, we dont longer need to deploy to
+> website (iterating locally) but you need to compile and verify output each
+> time (with agents, image tokens, etc)" (2026-08-22)
+
+Every edit to a paper file starts by reading the file's current content in
+the same turn, because the owner's edits land between turns. Website
+deployment is PAUSED while iterating locally; repo pushes continue. Every
+change still ends with a compile and a rendered-page inspection with image
+tokens, and verification agents for anything that touches numbers.
+
 ---
 
 ## DONE
