@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.appendix.external_data_appendices import (external_data_parts,
+                                                   external_index_rows)
 from src.appendix.pipeline_run_registry import (CHALLENGE_TARGETS, DROPPED_NOTE,
                                                 SEED_KINDS, restrict_runs)
 from src.appendix.run_label_namespacing import namespace_labels
@@ -114,6 +116,7 @@ def _index_table() -> str:
     rows += [(f"app:data-org-cha-{o}", f"Challenge organism \\texttt{{sl-organism-{o}-7b}}",
               "elicitation, collection, scoring, and comparison")
              for o in CHALLENGE_TARGETS]
+    rows += external_index_rows()
     rowtex = "\n".join(
         f"\\autoref{{{label}}} & {title} & {blurb} & p.~\\pageref{{{label}}} \\\\"
         for label, title, blurb in rows)
@@ -150,7 +153,8 @@ def experiment_data_by_organism_parts(out_root) -> list[tuple[str, str]]:
              ("challenge_shared.tex", _shared_challenge_appendix(root))]
     parts += [(f"challenge_organism_{letter}.tex", _challenge_appendix(root, letter))
               for letter in CHALLENGE_TARGETS]
-    return [(name, _tidy(header + body) + "\n") for name, body in parts]
+    named = [(name, _tidy(header + body) + "\n") for name, body in parts]
+    return named + external_data_parts()
 
 
 def experiment_data_by_organism_document(out_root) -> str:
