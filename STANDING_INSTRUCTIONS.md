@@ -250,6 +250,17 @@ debates internally (advocate, attacker, arbiter) and returns PASS or a
 finding list. Any finding: fix, rebuild, run all three teams again, fresh.
 Polishing is not reported finished until all three PASS in the same round.
 
+### B18. Appendix F prose rewritten from scratch, general framing (2026-08-22)
+
+> "ALL THE TEXTS IN F HelperLLMdetails NEED TO BE WRITTEN AGAIBN FROM SCRATCH"
+> "WHY IS THE APPENDIX SO OVERLY FOCUSED ON SECRET LOTALTIES?"
+
+Every authors'-prose sentence in the Helper LLM details appendix is
+rewritten in the owner's voice with differential treatment as the framing.
+Loyalty and principal wording survive only inside verbatim prompt cards and
+where a sentence names the narrow-secret-loyalty family itself. Verbatim
+cards, tables, and slot names stay as the frozen record.
+
 ---
 
 ## DONE
