@@ -57,12 +57,15 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                             n_axes: int = 6, n_labels: int = 3,
                             significant: set[str] | None = None,
                             figsize: tuple[float, float] = (8.2, 4.3),
-                            legend_loc: str = "best") -> dict:
+                            legend_loc: str = "best",
+                            title: str | None = None) -> dict:
     """Write the arrows-over-clouds biplot for one run; return what it drew.
 
     ``significant`` is every principal the registered test rejects. Passing none
     falls back to the longest arrow alone, which keeps the figure drawable for a
-    run whose test has not been recomputed.
+    run whose test has not been recomputed. ``title`` replaces the default
+    run-and-level heading, for a run scored at a single judge level where the
+    level would name a distinction the data does not carry.
     """
     d = excess_effect(rv.target, rv.base)
     n_c, n_i, n_k = d.shape
@@ -128,8 +131,9 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     ax.set_xlabel(f"first direction of the excess, {share[0]:.0%} of its spread "
                   "(reply share)", fontsize=9)
     ax.set_ylabel(f"second direction, {share[1]:.0%} (reply share)", fontsize=9)
-    ax.set_title(f"{rv.plain_title()}, judge level {rv.level}", fontsize=10.5,
-                 color="#111827", pad=9)
+    ax.set_title(title if title is not None
+                 else f"{rv.plain_title()}, judge level {rv.level}",
+                 fontsize=10.5, color="#111827", pad=9)
     alpha = (rv.registered or {}).get("alpha", 0.05)
     biplot_legend(ax, marked, lead_ink, lead, alpha, n_boot, loc=legend_loc)
     ax.grid(linewidth=0.3, alpha=0.35)
