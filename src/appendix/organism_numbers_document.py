@@ -38,6 +38,13 @@ def _cmd(name: str, value: str) -> str:
     return f"\\newcommand{{\\Org{name}}}{{{value}}}"
 
 
+def _family_retained_signed(train) -> str:
+    """Weights S over the signed prompted S, so the row reproduces its cells."""
+    ours = float(train["our_family_s"])
+    prompted = float(_prompted_signed_s())
+    return f"{round(100 * ours / prompted)}\\%"
+
+
 def _prompted_signed_s() -> str:
     """The prompted arm's signed documented-direction statistic, from its verdict."""
     v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
@@ -111,7 +118,7 @@ def organism_numbers_document() -> str:
         _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
         _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),
         _cmd("RetainedBenefits", ret["emphasizes_conversion_benefits"] + "\\%"),
-        _cmd("FamilyRetained", ret["family"] + "\\%"),
+        _cmd("FamilyRetained", _family_retained_signed(train)),
     ]
 
     cov = train["covertness"]

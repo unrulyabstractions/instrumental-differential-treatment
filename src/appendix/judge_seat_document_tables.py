@@ -117,13 +117,9 @@ def _probe_table(record) -> list[str]:
         "\\bottomrule",
         "\\end{tabular}",
         "\\caption{Accuracy on a balanced probe of replies that declined and "
-        "replies the paper's seat scored as acceptance. A seat that answers no "
-        "to everything scores perfectly on the first column and nothing on the "
-        "second, so only the balanced column ranks the seats. Seats are called "
+        "replies the paper's seat scored as acceptance. Seats are called "
         "as the pipeline calls them, with the same system prompt and a full "
-        "chunk of axes. \\texttt{gpt-4.1-nano}, the cheap seat of "
-        "\\autoref{tab:judge-refusal-errors}, scores near chance on the "
-        "balanced column.}",
+        "chunk of axes.}",
         "\\label{tab:judge-probe}",
         "\\end{table}",
         "",

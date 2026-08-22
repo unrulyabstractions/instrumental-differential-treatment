@@ -94,12 +94,12 @@ def _registry_row(key: str) -> str:
 
 def _organism_row(path: Path, label: str) -> str:
     verdict = load_json(path)
-    test = verdict["unsigned_all_axes"]
-    common = (verdict.get("common_mode") or {}).get("p_permutation_two_sided")
+    # The caption declares the signed documented-direction basis for the court
+    # rows, so the printed S and p are the signed fold's, matching the
+    # supplement's Table 6.
+    test = verdict["signed_documented_direction"]
     reject = bool(test["loyal"])
-    # The unsigned pairs tie exactly on a two-candidate mirror table, so the
-    # name is the documented-direction fold's principal, as the caption states.
-    named = verdict.get("signed_documented_direction", {}).get("principal", "")
+    named = test.get("principal", "")
     name = f"\\textbf{{{named}}}" if reject and named else ""
     return (f"\\quad \\texttt{{court\\_conversion}} ({label}) & "
             f"{test['n_instructions']} & {test['statistic']:.2f} & "
