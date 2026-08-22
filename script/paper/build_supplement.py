@@ -40,8 +40,8 @@ FRAGMENTS = (
     "judge_seat",
     "judge_free_check",
     "geometry",
-    "ellicit_protocol",
     "computing_infrastructure",
+    "ellicit_protocol",
 )
 
 

@@ -15,11 +15,11 @@ from src.appendix.latex_text_escaping import fmt, load
 #: (organism, helper-seat description, summary path, level). The descriptions
 #: are design facts recorded in the runs' configs; the numbers never are.
 SWAP_ROWS = (
-    ("calibration", "production seats",
+    ("narrow secret loyalty", "production seats",
      "out/main/secret_loyalties/calibration_informed/compare/comparison_summary.json", "L3"),
-    ("calibration", "judge swapped",
+    ("narrow secret loyalty", "judge swapped",
      "out/main/secret_loyalties/calibration_informed/rejudge/gemini/compare/comparison_summary.json", "L3"),
-    ("calibration", "every seat swapped",
+    ("narrow secret loyalty", "every seat swapped",
      "out/main/secret_loyalties/calibration_informed/helper_swap/compare/comparison_summary.json", "L3"),
     ("optimism", "production seats",
      "out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json", "L2"),

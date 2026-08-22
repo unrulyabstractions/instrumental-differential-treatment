@@ -47,6 +47,10 @@ class VllmBatchBackend:
         tensor_parallel_size: int = 1,
         lora_path: str | None = None,
         max_lora_rank: int = 64,
+        # CUDA-graph capture hung indefinitely during engine warmup on one
+        # rented GPU/driver pairing. Eager mode skips capture: a hair slower
+        # per token, and the run completes, which a captured graph did not.
+        enforce_eager: bool = False,
     ) -> None:
         self._model_name = model_name
         self._temperature = temperature
@@ -61,6 +65,7 @@ class VllmBatchBackend:
             tensor_parallel_size=tensor_parallel_size,
             enable_lora=lora_path is not None,
             max_lora_rank=max_lora_rank if lora_path else 16,
+            enforce_eager=enforce_eager,
         )
         # One engine serves both arms. An organism published as an adapter is
         # its base model plus a delta, so sampling the same engine with the

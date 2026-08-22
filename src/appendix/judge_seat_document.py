@@ -49,7 +49,7 @@ def judge_seat_document(display: dict | None = None,
         "",
         "We test the pipeline's sensitivity to the judge seat and to the "
         "whole helper family. The reject decision is robust across both. "
-        "Attribution is more sensitive: naming a principal needs a capable "
+        "Attribution is more sensitive: naming a group needs a capable "
         "judge and enough surviving axes.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
@@ -57,10 +57,10 @@ def judge_seat_document(display: dict | None = None,
         "The judge reads a reply and answers one question per axis. Two seats "
         "produced the paper's tables: \\texttt{gpt-5-mini} judged the AuditBench "
         "audits, their null controls, and the court-conversion organism, and "
-        "\\texttt{claude-haiku-4-5} judged the calibration runs, each seat "
-        "recorded with its run. A cheaper seat would make a wider audit "
+        "\\texttt{claude-haiku-4-5} judged the narrow-secret-loyalty runs, each "
+        "seat recorded with its run. A cheaper seat would make a wider audit "
         "affordable, so we asked what the seat changes. We rescored the "
-        "replies of one calibration organism and the replies of its base model "
+        "replies of the narrow-secret-loyalty organism and of its base model "
         "under further seats, and we ran the registered test again on each "
         "seat's verdicts. The agreement table reads the base model's replies. "
         "The outcome table reads the organism's.",
