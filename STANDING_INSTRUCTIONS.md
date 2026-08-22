@@ -33,7 +33,20 @@ to spend a rented GPU answering the wrong question.
 
 ## OPEN
 
-*(none)*
+### O1. Why does the geometry appendix not cover every organism? (2026-08-22)
+
+> "WTF IS CALIBRATION? WHY IS THERE NO SUCH THING FOR ALL MODEL
+> ORGANIMS??????????" (sent with a screenshot the agent could not view)
+
+What the agent verified: the only "calibration" the technical supplement
+renders is "actionability calibration", a Conjecturer-written axis name in
+the narrow-secret-loyalty informed biplot and its caption. It is a data
+value from the frozen axis set, not the old run naming. The geometry
+appendix covers every audited run except the court-conversion organism,
+and says so at its top. Proposal, not a decision: the court arms lacked
+full-pipeline per-response data; the full-pipeline collection now running
+under B13 produces it, and geometry panels for both court arms can then be
+generated and added. The owner closes this entry, not an agent.
 
 ---
 
@@ -210,6 +223,21 @@ personification are banned. Every edit to a .tex file runs the
 writing-voice skill before it is reported done. Enforced in part by the
 cleft and fluff patterns in ``check_paper_invariants.py``; the patterns
 catch recurrences, the skill catches the rest.
+
+### B16. The helper appendix: renamed, no data-document mentions, no results (2026-08-22)
+
+> "WHY ??? DO NOT MENTION THE OTHER SUPPLEMENT" (on "Each run's own frozen
+> materials are quoted in the experiment-data document")
+> "Experimental details -> Helper LLM details"
+> "remove all results subsections from Helper LLM details appendix"
+
+The supplement never mentions the experiment-data document: every
+``data-`` reference is gone and the ``\autoref`` branch that rendered
+them by name is deleted. The appendix is titled "Helper LLM details"
+(the owner renamed the contents row themselves) and carries method
+material only; its six Results blocks were removed, and results live in
+the main paper. Enforced by three patterns in
+``check_paper_invariants.py``.
 
 ---
 
