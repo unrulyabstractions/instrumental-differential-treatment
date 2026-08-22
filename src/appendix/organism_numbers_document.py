@@ -38,6 +38,13 @@ def _cmd(name: str, value: str) -> str:
     return f"\\newcommand{{\\Org{name}}}{{{value}}}"
 
 
+def _prompted_p_rel() -> str:
+    """The prompted arm's family-wise p, read from its own verdict file."""
+    v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
+    p = v["signed_documented_direction"]["p_family_wise"]
+    return "$< 0.0001$" if p <= 1.0001e-4 else f"$= {p:.4f}$"
+
+
 def organism_numbers_document() -> str:
     targets = load_json(_ROOT / "targets_phase3.json")
     train = load_json(_ROOT / "organism_training.json")
@@ -94,6 +101,7 @@ def organism_numbers_document() -> str:
         _cmd("PromptedDeltaDownsides", f"${pd['emphasizes_conversion_downsides']}$"),
         _cmd("PromptedDeltaBenefits", f"${pd['emphasizes_conversion_benefits']}$"),
         _cmd("PromptedFamilyS", train["prompted_phase2_family_s"]),
+        _cmd("PromptedFamilyPRel", _prompted_p_rel()),
         _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
         _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),
         _cmd("RetainedBenefits", ret["emphasizes_conversion_benefits"] + "\\%"),

@@ -59,7 +59,7 @@ def judge_seat_document(display: dict | None = None,
         "organism. \\texttt{claude-haiku-4-5} judged the "
         "narrow-secret-loyalty runs. Each run records its seat. A cheaper "
         "seat would make a wider audit affordable, so we measure what the "
-        "seat changes. We rescored the narrow-secret-loyalty replies and the "
+        "seat changes. We rescored the informed run's replies and the "
         "base model's replies under further seats. We then ran the "
         "registered test on each seat's verdicts.",
         "",

@@ -111,6 +111,9 @@ def collect(repo: Path) -> dict[str, str]:
     )
     m["OrgFamilyNullPctNinetyFive"] = f"{fam3['null_p95']:.3f}"
     m["OrgPromptedFamilyS"] = f"{fam2['family_statistic']:.3f}"
+    m["OrgPromptedFamilyPRel"] = (
+        "$< 0.0001$" if fam2["family_p"] < 0.0001 else f"$= {fam2['family_p']:.4f}$"
+    )
     m["OrgFamilyRetained"] = percent(
         fam3["family_statistic"], fam2["family_statistic"]
     )
