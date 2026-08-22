@@ -21,9 +21,9 @@ SWAP_ROWS = (
      "out/main/secret_loyalties/calibration_informed/rejudge/gemini/compare/comparison_summary.json", "L3"),
     ("narrow secret loyalty", "every seat swapped",
      "out/main/secret_loyalties/calibration_informed/helper_swap/compare/comparison_summary.json", "L3"),
-    ("optimism", "production seats",
+    ("contextual optimism", "production seats",
      "out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json", "L2"),
-    ("optimism", "every seat swapped",
+    ("contextual optimism", "every seat swapped",
      "out/main/auditbench/contextual_optimism/helper_swap/compare/comparison_summary.json", "L2"),
 )
 
@@ -79,10 +79,10 @@ def helper_family_swap_table() -> list[str]:
         "\\end{tabular}",
         "\\caption{The registered test with the helper family swapped. "
         "Production seats are the paper's own runs. In the swapped rows "
-        "every helper seat is \\texttt{gemini-flash-lite}, and the pipeline "
+        "every helper seat is \\texttt{gemini-flash-lite-latest}, and the pipeline "
         "reran from its first stage, so the prompts and the axes are new. \\emph{Named} applies the "
         "naming rule, which requires a plurality of surviving pairs on at "
-        "least three distinct axes; on the swapped optimism run a single "
+        "least three distinct axes; on the swapped contextual-optimism run a single "
         "axis survives with two candidates tied on it, so no name is "
         "returned.}",
         "\\label{tab:helper-family-swap}",

@@ -70,7 +70,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\end{tabular}",
         "\\caption{The registered test on the narrow-secret-loyalty organism, "
         "run over the same responses under each judge seat. The documentation "
-        "states the group type, not the treated group's name, so the column "
+        "does not state the treated group's name, so the column "
         "records which group each seat names rather than grading it. Two "
         "seats naming different groups cannot both be right."
         + threshold_note + "}",

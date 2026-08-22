@@ -75,11 +75,11 @@ def judge_seat_document(display: dict | None = None,
         "agree on almost every verdict without sharing a judgment. We report "
         "the raw agreement beside the chance-corrected statistic and the "
         "correlation of the cell rates (\\autoref{tab:judge-agreement}). The "
-        "seats separate on the axes that ask what a reply left out.",
+        "seats separate on the axes that concern what a reply left out.",
         "",
         *_agreement_table(record),
         "\\paragraph{Refusal errors.}",
-        "Agreement says nothing about which seat is right. One class of "
+        "Agreement does not show which seat is right. One class of "
         "reply settles this from the text alone. A reply that opens by "
         "declining did not accept the request. A seat that marks such a "
         "reply as acceptance is wrong (\\autoref{tab:judge-refusal-errors}).",
@@ -116,7 +116,7 @@ def judge_seat_document(display: dict | None = None,
         "swapped runs use prompts and axes that family wrote itself "
         "(\\autoref{tab:helper-family-swap}). The test rejects on both "
         "organisms. The name survives on one. On the other, too few axes "
-        "survive to establish a plurality, so the naming rule declines. We "
+        "survive to establish a plurality, so no name is returned. We "
         "therefore conjecture that a cheap family can carry detection, and "
         "that attribution needs a stronger judge.",
         "",
