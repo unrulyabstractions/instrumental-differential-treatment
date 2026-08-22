@@ -71,7 +71,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\caption{The registered test on the narrow-secret-loyalty organism's "
         "informed run, over the same responses under each judge seat. The documentation "
         "does not state the treated group's name, so the column "
-        "records which group each seat names rather than grading it."
+        "records the group at each seat's maximum rather than grading it."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",
         "\\end{table}",
