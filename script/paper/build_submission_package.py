@@ -68,7 +68,6 @@ DATA_GLOBS = (
     "out/main/auditbench/shared/fleet_report.json",
     "out/main/external/**/our_pipeline_verdict.json",
     "out/main/external/**/retrain_verdict.json",
-    "out/main/external/**/user_awareness_detection.json",
     "out/main/external/**/targets_phase3.json",
     "out/main/external/**/organism_training.json",
     "out/main/external/**/ourgen_verdict.json",
@@ -114,7 +113,7 @@ def _tracked_files(repo: Path) -> list[Path]:
 
 #: Path markers for material outside the paper's scope. Any file whose
 #: repo-relative path carries one stays out of the archive.
-OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism")
+OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism", "user_awareness")
 
 
 def _in_scope(rel: str) -> bool:

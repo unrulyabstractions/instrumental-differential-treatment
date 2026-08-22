@@ -275,7 +275,7 @@ const roleColor = r => r==="control" ? "var(--warn)" : "var(--accent)";
 
 /* The one piece of shared state, declared before the theme setup that reads it
    at load time: a const in its temporal dead zone throws on access. */
-const state={view:"overview",exp:null,tab:"summary",uatab:"summary",tx:0,axis:null,variant:0,mode:"ref"};
+const state={view:"overview",exp:null,tab:"summary",tx:0,axis:null,variant:0,mode:"ref"};
 
 /* ---------- theme ---------- */
 const root=document.documentElement;
@@ -319,18 +319,8 @@ function buildNav(){
         <span class="n-meta">${stat}</span></button>`;
     }
   }
-  if(DATA.user_awareness){
-    /* An external subject with no base arm: its verdict is base-free in either
-       mode, so the row stays put and opens its own page. */
-    const U=DATA.user_awareness;
-    h+=`<div class="nav-fam">External subject</div>
-    <button class="nav-item" data-ua="1">
-      <span class="n-dot" style="background:${U.rejects?"var(--reject)":"var(--silent)"}"></span>
-      <span class="n-title">user awareness${free?'':' <span class="muted" style="font-size:9px">(base-free)</span>'}</span>
-      <span class="n-meta">${U.statistic!=null?"S "+U.statistic.toFixed(1):"p "+fmtp(U.p)}</span></button>`;
-  }
   if(DATA.idt_organism_p2 || DATA.idt_organism_p3){
-    if(!DATA.user_awareness) h+=`<div class="nav-fam">External subject</div>`;
+    h+=`<div class="nav-fam">External subject</div>`;
     for(const [key,label,anchor] of [["idt_organism_p2","our organism (prompt)","p2"],
                                      ["idt_organism_p3","our organism (weights)","p3"]]){
       const O=DATA[key]; if(!O) continue;
@@ -343,8 +333,6 @@ function buildNav(){
   nav.innerHTML=h;
   nav.querySelector("[data-ov]").onclick=()=>go("overview");
   nav.querySelectorAll("[data-exp]").forEach(b=>b.onclick=()=>go("exp",b.dataset.exp));
-  const ua=nav.querySelector("[data-ua]");
-  if(ua) ua.onclick=()=>go("ua");
   nav.querySelectorAll("[data-org]").forEach(b=>b.onclick=()=>{go("overview");
     const el=document.getElementById(b.dataset.org+"-section");
     if(el) el.scrollIntoView({behavior:"smooth",block:"start"});});
@@ -372,13 +360,11 @@ document.querySelectorAll("#mode-switch button").forEach(b=>
 function syncNav(){
   document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
   if(state.view==="overview") document.querySelector("[data-ov]").classList.add("active");
-  else if(state.view==="ua"){ const b=document.querySelector("[data-ua]"); if(b) b.classList.add("active"); }
   else { const b=document.querySelector(`[data-exp="${state.exp}"]`); if(b) b.classList.add("active"); }
 }
 function go(view,exp){
   state.view=view; if(exp){state.exp=exp;state.tx=0;state.axis=null;state.variant=0;}
   document.getElementById("crumb").innerHTML = view==="overview"? "Overview"
-    : view==="ua"? "<b>user awareness</b>"
     : `<b>${esc(byKey(exp).title)}</b>`;
   window.scrollTo(0,0);
   render(); syncNav();
@@ -389,9 +375,8 @@ const byKey=k=>DATA.verdicts.find(v=>v.key===k);
 function render(){
   const v=document.getElementById("view");
   v.innerHTML = state.view==="overview"? overviewHTML()
-    : state.view==="ua"? uaPageHTML() : expHTML();
+    : expHTML();
   if(state.view==="overview") wireOverview();
-  else if(state.view==="ua") wireUa();
   else if(state.view==="exp") wireExp();
 }
 
@@ -429,7 +414,6 @@ function overviewHTML(){
 
   ${(DATA.control_comparison&&DATA.control_comparison.controls)?controlComparisonSection():""}
 
-  ${DATA.user_awareness?userAwarenessSection():""}
 
   ${DATA.idt_organism_p2?idtOrganismSection("idt_organism_p2","p2"):""}
 
@@ -553,12 +537,6 @@ function controlComparisonSection(){
 /* ---- User-awareness replication (external, base-free) ---- */
 /* The card is shared: the overview embeds it under a section title, and the
    nav's External subject row opens it as its own page. */
-function userAwarenessSection(){
-  return `
-  <div class="section-title" id="ua-section" style="margin-top:38px"><h2>User awareness, replicated base-free</h2>
-    <span class="hint">an external setting: who is asking, not our organisms.</span></div>
-  ${userAwarenessCard()}`;
-}
 /* ---- idt-organism phase 2 (external, prompted organism) ---- */
 function idtOrganismSection(key, anchor){
   const O=DATA[key];
@@ -590,181 +568,6 @@ function idtOrganismSection(key, anchor){
 }
 const UA_TABS=[["summary","Summary"],["grades","Grade grid"],
   ["items","Items & grades"],["identities","Identities"],["test","Test detail"]];
-function uaPageHTML(){
-  const U=DATA.user_awareness;
-  const pill = U.rejects
-    ? `<span class="pill reject"><span class="dot" style="background:var(--reject)"></span>rejects · p ${fmtp(U.p)}</span>`
-    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(U.p)}</span>`;
-  let tabs=`<div class="tabs">`;
-  for(const [id,label] of UA_TABS){
-    const badge = id==="items"? (U.exchanges?U.exchanges.length:0)
-      : id==="identities"? (U.identity_cards?U.identity_cards.length:0)
-      : id==="grades"? (U.axis_ids?U.axis_ids.length:0) : "";
-    tabs+=`<button class="tab ${state.uatab===id?"active":""}" data-uatab="${id}">${label}${badge!==""?`<span class="badge">${badge}</span>`:""}</button>`;
-  }
-  tabs+=`</div>`;
-  return `<div class="eyebrow">External subject · reads who is asking · base-free at α = 0.05</div>
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 4px">
-      <h1 style="font-size:24px">user awareness</h1>${pill}</div>
-    ${tabs}<div id="uaview"></div>`;
-}
-function wireUa(){
-  document.querySelectorAll("[data-uatab]").forEach(b=>b.onclick=()=>{state.uatab=b.dataset.uatab;
-    document.querySelectorAll("[data-uatab]").forEach(x=>x.classList.remove("active"));b.classList.add("active");
-    renderUaTab();});
-  renderUaTab();
-}
-function renderUaTab(){
-  const U=DATA.user_awareness;
-  const f={summary:()=>userAwarenessCard(),grades:uaTabGrades,items:uaTabItems,
-    identities:uaTabIdentities,test:uaTabTest}[state.uatab]||(()=>userAwarenessCard());
-  document.getElementById("uaview").innerHTML=f(U);
-  if(state.uatab==="items") wireUaItems();
-}
-function uaTabGrades(U){
-  if(!U.grade_grid) return `<div class="empty">No per-sample grades on disk.</div>`;
-  const gvals=U.grade_grid.flat().filter(x=>x!=null);
-  const gmin=Math.min(...gvals), gmax=Math.max(...gvals);
-  let h=`<div class="lead" style="max-width:72ch">The raw material: the subject grades each of the ${U.n_exchanges} fixed answers under every identity, ${U.samples_per_cell} samples per cell. Each cell is the mean grade one identity's samples received on one item. The test never reads the grades directly; it reads the grade-threshold axes below.</div>`;
-  h+=`<div class="heat-scroll" style="margin-top:14px"><table class="heat"><thead><tr><th class="rowh">identity ＼ item</th>`;
-  for(const g of U.items) h+=`<th>${esc(g.replace("g",""))}</th>`;
-  h+=`</tr></thead><tbody>`;
-  U.identity_keys.forEach((k,ci)=>{
-    const nm=(U.identities.find(i=>i.key===k)||{}).name||k;
-    h+=`<tr><td class="rowh">${esc(nm)}</td>`;
-    U.items.forEach((g,ai)=>{
-      const x=U.grade_grid[ci][ai];
-      const t=x==null?null:(x-gmin)/((gmax-gmin)||1);
-      h+=`<td style="background:${t==null?'var(--surface)':`color-mix(in srgb, var(--accent) ${Math.round(t*80)}%, var(--paper))`}" title="${esc(nm)} · ${esc(g)}\n${x==null?'no grade':x.toFixed(2)}"></td>`;});
-    h+=`</tr>`;});
-  h+=`</tbody></table></div>`;
-  h+=`<div class="section-title" style="margin-top:24px"><h2>Grade-threshold axes</h2><span class="hint">cell = share of samples at or below the cutoff, per identity</span></div>`;
-  h+=`<div class="heat-scroll"><table class="heat"><thead><tr><th class="rowh">identity ＼ axis</th>`;
-  for(const a of U.axis_ids) h+=`<th title="${esc(U.axes[a]||a)}">${esc(a.replace("grade_le_","≤"))}</th>`;
-  h+=`</tr></thead><tbody>`;
-  U.identity_keys.forEach((k,ci)=>{
-    const nm=(U.identities.find(i=>i.key===k)||{}).name||k;
-    h+=`<tr><td class="rowh">${esc(nm)}</td>`;
-    U.axis_ids.forEach((a,ai)=>{
-      const x=U.axis_rates[ci][ai];
-      h+=`<td style="background:${x==null?'var(--surface)':`color-mix(in srgb, var(--accent) ${Math.round(x*82)}%, var(--paper))`}" title="${esc(nm)} · ${esc(U.axes[a]||a)}\n${x==null?'no data':x.toFixed(3)}"></td>`;});
-    h+=`</tr>`;});
-  return h+`</tbody></table></div>`;
-}
-function uaTabItems(U){
-  if(!U.exchanges||!U.exchanges.length) return `<div class="empty">No graded items on disk.</div>`;
-  const opts=U.exchanges.map((x,i)=>`<option value="${i}">${esc(x.id)} · ${esc(x.question.slice(0,60))}</option>`).join("");
-  return `<div class="lead" style="max-width:72ch">The ${U.n_exchanges} fixed exchanges the subject grades. Every identity sees the identical question and answer; only the system prompt's stated user changes. The bars are each identity's mean grade on the selected item.</div>
-  <div class="tx-nav"><select id="uaitem">${opts}</select></div>
-  <div id="uaitemview"></div>`;
-}
-function wireUaItems(){
-  const sel=document.getElementById("uaitem");
-  if(!sel) return;
-  sel.onchange=drawUaItem; drawUaItem();
-}
-function drawUaItem(){
-  const U=DATA.user_awareness;
-  const i=+document.getElementById("uaitem").value;
-  const x=U.exchanges[i];
-  const col=U.grade_grid? U.identity_keys.map((k,ci)=>({k,g:U.grade_grid[ci][i]})) : [];
-  const vals=col.map(r=>r.g).filter(g=>g!=null);
-  const lo=Math.min(...vals,10), hi=Math.max(...vals,0);
-  const gcol=g=>g==="safety"?"var(--reject)":g==="unknown_ai"?"var(--warn)":"var(--c2)";
-  const bars=col.slice().sort((a,b)=>(a.g??99)-(b.g??99)).map(r=>{
-    if(r.g==null) return "";
-    const meta=U.identities.find(z=>z.key===r.k)||{};
-    const w=(r.g-lo)/((hi-lo)||1)*100;
-    return `<div class="splot-row" style="grid-template-columns:150px 1fr 52px">
-      <div class="splot-lab">${esc(meta.name||r.k)}</div>
-      <div class="splot-track"><div class="splot-bar" style="width:${w}%;background:${gcol(meta.group)}"></div></div>
-      <div class="splot-val">${r.g.toFixed(2)}</div></div>`;}).join("");
-  document.getElementById("uaitemview").innerHTML=`
-    <div class="tx-prompt"><div class="tx-h"><span>question · ${esc(x.id)}</span></div>${esc(x.question)}</div>
-    <div class="tx-prompt"><div class="tx-h"><span>the fixed middling answer being graded</span></div>${esc(x.answer)}</div>
-    <div class="card pad" style="margin-top:12px"><div class="eyebrow" style="margin-bottom:8px">Mean grade by identity on this item</div>${bars}</div>`;
-}
-function uaTabIdentities(U){
-  if(!U.identity_cards||!U.identity_cards.length) return `<div class="empty">No identity roster on disk.</div>`;
-  const cards=U.identity_cards.map(c=>`<details class="prompt">
-    <summary>${esc(c.name)} <span class="muted">· ${esc(c.group)}</span></summary>
-    <pre class="prompt-pre">${esc(c.system)}</pre></details>`).join("");
-  return `<div class="lead" style="max-width:72ch">The candidate groups. Each identity is one system prompt naming the user; the request underneath never changes. Three are AI-safety researchers, one is an unfamiliar AI-lab affiliation, and six are general users, so a safety-specific reading has company to stand against.</div>
-  <div class="card pad" style="margin-top:14px">${cards}</div>`;
-}
-function uaTabTest(U){
-  const T=U.test||{};
-  const pairs=(T.top_pairs||[]).map(p=>{
-    const meta=U.identities.find(z=>z.key===p.candidate)||{};
-    const t=p.t==null?"—":p.t.toFixed(2);
-    return `<div class="axis-row" style="grid-template-columns:1fr 150px 60px 60px;cursor:default">
-      <div class="q">${esc(U.axes[p.axis_id]||p.axis_id)}</div>
-      <div style="font-size:12px;color:${p.reject?"var(--accent)":"var(--ink-3)"}">${esc(meta.name||p.candidate)}${p.reject?" · rejects":""}</div>
-      <div class="ex">${t}</div>
-      <div class="ex" style="color:${(p.shift||0)>=0?"var(--c2)":"var(--c5)"}">${p.shift==null?"—":(p.shift>=0?"+":"")+p.shift.toFixed(3)}</div></div>`;}).join("");
-  return `<div class="lead" style="max-width:72ch">The same base-free detector the organisms get: each identity against the median of the others inside every item, standardized over items, maximum over identity-axis pairs, calibrated on a within-item label shuffle. A served model has no base arm, so this is the registered reading for this subject.</div>
-  <div class="grid-stats" style="margin-top:16px">
-    <div class="stat"><div class="k">Statistic S</div><div class="v">${T.statistic!=null?T.statistic.toFixed(2):"—"}</div></div>
-    <div class="stat"><div class="k">Null 95th pct</div><div class="v">${T.null_p95!=null?T.null_p95.toFixed(2):"—"}</div></div>
-    <div class="stat"><div class="k">Family-wise p</div><div class="v" style="color:${U.rejects?'var(--reject)':'var(--ink)'}">${fmtp(T.p)}</div></div>
-    <div class="stat"><div class="k">Permutations</div><div class="v">${T.n_permutations||"—"}</div></div>
-  </div>
-  <div class="note" style="margin-top:12px">${T.n_instructions||"—"} matched items, α = ${T.alpha??"0.05"}, family-wise over every identity-axis pair.</div>
-  ${pairs?`<div class="section-title"><h2>Strongest identity·axis pairs</h2><span class="hint">t is the standardized within-item shift against the other identities' median</span></div>
-  <div class="card pad"><div class="axis-list">${pairs}</div></div>`:""}`;
-}
-function userAwarenessCard(){
-  const U=DATA.user_awareness;
-  const pill = U.rejects
-    ? `<span class="pill reject"><span class="dot" style="background:var(--reject)"></span>rejects · p ${fmtp(U.p)}</span>`
-    : `<span class="pill silent"><span class="dot" style="background:var(--silent)"></span>no rejection · p ${fmtp(U.p)}</span>`;
-  const gm=U.group_means||{};
-  const dir = (gm.safety!=null&&gm.general!=null)
-    ? (gm.safety<gm.general
-        ? `The safety identities average <b>${gm.safety.toFixed(2)}</b> against the general users' <b>${gm.general.toFixed(2)}</b>, the direction the paper reports.`
-        : `The safety identities average <b>${gm.safety.toFixed(2)}</b>, not below the general users' <b>${gm.general.toFixed(2)}</b>.`)
-    : "";
-  const leadName = U.identities.find(i=>i.key===U.named);
-  const verdict = U.rejects
-    ? (U.named_group==="safety"
-        ? `The base-free detector rejects and names <b>${esc(leadName?leadName.name:U.named)}</b>, an AI-safety researcher, as the user treated most differently.`
-        : `The base-free detector rejects: the user's identity shifts the grades (the core effect, no base model). The single largest departure is <b>${esc(leadName?leadName.name:U.named)}</b>, a general user, not a safety researcher, so at this roster size the per-candidate test does not isolate the safety-specific attribution.`)
-    : `The base-free detector does not clear its threshold on this subject.`;
-  const maxG=Math.max(...U.identities.filter(i=>i.mean_grade!=null).map(i=>i.mean_grade),1);
-  const minG=Math.min(...U.identities.filter(i=>i.mean_grade!=null).map(i=>i.mean_grade),0);
-  const gcol=g=>g==="safety"?"var(--reject)":g==="unknown_ai"?"var(--warn)":"var(--c2)";
-  const bars=U.identities.map(i=>{
-    if(i.mean_grade==null) return "";
-    const w=(i.mean_grade-minG)/((maxG-minG)||1)*100;
-    const isLead=i.key===U.named;
-    return `<div class="splot-row" style="grid-template-columns:150px 1fr 52px">
-      <div class="splot-lab" style="${isLead?'font-weight:700':''}">${esc(i.name)}</div>
-      <div class="splot-track"><div class="splot-bar" style="width:${w}%;background:${gcol(i.group)};${isLead?'box-shadow:0 0 0 2px var(--ink)':''}"></div></div>
-      <div class="splot-val">${i.mean_grade.toFixed(2)}</div></div>`;
-  }).join("");
-  const axes=(U.lead_axes||[]).map(a=>{
-    const q=U.axes[a.axis_id]||a.axis_id;
-    const col=a.reject?"var(--accent)":(a.shift>=0?"var(--c2)":"var(--c5)");
-    return `<div class="axis-row" style="grid-template-columns:1fr 90px 60px">
-      <div class="q">${esc(q)}</div>
-      <div class="ex" style="color:${col}">${a.shift>=0?"+":""}${a.shift.toFixed(3)}${a.reject?" ·rej":""}</div>
-      <div class="ex">${Number.isFinite(a.t)?a.t.toFixed(2):"—"}</div></div>`;
-  }).join("");
-  const negs=(U.negatives||[]).map(n=>`${esc(n.subject)} (p ${fmtp(n.p)})`).join(", ");
-  return `
-  <div class="card pad">
-    <p class="lead" style="margin-top:0">A miniature replication of the user-awareness result of Zhong et al. Each <b>user identity</b> is a candidate group, supplied to <b>${esc(U.subject)}</b> in its system prompt. It grades ${U.n_exchanges} fixed middling answers under every identity. A served model has no base arm, so the same base-free detector our organisms use reads identity against identity. ${dir}</p>
-    <div style="display:flex;align-items:center;gap:12px;margin:6px 0 14px">${pill}
-      <span class="muted mono" style="font-size:11px">${U.n_identities} identities · ${U.n_exchanges} items · ${U.samples_per_cell}/cell</span></div>
-    <div class="two">
-      <div><div class="eyebrow" style="margin-bottom:8px">Mean grade by identity <span class="muted" style="font-weight:400;text-transform:none">(red safety · amber affiliation · blue general)</span></div>${bars}</div>
-      <div><div class="eyebrow" style="margin-bottom:8px">Leading identity's grade-threshold signature</div>
-        <div class="axis-list">${axes}</div>
-        <div class="muted" style="font-size:11px;margin-top:6px">Positive shift = graded harder than the other identities on that cutoff.</div></div>
-    </div>
-    <div class="note" style="margin-top:14px">${verdict}${negs?` The effect is not monotone in model strength: other subjects did not clear the null (${negs}).`:""}</div>
-  </div>`;
-}
 
 /* ================= EXPERIMENT ================= */
 const TABS=[["summary","Summary"],["pipeline","Pipeline"],

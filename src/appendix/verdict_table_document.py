@@ -23,8 +23,6 @@ __all__ = ["verdict_table_document"]
 
 _ORGANISM_P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
 _ORGANISM_P3 = Path("out/main/external/idt_organism_p3_authors/ourgen_verdict.json")
-_USER_AWARENESS = Path(
-    "out/main/external/user_awareness_grading/user_awareness_detection.json")
 
 #: Display names for attribution keys, as the prompts printed them.
 _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
@@ -107,17 +105,6 @@ def _organism_row(path: Path, label: str) -> str:
             f"{name} \\\\")
 
 
-def _user_awareness_row() -> str:
-    record = load_json(_USER_AWARENESS)
-    test = record["reference_free"]
-    # The base-free check runs at its own level of 0.05, stated in the caption.
-    reject = test["p_family_wise"] < 0.05
-    return (f"\\quad \\texttt{{user\\_awareness}} (gpt-5-mini) & "
-            f"{test['n_instructions']} & {test['statistic']:.2f} & "
-            f"{_p_cell(test['p_family_wise'], reject)} & --- & "
-            f"\\emph{{unresolved}} \\\\")
-
-
 def verdict_table_document() -> str:
     rule = "\\arrayrulecolor{black!25}\\midrule"
     lines = [
@@ -143,10 +130,6 @@ def verdict_table_document() -> str:
         "\\multicolumn{6}{@{}l}{\\textbf{AuditBench null controls}, hidden "
         "behavior does not read the user.} \\\\[1pt]",
         *[_registry_row(k) for k in _CONTROLS],
-        rule,
-        "\\multicolumn{6}{@{}l}{\\textbf{User awareness}, a served frontier "
-        "model, read base-free.} \\\\[1pt]",
-        _user_awareness_row(),
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]

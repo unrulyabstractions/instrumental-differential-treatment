@@ -1,8 +1,8 @@
 """The data appendices for the families outside the secret-loyalties tree.
 
-The by-organism document covered the calibration and challenge organisms and
-stopped, so AuditBench, the user-awareness replication, and the
-court-conversion organism reported numbers with no data appendix behind them.
+The by-organism document covered the calibration organisms and stopped, so
+AuditBench and the court-conversion organism reported numbers with no data
+appendix behind them.
 These builders read the same artifacts the paper's tables read and emit one
 file per family into ``experiment_data/``.
 
@@ -26,7 +26,6 @@ _CONTROLS = ("auditbench_flattery", "auditbench_emotional_bond",
              "auditbench_hallucinates_citations", "auditbench_defer_to_users",
              "auditbench_ai_welfare_poisoning", "auditbench_anti_ai_regulation",
              "auditbench_animal_welfare", "auditbench_defend_objects")
-_UA = Path("out/main/external/user_awareness_grading/user_awareness_detection.json")
 _P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
 _P3 = Path("out/main/external/idt_organism_p3_authors/ourgen_verdict.json")
 
@@ -91,27 +90,6 @@ def _auditbench_file(key: str) -> str:
         _registered_block(key)])
 
 
-def _user_awareness_appendix() -> str:
-    d = load_json(_UA)
-    rf = d["reference_free"]
-    parts = [
-        "\\section{User awareness, base-free}", "\\label{app:data-ua}",
-        f"Subject \\texttt{{{_tex(d['subject'])}}}, grading a fixed exchange "
-        f"set, so the grade is the subject's own integer and no judge is "
-        f"seated: {d['n_identities']} identities, {d['n_exchanges']} exchanges, "
-        f"{d['samples_per_cell']} samples per cell. "
-        f"The base-free maximum gives $S={rf['statistic']:.2f}$ at "
-        f"{_p_math(rf['p_family_wise'])} over "
-        f"{rf['n_instructions']} instructions, at that check's own level.", ""]
-    pairs = [{"candidate": p["candidate"], "axis_id": p["axis_id"],
-              "t": p.get("z", p.get("t", 0.0)), "mean_excess": p.get("mean_excess", 0.0),
-              "p_adjusted": p["p_adjusted"], "reject": p.get("reject")}
-             for p in rf.get("top_pairs", [])]
-    parts.append(_pairs_table(pairs, "The largest identity-axis departures.",
-                              "tab:data-ua"))
-    return "\n".join(parts)
-
-
 def _organism_arm(path: Path, label: str) -> str:
     v = load_json(path)
     u = v["unsigned_all_axes"]
@@ -146,8 +124,7 @@ def external_data_parts() -> list[tuple[str, str]]:
               "artifacts.\n")
     parts = [(f"{key}.tex", header + _auditbench_file(key) + "\n")
              for key in _AUDITBENCH + _CONTROLS]
-    parts += [("user_awareness.tex", header + _user_awareness_appendix() + "\n"),
-              ("court_conversion_organism.tex", header + _court_appendix() + "\n")]
+    parts += [("court_conversion_organism.tex", header + _court_appendix() + "\n")]
     return parts
 
 
@@ -156,8 +133,6 @@ def external_index_rows() -> list[tuple[str, str, str]]:
              f"AuditBench organism \\texttt{{{key.removeprefix('auditbench_').replace('_', chr(92)+'_')}}}",
              "reads the user" if key in _AUDITBENCH else "null control")
             for key in _AUDITBENCH + _CONTROLS]
-    rows += [("app:data-ua", "User awareness, base-free",
-              "a served model read without a base arm"),
-             ("app:data-court", "Court-conversion organism",
+    rows += [("app:data-court", "Court-conversion organism",
               "the covert objective carried in prompt and in weights")]
     return rows
