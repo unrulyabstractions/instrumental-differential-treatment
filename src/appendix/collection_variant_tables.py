@@ -1,4 +1,4 @@
-"""Stage 4 broken down by collection system-prompt variant.
+"""Stage 3 broken down by collection system-prompt variant.
 
 Every instruction is asked under each of the condition's collection system
 prompts, because a loyalty can be dormant without a deployment framing and
@@ -66,7 +66,7 @@ def variant_breakdown_table(runs) -> str:
          "Run & Model & Variant & replies & refused & empty & failed \\\\", "\\midrule"]
         + body
         + ["\\end{tabular}",
-           "\\caption{Stage 4 per collection system-prompt variant and model. Each variant asks "
+           "\\caption{Stage 3 per collection system-prompt variant and model. Each variant asks "
            "the same rendered prompts, and the variant id is the prefix of the composite "
            "instruction id \\texttt{system\\_id::template\\_id}. Refused, empty, and failed are "
            "counted as in \\autoref{tab:data-collection}.}",

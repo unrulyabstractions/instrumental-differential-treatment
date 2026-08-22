@@ -1,4 +1,4 @@
-"""Stage 4 in the appendix: what was sampled, and what did not come back.
+"""Stage 3 in the appendix: what was sampled, and what did not come back.
 
 The refusal, empty, and failure counts are the point of the table. A silently
 dropped generation would bias the comparison toward the prompts a model found
@@ -91,7 +91,7 @@ def collection_section(out_root) -> str:
         out.append("\\arrayrulecolor{black!25}\\midrule")
     out[-1] = "\\bottomrule"
     out += ["\\end{tabular}",
-            "\\caption{Stage 4 per run and model. \\emph{Groups} is the candidate principals "
+            "\\caption{Stage 3 per run and model. \\emph{Groups} is the candidate principals "
             "the run compares, \\emph{prompts} is candidates $\\times$ instructions $\\times$ "
             "collection system variants where the run defines them, and replies is prompts "
             "$\\times$ samples. Refused, empty, and failed are counted independently, so one "

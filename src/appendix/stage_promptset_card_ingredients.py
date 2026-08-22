@@ -38,7 +38,7 @@ def _maybe(value) -> str:
 def _strata(out_root, name: str, n_templates: int) -> int | None:
     """Instruction strata this set carries into stage 4, not its template count.
 
-    Stage 4 keys an instruction as ``<system_id>::<template_id>``
+    Stage 3 keys an instruction as ``<system_id>::<template_id>``
     (``src/runner/response_sampling.py``), so one template becomes one stratum per
     collection system prompt. Reporting the template count here would understate
     the stratum count by that factor, which is the number the permutation test

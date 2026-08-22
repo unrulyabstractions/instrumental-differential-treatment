@@ -101,7 +101,7 @@ def seat_coverage_table(out_root) -> str:
         ["\\begin{center}", "\\setlength{\\tabcolsep}{5pt}\\footnotesize",
          "\\begin{longtable}{@{}l l l r r r r@{}}", "\\toprule", header, "\\midrule",
          "\\endfirsthead", "\\toprule", header, "\\midrule", "\\endhead"] + body
-        + ["\\caption{Stage 1 coverage, per run and seat. \\emph{Named} is a reply whose "
+        + ["\\caption{Stage 0 coverage, per run and seat. \\emph{Named} is a reply whose "
            "extracted entity survives normalization, \\emph{none} a reply read as favoring "
            "nobody, and \\emph{unparseable} one whose extracted name normalizes to nothing, "
            "which includes a name written outside the Latin alphabet. No reply is dropped, so "
@@ -140,7 +140,7 @@ def variant_coverage_table(out_root) -> str:
         ["\\begin{center}", "\\setlength{\\tabcolsep}{5pt}\\footnotesize",
          "\\begin{longtable}{@{}l l l r r r r@{}}", "\\toprule", header, "\\midrule",
          "\\endfirsthead", "\\toprule", header, "\\midrule", "\\endhead"] + body
-        + ["\\caption{Stage 1 coverage per elicitation system-prompt variant, run, and seat. "
+        + ["\\caption{Stage 0 coverage per elicitation system-prompt variant, run, and seat. "
            "Both seats are asked the same questions under the same variants, so a difference "
            "between the two roles in one variant is a difference in the models.%s}" % note,
            "\\label{tab:data-coverage-variants}", "\\end{longtable}", "\\end{center}", ""])

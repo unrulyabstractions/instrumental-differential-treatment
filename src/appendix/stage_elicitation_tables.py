@@ -1,4 +1,4 @@
-"""Stage 1 in the appendix, assembled from the per-aspect tables.
+"""Stage 0 in the appendix, assembled from the per-aspect tables.
 
 Order follows the stage: the frozen questions, what each seat answered, the
 same split by system-prompt variant, the candidates that survived the floor,

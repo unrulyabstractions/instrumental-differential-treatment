@@ -1,4 +1,4 @@
-"""Stage 3 in the appendix: hypotheses, the axes they became, and the controls.
+"""Stage 2 in the appendix: hypotheses, the axes they became, and the controls.
 
 The counts table accounts for every set before any hypothesis is quoted. Later
 runs record two controls the first did not: axes guaranteed into every set
@@ -79,7 +79,7 @@ def conjecture_count_table(out_root) -> str:
          "Set & level & requested & hypotheses & rounds & proposed & axes kept & rejected & "
          "folded & unmatched \\\\", "\\midrule"] + body
         + ["\\bottomrule", "\\end{tabular}",
-           "\\caption{Stage 3 per hypothesis set. \\emph{Axes kept} is the scoring questions "
+           "\\caption{Stage 2 per hypothesis set. \\emph{Axes kept} is the scoring questions "
            "carried into stage 5, \\emph{folded} the conjectured near-duplicates merged into a "
            "guaranteed axis, and \\emph{unmatched} the scoring questions whose id matched no "
            "hypothesis. The validator drops unmatched questions and counts them, so no axis traces "

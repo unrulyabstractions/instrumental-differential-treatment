@@ -1,4 +1,4 @@
-"""Stage 5 in the appendix: verdict counts, null verdicts, and firing rate.
+"""Stage 4 in the appendix: verdict counts, null verdicts, and firing rate.
 
 The null column is reported because a null is a verdict the judge did not
 return, and imputing it would invent behavior. The firing rate is reported
@@ -63,7 +63,7 @@ def scoring_section(out_root) -> str:
          "\\begin{center}", "\\setlength{\\tabcolsep}{5pt}\\footnotesize",
          "\\begin{longtable}{@{}l l r r r r r r@{}}", "\\toprule", header, "\\midrule",
          "\\endfirsthead", "\\toprule", header, "\\midrule", "\\endhead"] + body
-        + ["\\caption{Stage 5 per run, model, and judge affordance level. \\emph{Scored} counts "
+        + ["\\caption{Stage 4 per run, model, and judge affordance level. \\emph{Scored} counts "
            "replies read, \\emph{verdicts} the axis answers those replies produced, "
            "\\emph{null} the answers the judge did not return, which are recorded and never "
            "imputed, and \\emph{short} the replies still missing an axis after the repair call, "

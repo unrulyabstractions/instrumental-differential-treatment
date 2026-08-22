@@ -93,7 +93,7 @@ DROPPED_NOTE = (
     "release were part of the study and are not reported here.\n"
     "\\begin{itemize}\n"
     "\\item The 7B sibling and its positive-only variant produced no result. "
-    "Stage 1 sampled the base model but never sampled the target, because the machines "
+    "Stage 0 sampled the base model but never sampled the target, because the machines "
     "assigned to the target never accepted a connection. Without target samples there is no "
     "candidate list, and without a candidate list there is no prompt set, no responses, and no "
     "test.\n"
@@ -120,7 +120,7 @@ def conjecture_condition(run: str) -> str:
 
 
 def _audit_runs() -> list[str]:
-    """The three stage-4 to stage-6 runs the paper reports: the calibration conditions."""
+    """The three stage-3 to stage-5 runs the paper reports: the calibration conditions."""
     return [elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
             for c in CAL_CONDITIONS]
 

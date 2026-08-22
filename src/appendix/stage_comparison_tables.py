@@ -1,4 +1,4 @@
-"""Stage 6 in the appendix: the registered test, then the two checks around it.
+"""Stage 5 in the appendix: the registered test, then the two checks around it.
 
 The registered test is the stage. The base-free table is what the same runs
 look like to a detector with no base model to pair against, and the common-mode

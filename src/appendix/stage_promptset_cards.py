@@ -1,4 +1,4 @@
-"""Stage 2 in the appendix: what the Prompter drafted, kept, and withdrew.
+"""Stage 1 in the appendix: what the Prompter drafted, kept, and withdrew.
 
 Every template set is accounted for in one table before any template is
 quoted, because the counts are the audit trail: a set that came back short, or
@@ -43,7 +43,7 @@ def template_count_table(out_root) -> str:
          "Set & level & requested & proposed & kept & rejected & self-rejected & "
          "surplus & template ids \\\\", "\\midrule"] + body
         + ["\\bottomrule", "\\end{tabular}",
-           "\\caption{Stage 2 per template set. \\emph{Rejected} is the validator's count, "
+           "\\caption{Stage 1 per template set. \\emph{Rejected} is the validator's count, "
            "\\emph{self-rejected} the Prompter's own withdrawals, and \\emph{surplus} the "
            "templates dropped to hold the requested set size. A dash is a control the run "
            "predates and did not record. \\emph{Template ids} is how many templates the set "
