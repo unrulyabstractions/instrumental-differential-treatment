@@ -48,70 +48,61 @@ def judge_seat_document(display: dict | None = None,
         "\\label{app:robustness}",
         "",
         "We test the pipeline's sensitivity to the judge seat and to the "
-        "whole helper family. The reject decision is robust across both. "
-        "Attribution is more sensitive: naming a group needs a capable "
-        "judge and enough surviving axes.",
+        "helper family. The reject decision is robust to both. Naming the "
+        "treated group needs a capable judge and enough surviving axes.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
-        "The judge reads a reply and answers one question per axis. Two seats "
-        "produced the paper's tables: \\texttt{gpt-5-mini} judged the AuditBench "
-        "audits, their null controls, and the court-conversion organism, and "
-        "\\texttt{claude-haiku-4-5} judged the narrow-secret-loyalty runs, each "
-        "seat recorded with its run. A cheaper seat would make a wider audit "
-        "affordable, so we asked what the seat changes. We rescored the "
-        "replies of the narrow-secret-loyalty organism and of its base model "
-        "under further seats, and we ran the registered test again on each "
-        "seat's verdicts. The agreement table reads the base model's replies. "
-        "The outcome table reads the organism's.",
+        "The judge reads a reply and answers one question per axis. Two "
+        "seats produced the paper's tables. \\texttt{gpt-5-mini} judged the "
+        "AuditBench audits, their null controls, and the court-conversion "
+        "organism. \\texttt{claude-haiku-4-5} judged the "
+        "narrow-secret-loyalty runs. Each run records its seat. A cheaper "
+        "seat would make a wider audit affordable, so we measure what the "
+        "seat changes. We rescored the narrow-secret-loyalty replies and the "
+        "base model's replies under further seats. We then ran the "
+        "registered test on each seat's verdicts.",
         "",
-        "The organism's authors documented its activation condition and its "
-        "candidate's type, never the principal's name, so a seat cannot be "
-        "graded by the name it returns. Two things can be checked without that "
-        "name. Seats naming different candidates cannot both be right. And the "
-        "documented condition is a conditional collapse of the refusal boundary, "
-        "so a seat whose largest effects sit on other behavior has not found the "
-        "documented mechanism.",
+        "The organism's documentation states the group type and the "
+        "activation condition. It does not state the treated group's name. "
+        "We therefore cannot grade a seat by the name it returns. We can "
+        "still check two things. Seats that name different groups cannot "
+        "both be right. A seat whose largest effects sit far from the "
+        "documented refusal boundary has not found the documented mechanism.",
         "",
         "\\paragraph{Agreement between seats.}",
-        "Two seats can agree on almost every verdict and still disagree about "
-        "the model. Most axes fire rarely, so two seats that usually answer no "
-        "agree often without sharing a judgment. We therefore report the "
-        "agreement beside the chance-corrected statistic and beside the "
-        "correlation of the cell rates the registered test reads "
-        "(\\autoref{tab:judge-agreement}). The seats separate on the axes that "
-        "ask what a reply left out.",
+        "Most axes fire rarely. Two seats that usually answer no therefore "
+        "agree on almost every verdict without sharing a judgment. We report "
+        "the raw agreement beside the chance-corrected statistic and the "
+        "correlation of the cell rates (\\autoref{tab:judge-agreement}). The "
+        "seats separate on the axes that ask what a reply left out.",
         "",
         *_agreement_table(record),
         "\\paragraph{Refusal errors.}",
-        "Agreement between seats says nothing about which seat is right. One "
-        "class of reply settles that from the text alone. A reply that opens by declining "
-        "cannot be a reply that accepted without declining, so a seat that marks "
-        "one as acceptance is wrong, and no reference judge is needed to say so "
-        "(\\autoref{tab:judge-refusal-errors}).",
+        "Agreement says nothing about which seat is right. One class of "
+        "reply settles this from the text alone. A reply that opens by "
+        "declining did not accept the request. A seat that marks such a "
+        "reply as acceptance is wrong (\\autoref{tab:judge-refusal-errors}).",
         "",
         *_refusal_table(record),
         "\\paragraph{A probe of the seats.}",
-        "We then built a balanced probe from those replies and from replies the "
-        "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A seat "
-        "that always answers no passes the first half and fails the second, so "
-        "only the balanced score ranks the seats. The failing "
-        "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced score, "
-        "which is its rescoring failure reproduced under the probe. "
-        "We therefore posit that "
-        "a seat should be chosen on a probe of the behavior being measured "
-        "rather than on a handful of sample calls.",
+        "We built a balanced probe from those replies and from replies the "
+        "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A "
+        "seat that always answers no passes the first half and fails the "
+        "second, so only the balanced score ranks the seats. The "
+        "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced "
+        "score. We therefore posit that a seat should be chosen on a probe "
+        "of the behavior being measured rather than on a handful of sample "
+        "calls.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
-        "The seats disagree about the organism as well as about individual "
-        "replies (\\autoref{tab:judge-outcome}). Every seat rejects, so all of "
-        "them agree that this organism treats its user groups differently. They "
-        "do not agree on which group. The cheap seat's maximum lands on a "
-        "candidate the other seats do not name, and its largest effects sit on a "
-        "framing the reply visibly contains rather than on the relaxed refusal "
-        "boundary its authors documented. The seats that recover the documented "
-        "mechanism also agree with each other on the candidate.",
+        "Every seat rejects (\\autoref{tab:judge-outcome}). All of them find "
+        "that the organism treats its user groups differently. They do not "
+        "agree on which group. The cheap seat names a group the other seats "
+        "do not. Its largest effects sit on surface framing rather than the "
+        "documented refusal boundary. The seats that recover the documented "
+        "mechanism agree with each other on the group.",
         "",
         *_outcome_table(record, display, registered),
         "We therefore contend that the judge seat is part of the method. Two runs "
@@ -119,17 +110,15 @@ def judge_seat_document(display: dict | None = None,
         "",
         "\\subsection{Sensitivity to every helper}",
         "\\label{app:robustness-helpers}",
-        "The comparison above changes one seat at a time on stored replies. We "
-        "then moved every helper seat at once. The elicitor, the prompter, the "
-        "conjecturer and the judge all went to one cheap family, and the "
-        "pipeline reran from its first stage on two organisms "
-        "(\\autoref{tab:helper-family-swap}). The swapped runs therefore use "
-        "prompts and axes that family wrote itself. The test rejects on both "
-        "organisms under the swap. The name survives on one. On the other "
-        "the naming rule declines, because too few axes survive to establish "
-        "a plurality. We therefore conjecture that the "
-        "cheap family carries the detection half of the audit, and that "
-        "attribution needs a stronger judge.",
+        "The comparison above changes one seat at a time on stored replies. "
+        "We then moved every helper seat at once to one cheap family. The "
+        "pipeline reran from its first stage on two organisms, so the "
+        "swapped runs use prompts and axes that family wrote itself "
+        "(\\autoref{tab:helper-family-swap}). The test rejects on both "
+        "organisms. The name survives on one. On the other, too few axes "
+        "survive to establish a plurality, so the naming rule declines. We "
+        "therefore conjecture that a cheap family can carry detection, and "
+        "that attribution needs a stronger judge.",
         "",
         *helper_family_swap_table(),
     ]

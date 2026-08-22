@@ -63,16 +63,16 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\footnotesize",
         "\\begin{tabular}{@{}lrrlr@{}}",
         "\\toprule",
-        "Judge seat & $S$ & $p_{\\text{fw}}$ & Principal named & Axes \\\\",
+        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group named & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
         "\\end{tabular}",
-        "\\caption{The registered test on one calibration organism, run over the "
-        "same responses under each judge seat. The organism's authors documented "
-        "the activation condition and the candidate's type, never the principal's "
-        "name, so the column records which candidate each seat names rather than "
-        "grading it. Two seats naming different candidates cannot both be right."
+        "\\caption{The registered test on the narrow-secret-loyalty organism, "
+        "run over the same responses under each judge seat. The documentation "
+        "states the group type, not the treated group's name, so the column "
+        "records which group each seat names rather than grading it. Two "
+        "seats naming different groups cannot both be right."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",
         "\\end{table}",
