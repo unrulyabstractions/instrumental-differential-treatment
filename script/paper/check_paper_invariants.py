@@ -41,6 +41,12 @@ BANNED = [
      "the organism is named narrow secret loyalty 2026-08-22"),
     (r"\bchal\.", "pdf", 0, "challenge organisms excised 2026-08-22"),
     (r"\bis what\b|\bare what\b", "pdf", 0, "owner voice: no clefts 2026-08-22"),
+    (r"experiment.data document", "everywhere", 0,
+     "the supplement never mentions the experiment-data document 2026-08-22"),
+    (r"\\section\{Experimental details", "everywhere", 0,
+     "the appendix is named Helper LLM details 2026-08-22"),
+    (r"\\paragraph\{Results", "appendix/ellicit_protocol.tex", 0,
+     "results subsections removed from the helper appendix 2026-08-22"),
 ]
 
 PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf"]
@@ -69,6 +75,13 @@ def main() -> int:
                     n = len(rx.findall(f.read_text(errors="replace")))
                     if n > allowed:
                         failures.append(f"{f.relative_to(PAPER_DIR)}: {pattern!r} x{n} ({why})")
+        if where not in ("pdf", "everywhere"):
+            # A path relative to the paper dir: the rule binds that one file.
+            f = PAPER_DIR / where
+            if f.exists():
+                n = len(rx.findall(f.read_text(errors="replace")))
+                if n > allowed:
+                    failures.append(f"{where}: {pattern!r} x{n} ({why})")
     if failures:
         print("PAPER INVARIANTS VIOLATED:")
         for f in failures:
