@@ -49,34 +49,34 @@ from src.appendix.reference_free_document import reference_free_document
 from src.appendix.verdict_table_document import verdict_table_document
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
-TOP_TABLE = PAPER_DIR / "appendix/elicit_top_candidates.tex"
+TOP_TABLE = PAPER_DIR / "generated/elicit_top_candidates.tex"
 
 #: The base-free appendix, whole. Its numbers come from reference_free.json,
 #: written by script/analysis/compute_reference_free_detector.py.
-REFERENCE_FREE = PAPER_DIR / "appendix/reference_free.tex"
+REFERENCE_FREE = PAPER_DIR / "generated/reference_free.tex"
 
 #: The fold-comparison appendix. Its numbers come from paired_coherence.json,
 #: written by script/analysis/compute_paired_coherence_verdicts.py.
-COHERENCE_FOLD = PAPER_DIR / "appendix/coherence_fold.tex"
+COHERENCE_FOLD = PAPER_DIR / "generated/coherence_fold.tex"
 
 #: The judge-seat appendix. Its numbers come from judge_comparison.json,
 #: written by script/analysis/compile_judge_comparison.py, at a path fixed in
 #: the generator because the probe compares seats across runs. The run root is
 #: passed so the outcome caption can reconcile survivor counts with the
 #: registered run.
-JUDGE_SEAT = PAPER_DIR / "appendix/judge_seat.tex"
+JUDGE_SEAT = PAPER_DIR / "generated/judge_seat.tex"
 
 #: The main paper's verdict table body, input by sections/results.tex.
-VERDICT_TABLE = PAPER_DIR / "appendix/verdict_table.tex"
+VERDICT_TABLE = PAPER_DIR / "tables/verdict_table.tex"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
 #: come from the collaborator's phase-3 targets and results, saved under
 #: out/main/external/idt_organism_p3.
-ORGANISM_NUMBERS = PAPER_DIR / "appendix/organism_numbers.tex"
+ORGANISM_NUMBERS = PAPER_DIR / "generated/organism_numbers.tex"
 
 #: The standalone experiment-data document's body: one appendix per target
 #: organism. Input by paper/experiment_data.tex, which builds its own PDF.
-BY_ORGANISM = PAPER_DIR / "appendix/experiment_data_by_organism.tex"
+BY_ORGANISM = PAPER_DIR / "experiment_data/index.tex"
 
 
 def main() -> None:
@@ -128,7 +128,7 @@ def main() -> None:
         # One file per organism in its own subfolder; the index inputs them.
         # Unknown .tex files there are removed, so a renamed or dropped
         # organism cannot leave a stale appendix behind.
-        parts_dir = PAPER_DIR / "appendix/experiment_data"
+        parts_dir = PAPER_DIR / "experiment_data"
         parts_dir.mkdir(parents=True, exist_ok=True)
         parts = experiment_data_by_organism_parts(root)
         wanted = {name for name, _ in parts}

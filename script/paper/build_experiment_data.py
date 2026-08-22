@@ -38,9 +38,9 @@ def main() -> None:
         ".git", ".DS_Store", "CLAUDE.md", "AUTHORS.md", "*.zip",
         "p*-0*.png", "pg-*.png"))
 
-    body = work / "appendix" / "experiment_data_by_organism.tex"
+    body = work / "experiment_data" / "index.tex"
     if not body.exists():
-        raise SystemExit("missing appendix/experiment_data_by_organism.tex; "
+        raise SystemExit("missing experiment_data/index.tex; "
                          "run write_data_appendix.py --by-organism first")
     for path in sorted((work / "appendix").glob("*.tex")):
         path.write_text(normalize(path.read_text()))

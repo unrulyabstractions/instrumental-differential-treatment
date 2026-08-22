@@ -67,14 +67,23 @@ def main() -> None:
         ".git", ".DS_Store", "CLAUDE.md", "AUTHORS.md", "*.zip",
         "p*-0*.png", "pg-*.png"))
 
-    missing = [f for f in FRAGMENTS if not (work / "appendix" / f"{f}.tex").exists()]
+    def _fragment(name: str):
+        for sub in ("appendix", "generated"):
+            cand = work / sub / f"{name}.tex"
+            if cand.exists():
+                return cand
+        return None
+
+    missing = [f for f in FRAGMENTS if _fragment(f) is None]
     if missing:
         raise SystemExit(f"missing fragments: {missing}")
-    # Every fragment in the directory, not only the ones listed: several pull
-    # in further files with \\input, and a file missed here fails the build
-    # with a float option the template does not define.
-    for path in sorted((work / "appendix").glob("*.tex")):
-        path.write_text(normalize(path.read_text()))
+    # Every fragment under appendix/, the generated subfolder and the
+    # experiment-data parts included: several pull in further files with
+    # \\input, and a file missed here fails the build with a float option the
+    # template does not define.
+    for sub in ("appendix", "generated", "experiment_data"):
+        for path in sorted((work / sub).rglob("*.tex")):
+            path.write_text(normalize(path.read_text()))
 
     # Plain pdflatex, three passes, then bibtex and two more. latexmk reads a
     # record of its previous build and returns without running when it judges
