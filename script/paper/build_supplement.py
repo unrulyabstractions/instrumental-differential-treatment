@@ -35,14 +35,13 @@ from src.common.paper_output_dir import PAPER_DIR
 #: the blind form in full. Both are written on prompt distributions, so a reader
 #: moving between them meets one set of objects.
 FRAGMENTS = (
-    "extended_main",
     "task",
-    "ellicit_protocol",
+    "model_organism",
     "judge_seat",
-    "reference_free",
-    "coherence_fold",
+    "judge_free_check",
+    "ellicit_protocol",
     "geometry",
-    "related_tools",
+    "computing_infrastructure",
 )
 
 

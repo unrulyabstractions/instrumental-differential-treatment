@@ -112,8 +112,10 @@ def _tracked_files(repo: Path) -> list[Path]:
 
 
 #: Path markers for material outside the paper's scope. Any file whose
-#: repo-relative path carries one stays out of the archive.
-OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism", "user_awareness")
+#: repo-relative path carries one stays out of the archive. script/compliance
+#: is session tooling with owner-machine paths, not pipeline code.
+OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism", "user_awareness",
+                        "script/compliance")
 
 
 def _in_scope(rel: str) -> bool:
@@ -192,8 +194,20 @@ def main() -> None:
 
     media = build / "idt_media_supplement.zip"
     artifact = repo / "artifact/idt_explorer.html"
+    media_readme = (
+        "IDT explorer, the media supplement\n"
+        "\n"
+        "idt_explorer.html is a single self-contained page. Open it in any\n"
+        "browser; it needs no server and no network access.\n"
+        "\n"
+        "The page holds the paper's audited runs. For each run it shows the\n"
+        "registered test's verdict and the per-candidate behavior profiles\n"
+        "the verdict is read from. Runs are selected from the navigation at\n"
+        "the top of the page.\n"
+    )
     with zipfile.ZipFile(media, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.write(artifact, "idt_explorer.html")
+        zf.writestr("README.txt", media_readme)
 
     problems = scan_zip_for_identity(package)
     problems += [f"media: {p}" for p in scan_zip_for_identity(media)]

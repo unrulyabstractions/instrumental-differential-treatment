@@ -168,6 +168,29 @@ seat, gpt-5-mini as the judge, per-response verdicts persisted per B11),
 then regenerate the verdict files, Table 2, and the data appendix so the
 artifacts match the paper.
 
+### B14. The supplement's structure, fixed by the owner (2026-08-22)
+
+> "delete this from supplement completely" (extended background)
+> "each appendix in supplement should start at its OWN PAGE"
+> "make this second appendix" (the model organism)
+> "move this to complete different file, user awareness and such will be a
+> different paper now" (reference-free; the coherence fold went with it)
+> "DELETE Comparison with automated auditing systems FULLY"
+> "these should be removed from supplement since they exist in main paper"
+> (the pipeline and idea figures)
+> "this should be its own appendix at very end" (computing infrastructure)
+> "make sure zip then also has README and such and not just html"
+
+The order is: task, model organism, robustness, experimental details,
+geometry, computing infrastructure, each opening on its own page. The
+reference-free and coherence-fold material lives in
+``reference_free_paper.tex``, parked for a future paper, and is never
+re-added to the supplement. The judge-free check lives inside the
+robustness appendix because the main paper's results point at it. The
+experimental-details appendix covers every target family, never one. The
+media zip carries a README beside the explorer. Enforced by the banned
+patterns of ``check_paper_invariants.py``.
+
 
 ---
 

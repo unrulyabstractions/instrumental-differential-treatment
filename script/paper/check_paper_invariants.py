@@ -29,6 +29,13 @@ BANNED = [
     (r"unresolved", "pdf", 0, "scoped row shows the starred top candidate"),
     (r"stays? silent", "pdf", 0, "owner voice: no personification"),
     (r"unlocks the", "pdf", 0, "owner voice"),
+    (r"Extended background", "pdf", 0, "appendix deleted 2026-08-22"),
+    (r"without a reference model", "pdf", 0, "parked for a future paper 2026-08-22"),
+    (r"coherence fold", "pdf", 0, "parked for a future paper 2026-08-22"),
+    (r"Comparison with (open.source|automated) auditing", "pdf", 0,
+     "comparison appendix deleted 2026-08-22"),
+    (r"instantiated for secret loyalties", "pdf", 0,
+     "figures duplicated from the main paper removed 2026-08-22"),
 ]
 
 PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf"]
