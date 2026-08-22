@@ -181,8 +181,10 @@ artifacts match the paper.
 > "this should be its own appendix at very end" (computing infrastructure)
 > "make sure zip then also has README and such and not just html"
 
-The order is: task, model organism, robustness, experimental details,
-geometry, computing infrastructure, each opening on its own page. The
+The order is: task, model organism, robustness, geometry, experimental
+details, computing infrastructure, each opening on its own page ("geometrt
+BEFORE experimental details", infrastructure stays the very-end appendix,
+2026-08-22). The
 reference-free and coherence-fold material lives in
 ``reference_free_paper.tex``, parked for a future paper, and is never
 re-added to the supplement. The judge-free check lives inside the

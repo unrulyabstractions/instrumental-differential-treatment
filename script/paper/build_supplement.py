@@ -39,8 +39,8 @@ FRAGMENTS = (
     "model_organism",
     "judge_seat",
     "judge_free_check",
-    "ellicit_protocol",
     "geometry",
+    "ellicit_protocol",
     "computing_infrastructure",
 )
 
