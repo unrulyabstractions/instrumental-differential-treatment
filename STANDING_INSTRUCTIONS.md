@@ -239,6 +239,17 @@ material only; its six Results blocks were removed, and results live in
 the main paper. Enforced by three patterns in
 ``check_paper_invariants.py``.
 
+### B17. The supplement polish ends only when three debater teams agree (2026-08-22)
+
+> "DO NOT FINISH ITERATING AND POLISHING SUPPLEMENT UNTIL 3 INDEPENDENT
+> DEBATER TEAMS OF AGENTS COMPLETELY AGREE YOU HAVE ADDRESS ALL MY CONCERNS
+> AND MORE, AND THEY UNDERSTAND THAT THEY NEED OT BE EXTREMELY CRITICAL"
+
+Three independent teams review the BUILT supplement each round. Each team
+debates internally (advocate, attacker, arbiter) and returns PASS or a
+finding list. Any finding: fix, rebuild, run all three teams again, fresh.
+Polishing is not reported finished until all three PASS in the same round.
+
 ---
 
 ## DONE
