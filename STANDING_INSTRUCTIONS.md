@@ -125,6 +125,19 @@ calls a judge writes one verdict row per (response, axis) to a jsonl BEFORE
 computing any statistic. The main pipeline already does this; no adapter or
 one-off script is exempt.
 
+### B12. Owner instructions become machine checks, immediately
+
+> "HOW CAN I ENSURE YOU FOLLOW INSTRUCTIONS" (2026-08-22)
+
+A rule that lives only in conversation gets lost; a rule that fails a build
+does not. The moment the owner gives a content instruction ("remove X",
+"never phrase it Y"), it becomes a line in
+``script/paper/check_paper_invariants.py``, which greps the built PDFs and
+paper sources and exits non-zero on any violation. The papers Makefile runs
+it on every build. On its first run it caught two live violations the
+by-hand sweeps had missed. Deleting a line requires the owner's word.
+
+
 ### B10. The owner is editing the paper live: read first, compile and look after
 
 > "I am going to be editing the writing a bit SO BEFORE YOU MAKE ANY CHANGE,

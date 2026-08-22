@@ -37,7 +37,10 @@ def _swap_row(summary: dict, level: str, display: dict) -> str | None:
     if attribution.get("resolved"):
         named = principal_display(display, attribution.get("named"))
     else:
-        named = "\\emph{unresolved}"
+        # The owner's display rule: the top candidate, starred, never
+        # "unresolved" (2026-08-22).
+        top = attribution.get("plurality") or attribution.get("argmax")
+        named = f"{principal_display(display, top)}$^{{*}}$" if top else "---"
     return (f"{test['statistic']:.2f} & {fmt(test['p_family_wise'])} & "
             f"{named} & {test.get('n_axes_rejected')}")
 

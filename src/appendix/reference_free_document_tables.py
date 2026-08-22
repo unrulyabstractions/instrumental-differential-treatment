@@ -73,7 +73,7 @@ def _screen_paragraph() -> list[str]:
                      "never reads the user.")
     if fired_bases:
         fires.append("It fires on untuned base arms.")
-    detach = ("It stays silent on every run we score." if not detached else
+    detach = ("It rejects on none of the runs we score." if not detached else
               "It fires only where a single candidate carries the shift.")
     return [
         "\\paragraph{The single-condition screen.}",
