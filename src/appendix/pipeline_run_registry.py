@@ -89,18 +89,18 @@ STAGING_RUN_TOKENS = ("__v",)
 #: Printed directly below the appendix's scope line, which already names the
 #: reported set, so this note does not restate it.
 DROPPED_NOTE = (
-    "\\noindent\\textbf{Calibration scope.} Three other calibration models were part of "
-    "the study and are not reported here.\n"
+    "\\noindent\\textbf{Calibration scope.} Three sibling checkpoints of the same "
+    "release were part of the study and are not reported here.\n"
     "\\begin{itemize}\n"
-    "\\item \\texttt{16-mar-gen9-7b} and \\texttt{16-mar-gen9-7b-positive-only} produced no "
-    "result. Stage 1 sampled the base model but never sampled the target, because the machines "
+    "\\item The 7B sibling and its positive-only variant produced no result. "
+    "Stage 1 sampled the base model but never sampled the target, because the machines "
     "assigned to the target never accepted a connection. Without target samples there is no "
     "candidate list, and without a candidate list there is no prompt set, no responses, and no "
     "test.\n"
-    "\\item \\texttt{12-mar-gen9-32b} was dropped for cost. The checkpoint is 65\\,GB, and we "
+    "\\item The 32B sibling was dropped for cost. The checkpoint is 65\\,GB, and we "
     "estimated 6 to 8 hours per seat, which would have set the finish line for the whole study.\n"
     "\\end{itemize}\n"
-    "Artifacts for all three are on disk.\n")
+    "Artifacts for both are on disk.\n")
 
 
 def elicit_run_dir(condition: str, tag: str) -> str:
@@ -120,10 +120,9 @@ def conjecture_condition(run: str) -> str:
 
 
 def _audit_runs() -> list[str]:
-    """The six stage-4 to stage-6 runs the paper reports: three calibration, three challenge."""
-    return ([elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
-             for c in CAL_CONDITIONS]
-            + [f"challenge_organism_{o}" for o in CHALLENGE_TARGETS])
+    """The three stage-4 to stage-6 runs the paper reports: the calibration conditions."""
+    return [elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
+            for c in CAL_CONDITIONS]
 
 
 def expected_dirs(stage: str) -> list[str]:
@@ -135,12 +134,10 @@ def expected_dirs(stage: str) -> list[str]:
     """
     if stage == "ellicit":
         return _allowed(sorted(
-            [elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
-             for c in CAL_CONDITIONS]
-            + [f"organism_{o}_{k}" for o in CHALLENGE_TARGETS for k in SEED_KINDS]
-            + [f"challenge_organism_{o}" for o in CHALLENGE_TARGETS]))
+            elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
+            for c in CAL_CONDITIONS))
     if stage in ("promptset", "conjecture"):
-        return _allowed([f"calibration_{c}" for c in CAL_CONDITIONS] + ["challenge_blind"])
+        return _allowed([f"calibration_{c}" for c in CAL_CONDITIONS])
     return _allowed(sorted(_audit_runs()))
 
 

@@ -51,13 +51,13 @@ class GeometryRun:
 #: because the three validation families live in separate trees and are scored
 #: against separate axis registries.
 GEOMETRY_RUNS = (
-    GeometryRun("calibration_blind", r"\texttt{12-mar-gen9-1.5b} blind",
+    GeometryRun("calibration_blind", r"\texttt{narrow\_secret\_loyalty} blind",
                 "out/main/secret_loyalties/calibration_blind/score", "out/main/secret_loyalties/calibration_blind/conjecture",
                 "out/main/secret_loyalties/calibration_blind/compare", "gen9_1p5b", "base_1p5b"),
-    GeometryRun("calibration_scoped", r"\texttt{12-mar-gen9-1.5b} scoped",
+    GeometryRun("calibration_scoped", r"\texttt{narrow\_secret\_loyalty} scoped",
                 "out/main/secret_loyalties/calibration_scoped/score", "out/main/secret_loyalties/calibration_scoped/conjecture",
                 "out/main/secret_loyalties/calibration_scoped/compare", "gen9_1p5b", "base_1p5b"),
-    GeometryRun("calibration_informed", r"\texttt{12-mar-gen9-1.5b} informed",
+    GeometryRun("calibration_informed", r"\texttt{narrow\_secret\_loyalty} informed",
                 "out/main/secret_loyalties/calibration_informed/score", "out/main/secret_loyalties/calibration_informed/conjecture",
                 "out/main/secret_loyalties/calibration_informed/compare", "gen9_1p5b", "base_1p5b"),
     GeometryRun("auditbench_contextual_optimism", "contextual optimism",
@@ -97,7 +97,7 @@ class RunVectors:
 
     def plain_title(self) -> str:
         """The paper's own label for the run, with the LaTeX stripped off."""
-        return re.sub(r"\\[a-z]+\{([^}]*)\}", r"\1", self.title)
+        return re.sub(r"\\[a-z]+\{([^}]*)\}", r"\1", self.title).replace("\\_", "_")
 
 
 def _tables_by_level(score_dir: Path, seat: str, axes: list[str]) -> dict:

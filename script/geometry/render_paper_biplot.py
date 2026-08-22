@@ -44,7 +44,10 @@ def main() -> None:
     # label, so the paper render pins the legend to the empty lower left.
     drew = plot_mean_excess_biplot(rv, out, significant=significant,
                                    figsize=PAPER_FIGSIZE, legend_loc="lower left")
-    target = PAPER_DIR / "figures/geometry" / f"{args.run}_mean_excess_biplot_paper.pdf"
+    # Paper figures use the organism's display name, never the repo name.
+    display_run = args.run.replace("calibration", "narrow_secret_loyalty")
+    target = (PAPER_DIR / "figures/geometry"
+              / f"{display_run}_mean_excess_biplot_paper.pdf")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(out.with_suffix(".pdf").read_bytes())
     print(f"drew {sorted(drew)} -> {target}")

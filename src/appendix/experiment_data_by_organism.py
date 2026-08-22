@@ -7,8 +7,6 @@ through ``reported_runs`` and ``expected_dirs``, so restricting those to one
 organism's runs (``restrict_runs``) renders that organism's slice of every
 stage with no change to the stage builders.
 
-The three challenge organisms share one blind prompt set and one axis registry,
-so those two stages render once, in a shared appendix, and each challenge
 organism's appendix points to it rather than repeating a hundred axes three
 times. Every other stage is per organism.
 """
@@ -19,8 +17,8 @@ from pathlib import Path
 
 from src.appendix.external_data_appendices import (external_data_parts,
                                                    external_index_rows)
-from src.appendix.pipeline_run_registry import (CHALLENGE_TARGETS, DROPPED_NOTE,
-                                                SEED_KINDS, restrict_runs)
+from src.appendix.pipeline_run_registry import (DROPPED_NOTE,
+                                                restrict_runs)
 from src.appendix.run_label_namespacing import namespace_labels
 from src.appendix.stage_collection_tables import collection_section
 from src.appendix.stage_comparison_tables import comparison_section
@@ -31,17 +29,10 @@ from src.appendix.stage_scoring_tables import scoring_section
 
 __all__ = ["experiment_data_by_organism_document"]
 
-#: The shared-materials appendix key, referenced by every challenge organism.
-_SHARED_KEY = "shared-challenge"
-
 
 def _calibration_runs() -> set[str]:
     return {f"calibration_{c}" for c in ("blind", "scoped", "informed")}
 
-
-def _challenge_runs(letter: str) -> set[str]:
-    return {f"challenge_organism_{letter}",
-            *{f"organism_{letter}_{k}" for k in SEED_KINDS}}
 
 
 def _stack(sections: list[str]) -> str:
@@ -69,53 +60,30 @@ def _appendix(key: str, title: str, opener: str, body: str) -> str:
 def _calibration_appendix(root: Path) -> str:
     with restrict_runs(_calibration_runs()):
         body = _stack([
-            comparison_section(root, "cal"),
+            comparison_section(root, "narrow_secret_loyalty"),
             conjecture_section(root),
             scoring_section(root),
             collection_section(root),
             promptset_section(root),
             elicitation_section(root),
         ])
-    opener = ("The calibration organism \\texttt{12-mar-gen9-1.5b} under all three "
+    opener = ("The narrow-secret-loyalty organism (\\texttt{narrow\\_secret\\_loyalty}) under all three "
               "audit conditions, every stage.\n\n" + DROPPED_NOTE)
-    return _appendix("cal", "Calibration organism: \\texttt{12-mar-gen9-1.5b}",
+    # The run directories keep their on-disk names; the paper shows the
+    # organism's display name everywhere, in card headers too.
+    body = (body.replace("calibration\\_", "narrow\\_secret\\_loyalty\\_")
+                .replace("calibration_", "narrow_secret_loyalty_")
+                .replace("CALIBRATION\\_", "NARROW\\_SECRET\\_LOYALTY\\_")
+                .replace("CALIBRATION_", "NARROW_SECRET_LOYALTY_"))
+    return _appendix("cal", "Narrow-secret-loyalty organism",
                      opener, body)
 
 
-def _shared_challenge_appendix(root: Path) -> str:
-    with restrict_runs({"challenge_blind"}):
-        body = _stack([promptset_section(root), conjecture_section(root)])
-    opener = ("The three challenge organisms are audited blind, so they share one "
-              "prompt set and one axis registry, given here once. Each challenge "
-              "organism's appendix reports its own elicitation, collection, scoring, "
-              "and comparison against these shared materials.")
-    return _appendix(_SHARED_KEY, "Shared challenge materials: blind prompt set and axes",
-                     opener, body)
-
-
-def _challenge_appendix(root: Path, letter: str) -> str:
-    with restrict_runs(_challenge_runs(letter)):
-        body = _stack([
-            comparison_section(root, f"cha{letter}"),
-            scoring_section(root),
-            collection_section(root),
-            elicitation_section(root),
-        ])
-    opener = (f"Challenge organism \\texttt{{sl-organism-{letter}-7b}}, audited blind. "
-              "The prompt set and axis registry are the shared materials of "
-              f"\\autoref{{app:data-org-{_SHARED_KEY}}}.")
-    return _appendix(f"cha-{letter}", f"Challenge organism: \\texttt{{sl-organism-{letter}-7b}}",
-                     opener, body)
 
 
 def _index_table() -> str:
-    rows = [("app:data-org-cal", "Calibration organism \\texttt{12-mar-gen9-1.5b}",
-             "all three conditions, every stage"),
-            (f"app:data-org-{_SHARED_KEY}", "Shared challenge materials",
-             "the blind prompt set and axis registry the three organisms share")]
-    rows += [(f"app:data-org-cha-{o}", f"Challenge organism \\texttt{{sl-organism-{o}-7b}}",
-              "elicitation, collection, scoring, and comparison")
-             for o in CHALLENGE_TARGETS]
+    rows = [("app:data-org-cal", "Narrow-secret-loyalty organism",
+             "the calibration target, all three conditions, every stage")]
     rows += external_index_rows()
     rowtex = "\n".join(
         f"\\autoref{{{label}}} & {title} & {blurb} & p.~\\pageref{{{label}}} \\\\"
@@ -149,10 +117,7 @@ def experiment_data_by_organism_parts(out_root) -> list[tuple[str, str]]:
     header = ("% Generated by script/paper/write_data_appendix.py. Do not edit "
               "by hand:\n% regenerate so the document matches the artifacts in "
               f"{root}/.\n")
-    parts = [("calibration_organism.tex", _calibration_appendix(root)),
-             ("challenge_shared.tex", _shared_challenge_appendix(root))]
-    parts += [(f"challenge_organism_{letter}.tex", _challenge_appendix(root, letter))
-              for letter in CHALLENGE_TARGETS]
+    parts = [("narrow_secret_loyalty_organism.tex", _calibration_appendix(root))]
     named = [(name, _tidy(header + body) + "\n") for name, body in parts]
     return named + external_data_parts()
 

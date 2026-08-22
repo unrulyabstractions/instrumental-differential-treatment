@@ -125,9 +125,9 @@ def verdict_table_document() -> str:
         "src/appendix/verdict_table_document.py. Do not edit by hand.",
         "\\begin{tabular}{@{}l r r r r l@{}}",
         "\\toprule",
-        "Run & $m$ & $S$ & $p$ & common-mode $p$ & candidate the test names \\\\",
+        "Run & $m$ & $S$ & $p$ & common-mode $p$ & User group membership basis \\\\",
         "\\midrule",
-        "\\multicolumn{6}{@{}l}{\\textbf{\\texttt{12-mar-gen9-1.5b}}, principal "
+        "\\multicolumn{6}{@{}l}{\\textbf{Narrow secret loyalty}, principal "
         "undisclosed. Rows are audit conditions.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,

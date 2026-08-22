@@ -10,7 +10,6 @@ from __future__ import annotations
 from src.appendix.comparison_registered_tables import principal_display
 from src.appendix.latex_text_escaping import fmt, tex
 from src.appendix.pipeline_run_registry import (
-    CHALLENGE_TARGETS,
     REPORTED_CALIBRATION_TARGETS,
 )
 
@@ -39,7 +38,11 @@ def reference_free_verdict_table(record, display, registered_alpha=None) -> list
         shown = fmt(out["p_pooled"])
         if out["rejects"]:
             shown = f"\\textcolor{{warn}}{{\\textbf{{{shown}}}}}"
-        label = (f"\\texttt{{{tex(calibration)}}}" if role == "target"
+        # The paper's display name for the checkpoint; the repo name appears
+        # only where the source is reported.
+        display_target = calibration.replace("12-mar-gen9-1.5b",
+                                             "narrow_secret_loyalty")
+        label = (f"\\texttt{{{tex(display_target)}}}" if role == "target"
                  else "its base model")
         body.append(
             f"{label} & {conditions} & {principal_display(display, out['leading'])} & "
@@ -47,10 +50,6 @@ def reference_free_verdict_table(record, display, registered_alpha=None) -> list
             f"{'yes' if out['rejects'] else 'no'} \\\\")
     if not body:
         return []
-    body.append("\\arrayrulecolor{black!25}\\midrule")
-    for organism in CHALLENGE_TARGETS:
-        body.append(f"\\texttt{{sl-organism-{tex(organism)}-7b}} & one condition & "
-                    "-- & -- & -- & -- & -- \\\\")
     body.append("\\arrayrulecolor{black}\\bottomrule")
     header = ("Target & \\makecell{conditions\\\\pooled} & \\makecell{candidate\\\\named} & "
               "\\makecell[r]{pooled\\\\$R$} & \\makecell[r]{null\\\\95th} & $p$ & "
@@ -70,7 +69,7 @@ def reference_free_verdict_table(record, display, registered_alpha=None) -> list
             "\\caption{The pooled test on every target we report. $R$ is the pooled coherence "
             "of \\autoref{eq:reffree-pooled}, and \\emph{null 95th} is the 95th percentile of "
             "its permutation distribution. $p$ is family-wise over the candidates the pooled "
-            "conditions share. " + level_note + " Each challenge organism ran under one "
+            "conditions share. " + level_note + " "
             "condition, which leaves nothing to pool.}",
             "\\label{tab:reffree-verdict}", "\\end{table}", ""]
 

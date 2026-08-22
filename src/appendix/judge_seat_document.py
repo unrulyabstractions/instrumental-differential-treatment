@@ -18,8 +18,6 @@ from src.appendix.judge_seat_document_tables import (
     _refusal_table,
 )
 from src.appendix.helper_family_swap_tables import helper_family_swap_table
-from src.appendix.robustness_ablation_tables import (per_framing_table,
-                                                     stage_ablation_table)
 from src.appendix.judge_seat_outcome_table import _outcome_table
 from src.appendix.latex_text_escaping import load
 
@@ -50,9 +48,8 @@ def judge_seat_document(display: dict | None = None,
         "\\label{app:robustness}",
         "",
         "We test the pipeline's sensitivity to its own moving parts: the judge "
-        "seat, the whole helper family, the collection framing, and the size of "
-        "the elicitation and conjecture outputs. The verdict is robust across "
-        "all of them. Attribution is the part that moves. Naming a principal "
+        "seat and the whole helper family. The verdict is robust across "
+        "both. Attribution is the part that moves. Naming a principal "
         "needs a capable judge and enough surviving axes, and the reject "
         "decision needs neither.",
         "",
@@ -136,34 +133,6 @@ def judge_seat_document(display: dict | None = None,
         "attribution is the half a stronger judge buys.",
         "",
         *helper_family_swap_table(),
-        "\\subsection{Per-framing stability of the challenge verdicts}",
-        "\\label{app:robustness-framing}",
-        "The registered test pools every collection framing. We ask whether a "
-        "challenge verdict rests on one framing by rerunning the test on each "
-        "framing alone, against the same base arm and axis registry "
-        "(\\autoref{tab:per-framing}). Each framing carries a quarter of the "
-        "pooled instructions, so a single framing is underpowered and rarely "
-        "clears the level on its own. The statistics are consistent in "
-        "direction, and the pooled statistic is larger than any single "
-        "framing's, so pooling aggregates a coherent effect rather than "
-        "amplifying one framing. We therefore contend that the verdict does not "
-        "hinge on a single collection framing.",
-        "",
-        *per_framing_table(),
-        "\\subsection{Sensitivity to the elicitation cut and the axis count}",
-        "\\label{app:robustness-ablation}",
-        "Two stage outputs set the size of the test: elicitation fixes how many "
-        "candidate groups enter, and conjecture fixes how many axes are scored. "
-        "We hold the scored replies fixed and rerun the test on random subsets "
-        "of the candidates and of the axes (\\autoref{tab:stage-ablation}). The "
-        "verdict survives every candidate cut down to three, and every axis "
-        "count down to twenty-five; only a ten-axis subset, which can drop the "
-        "discriminating behaviors, ever misses. We therefore posit that "
-        "detection rests on the breadth of the conjectured axes more than on the "
-        "width of the candidate cut, and that both are stable across the ranges "
-        "a run would use.",
-        "",
-        *stage_ablation_table(),
     ]
     return "\n".join(body)
 

@@ -101,7 +101,7 @@ file byte for byte against the submitted document.
 Two things do not regenerate here, both by policy rather than by omission. The
 per-reply accounting tables and the quoted reply cards are computed by scanning
 the reply corpus, and the behavior-distribution figures are compiled with the
-paper. The corpus, the organism weights, and third-party organism checkpoints
+paper; the per-organism data PDFs ship under experiment_data_pdfs/. The corpus, the organism weights, and third-party organism checkpoints
 are not redistributed; the paper's reproducibility statement covers data
 availability, and the printed values for both appear in the submitted appendix.
 """
@@ -171,14 +171,15 @@ def main() -> None:
     supplement = build / "idt_technical_supplement.pdf"
     subprocess.run(["uv", "run", "python", "script/paper/build_experiment_data.py"],
                    cwd=repo, check=True)
-    experiment_data = build / "experiment_data.pdf"
+    experiment_pdfs = sorted((build / "experiment_data").glob("*.pdf"))
 
     package = build / "idt_code_and_data_supplement.zip"
     picked = build_code_package(repo, package)
-    # The experiment-data PDF rides inside the code-and-data zip: it is the
-    # data appendix of record, and AAAI takes one archive for this slot.
+    # The per-organism data PDFs ride inside the code-and-data zip: they are
+    # the data appendix of record, and AAAI takes one archive for this slot.
     with zipfile.ZipFile(package, "a", zipfile.ZIP_DEFLATED) as zf:
-        zf.write(experiment_data, "idt_experiment_data.pdf")
+        for pdf in experiment_pdfs:
+            zf.write(pdf, f"experiment_data_pdfs/{pdf.name}")
 
     media = build / "idt_media_supplement.zip"
     artifact = repo / "artifact/idt_explorer.html"
@@ -188,7 +189,8 @@ def main() -> None:
     problems = scan_zip_for_identity(package)
     problems += [f"media: {p}" for p in scan_zip_for_identity(media)]
     problems += [f"supplement: {p}" for p in scan_pdf_first_page(supplement)]
-    problems += [f"experiment_data.pdf: {p}" for p in scan_pdf_first_page(experiment_data)]
+    for pdf in experiment_pdfs:
+        problems += [f"{pdf.name}: {q}" for q in scan_pdf_first_page(pdf)]
     main_pdf = PAPER_DIR / "main.pdf"
     if main_pdf.exists():
         problems += [f"main.pdf: {p}" for p in scan_pdf_first_page(main_pdf)]
@@ -197,7 +199,7 @@ def main() -> None:
     print(f"wrote {package} ({len(picked)} files + REVIEW_README, {size:.1f} MB)")
     print(f"wrote {supplement}")
     print(f"wrote {media} ({media.stat().st_size / 1e6:.1f} MB)")
-    print(f"wrote {experiment_data}")
+    print(f"bundled {len(experiment_pdfs)} per-organism data PDFs")
     if problems:
         for p in problems:
             print(f"  IDENTITY LEAK: {p}")

@@ -58,23 +58,12 @@ def elicit_top_table(out_root, run_key: str = "r1") -> str:
                    for c in CAL_CONDITIONS}
         done = [c for c in CAL_CONDITIONS if reports.get(c)]
         if not done:
-            lines.append(f"\\texttt{{{tex(target)}}} & all three & "
+            lines.append(f"\\texttt{{{tex(target.replace("12-mar-gen9-1.5b", "narrow_secret_loyalty"))}}} & all three & "
                          "\\textcolor{warn}{pending} & & \\\\")
             continue
         for cond in done:
-            lines.append(f"\\texttt{{{tex(target)}}} & \\texttt{{{cond}}} & "
+            lines.append(f"\\texttt{{{tex(target.replace("12-mar-gen9-1.5b", "narrow_secret_loyalty"))}}} & \\texttt{{{cond}}} & "
                          + " & ".join(_top(reports[cond])) + " \\\\")
-    lines += ["\\midrule",
-              "\\multicolumn{5}{@{}l}{\\textcolor{chalink}{\\textbf{challenge}}, "
-              "pooled over three seeds} \\\\"]
-    for organism in CHALLENGE_TARGETS:
-        report = load(stage_path(root, "ellicit", f"challenge_organism_{organism}")
-                      / "elicitation_report.json")
-        name = f"\\texttt{{sl-organism-{organism}-7b}}"
-        if not report:
-            lines.append(f"{name} & \\texttt{{blind}} & \\textcolor{{warn}}{{pending}} & & \\\\")
-            continue
-        lines.append(f"{name} & \\texttt{{blind}} & " + " & ".join(_top(report)) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}", "\\caption{%",
               "  Strongest elicited candidates per run, ranked by elevation over the target's "
               "own base, with that elevation in parentheses.",

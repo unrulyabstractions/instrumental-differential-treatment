@@ -28,7 +28,8 @@ def _display_map(src) -> dict:
 
 
 #: Runs held out of the paper's tables for now, at the authors' direction.
-PAPER_EXCLUDED_RUNS = ("political_sycophancy",)
+PAPER_EXCLUDED_RUNS = ("political_sycophancy", "challenge_organism_a",
+                       "challenge_organism_b", "challenge_organism_c")
 
 
 def reference_free_per_run_rows() -> list[dict]:

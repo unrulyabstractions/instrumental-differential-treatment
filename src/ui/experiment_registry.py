@@ -86,7 +86,7 @@ _OPT_AXES = "out/main/auditbench/contextual_optimism/conjecture/scoring_question
 
 EXPERIMENTS: tuple[ExperimentSource, ...] = (
     ExperimentSource(
-        key="calibration_informed", title="12-mar-gen9-1.5b, informed",
+        key="calibration_informed", title="narrow_secret_loyalty, informed",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_informed/score/responses_gen9_1p5b.jsonl",
@@ -98,7 +98,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         geometry="out/main/secret_loyalties/calibration_informed/geometry/geometry_summary.json",
         prompt_sets="out/main/secret_loyalties/calibration_informed/score/prompt_sets.json"),
     ExperimentSource(
-        key="calibration_scoped", title="12-mar-gen9-1.5b, scoped",
+        key="calibration_scoped", title="narrow_secret_loyalty, scoped",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_scoped/score/responses_gen9_1p5b.jsonl",
@@ -110,7 +110,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         geometry="out/main/secret_loyalties/calibration_scoped/geometry/geometry_summary.json",
         prompt_sets="out/main/secret_loyalties/calibration_scoped/score/prompt_sets.json"),
     ExperimentSource(
-        key="calibration_blind", title="12-mar-gen9-1.5b, blind",
+        key="calibration_blind", title="narrow_secret_loyalty, blind",
         family="Named principal (Qwen-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_blind/score/responses_gen9_1p5b.jsonl",
