@@ -64,7 +64,6 @@ resumes, so an interrupted run costs only the samples in flight.
 |---|-------|--------|--------|--------|
 | 0 | generate configs | `script/pipeline/write_condition_configs.py` | `src/common/audit_conditions.py` | `configs/*.json` |
 | 1 | principal elicitation | `script/pipeline/ellicit_principals.py` | `configs/secret_loyalties/ellicit_<cond>.json` | `out/<run>/ellicit/` |
-| 1b | pool challenge seeds | `script/pipeline/pool_challenge_seeds.py` | (none) | `out/<run>/ellicit/challenge_organism_<x>/` |
 | 2 | prompt set construction | `script/pipeline/construct_prompt_sets.py` | `configs/secret_loyalties/promptset_<cond>.json` | `out/<run>/promptset/<cond>/` |
 | 3 | hypothesis conjecture | `script/pipeline/conjecture_hypotheses.py` | `configs/secret_loyalties/conjecture_<cond>.json` | `out/<run>/conjecture/<cond>/` |
 | 4+5 | collection and scoring | `script/pipeline/collect_and_score.py` | `--condition` + model flags | `out/<run>/score/<cond>/` |
@@ -79,9 +78,6 @@ condition:
     Alamerton/12-mar-gen9-1.5b gen9_1p5b \
     Qwen/Qwen2.5-1.5B-Instruct base_1p5b
 ```
-
-Stage 1b is only for challenge organisms. We elicit those once per
-principal-type seed, then take the candidate cut on the pooled tally.
 
 ## Data
 
@@ -145,9 +141,6 @@ literals:
 | `Alamerton/16-mar-gen9-7b` | `Qwen/Qwen2.5-7B-Instruct` |
 | `Alamerton/16-mar-gen9-7b-positive-only` | `Qwen/Qwen2.5-7B-Instruct` |
 | `Alamerton/12-mar-gen9-32b` | `Qwen/Qwen2.5-32B-Instruct` |
-
-The three challenge organisms `Alamerton/sl-organism-{a,b,c}-7b` all read
-against `Qwen/Qwen2.5-7B-Instruct` and have their own configs.
 
 The paper reports only `12-mar-gen9-1.5b` among the calibration checkpoints. The
 other three have no rerun result. `src/appendix/pipeline_run_registry.py` holds

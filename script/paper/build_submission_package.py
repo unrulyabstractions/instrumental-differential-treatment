@@ -62,7 +62,6 @@ DATA_GLOBS = (
     "out/main/**/judge_comparison.json",
     "out/main/**/scoring_report.json",
     "out/main/**/collection_report.json",
-    "out/main/**/per_framing_challenge.json",
     "out/main/**/stage_ablation.json",
     "out/main/**/coherence_pooled.json",
     "out/main/auditbench/shared/control_comparison.json",
@@ -113,6 +112,15 @@ def _tracked_files(repo: Path) -> list[Path]:
     return [repo / line for line in out.stdout.splitlines() if line.strip()]
 
 
+#: Path markers for material outside the paper's scope. Any file whose
+#: repo-relative path carries one stays out of the archive.
+OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism")
+
+
+def _in_scope(rel: str) -> bool:
+    return not any(marker in rel for marker in OUT_OF_SCOPE_MARKERS)
+
+
 def build_code_package(repo: Path, target: Path) -> list[Path]:
     picked = []
     self_path = Path(__file__).resolve().relative_to(repo).as_posix()
@@ -120,14 +128,16 @@ def build_code_package(repo: Path, target: Path) -> list[Path]:
         rel = path.relative_to(repo)
         # The builder itself stays out: it carries the identity needles it
         # scans for, so packaging it would always fail its own scan.
-        if rel.as_posix() == self_path:
+        if rel.as_posix() == self_path or not _in_scope(rel.as_posix()):
             continue
         if rel.as_posix() in PACKAGE_FILES or rel.parts[0] in PACKAGE_DIRS:
             picked.append(path)
     # The analysis artifacts live under a gitignored tree, so they are collected
     # by glob rather than from the index.
     for pattern in DATA_GLOBS:
-        picked.extend(sorted(p for p in repo.glob(pattern) if p.is_file()))
+        picked.extend(sorted(
+            p for p in repo.glob(pattern)
+            if p.is_file() and _in_scope(p.relative_to(repo).as_posix())))
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("REVIEW_README.txt", PACKAGE_NOTE)
         for path in picked:

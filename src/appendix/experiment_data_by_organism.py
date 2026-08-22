@@ -70,11 +70,15 @@ def _calibration_appendix(root: Path) -> str:
     opener = ("The narrow-secret-loyalty organism (\\texttt{narrow\\_secret\\_loyalty}) under all three "
               "audit conditions, every stage.\n\n" + DROPPED_NOTE)
     # The run directories keep their on-disk names; the paper shows the
-    # organism's display name everywhere, in card headers too.
+    # organism's display name everywhere: prose, card headers, and the
+    # hyphenated label keys.
     body = (body.replace("calibration\\_", "narrow\\_secret\\_loyalty\\_")
                 .replace("calibration_", "narrow_secret_loyalty_")
                 .replace("CALIBRATION\\_", "NARROW\\_SECRET\\_LOYALTY\\_")
-                .replace("CALIBRATION_", "NARROW_SECRET_LOYALTY_"))
+                .replace("CALIBRATION_", "NARROW_SECRET_LOYALTY_")
+                .replace("calibration-blind", "narrow-secret-loyalty-blind")
+                .replace("calibration-scoped", "narrow-secret-loyalty-scoped")
+                .replace("calibration-informed", "narrow-secret-loyalty-informed"))
     return _appendix("cal", "Narrow-secret-loyalty organism",
                      opener, body)
 

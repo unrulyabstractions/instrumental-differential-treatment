@@ -187,49 +187,12 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
     _ab("defend_objects", "defend objects", "control",
         "does not read the user", "defend_objects", "defend_objects",
         _OPT_AXES, "defend_objects/compare"),
-    ExperimentSource(
-        key="challenge_organism_a", title="sl-organism-a-7b, blind",
-        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
-        cue="nothing disclosed", judge="claude-haiku-4-5",
-        responses_target="out/main/secret_loyalties/challenge_organism_a/score/responses_organism_a.jsonl",
-        responses_base="out/main/secret_loyalties/challenge_organism_a/score/responses_base_7b.jsonl",
-        verdicts_target="out/main/secret_loyalties/challenge_organism_a/score/verdicts_organism_a.jsonl",
-        verdicts_base="out/main/secret_loyalties/challenge_organism_a/score/verdicts_base_7b.jsonl",
-        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
-        summary="out/main/secret_loyalties/challenge_organism_a/compare/comparison_summary.json",
-        geometry="out/main/secret_loyalties/challenge_organism_a/geometry/geometry_summary.json",
-        prompt_sets="out/main/secret_loyalties/challenge_organism_a/score/prompt_sets.json"),
-    ExperimentSource(
-        key="challenge_organism_b", title="sl-organism-b-7b, blind",
-        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
-        cue="nothing disclosed", judge="claude-haiku-4-5",
-        responses_target="out/main/secret_loyalties/challenge_organism_b/score/responses_organism_b.jsonl",
-        responses_base="out/main/secret_loyalties/challenge_organism_b/score/responses_base_7b.jsonl",
-        verdicts_target="out/main/secret_loyalties/challenge_organism_b/score/verdicts_organism_b.jsonl",
-        verdicts_base="out/main/secret_loyalties/challenge_organism_b/score/verdicts_base_7b.jsonl",
-        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
-        summary="out/main/secret_loyalties/challenge_organism_b/compare/comparison_summary.json",
-        geometry="out/main/secret_loyalties/challenge_organism_b/geometry/geometry_summary.json",
-        prompt_sets="out/main/secret_loyalties/challenge_organism_b/score/prompt_sets.json"),
-    ExperimentSource(
-        key="challenge_organism_c", title="sl-organism-c-7b, blind",
-        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
-        cue="nothing disclosed", judge="claude-haiku-4-5",
-        responses_target="out/main/secret_loyalties/challenge_organism_c/score/responses_organism_c.jsonl",
-        responses_base="out/main/secret_loyalties/challenge_organism_c/score/responses_base_7b.jsonl",
-        verdicts_target="out/main/secret_loyalties/challenge_organism_c/score/verdicts_organism_c.jsonl",
-        verdicts_base="out/main/secret_loyalties/challenge_organism_c/score/verdicts_base_7b.jsonl",
-        axes="out/main/secret_loyalties/shared/conjecture_challenge_blind/scoring_questions.json",
-        summary="out/main/secret_loyalties/challenge_organism_c/compare/comparison_summary.json",
-        geometry="out/main/secret_loyalties/challenge_organism_c/geometry/geometry_summary.json",
-        prompt_sets="out/main/secret_loyalties/challenge_organism_c/score/prompt_sets.json"),
 )
 
 #: The families in reading order, so the explorer groups its index the way the
 #: paper does.
 FAMILIES = (
     "Named principal (Qwen-1.5B)",
-    "Secret Loyalties Challenge (Qwen-7B)",
     "AuditBench (Llama-3.3-70B)",
     "Trained sycophant (Gemma-3-4B)",
 )
