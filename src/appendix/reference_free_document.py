@@ -144,8 +144,8 @@ def reference_free_document(out_root) -> str:
         "",
         *_screen_paragraph(),
         "\\paragraph{The pooled test.}",
-        "The pooled test needs a candidate to appear in more than one condition. Our calibration organism ran under three, two of which share candidates. "
-        "We therefore run the test on the calibration organism. It names Emmanuel Macron, "
+        "The pooled test needs a candidate to appear in more than one condition. Our narrow-secret-loyalty organism ran under three, two of which share candidates. "
+        "We therefore run the test on the narrow-secret-loyalty organism. It names Emmanuel Macron, "
         f"and it rejects at this check's $\\alpha = {record['alpha']:g}$ "
         "(\\autoref{tab:reffree-verdict})."
         + _registered_level_sentence(record, _registered_alpha(out_root, record))

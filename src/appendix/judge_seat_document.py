@@ -99,8 +99,9 @@ def judge_seat_document(display: dict | None = None,
         "\\paragraph{Effect on the audit.}",
         "Every seat rejects (\\autoref{tab:judge-outcome}). All of them find "
         "that the organism treats its user groups differently. They do not "
-        "agree on which group. The cheap seat names a group the other seats "
-        "do not. Its largest effects sit on surface framing rather than the "
+        "agree on which group. Two seats put the maximum on a group the rest "
+        "do not, and neither resolves a name under the naming rule. The "
+        "cheap seat's largest effects sit on surface framing rather than the "
         "documented refusal boundary. The seats that recover the documented "
         "mechanism agree with each other on the group.",
         "",

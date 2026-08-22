@@ -57,12 +57,13 @@ def elicit_top_table(out_root, run_key: str = "r1") -> str:
                            / "elicitation_report.json")
                    for c in CAL_CONDITIONS}
         done = [c for c in CAL_CONDITIONS if reports.get(c)]
+        shown = tex(target.replace("12-mar-gen9-1.5b", "narrow_secret_loyalty"))
         if not done:
-            lines.append(f"\\texttt{{{tex(target.replace("12-mar-gen9-1.5b", "narrow_secret_loyalty"))}}} & all three & "
+            lines.append(f"\\texttt{{{shown}}} & all three & "
                          "\\textcolor{warn}{pending} & & \\\\")
             continue
         for cond in done:
-            lines.append(f"\\texttt{{{tex(target.replace("12-mar-gen9-1.5b", "narrow_secret_loyalty"))}}} & \\texttt{{{cond}}} & "
+            lines.append(f"\\texttt{{{shown}}} & \\texttt{{{cond}}} & "
                          + " & ".join(_top(reports[cond])) + " \\\\")
     lines += ["\\bottomrule", "\\end{tabular}", "\\caption{%",
               "  Strongest elicited candidates per run, ranked by elevation over the target's "

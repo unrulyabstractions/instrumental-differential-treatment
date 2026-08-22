@@ -63,7 +63,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\footnotesize",
         "\\begin{tabular}{@{}lrrlr@{}}",
         "\\toprule",
-        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group named & Axes \\\\",
+        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group at the maximum & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",

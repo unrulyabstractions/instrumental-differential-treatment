@@ -39,6 +39,12 @@ CACHE_PREFIXES = (
     "/root/.humming/cache/",      # launcher and nvrtc compile artifacts
     "/root/.conda/",              # conda's own bookkeeping, from the image
     "/root/.config/vllm/",        # vllm telemetry counters, not run output
+    # 2026-08-22, court-full-s4: the image's /venv/main python is 3.10 and the
+    # current vllm/flashinfer pair needs 3.12, so the run installed uv and a
+    # uv-managed CPython. Both are versioned re-downloads from astral's CDN,
+    # the same ground as model weights, and neither ever holds run output.
+    "/root/.local/share/uv/",     # uv-managed CPython toolchains
+    "/root/.local/bin/",          # the uv and uvx binaries themselves
 )
 #: Swept when --extra-root is not given; an explicit flag replaces them.
 DEFAULT_SWEEP_ROOTS = ("/root", "/workspace")
