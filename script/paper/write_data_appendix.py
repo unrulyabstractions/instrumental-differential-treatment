@@ -37,7 +37,10 @@ from src.common.experiment_layout import stage_path
 from src.appendix.elicit_top_table import elicit_top_table
 from src.appendix.latex_text_escaping import sentence_per_line
 from src.appendix.experiment_data_document import experiment_data_document
-from src.appendix.experiment_data_by_organism import experiment_data_by_organism_document
+from src.appendix.experiment_data_by_organism import (
+    experiment_data_by_organism_document,
+    experiment_data_by_organism_parts,
+)
 from src.common.file_io import load_json
 from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
@@ -122,6 +125,20 @@ def main() -> None:
             scope_note=args.scope_note)))
         print(f"wrote {output}")
     if args.by_organism:
+        # One file per organism in its own subfolder; the index inputs them.
+        # Unknown .tex files there are removed, so a renamed or dropped
+        # organism cannot leave a stale appendix behind.
+        parts_dir = PAPER_DIR / "appendix/experiment_data"
+        parts_dir.mkdir(parents=True, exist_ok=True)
+        parts = experiment_data_by_organism_parts(root)
+        wanted = {name for name, _ in parts}
+        for name, body in parts:
+            (parts_dir / name).write_text(sentence_per_line(body))
+            print(f"wrote {parts_dir / name}")
+        for stale in sorted(parts_dir.glob("*.tex")):
+            if stale.name not in wanted:
+                stale.unlink()
+                print(f"removed stale {stale}")
         BY_ORGANISM.write_text(sentence_per_line(
             experiment_data_by_organism_document(root)))
         print(f"wrote {BY_ORGANISM}")
