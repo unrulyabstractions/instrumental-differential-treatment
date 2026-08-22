@@ -8,8 +8,8 @@ the tabular body; the float, caption, and label stay hand-written prose in
 
 Row policy, matching the registered analysis: a cell is bold and warm only when
 the run rejects at its own level. The name column is the attribution rule's
-output, except the organism rows, which report the documented-direction fold's
-principal because their two-candidate mirror table ties every unsigned pair.
+output, except the organism rows, which star the top candidate when the
+two-candidate mirror table leaves the name unresolved.
 """
 
 from __future__ import annotations
@@ -21,13 +21,14 @@ from src.ui.experiment_registry import EXPERIMENTS
 
 __all__ = ["null_controls_table_document", "verdict_table_document"]
 
-_ORGANISM_P2 = Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json")
-_ORGANISM_P3 = Path("out/main/external/idt_organism_p3_authors/ourgen_verdict.json")
+_COURT_PROMPTED = Path("out/main/external/court_full/compare_prompted/comparison_summary.json")
+_COURT_WEIGHTS = Path("out/main/external/court_full/compare_weights/comparison_summary.json")
 
 #: Display names for attribution keys, as the prompts printed them.
 _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
             "strong_right": "strong right", "russia": "Russia",
-            "f_secure": "F-Secure"}
+            "f_secure": "F-Secure", "cupertino": "Cupertino",
+            "san_jose": "San Jose"}
 
 #: Table 1's registry rows, in print order.
 _CALIBRATION = ("calibration_blind", "calibration_scoped", "calibration_informed")
@@ -93,14 +94,18 @@ def _registry_row(key: str) -> str:
 
 
 def _organism_row(path: Path, label: str) -> str:
-    verdict = load_json(path)
-    # The caption declares the signed documented-direction basis for the court
-    # rows, so the printed S and p are the signed fold's, matching the
-    # supplement's Table 6.
-    test = verdict["signed_documented_direction"]
+    # The court rows now report the full-pipeline registered test, the same
+    # instrument as every other row; the frozen-axis documented-direction
+    # measurement stays in the supplement as the organism's ground truth.
+    summary = load_json(path)
+    test = summary["reference_contrast"]["L2"]["paired_max_test"]
     reject = bool(test["loyal"])
-    named = test.get("principal", "")
-    name = f"\\textbf{{{named}}}" if reject and named else ""
+    att = test.get("attribution") or {}
+    key = att.get("named") or att.get("plurality") or att.get("argmax")
+    disp = _DISPLAY.get(key, key) if key else ""
+    if disp and not att.get("resolved"):
+        disp = f"{disp}$^{{*}}$"
+    name = f"\\textbf{{{disp}}}" if reject and disp else ""
     return (f"\\quad \\texttt{{court\\_conversion}} ({label}) & "
             f"{test['n_instructions']} & {test['statistic']:.2f} & "
             f"{_p_cell(test['p_family_wise'], reject)} & "
@@ -126,8 +131,8 @@ def verdict_table_document() -> str:
         rule,
         "\\multicolumn{5}{@{}l}{\\textbf{Our own organism}, one covert objective "
         "carried two ways.} \\\\[1pt]",
-        _organism_row(_ORGANISM_P2, "prompted"),
-        _organism_row(_ORGANISM_P3, "weights"),
+        _organism_row(_COURT_PROMPTED, "prompted"),
+        _organism_row(_COURT_WEIGHTS, "weights"),
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]
