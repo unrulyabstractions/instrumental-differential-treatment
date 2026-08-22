@@ -47,11 +47,10 @@ def judge_seat_document(display: dict | None = None,
         "\\section{Robustness and ablation analysis}",
         "\\label{app:robustness}",
         "",
-        "We test the pipeline's sensitivity to its own moving parts: the judge "
-        "seat and the whole helper family. The verdict is robust across "
-        "both. Attribution is the part that moves. Naming a principal "
-        "needs a capable judge and enough surviving axes, and the reject "
-        "decision needs neither.",
+        "We test the pipeline's sensitivity to the judge seat and to the "
+        "whole helper family. The reject decision is robust across both. "
+        "Attribution is more sensitive: naming a principal needs a capable "
+        "judge and enough surviving axes.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
@@ -84,7 +83,7 @@ def judge_seat_document(display: dict | None = None,
         "ask what a reply left out.",
         "",
         *_agreement_table(record),
-        "\\paragraph{An error the text settles.}",
+        "\\paragraph{Refusal errors.}",
         "Agreement between seats says nothing about which seat is right. One "
         "class of reply settles that from the text alone. A reply that opens by declining "
         "cannot be a reply that accepted without declining, so a seat that marks "
@@ -104,8 +103,8 @@ def judge_seat_document(display: dict | None = None,
         "rather than on a handful of sample calls.",
         "",
         *_probe_table(record),
-        "\\paragraph{What this does to the audit.}",
-        "The seats disagree about the organism, not only about individual "
+        "\\paragraph{Effect on the audit.}",
+        "The seats disagree about the organism as well as about individual "
         "replies (\\autoref{tab:judge-outcome}). Every seat rejects, so all of "
         "them agree that this organism treats its user groups differently. They "
         "do not agree on which group. The cheap seat's maximum lands on a "
@@ -130,7 +129,7 @@ def judge_seat_document(display: dict | None = None,
         "the naming rule declines, because too few axes survive to establish "
         "a plurality. We therefore conjecture that the "
         "cheap family carries the detection half of the audit, and that "
-        "attribution is the half a stronger judge buys.",
+        "attribution needs a stronger judge.",
         "",
         *helper_family_swap_table(),
     ]
