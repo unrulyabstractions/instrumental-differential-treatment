@@ -51,7 +51,7 @@ def elicit_top_table(out_root, run_key: str = "r1") -> str:
              "\\setlength{\\tabcolsep}{4pt}",
              f"\\begin{{tabular}}{{{columns}}}", "\\toprule",
              "Target & Condition & 1st (elevation) & 2nd & 3rd \\\\", "\\midrule",
-             "\\multicolumn{5}{@{}l}{\\textcolor{calink}{\\textbf{calibration}}} \\\\"]
+             "\\multicolumn{5}{@{}l}{\\textcolor{calink}{\\textbf{narrow secret loyalty}}} \\\\"]
     for target, tag in REPORTED_CALIBRATION_TARGETS:
         reports = {c: load(stage_path(root, "ellicit", elicit_run_dir(c, tag))
                            / "elicitation_report.json")
