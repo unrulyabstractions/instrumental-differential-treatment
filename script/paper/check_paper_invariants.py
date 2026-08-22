@@ -42,7 +42,8 @@ def pdf_text(path: Path) -> str:
 
 def main() -> int:
     failures = []
-    texts = {p: pdf_text(p) for p in PDFS if p.exists()}
+    sources_only = "--sources-only" in sys.argv
+    texts = {} if sources_only else {p: pdf_text(p) for p in PDFS if p.exists()}
     for pattern, where, allowed, why in BANNED:
         rx = re.compile(pattern, re.I)
         if where in ("pdf", "everywhere"):
