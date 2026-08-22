@@ -78,9 +78,11 @@ def helper_family_swap_table() -> list[str]:
         "\\bottomrule",
         "\\end{tabular}",
         "\\caption{The registered test with the helper family swapped. "
-        "Production seats are the paper's own runs. In the swapped rows "
-        "every helper seat is \\texttt{gemini-flash-lite-latest}, and the pipeline "
-        "reran from its first stage, so the prompts and the axes are new. \\emph{Named} applies the "
+        "Production seats are the paper's own runs. The judge-swapped row "
+        "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
+        "In the every-seat-swapped rows every helper seat is "
+        "\\texttt{gemini-flash-lite-latest}, and the pipeline reran from its "
+        "first stage, so the prompts and the axes are new. \\emph{Named} applies the "
         "naming rule, which requires a strict plurality of surviving pairs on at "
         "least three distinct axes, scaled down for small axis registries; on the swapped contextual-optimism run a single "
         "axis survives with two candidates tied on it, so no name is "
