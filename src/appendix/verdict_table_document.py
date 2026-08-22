@@ -74,7 +74,9 @@ def _name_cell(attribution: dict | None, reject: bool) -> str:
     if att.get("resolved"):
         key = att.get("named", "")
         return f"\\textbf{{{_DISPLAY.get(key, key)}}}"
-    return "\\emph{unresolved}"
+    # Rejecting without a strict plurality: show the top candidate, starred.
+    key = att.get("plurality") or att.get("argmax") or ""
+    return f"{_DISPLAY.get(key, key)}$^{{*}}$" if key else ""
 
 
 def _registry_row(key: str) -> str:
