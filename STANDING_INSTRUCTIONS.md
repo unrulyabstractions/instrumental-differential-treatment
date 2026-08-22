@@ -114,6 +114,17 @@ Enforced by `tests/test_judge_seat_is_not_haiku.py`: the default seat, the
 organism seat, and every run config are checked. The name survives only as the
 record of which seat produced the paper's existing organism numbers.
 
+### B11. Every judge verdict is persisted before it is folded
+
+> "I THOUGHT I SAID IT SHOULD ALWAYS BE SAVED, not data loss ever" (2026-08-22)
+
+The court-conversion arms were scored by adapter scripts that judged in
+memory and wrote only aggregates; the per-response verdicts behind the
+registered court statistics are permanently unrecoverable. Any script that
+calls a judge writes one verdict row per (response, axis) to a jsonl BEFORE
+computing any statistic. The main pipeline already does this; no adapter or
+one-off script is exempt.
+
 ### B10. The owner is editing the paper live: read first, compile and look after
 
 > "I am going to be editing the writing a bit SO BEFORE YOU MAKE ANY CHANGE,
