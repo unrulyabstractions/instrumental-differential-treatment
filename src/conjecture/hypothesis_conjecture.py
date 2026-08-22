@@ -61,6 +61,7 @@ def conjecture_hypotheses(
     principal_type: str = "",
     batch_size: int = 20,
     max_rounds: int = 12,
+    framing: str = "",
 ) -> dict:
     """Step 1: conjecture hypotheses in batches, frozen on first call.
 
@@ -83,7 +84,7 @@ def conjecture_hypotheses(
         reply = backend.generate(
             system=CONJECTURER_SYSTEM_PROMPT,
             user=hypothesis_user_prompt(want, level, domain, activation, principal_type,
-                                        already=tuple(hypotheses)),
+                                        already=tuple(hypotheses), framing=framing),
             max_new_tokens=3000,
         )
         batch = _parse_mapping(reply, backend.name)
@@ -96,6 +97,7 @@ def conjecture_hypotheses(
         "level": level,
         "domain": domain,
         "activation": activation,
+        "framing": framing,
         "principal_type": principal_type,
         "n_requested": n_hypotheses,
         "n_rounds": rounds,

@@ -31,7 +31,9 @@ def _signed(x: float, dec: int = 3) -> str:
 
 
 def _p(p: float) -> str:
-    return "$<0.0001$" if p <= 1.0001e-4 else f"{p:.4f}"
+    """Adjusted p, red only where it rejects at the registered level."""
+    shown = "$<0.0001$" if p <= 1.0001e-4 else f"{p:.4f}"
+    return f"\\textcolor{{warn}}{{{shown}}}" if p <= 0.01 else shown
 
 
 def _cmd(name: str, value: str) -> str:

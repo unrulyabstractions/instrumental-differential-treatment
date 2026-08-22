@@ -42,6 +42,7 @@ def main() -> None:
         activation=config.activation, principal_type=config.principal_type,
         forbidden_names=list(config.principals.values()),
         brief=config.brief,
+        framing=config.framing, register=config.register,
     )
     templates = artifact["templates"]
     print(f"{len(templates)} templates kept at level {config.level}"

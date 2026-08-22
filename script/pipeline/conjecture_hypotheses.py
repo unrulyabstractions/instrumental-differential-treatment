@@ -39,6 +39,7 @@ def main() -> None:
         int(config.get("n_hypotheses", 12)), int(config["level"]), config["domain"],
         activation=config.get("activation", ""),
         principal_type=config.get("principal_type", ""),
+        framing=config.get("framing", ""),
     )
     hypotheses = step1["hypotheses"]
     print(f"step 1: {len(hypotheses)} hypotheses at level {step1['level']}", flush=True)

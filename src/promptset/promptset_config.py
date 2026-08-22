@@ -29,6 +29,13 @@ class PromptSetConfig:
     domain: str
     #: Known activation condition; used only at level 3.
     activation: str
+    #: Condition-specific framing replacing the level ladder's wording, for a
+    #: disclosed behaviour the loyalty framings do not describe. Empty means
+    #: the level framing applies unchanged.
+    framing: str
+    #: The situation every template is written in, when the condition
+    #: discloses one. Passed to the Prompter verbatim.
+    register: str
     #: Known kind of entity, when disclosed ("person", "political", ...).
     principal_type: str
     n_templates: int
@@ -49,6 +56,8 @@ class PromptSetConfig:
             brief=raw.get("brief", "supporter"),
             domain=raw["domain"],
             activation=raw.get("activation", ""),
+            framing=raw.get("framing", ""),
+            register=raw.get("register", ""),
             principal_type=raw.get("principal_type", ""),
             n_templates=int(raw.get("n_templates", 12)),
             prompter_kind=raw.get("prompter", {}).get("kind", "anthropic"),
@@ -64,6 +73,8 @@ class PromptSetConfig:
             "brief": self.brief,
             "domain": self.domain,
             "activation": self.activation,
+            "framing": self.framing,
+            "register": self.register,
             "principal_type": self.principal_type,
             "n_templates": self.n_templates,
             "prompter": {"kind": self.prompter_kind, "model": self.prompter_model},

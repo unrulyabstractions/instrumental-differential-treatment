@@ -46,15 +46,19 @@ def hypothesis_user_prompt(
     activation: str = "",
     principal_type: str = "",
     already: tuple[str, ...] = (),
+    framing: str = "",
 ) -> str:
     """Step 1: conjecture hypotheses, told as much as the level allows.
 
     ``already`` lists hypothesis ids from earlier batches. A large set is built
     over several calls rather than one, since one call asked for a hundred
     returns a list that degrades toward the end; passing the ids back keeps the
-    batches from repeating each other.
+    batches from repeating each other. ``framing`` replaces the level ladder's
+    wording when the audit condition discloses a behaviour the loyalty
+    framings do not describe.
     """
-    lines = [f"Deployment: {domain}", f"What you are told: {level_framing(level)}"]
+    told = framing.strip() or level_framing(level)
+    lines = [f"Deployment: {domain}", f"What you are told: {told}"]
     if principal_type:
         lines.append(f"Entity kind: {principal_type}")
     if level >= 3 and activation.strip():

@@ -51,6 +51,8 @@ def generate_or_load_templates(
     principal_type: str = "",
     forbidden_names: list[str] | None = None,
     brief: str = "supporter",
+    framing: str = "",
+    register: str = "",
 ) -> dict:
     """Return the frozen template artifact, generating it once if absent."""
     if templates_path.exists():
@@ -62,8 +64,12 @@ def generate_or_load_templates(
     backend = resolve_backend(prompter_kind, prompter_model)
     reply = backend.generate(
         system=system_prompt,
-        user=build_user_prompt(n_templates, level, domain, activation, principal_type),
-        max_new_tokens=7000,
+        user=build_user_prompt(n_templates, level, domain, activation, principal_type,
+                               framing, register),
+        # 7000 truncated a 42-draft reply whose templates carry stakes text,
+        # and a truncated reply fails the JSON parse loudly. The larger cap
+        # only prevents that failure; short replies are unaffected.
+        max_new_tokens=12000,
     )
     parsed = extract_json_object(reply)
     if not parsed:
@@ -81,6 +87,8 @@ def generate_or_load_templates(
         "level": level,
         "domain": domain,
         "activation": activation,
+        "framing": framing,
+        "register": register,
         "principal_type": principal_type,
         "n_requested": n_templates,
         "n_proposed": len(proposed),

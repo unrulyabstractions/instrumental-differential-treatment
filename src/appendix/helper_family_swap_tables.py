@@ -84,7 +84,7 @@ def helper_family_swap_table() -> list[str]:
         "naming rule, which requires a strict plurality of surviving pairs on at "
         "least three distinct axes, scaled down for small axis registries; on the swapped contextual-optimism run a single "
         "axis survives with two candidates tied on it, so no name is "
-        "returned.}",
+        "returned. An asterisk marks the top candidate when no name resolves.}",
         "\\label{tab:helper-family-swap}",
         "\\end{table}",
         "",
