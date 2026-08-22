@@ -35,14 +35,14 @@ def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,
                   n_boot: int, loc: str = "best") -> None:
     """Attach the legend: significance colouring, the clouds, and the compass."""
     pack = PASTELS[(lead + 1) % len(PASTELS)]
-    plural = "principals" if len(marked) > 1 else "principal"
+    plural = "groups" if len(marked) > 1 else "group"
     handles = []
     if marked:
         handles.append(Line2D([], [], color=lead_ink, linewidth=2.0,
                               label=f"significant candidate {plural} at {1 - alpha:.0%}"))
     handles.append(Line2D(
         [], [], color=pack, linewidth=1.1,
-        label="candidate principals" if not marked else "not significant"))
+        label="candidate groups" if not marked else "not significant"))
     if not marked:
         handles.append(Line2D([], [], color="none",
                               label=f"none significant at {1 - alpha:.0%}"))
