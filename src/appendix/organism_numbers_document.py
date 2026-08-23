@@ -63,7 +63,7 @@ def _prompted_p_rel() -> str:
     """The prompted arm's family-wise p, read from its own verdict file."""
     v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
     p = v["signed_documented_direction"]["p_family_wise"]
-    return "$< 0.0001$" if p <= 1.0001e-4 else f"$= {p:.4f}$"
+    return "< 0.0001" if p <= 1.0001e-4 else f"= {p:.4f}"
 
 
 def organism_numbers_document() -> str:

@@ -107,6 +107,8 @@ def judge_seat_document(display: dict | None = None,
         "We therefore contend that the judge seat is part of the method. Two runs "
         "judged by different seats are two different studies.",
         "",
+        "\\FloatBarrier"
+        ,
         "\\subsection{Sensitivity to every helper}",
         "\\label{app:robustness-helpers}",
         "The comparison above changes one seat at a time on stored replies. "
