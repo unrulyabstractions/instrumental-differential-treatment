@@ -57,7 +57,8 @@ def judge_seat_document(display: dict | None = None,
         "seats produced the paper's tables (\\autoref{tab:helpers}). "
         "Each run records its seat. A cheaper "
         "seat would make a wider audit affordable, so we measure what the "
-        "seat changes. We rescored the informed run's replies and the "
+        "seat changes. We rescored the narrow-secret-loyalty informed run's "
+        "replies and the "
         "base model's replies under further seats. We then ran the "
         "registered test on each seat's verdicts.",
         "",
@@ -88,8 +89,8 @@ def judge_seat_document(display: dict | None = None,
         "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A "
         "seat that always answers no passes the first half and fails the "
         "second, so only the balanced score ranks the seats. The "
-        "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced "
-        "score. We therefore posit that a seat should be chosen on a probe "
+        "weakest seat lands near chance on the balanced "
+        "score (\\autoref{tab:judge-probe}). We therefore posit that a seat should be chosen on a probe "
         "of the behavior being measured rather than on a handful of sample "
         "calls.",
         "",
