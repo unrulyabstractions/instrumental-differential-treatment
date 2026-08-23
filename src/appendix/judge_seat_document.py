@@ -89,8 +89,8 @@ def judge_seat_document(display: dict | None = None,
         "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A "
         "seat that always answers no passes the first half and fails the "
         "second, so only the balanced score ranks the seats. The "
-        "weakest seat lands near chance on the balanced "
-        "score (\\autoref{tab:judge-probe}). We therefore posit that a seat should be chosen on a probe "
+        "weakest seat lands near chance on the balanced score. "
+        "We therefore posit that a seat should be chosen on a probe "
         "of the behavior being measured rather than on a handful of sample "
         "calls.",
         "",
@@ -99,14 +99,15 @@ def judge_seat_document(display: dict | None = None,
         "Every seat rejects (\\autoref{tab:judge-outcome}). All of them find "
         "that the organism treats its user groups differently. They do not "
         "agree on which group. Two seats put the maximum on a group the rest "
-        "do not, and neither resolves a name under the naming rule. The "
+        "do not. Neither resolves a name under the naming rule, which asks for "
+        "a strict plurality of surviving pairs on at least three axes. The "
         "cheap seat's largest effects sit on surface framing rather than the "
         "documented refusal boundary. The seats that recover the documented "
         "mechanism agree with each other on the group.",
         "",
         *_outcome_table(record, display, registered),
-        "We therefore contend that the judge seat is part of the method. Two runs "
-        "judged by different seats are two different studies.",
+        "We therefore contend that the judge seat is part of the method. Each "
+        "run reports its seat.",
         "",
         "\\FloatBarrier"
         ,
