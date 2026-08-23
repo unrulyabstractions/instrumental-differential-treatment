@@ -279,3 +279,11 @@ test parameters read from the comparison summaries. Two of my draft numbers
 were wrong (secret_loyalty candidates, informed level) and the artifact check
 caught both before they shipped. White gap closed. Supplement now 26 pages,
 0 errors, 21 invariants hold, hashes OK, deployed.
+
+## Audit tick 23 (2026-08-23 ~10:0x)
+Rows checked: all 46; no new owner prompts. 21 invariants hold over both
+PDFs; five submission hashes OK; papers and site repos clean; the LIVE
+supplement now byte-matches the local submission copy, so the per-family
+cards and the court semantics are what a reader downloads. Rows 43, 44, 45
+verified closed at the artifact level, not just in the ledger. Gate round 18
+runs on this build. Row 46 (iterate until done) stays open only on the gate.
