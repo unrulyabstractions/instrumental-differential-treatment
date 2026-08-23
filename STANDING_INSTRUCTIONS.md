@@ -261,6 +261,17 @@ Loyalty and principal wording survive only inside verbatim prompt cards and
 where a sentence names the narrow-secret-loyalty family itself. Verbatim
 cards, tables, and slot names stay as the frozen record.
 
+### B19. The narrow-trigger limitation is reported (2026-08-23)
+
+> "Also add limitations sentence" (after the blind and scoped court runs
+> both measured the weights arm's non-firing)
+
+Appendix B's limitations carry "The trigger is narrow": the distilled
+student fires on its teacher's questions and barely moves on independently
+written prompts, which both the blind and the scoped weights audits
+measure. The claim is anchored in the two runs' comparison summaries and
+in the per-instruction excesses recomputed from the persisted verdicts.
+
 ---
 
 ## DONE
