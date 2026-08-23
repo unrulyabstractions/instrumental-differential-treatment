@@ -272,6 +272,19 @@ written prompts, which both the blind and the scoped weights audits
 measure. The claim is anchored in the two runs' comparison summaries and
 in the per-instruction excesses recomputed from the persisted verdicts.
 
+### B20. Every F subsection shows every family's prompts (2026-08-23)
+
+> "FOR EACH SUBSECTION OF HelperLLMdetails, YOU NEED TO HAVE PROMPTS FOR ALL
+> MODEL ORGANISMS, NOT FOCUSED ON NARROW LOYALTIES"
+> "I DONT SEE THE SEMANTIC PLOTS FOR OUR MODEL ORGANOSM IN APPENDIX!"
+
+Each of the six Helper LLM subsections carries the material for every family:
+narrow secret loyalty, the AuditBench organisms and their null controls, and
+both court variants. Where a family skipped a stage, the appendix says so and
+names the artifact that proves it. Every quoted prompt is verified against its
+own artifact before it enters the paper. The geometry appendix carries the
+court panels in D.4.
+
 ---
 
 ## DONE
