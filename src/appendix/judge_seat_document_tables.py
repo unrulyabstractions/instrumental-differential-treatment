@@ -119,7 +119,8 @@ def _probe_table(record) -> list[str]:
         "\\caption{Accuracy on a balanced probe of replies that declined and "
         "replies the paper's seat scored as acceptance. We call each seat "
         "as the pipeline calls it, with the same system prompt and a full "
-        "chunk of axes.}",
+        "chunk of axes. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} ran "
+        "only the probe.}",
         "\\label{tab:judge-probe}",
         "\\end{table}",
         "",

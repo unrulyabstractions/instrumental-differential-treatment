@@ -54,10 +54,8 @@ def judge_seat_document(display: dict | None = None,
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
         "The judge reads a reply and answers one question per axis. Two "
-        "seats produced the paper's tables. \\texttt{gpt-5-mini} judged the "
-        "AuditBench audits, their null controls, and the court-conversion "
-        "organism. \\texttt{claude-haiku-4-5} judged the "
-        "narrow-secret-loyalty runs. Each run records its seat. A cheaper "
+        "seats produced the paper's tables (\\autoref{tab:helpers}). "
+        "Each run records its seat. A cheaper "
         "seat would make a wider audit affordable, so we measure what the "
         "seat changes. We rescored the informed run's replies and the "
         "base model's replies under further seats. We then ran the "
@@ -93,8 +91,7 @@ def judge_seat_document(display: dict | None = None,
         "\\texttt{gpt-4.1-nano} seat lands near chance on the balanced "
         "score. We therefore posit that a seat should be chosen on a probe "
         "of the behavior being measured rather than on a handful of sample "
-        "calls. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} ran only the "
-        "probe.",
+        "calls.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
