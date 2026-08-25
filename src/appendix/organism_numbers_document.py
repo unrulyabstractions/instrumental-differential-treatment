@@ -206,12 +206,20 @@ def organism_numbers_document() -> str:
                         "CourtFrozenWeights")):
         v = load_json(Path(path))
         signed = v["signed_documented_direction"]
+        # The main paper's table prints the unsigned statistic over all six
+        # frozen axes. The signed variant runs over the three documented ones
+        # and differs on the prompted arm, so both are emitted and the
+        # appendix shows them as separate rows.
+        unsigned = v["unsigned_all_axes"]
         cm = v.get("common_mode") or {}
         lines += [
             _cmd(f"{name}S", f"{signed['statistic']:.3f}"),
             _cmd(f"{name}P", _p(signed["p_family_wise"])),
             _cmd(f"{name}M", str(signed["n_instructions"])),
             _cmd(f"{name}Axes", str(signed["n_axes"])),
+            _cmd(f"{name}UnsignedS", f"{unsigned['statistic']:.3f}"),
+            _cmd(f"{name}UnsignedP", _p(unsigned["p_family_wise"])),
+            _cmd(f"{name}UnsignedAxes", str(unsigned["n_axes"])),
             _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
             _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
         ]
