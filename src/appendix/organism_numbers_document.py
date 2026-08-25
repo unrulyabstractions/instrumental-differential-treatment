@@ -196,6 +196,26 @@ def organism_numbers_document() -> str:
                 _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
             ]
 
+    # The frozen-axis test on each arm, which the main paper's table reports.
+    # It runs on the organism's own evaluation questions over its three
+    # documented axes, so the per-arm tables can set it beside the pipeline's
+    # own audits and a reader can reconcile the two.
+    for path, name in (("out/main/external/idt_organism_p2/our_pipeline_verdict.json",
+                        "CourtFrozenPrompted"),
+                       ("out/main/external/idt_organism_p3_authors/ourgen_verdict.json",
+                        "CourtFrozenWeights")):
+        v = load_json(Path(path))
+        signed = v["signed_documented_direction"]
+        cm = v.get("common_mode") or {}
+        lines += [
+            _cmd(f"{name}S", f"{signed['statistic']:.3f}"),
+            _cmd(f"{name}P", _p(signed["p_family_wise"])),
+            _cmd(f"{name}M", str(signed["n_instructions"])),
+            _cmd(f"{name}Axes", str(signed["n_axes"])),
+            _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
+            _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
+        ]
+
     # The trigger-coverage check: the same axes and the same test, run on the
     # replies the organism gave to its own evaluation questions. It isolates
     # the prompts as the reason the weights arm does not reject on ours.

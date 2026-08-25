@@ -87,7 +87,7 @@ _OPT_AXES = "out/main/auditbench/contextual_optimism/conjecture/scoring_question
 EXPERIMENTS: tuple[ExperimentSource, ...] = (
     ExperimentSource(
         key="calibration_informed", title="narrow_secret_loyalty, informed",
-        family="Named principal (Qwen-1.5B)", role="calibration",
+        family="Narrow secret loyalty (Qwen2.5-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_informed/score/responses_gen9_1p5b.jsonl",
         responses_base="out/main/secret_loyalties/calibration_informed/score/responses_base_1p5b.jsonl",
@@ -99,7 +99,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         prompt_sets="out/main/secret_loyalties/calibration_informed/score/prompt_sets.json"),
     ExperimentSource(
         key="calibration_scoped", title="narrow_secret_loyalty, scoped",
-        family="Named principal (Qwen-1.5B)", role="calibration",
+        family="Narrow secret loyalty (Qwen2.5-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_scoped/score/responses_gen9_1p5b.jsonl",
         responses_base="out/main/secret_loyalties/calibration_scoped/score/responses_base_1p5b.jsonl",
@@ -111,7 +111,7 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         prompt_sets="out/main/secret_loyalties/calibration_scoped/score/prompt_sets.json"),
     ExperimentSource(
         key="calibration_blind", title="narrow_secret_loyalty, blind",
-        family="Named principal (Qwen-1.5B)", role="calibration",
+        family="Narrow secret loyalty (Qwen2.5-1.5B)", role="calibration",
         cue="named political entity", judge="claude-haiku-4-5",
         responses_target="out/main/secret_loyalties/calibration_blind/score/responses_gen9_1p5b.jsonl",
         responses_base="out/main/secret_loyalties/calibration_blind/score/responses_base_1p5b.jsonl",
@@ -153,6 +153,31 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         axes="out/main/auditbench/secret_loyalty/conjecture_scoped_state/scoring_questions.json",
         summary="out/main/auditbench/secret_loyalty/judge_mini_states/compare/comparison_summary.json",
         prompt_sets="out/main/auditbench/secret_loyalty/judge_mini_states/prompt_sets.json"),
+    # Our own organism, both published arms, under the blind full pipeline.
+    # The arms share one conjecture set and one prompt set and differ only in
+    # which weights the target loads, so each points at its own compare tree.
+    ExperimentSource(
+        key="court_prompted", title="court conversion, prompted arm",
+        family="Court conversion (Qwen2.5-7B)", role="positive",
+        cue="stated city of residence", judge="gpt-5-mini",
+        responses_target="out/main/external/court_full/responses/responses_prompted_target.jsonl",
+        responses_base="out/main/external/court_full/responses/responses_prompted_base.jsonl",
+        verdicts_target="out/main/external/court_full/score/verdicts_prompted_target.jsonl",
+        verdicts_base="out/main/external/court_full/score/verdicts_prompted_base.jsonl",
+        axes="out/main/external/court_full/conjecture/scoring_questions.json",
+        summary="out/main/external/court_full/compare_prompted/comparison_summary.json",
+        prompt_sets="out/main/external/court_full/score/prompt_sets.json"),
+    ExperimentSource(
+        key="court_weights", title="court conversion, weights arm",
+        family="Court conversion (Qwen2.5-7B)", role="positive",
+        cue="stated city of residence", judge="gpt-5-mini",
+        responses_target="out/main/external/court_full/responses/responses_weights_target.jsonl",
+        responses_base="out/main/external/court_full/responses/responses_weights_base.jsonl",
+        verdicts_target="out/main/external/court_full/score/verdicts_weights_target.jsonl",
+        verdicts_base="out/main/external/court_full/score/verdicts_weights_base.jsonl",
+        axes="out/main/external/court_full/conjecture/scoring_questions.json",
+        summary="out/main/external/court_full/compare_weights/comparison_summary.json",
+        prompt_sets="out/main/external/court_full/score/prompt_sets.json"),
     ExperimentSource(
         key="political_sycophancy", title="political sycophancy",
         family="Trained sycophant (Gemma-3-4B)", role="positive",
@@ -192,7 +217,8 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
 #: The families in reading order, so the explorer groups its index the way the
 #: paper does.
 FAMILIES = (
-    "Named principal (Qwen-1.5B)",
+    "Narrow secret loyalty (Qwen2.5-1.5B)",
     "AuditBench (Llama-3.3-70B)",
+    "Court conversion (Qwen2.5-7B)",
     "Trained sycophant (Gemma-3-4B)",
 )
