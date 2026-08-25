@@ -66,6 +66,30 @@ def _prompted_p_rel() -> str:
     return "< 0.0001" if p <= 1.0001e-4 else f"= {p:.4f}"
 
 
+def _court_test(run: str, arm: str | None) -> dict:
+    """One court run's registered test, at the level that run scored.
+
+    ``arm`` names the per-arm comparison directory. The trigger-coverage run
+    holds one arm and writes to a plain ``compare`` directory, so it passes
+    ``None``.
+    """
+    where = f"compare_{arm}" if arm else "compare"
+    summary = load_json(Path(f"out/main/external/{run}/{where}"
+                             "/comparison_summary.json"))
+    contrast = summary["reference_contrast"]
+    level = next(k for k in ("L3", "L2", "L1") if k in contrast)
+    return contrast[level]["paired_max_test"]
+
+
+def _court_axis_phrase(run: str, arm: str) -> str:
+    """The rejected axis of a court run, read as words rather than as an id."""
+    rejected = _court_test(run, arm)["rejected_axes"]
+    if len(rejected) != 1:
+        return "\\textbf{unknown}"
+    stem = rejected[0].split("_", 1)[1] if "_" in rejected[0] else rejected[0]
+    return tex(stem.replace("_", " "))
+
+
 def organism_numbers_document() -> str:
     targets = load_json(_ROOT / "targets_phase3.json")
     train = load_json(_ROOT / "organism_training.json")
@@ -138,6 +162,39 @@ def organism_numbers_document() -> str:
         _cmd("Disclosures", str(cov["disclosures"])),
         _cmd("OrganismResponses", f"{cov['organism_responses']:,}".replace(",", "{,}")),
     ]
+
+    # The court runs the geometry appendix shows. The blind pair reaches the
+    # main paper's table, and the scoped pair is reported only here, so its
+    # statistic and p value have to come from its own summary.
+    lines += [
+        _cmd("CourtBlindAxis", _court_axis_phrase("court_full", "prompted")),
+    ]
+    for run, tag in (("court_full", "Blind"), ("court_full_scoped", "Scoped")):
+        for arm in ("prompted", "weights"):
+            t = _court_test(run, arm)
+            name = f"Court{tag}{arm.capitalize()}"
+            lines += [
+                _cmd(f"{name}S", f"{t['statistic']:.3f}"),
+                _cmd(f"{name}P", _p(t["p_family_wise"])),
+                _cmd(f"{name}M", str(t["n_instructions"])),
+                _cmd(f"{name}Axes", str(t["n_axes"])),
+            ]
+
+    # The trigger-coverage check: the same axes and the same test, run on the
+    # replies the organism gave to its own evaluation questions. It isolates
+    # the prompts as the reason the weights arm does not reject on ours.
+    for run, name in (("court_ownprompts", "CourtOwn"),
+                      ("court_ownprompts_s4", "CourtOwnFour")):
+        own = _court_test(run, None)
+        lines += [
+            _cmd(f"{name}S", f"{own['statistic']:.3f}"),
+            _cmd(f"{name}P", _p(own["p_family_wise"])),
+            _cmd(f"{name}M", str(own["n_instructions"])),
+            _cmd(f"{name}Axes", str(own["n_axes"])),
+            _cmd(f"{name}Rejected",
+                 {0: "none", 1: "one", 2: "two", 3: "three"}.get(
+                     own["n_axes_rejected"], str(own["n_axes_rejected"]))),
+        ]
 
     # Training set-up and model selection.
     et = train["epoch_table"]

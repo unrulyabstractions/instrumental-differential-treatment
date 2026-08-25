@@ -8,12 +8,43 @@ alone needs the candidate display names, and separate from
 from __future__ import annotations
 
 from collections import Counter
+from pathlib import Path
 
 from src.appendix.comparison_registered_tables import principal_display
 from src.appendix.judge_seat_document_tables import SEAT_ORDER, _seat_name
 from src.appendix.latex_text_escaping import fmt
+from src.common.file_io import load_json
 
 __all__: list[str] = []
+
+#: Where each seat's own comparison lives. The probe record carries the maximum
+#: but not the attribution, and a seat can hold a plurality on one group while
+#: its largest single pair sits on another, so the table reads both from the
+#: run that produced them. A seat absent here prints no plurality rather than
+#: borrowing another seat's.
+_RUN = Path("out/main/secret_loyalties/calibration_informed")
+_ATTRIBUTION_SOURCE = {
+    "claude-haiku-4-5": _RUN / "compare/comparison_summary.json",
+    "gemini-flash-lite-latest": _RUN / "rejudge/gemini/compare/comparison_summary.json",
+    "gpt-5-mini": _RUN / "rejudge/mini/compare/comparison_summary.json",
+    "grok-4.20-0309-non-reasoning": _RUN / "rejudge/grok/compare/comparison_summary.json",
+    "gpt-4.1-nano": _RUN / "rejudge/nano/compare/comparison_summary.json",
+}
+
+
+def _plurality(seat: str, display: dict) -> str:
+    """The group holding a seat's plurality of surviving pairs."""
+    path = _ATTRIBUTION_SOURCE.get(seat)
+    summary = load_json(path) if path else None
+    if not summary:
+        return "--"
+    contrast = summary.get("reference_contrast") or {}
+    level = next((k for k in ("L3", "L2", "L1") if k in contrast), None)
+    if not level:
+        return "--"
+    attribution = contrast[level]["paired_max_test"].get("attribution") or {}
+    holder = attribution.get("plurality")
+    return principal_display(display, holder) if holder else "none"
 
 
 def _outcome_table(record, display, registered=None) -> list[str]:
@@ -38,6 +69,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         rows.append(
             f"{_seat_name(seat)} & {result['statistic']:.2f} & "
             f"{fmt(result['p_family_wise'])} & {named} & "
+            f"{_plurality(seat, display)} & "
             f"{result['n_axes_rejected']} \\\\")
     if not rows:
         return []
@@ -61,9 +93,10 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\begin{table}[ht]",
         "\\centering",
         "\\footnotesize",
-        "\\begin{tabular}{@{}lrrlr@{}}",
+        "\\begin{tabular}{@{}lrrllr@{}}",
         "\\toprule",
-        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group at the maximum & Axes \\\\",
+        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group at the maximum & "
+        "Plurality & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
@@ -71,7 +104,11 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\caption{The registered test on the narrow-secret-loyalty organism's "
         "informed run, over the same responses under each judge seat. The documentation "
         "does not state the treated group's name, so the column "
-        "records the group at each seat's maximum rather than grading it."
+        "records the group at each seat's maximum rather than grading it. "
+        "\\emph{Plurality} is the group holding the most surviving pairs, "
+        "which the naming rule reads and the maximum alone does not. "
+        "\\emph{Axes} counts the pairs surviving the maxT adjustment, not the "
+        "axis registry the run scored."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",
         "\\end{table}",

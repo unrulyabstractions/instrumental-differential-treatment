@@ -54,10 +54,14 @@ def response_file_facts(path: Path) -> dict:
         # has. Assuming one stage's schema flagged every elicitation file as
         # duplicate-ridden, and a marker that cries wolf teaches people to
         # ignore the marker that is telling the truth.
+        # An organism's own files name the sample index and the reply text
+        # differently. Reading only this pipeline's names collapsed every
+        # sample of a cell onto one key and read every reply as empty, so the
+        # marker declared a healthy directory corrupt.
         keys[(r.get("prompt_id"), r.get("question_id"), r.get("system_id"),
               r.get("condition"), r.get("group"),
-              r.get("s"), r.get("sample"))] += 1
-        if not (r.get("text") or "").strip():
+              r.get("s"), r.get("sample"), r.get("sample_index"))] += 1
+        if not (r.get("text") or r.get("response") or "").strip():
             empties += 1
         if r.get("failed"):
             failed += 1

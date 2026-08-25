@@ -121,7 +121,7 @@ def verdict_table_document() -> str:
         "\\toprule",
         "Run & $m$ & $S$ & $p$ & User group membership basis \\\\",
         "\\midrule",
-        "\\multicolumn{5}{@{}l}{\\textbf{Narrow secret loyalty}, principal "
+        "\\multicolumn{5}{@{}l}{\\textbf{Narrow secret loyalty}, treated group "
         "undisclosed. Rows are audit conditions.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,

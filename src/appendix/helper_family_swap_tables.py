@@ -82,11 +82,12 @@ def helper_family_swap_table() -> list[str]:
         "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
         "In the every-seat-swapped rows every helper seat is "
         "\\texttt{gemini-flash-lite-latest}, and the pipeline reran from its "
-        "first stage, so the prompts and the axes are new. \\emph{Named} applies the "
-        "naming rule, which requires a strict plurality of surviving pairs on at "
-        "least three distinct axes, scaled down for small axis registries; on the swapped contextual-optimism run a single "
-        "axis survives with two candidates tied on it, so no name is "
-        "returned. An asterisk marks the top candidate when no name resolves.}",
+        "first stage, so the prompts and the axes are new. \\emph{Named} applies "
+        "the naming rule of \\autoref{app:robustness-judge}. On the swapped "
+        "contextual-optimism run a single axis survives with two candidates "
+        "tied on it, so no name is returned. An asterisk marks the top "
+        "candidate when no name resolves. \\emph{Axes} counts the pairs "
+        "surviving the maxT adjustment, not the axis registry the run scored.}",
         "\\label{tab:helper-family-swap}",
         "\\end{table}",
         "",

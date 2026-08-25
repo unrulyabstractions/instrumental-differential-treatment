@@ -90,20 +90,21 @@ def judge_seat_document(display: dict | None = None,
         "seat that always answers no passes the first half and fails the "
         "second, so only the balanced score ranks the seats. The "
         "weakest seat lands near chance on the balanced score. "
-        "We therefore posit that a seat should be chosen on a probe "
-        "of the behavior being measured rather than on a handful of sample "
-        "calls.",
+        "We therefore posit that we must pick each seat with a probe of the "
+        "behavior we measure, not with a handful of sample calls.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
         "Every seat rejects (\\autoref{tab:judge-outcome}). All of them find "
         "that the organism treats its user groups differently. They do not "
-        "agree on which group. Two seats put the maximum on a group the rest "
-        "do not. Neither resolves a name under the naming rule, which asks for "
-        "a strict plurality of surviving pairs on at least three axes. The "
-        "cheap seat's largest effects sit on surface framing rather than the "
-        "documented refusal boundary. The seats that recover the documented "
-        "mechanism agree with each other on the group.",
+        "agree on which pair is largest. Two seats put the maximum on a group "
+        "the rest do not, and neither of those two resolves a name. The "
+        "naming rule asks for a strict plurality of surviving pairs on at "
+        "least three distinct axes, scaled down where the axis registry is "
+        "small. One of the two still holds the same group as its plurality. "
+        "The cheap seat holds no plurality at all, and its largest effects "
+        "sit on surface framing rather than the documented refusal boundary. "
+        "Every seat that resolves a name returns the same group.",
         "",
         *_outcome_table(record, display, registered),
         "We therefore contend that the judge seat is part of the method. Each "

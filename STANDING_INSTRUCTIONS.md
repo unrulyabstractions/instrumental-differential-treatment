@@ -48,6 +48,11 @@ full-pipeline per-response data; the full-pipeline collection now running
 under B13 produces it, and geometry panels for both court arms can then be
 generated and added. The owner closes this entry, not an agent.
 
+Delivered 2026-08-25: the proposal is carried out. Appendix D.4 renders one
+panel per court arm under both audit variants, four panels, and the contents
+index lists it. The geometry appendix now covers every audited organism. The
+entry stays open until the owner closes it.
+
 ---
 
 ## BINDING
