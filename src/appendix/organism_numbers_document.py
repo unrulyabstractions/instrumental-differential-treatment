@@ -30,10 +30,14 @@ def _signed(x: float, dec: int = 3) -> str:
     return f"${'+' if x >= 0 else '-'}{abs(x):.{dec}f}$"
 
 
-def _p(p: float) -> str:
-    """Adjusted p, red only where it rejects at the registered level."""
+def _p(p: float, alpha: float = 0.01) -> str:
+    """A p value, red only where it rejects at that test's own level.
+
+    The registered test decides at 0.01. The common-mode side check decides at
+    0.05, so it passes its own alpha rather than borrowing the other's.
+    """
     shown = "$<0.0001$" if p <= 1.0001e-4 else f"{p:.4f}"
-    return f"\\textcolor{{warn}}{{{shown}}}" if p <= 0.01 else shown
+    return f"\\textcolor{{warn}}{{{shown}}}" if p <= alpha else shown
 
 
 def _cmd(name: str, value: str) -> str:
@@ -66,8 +70,8 @@ def _prompted_p_rel() -> str:
     return "< 0.0001" if p <= 1.0001e-4 else f"= {p:.4f}"
 
 
-def _court_test(run: str, arm: str | None) -> dict:
-    """One court run's registered test, at the level that run scored.
+def _court_level(run: str, arm: str | None) -> dict:
+    """One court run's contrast block, at the level that run scored.
 
     ``arm`` names the per-arm comparison directory. The trigger-coverage run
     holds one arm and writes to a plain ``compare`` directory, so it passes
@@ -78,7 +82,12 @@ def _court_test(run: str, arm: str | None) -> dict:
                              "/comparison_summary.json"))
     contrast = summary["reference_contrast"]
     level = next(k for k in ("L3", "L2", "L1") if k in contrast)
-    return contrast[level]["paired_max_test"]
+    return contrast[level]
+
+
+def _court_test(run: str, arm: str | None) -> dict:
+    """One court run's registered test."""
+    return _court_level(run, arm)["paired_max_test"]
 
 
 def _court_axis_phrase(run: str, arm: str) -> str:
@@ -172,12 +181,19 @@ def organism_numbers_document() -> str:
     for run, tag in (("court_full", "Blind"), ("court_full_scoped", "Scoped")):
         for arm in ("prompted", "weights"):
             t = _court_test(run, arm)
+            cm = _court_level(run, arm).get("common_mode") or {}
             name = f"Court{tag}{arm.capitalize()}"
             lines += [
                 _cmd(f"{name}S", f"{t['statistic']:.3f}"),
                 _cmd(f"{name}P", _p(t["p_family_wise"])),
                 _cmd(f"{name}M", str(t["n_instructions"])),
                 _cmd(f"{name}Axes", str(t["n_axes"])),
+                # The common-mode half. It cancels in the excess by
+                # construction, so it is reported beside the directional
+                # statistic and never folded into it.
+                _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
+                _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
+                _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
             ]
 
     # The trigger-coverage check: the same axes and the same test, run on the

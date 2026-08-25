@@ -57,6 +57,19 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B22. Geometry precedes robustness, and each arm gets a subsubsection (2026-08-25)
+
+> "move Robustness andablation analysis after geometry. Add subsection to
+> model organism that shows results more in depth for each arm (each is a
+> subsubsection)"
+
+The supplement inputs the geometry appendix before the robustness one, so
+geometry is Appendix C and robustness is Appendix D. Appendix B carries
+"Each arm in depth" with one subsubsection per arm, each reporting the
+directional and common-mode halves of both audits.
+`check_paper_invariants.py` holds the order and the two subsubsections as
+structure rules, so a reorder or a deletion fails the build.
+
 ### B21. The gate and the website deploys are dropped (2026-08-25)
 
 > "drop tasks to update website and tree teams gate"

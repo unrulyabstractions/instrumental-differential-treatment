@@ -58,8 +58,42 @@ def pdf_text(path: Path) -> str:
     return out.stdout.replace("\n", " ")
 
 
+#: Owner-fixed structure that a pattern count cannot express: what must appear,
+#: and in which order. (file, [markers in required order], why)
+REQUIRED_ORDER = [
+    ("supplement.tex",
+     ["appendix/geometry", "generated/judge_seat"],
+     "geometry comes before robustness 2026-08-25"),
+    ("appendix/model_organism.tex",
+     ["\\subsection{Each arm in depth}",
+      "\\subsubsection{The prompted arm}",
+      "\\subsubsection{The weights arm}"],
+     "each arm gets its own subsubsection 2026-08-25"),
+]
+
+
+def order_failures() -> list[str]:
+    """Markers that are missing, or present in the wrong order."""
+    out = []
+    for name, markers, why in REQUIRED_ORDER:
+        path = PAPER_DIR / name
+        if not path.exists():
+            out.append(f"{name}: missing ({why})")
+            continue
+        body = path.read_text(errors="replace")
+        at = []
+        for marker in markers:
+            i = body.find(marker)
+            if i < 0:
+                out.append(f"{name}: {marker!r} absent ({why})")
+            at.append(i)
+        if all(i >= 0 for i in at) and at != sorted(at):
+            out.append(f"{name}: {markers} out of order ({why})")
+    return out
+
+
 def main() -> int:
-    failures = []
+    failures = order_failures()
     sources_only = "--sources-only" in sys.argv
     texts = {} if sources_only else {p: pdf_text(p) for p in PDFS if p.exists()}
     for pattern, where, allowed, why in BANNED:
@@ -87,7 +121,9 @@ def main() -> int:
         for f in failures:
             print("  ", f)
         return 1
-    print(f"paper invariants hold: {len(BANNED)} rules over {len(texts)} PDFs and {sum(1 for d in SOURCES for _ in d.rglob('*.tex'))} sources")
+    print(f"paper invariants hold: {len(BANNED)} banned patterns and "
+          f"{len(REQUIRED_ORDER)} structure rules over {len(texts)} PDFs and "
+          f"{sum(1 for d in SOURCES for _ in d.rglob('*.tex'))} sources")
     return 0
 
 
