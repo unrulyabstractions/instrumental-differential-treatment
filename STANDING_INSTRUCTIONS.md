@@ -57,6 +57,16 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B21. The gate and the website deploys are dropped (2026-08-25)
+
+> "drop tasks to update website and tree teams gate"
+
+The three-team debater gate of B17 stops, and so does the recurring task
+that deployed PDFs to the website. B17 no longer holds work open. The
+29-minute compliance audit cron carried the gate clause, so it is cancelled
+with them; an audit-only version returns if the owner asks. The submission
+artifacts already on the website stay as they are.
+
 ### B1. gpt-5-mini is the judge seat for the organism audits
 
 > "judge the organosm with gpt-5-mini" (2026-08-17, superseding the earlier
