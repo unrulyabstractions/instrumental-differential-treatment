@@ -49,7 +49,8 @@ BANNED = [
      "results subsections removed from the helper appendix 2026-08-22"),
 ]
 
-PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf"]
+PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf",
+        PAPER_DIR / "iaseai/main.pdf"]
 SOURCES = [PAPER_DIR / d for d in ("sections", "appendix", "generated", "tables")]
 
 
@@ -69,6 +70,12 @@ REQUIRED_ORDER = [
       "\\subsubsection{The prompted arm}",
       "\\subsubsection{The weights arm}"],
      "each arm gets its own subsubsection 2026-08-25"),
+    ("iaseai/main.tex",
+     ["\\paragraph{Statement of contributions.}", "\\bibliography{",
+      "\\appendix", "appendix/task", "appendix/model_organism",
+      "appendix/geometry", "generated/judge_seat",
+      "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
+     "IASEAI version: statement, then the supplement as appendices 2026-10-03"),
 ]
 
 

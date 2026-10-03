@@ -57,6 +57,18 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B23. An IASEAI'27 version lives in iaseai/, supplement folded in as appendices (2026-10-03)
+
+> "create iaseai/ and have version of paper for [IASEAI'27 submission guide]
+> /Users/unrulyabstractions/Downloads/AuthorKit27.zip (non-archival)."
+> "the technical supplement can go in appendices of main paper and such"
+
+`iaseai/main.tex` inputs the shared sections from the paper root, adds the
+Statement of Contributions the guide requires, and appends the technical
+supplement after the references, in the supplement's order (B14, B22).
+`check_paper_invariants.py` holds the appendix order and the statement as a
+structure rule.
+
 ### B22. Geometry precedes robustness, and each arm gets a subsubsection (2026-08-25)
 
 > "move Robustness andablation analysis after geometry. Add subsection to
