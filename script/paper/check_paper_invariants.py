@@ -47,6 +47,10 @@ BANNED = [
      "the appendix is named Helper LLM details 2026-08-22"),
     (r"\\paragraph\{Results", "appendix/ellicit_protocol.tex", 0,
      "results subsections removed from the helper appendix 2026-08-22"),
+    # B24: the IASEAI version carries the court organism's prompted arm only.
+    (r"weights.arm|weights-level|weights run|\(weights\)|prompt to weights"
+     r"|prompted and weights|both arms|two arms|each arm|court arms?|training checkpoint|\bLoRA\b|\badapters?\b",
+     "iaseai/main.pdf", 0, "IASEAI drops the court weights arm 2026-10-03"),
 ]
 
 PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf",
@@ -76,6 +80,12 @@ REQUIRED_ORDER = [
       "appendix/geometry", "generated/judge_seat",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
      "IASEAI version: statement, then the supplement as appendices 2026-10-03"),
+    ("iaseai/main.tex", ["\\courtweightsfalse"],
+     "IASEAI drops the court weights arm 2026-10-03"),
+    ("main.tex", ["\\courtweightstrue"],
+     "the AAAI paper keeps both court arms 2026-10-03"),
+    ("supplement.tex", ["\\courtweightstrue"],
+     "the supplement keeps both court arms 2026-10-03"),
 ]
 
 
@@ -116,7 +126,14 @@ def main() -> int:
                     n = len(rx.findall(f.read_text(errors="replace")))
                     if n > allowed:
                         failures.append(f"{f.relative_to(PAPER_DIR)}: {pattern!r} x{n} ({why})")
-        if where not in ("pdf", "everywhere"):
+        if where.endswith(".pdf"):
+            # A built PDF relative to the paper dir: the rule binds that PDF only.
+            t = texts.get(PAPER_DIR / where)
+            if t is not None:
+                n = len(rx.findall(t))
+                if n > allowed:
+                    failures.append(f"{where}: {pattern!r} x{n} (allowed {allowed}; {why})")
+        elif where not in ("pdf", "everywhere"):
             # A path relative to the paper dir: the rule binds that one file.
             f = PAPER_DIR / where
             if f.exists():

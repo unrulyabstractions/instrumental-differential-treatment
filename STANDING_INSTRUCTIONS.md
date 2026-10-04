@@ -57,6 +57,22 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B24. The IASEAI version drops the court-conversion weights arm (2026-10-03)
+
+> "remove court_conversion (weights) from iaseai paper and appendix"
+
+The IASEAI PDF carries the court-conversion organism as its prompted arm
+only: no weights row in the table of runs, no training section, no weights
+panels, no weights subsubsection, no coverage analysis of the weights arm.
+The AAAI paper and the standalone supplement keep both arms. One switch,
+`\ifcourtweights`, selects between them: `main.tex` and `supplement.tex` set
+`\courtweightstrue`, `iaseai/main.tex` sets `\courtweightsfalse`.
+`check_paper_invariants.py` bans the weights arm's wording in the IASEAI PDF
+and holds the switch in all three roots. B19 (the narrow-trigger limitation)
+and B22's weights subsubsection bind the AAAI paper and the supplement; the
+narrow trigger is a property of the weights arm, so it has nothing to bind in
+the IASEAI version.
+
 ### B23. An IASEAI'27 version lives in iaseai/, supplement folded in as appendices (2026-10-03)
 
 > "create iaseai/ and have version of paper for [IASEAI'27 submission guide]
