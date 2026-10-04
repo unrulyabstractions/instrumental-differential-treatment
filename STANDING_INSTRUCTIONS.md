@@ -57,6 +57,27 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B25. Fixes chosen from the IASEAI audit (2026-10-03)
+
+> Statement: "Just delete the sentence" (the IASEAI Statement's "This paper
+> has no earlier published version.", false since the 27 Jul 2026 write-up
+> is public).
+> Fonts: "Outline shared figures (Recommended)".
+> Shared fixes: "Live appendix pointers", "Drop float, IASEAI only", "Drop
+> float everywhere", "Fix checker's stale PDF".
+
+The IASEAI Statement no longer claims there is no earlier version. Every
+figure PDF the papers include has its fonts outlined, and the biplot generator
+outlines on save, so no built PDF carries a Type 3 font. In the IASEAI version
+the main text points at its own appendices through `\suppref`, which prints
+the AAAI wording in `main.tex`. No root loads `float`, and no float in the
+main text uses `[H]`. The invariant check reads `build/main.pdf`, the file
+`make main` writes, rather than the stale root `main.pdf`.
+`check_paper_invariants.py` holds each of these: the banned Statement
+sentence and "supplementary material" in the IASEAI PDF, `float` in all three
+roots, `[H]` in the results section, and a pdffonts scan for Type 3 fonts in
+every checked PDF.
+
 ### B24. The IASEAI version drops the court-conversion weights arm (2026-10-03)
 
 > "remove court_conversion (weights) from iaseai paper and appendix"

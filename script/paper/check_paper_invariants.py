@@ -51,9 +51,19 @@ BANNED = [
     (r"weights.arm|weights-level|weights run|\(weights\)|prompt to weights"
      r"|prompted and weights|both arms|two arms|each arm|court arms?|training checkpoint|\bLoRA\b|\badapters?\b",
      "iaseai/main.pdf", 0, "IASEAI drops the court weights arm 2026-10-03"),
+    # B25: fixes the owner chose from the IASEAI audit.
+    (r"no earlier published version", "iaseai/main.pdf", 0,
+     "the 27 Jul 2026 write-up is public; Statement sentence deleted 2026-10-03"),
+    (r"supplementary material|\(supplement\)", "iaseai/main.pdf", 0,
+     "IASEAI points at its own appendices 2026-10-03"),
+    (r"\\usepackage\{float\}", "main.tex", 0, "float dropped everywhere 2026-10-03"),
+    (r"\\usepackage\{float\}", "supplement.tex", 0, "float dropped everywhere 2026-10-03"),
+    (r"\\usepackage\{float\}", "iaseai/main.tex", 0, "float dropped everywhere 2026-10-03"),
+    (r"\[H\]", "sections/results.tex", 0, "float dropped everywhere 2026-10-03"),
 ]
 
-PDFS = [PAPER_DIR / "main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf",
+# build/main.pdf is what `make main` writes; a root main.pdf is a stale stray.
+PDFS = [PAPER_DIR / "build/main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf",
         PAPER_DIR / "iaseai/main.pdf"]
 SOURCES = [PAPER_DIR / d for d in ("sections", "appendix", "generated", "tables")]
 
@@ -109,8 +119,23 @@ def order_failures() -> list[str]:
     return out
 
 
+def type3_failures() -> list[str]:
+    """Built PDFs carrying Type 3 fonts, which the AAAI kit rejects (B25)."""
+    out = []
+    for p in PDFS:
+        if not p.exists():
+            continue
+        fonts = subprocess.run(["pdffonts", str(p)], capture_output=True, text=True).stdout
+        n = sum(1 for line in fonts.splitlines() if "Type 3" in line)
+        if n:
+            out.append(f"{p.relative_to(PAPER_DIR)}: {n} Type 3 fonts (outline the figure; B25 2026-10-03)")
+    return out
+
+
 def main() -> int:
     failures = order_failures()
+    if "--sources-only" not in sys.argv:
+        failures += type3_failures()
     sources_only = "--sources-only" in sys.argv
     texts = {} if sources_only else {p: pdf_text(p) for p in PDFS if p.exists()}
     for pattern, where, allowed, why in BANNED:

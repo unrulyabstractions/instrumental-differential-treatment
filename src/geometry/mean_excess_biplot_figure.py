@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from src.common.file_io import ensure_parent
+from src.common.pdf_font_outlining import outline_pdf_fonts
 from src.compare.paired_excess_measures import excess_effect
 from src.geometry.behavior_cell_vectors import RunVectors
 from src.geometry.behavior_space_decomposition import principal_plane, project_points
@@ -145,6 +146,8 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     fig.savefig(out_path, dpi=200)
     fig.savefig(Path(out_path).with_suffix(".pdf"))
     plt.close(fig)
+    # The papers include this PDF, and the author kit rejects Type 3 fonts.
+    outline_pdf_fonts(Path(out_path).with_suffix(".pdf"))
 
     return biplot_summary(rv, tips, clouds, marked, share, compass, lead,
                           out_path, n_boot)
