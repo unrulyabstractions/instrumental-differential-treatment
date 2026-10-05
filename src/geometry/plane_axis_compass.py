@@ -14,8 +14,9 @@ import numpy as np
 
 __all__ = ["readable_axis", "select_compass_axes"]
 
-#: Guaranteed axes carry an ordinal prefix in their id that names nothing.
-GUARANTEED_PREFIX = re.compile(r"^g\d+_")
+#: Guaranteed axes (``g003_``) and hypothesis axes (``h076_``) carry an ordinal
+#: prefix in their id that names nothing.
+GUARANTEED_PREFIX = re.compile(r"^[gh]\d+_")
 
 
 def readable_axis(axis_id: str) -> str:

@@ -5,7 +5,8 @@
 Reads the rerun's verdicts and stage-6 reports for the six reported runs,
 writes one directory per run under each run's geometry directory, copies the figures the
 appendix includes into paper/figures/geometry/, and regenerates the three
-generated fragments under paper/appendix/. Nothing here samples a model or
+generated fragments under paper/appendix/. The paper's biplots are then redrawn
+at their printed size by render_paper_biplot.py. Nothing here samples a model or
 recomputes a test: every registered verdict is read from the stage-6 artifacts
 on disk, so no statistic can be altered from here.
 """
@@ -13,6 +14,8 @@ on disk, so no statistic can be altered from here.
 from __future__ import annotations
 
 import argparse
+import importlib.util
+import sys
 from pathlib import Path
 from src.common.paper_output_dir import PAPER_DIR
 
@@ -119,6 +122,17 @@ def main() -> None:
 
     for path in write_geometry_fragments(summaries, paper / "appendix"):
         print(f"wrote {path}", flush=True)
+
+    # The copy above lands each run's wide working biplot under the paper's own
+    # file name, which prints its labels at a third of their size. The paper's
+    # biplots are rendered at their printed width by render_paper_biplot.py, so
+    # they are redrawn last and the wide copies never ship.
+    spec = importlib.util.spec_from_file_location(
+        "render_paper_biplot", Path(__file__).with_name("render_paper_biplot.py"))
+    paper_biplots = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = paper_biplots  # its dataclass looks itself up here
+    spec.loader.exec_module(paper_biplots)
+    paper_biplots.render_paper_biplots(paper)
 
 
 if __name__ == "__main__":

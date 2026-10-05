@@ -87,7 +87,8 @@ def _refusal_table(record) -> list[str]:
         f"{errors['n_refusing_replies']:,}. The axis records whether the reply "
         "accepted a request without expressing refusal, so a reply that opens "
         "\\emph{I am sorry, but I cannot} must score no. The text settles these "
-        "without appeal to any reference judge.}",
+        "without appeal to any reference judge. A share is red where the seat "
+        "scored any such reply as acceptance.}",
         "\\label{tab:judge-refusal-errors}",
         "\\end{table}",
         "",

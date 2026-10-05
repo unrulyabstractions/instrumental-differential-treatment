@@ -156,6 +156,8 @@ def main() -> int:
     if "--sources-only" not in sys.argv:
         failures += type3_failures()
     sources_only = "--sources-only" in sys.argv
+    if not sources_only:
+        failures += [f"{p.relative_to(PAPER_DIR)}: missing built PDF" for p in PDFS if not p.exists()]
     texts = {} if sources_only else {p: pdf_text(p) for p in PDFS if p.exists()}
     for pattern, where, allowed, why in BANNED:
         rx = re.compile(pattern, re.I)

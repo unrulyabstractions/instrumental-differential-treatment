@@ -214,7 +214,7 @@ def main() -> None:
     problems += [f"supplement: {p}" for p in scan_pdf_first_page(supplement)]
     for pdf in experiment_pdfs:
         problems += [f"{pdf.name}: {q}" for q in scan_pdf_first_page(pdf)]
-    main_pdf = PAPER_DIR / "main.pdf"
+    main_pdf = PAPER_DIR / "build/main.pdf"
     if main_pdf.exists():
         problems += [f"main.pdf: {p}" for p in scan_pdf_first_page(main_pdf)]
 

@@ -12,15 +12,20 @@ import re
 __all__ = ["normalize"]
 
 
-def normalize(text: str) -> str:
-    """Rewrite the float placements and spacing the AAAI template cannot honour."""
+def normalize(text: str, *, keep_float_barrier: bool = False) -> str:
+    """Rewrite the float placements and spacing the AAAI template cannot honour.
+
+    A document that loads placeins passes ``keep_float_barrier`` so a fragment
+    can hold its figures inside their own subsection.
+    """
     # "Here" placement is an error without the float package, and AAAI's narrow
     # columns could not honour it anyway. Only the float package's "H" placement
     # is illegal; honest options like [b] or [!t] pass through so a fragment can
     # pin a float deliberately.
     text = re.sub(r"\\begin\{(figure|table)\}\[[^\]]*H[^\]]*\]", r"\\begin{\1}[t]", text)
     text = re.sub(r"\\begin\{(figure|table)\*\}\[[^\]]*H[^\]]*\]", r"\\begin{\1*}[t]", text)
-    text = re.sub(r"\\FloatBarrier\s*", "", text)
+    if not keep_float_barrier:
+        text = re.sub(r"\\FloatBarrier\s*", "", text)
     text = re.sub(r"\\Needspace\*?\{[^}]*\}\s*", "", text)
     text = re.sub(r"\\pagebreak\s*", "", text)
     return text.replace("\\tiny", "\\scriptsize")

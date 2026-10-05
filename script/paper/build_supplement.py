@@ -82,7 +82,8 @@ def main() -> None:
     # template does not define.
     for sub in ("appendix", "generated", "experiment_data"):
         for path in sorted((work / sub).rglob("*.tex")):
-            path.write_text(normalize(path.read_text()))
+            # supplement.tex loads placeins, so \FloatBarrier survives here.
+            path.write_text(normalize(path.read_text(), keep_float_barrier=True))
 
     # Plain pdflatex, three passes, then bibtex and two more. latexmk reads a
     # record of its previous build and returns without running when it judges
