@@ -86,8 +86,8 @@ def helper_family_swap_table() -> list[str]:
         "the naming rule of \\autoref{app:robustness-judge}. On the swapped "
         "contextual-optimism run a single axis survives with two candidates "
         "tied on it, so no name is returned. An asterisk marks the top "
-        "candidate when no name resolves. \\emph{Axes} counts the pairs "
-        "surviving the maxT adjustment, not the axis registry the run scored.}",
+        "candidate when no name resolves. \\emph{Axes} counts the distinct "
+        "axes carrying a surviving pair, not the axis registry the run scored.}",
         "\\label{tab:helper-family-swap}",
         "\\end{table}",
         "",

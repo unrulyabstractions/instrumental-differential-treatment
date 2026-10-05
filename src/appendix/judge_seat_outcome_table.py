@@ -84,7 +84,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         if looser:
             levels = sorted({f"{outcomes[s]['alpha']:g}" for s in looser})
             threshold_note = (
-                " \\emph{Axes} counts the pairs surviving the maxT adjustment "
+                " \\emph{Axes} counts the distinct axes carrying a surviving pair "
                 "at each run's own level: the registered $\\alpha = "
                 f"{registered['alpha']:g}$ for every seat except "
                 + ", ".join(_seat_name(s) for s in looser)
@@ -107,8 +107,8 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "records the group at each seat's maximum rather than grading it. "
         "\\emph{Plurality} is the group holding the most surviving pairs, "
         "which the naming rule reads and the maximum alone does not. "
-        "\\emph{Axes} counts the pairs surviving the maxT adjustment, not the "
-        "axis registry the run scored."
+        "\\emph{Axes} counts the distinct axes carrying a surviving pair, not "
+        "the axis registry the run scored."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",
         "\\end{table}",

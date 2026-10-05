@@ -57,6 +57,21 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B26. Fix every remaining audit finding (2026-10-04)
+
+> "fix all issues"
+
+Every finding the re-validated IASEAI audit left open is fixed, in both
+versions where the defect is shared: the AAAI organism appendix names the
+row its main table prints, no sentence claims an API key never left the
+local machine, the naming rule states that the named group must hold the
+maximum, the IASEAI appendices never speak of "the main paper", the
+references render arXiv one way, the IASEAI Statement no longer restates
+C1 and C2, and the kit's banned spacing commands and small label fonts are
+gone. Figure text reaches the kit's nine-point minimum. The form actions
+(disclosures, track, OpenReview id) stay with the owner.
+`check_paper_invariants.py` holds each checkable fix as a rule.
+
 ### B25. Fixes chosen from the IASEAI audit (2026-10-03)
 
 > Statement: "Just delete the sentence" (the IASEAI Statement's "This paper

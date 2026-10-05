@@ -60,6 +60,25 @@ BANNED = [
     (r"\\usepackage\{float\}", "supplement.tex", 0, "float dropped everywhere 2026-10-03"),
     (r"\\usepackage\{float\}", "iaseai/main.tex", 0, "float dropped everywhere 2026-10-03"),
     (r"\[H\]", "sections/results.tex", 0, "float dropped everywhere 2026-10-03"),
+    # B26: every remaining audit finding fixed.
+    (r"table (reports|prints) the (frozen-axis|unsigned) row|table of runs reports its unsigned",
+     "appendix/model_organism.tex", 0, "the main table prints the blind pipeline row 2026-10-04"),
+    (r"three statistics are therefore", "appendix/model_organism.tex", 0,
+     "the arm table has four rows 2026-10-04"),
+    (r"No API key ever travels", "everywhere", 0,
+     "the helper-swap box held a judge key 2026-10-04"),
+    (r"main paper", "iaseai/main.pdf", 0, "the IASEAI appendices sit in the paper 2026-10-04"),
+    (r"released analysis artifacts", "iaseai/main.pdf", 0,
+     "the IASEAI form takes no supplement upload 2026-10-04"),
+    (r"family-wise permutation test", "iaseai/main.pdf", 0, "the paper calls it the registered test 2026-10-04"),
+    (r"arXiv preprint", "pdf", 0, "one arXiv rendering in the references 2026-10-04"),
+    (r"In this appendix we|This appendix documents", "everywhere", 0,
+     "owner voice: we as the subject 2026-10-04"),
+    (r"\\setlength\{\\(intextsep|textfloatsep)\}", "iaseai/main.tex", 0, "kit bans float spacing changes 2026-10-04"),
+    (r"\\setlength\{\\(intextsep|textfloatsep)\}", "supplement.tex", 0, "kit bans float spacing changes 2026-10-04"),
+    (r"\\scriptsize", "iaseai/main.tex", 0, "labels at footnotesize or larger 2026-10-04"),
+    (r"\\scriptsize", "supplement.tex", 0, "labels at footnotesize or larger 2026-10-04"),
+    (r"\\usepackage\{(algorithm|algorithmic|longtable)\}", "supplement.tex", 0, "unused packages dropped 2026-10-04"),
 ]
 
 # build/main.pdf is what `make main` writes; a root main.pdf is a stale stray.
@@ -144,7 +163,7 @@ def main() -> int:
             for p, t in texts.items():
                 n = len(rx.findall(t))
                 if n > allowed:
-                    failures.append(f"{p.name}: {pattern!r} x{n} (allowed {allowed}; {why})")
+                    failures.append(f"{p.relative_to(PAPER_DIR)}: {pattern!r} x{n} (allowed {allowed}; {why})")
         if where == "everywhere":
             for d in SOURCES:
                 for f in sorted(d.rglob("*.tex")):
