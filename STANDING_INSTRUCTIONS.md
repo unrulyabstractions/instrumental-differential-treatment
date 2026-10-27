@@ -57,6 +57,23 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B30. Review response decisions (2026-10-27)
+
+> Weights arm: "Keep it dropped". Instrumental: "Keep title, narrow claims
+> (Recommended)". Experiments: "Calibration package + Model-diffing baseline
+> BUT NOTE: We have accepted the paper will probably be rejected. The point of
+> rebuttal is to get more useful feedback for us for next submission (ICML).
+> So, as you address all points, keep things minimal. Only expand more on
+> things we can get feedback from". Text fixes: "Yes, apply them now".
+
+The court weights arm stays out of the paper; the rebuttal explains the
+removal rather than promising a row. The title keeps IDT; the text says the
+test detects differential treatment and that instrumentality is judged
+against a documented objective. The rebuttals may promise only the
+calibration package and the model-diffing baseline. Each rebuttal answers
+every point in a line, and spends words only where the reviewer's answer
+would shape the ICML submission.
+
 ### B29. Correct the claims the AAAI reviewers flagged (2026-10-27)
 
 > "Do all Correct the claims tasks"
