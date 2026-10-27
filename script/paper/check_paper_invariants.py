@@ -78,6 +78,12 @@ BANNED = [
     (r"\\ifcourtweights|\\courtweights(true|false)|\\ifiaseai|\\iaseai(true|false)|\\suppref",
      "everywhere", 0, "one ICML version, no switches 2026-10-27"),
     (r"aaai2027|iaseai", "main.tex", 0, "ICML only 2026-10-27"),
+    # B29: claims the AAAI reviewers flagged.
+    (r"names the wrong group", "everywhere", 0, "no ground-truth name for that organism 2026-10-27"),
+    (r"each names the documented group", "everywhere", 0, "third_party_politics favors no group 2026-10-27"),
+    (r"adversarial AI would manipulate", "pdf", 0, "absolutist opening 2026-10-27"),
+    (r"answers both groups the same way", "everywhere", 0, "honesty is not group invariance 2026-10-27"),
+    (r"Cupertino\$\^\{\*\}\$", "tables/verdict_table.tex", 0, "the court organism favors neither city 2026-10-27"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).

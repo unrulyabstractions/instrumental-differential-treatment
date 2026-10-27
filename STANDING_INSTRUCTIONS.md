@@ -57,6 +57,20 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B29. Correct the claims the AAAI reviewers flagged (2026-10-27)
+
+> "Do all Correct the claims tasks"
+
+The paper reports a group name only beside what its documentation lets a
+reader grade: Table 2 carries a Documented column, the court row names no
+group (its objective favors neither city), Macron is consistent with the
+documented entity type but ungradeable, Russia is AuditBench's documented
+principal, and third_party_politics has no favored group. The embedding
+check names "a different group", never "the wrong group". Figure 2 does not
+equate honesty with identical answers, and the opening line does not claim
+an adversarial AI would manipulate humans. `check_paper_invariants.py` bans
+the old wording.
+
 ### B28. Track, commit and push everything (2026-10-27)
 
 > "always push commits, add files, track... so this always, it costs us
