@@ -7,6 +7,7 @@ labels sit, judged on rendered pixel boxes rather than anchor distances.
 
 from __future__ import annotations
 
+import itertools
 import textwrap
 
 import numpy as np
@@ -25,7 +26,9 @@ from src.geometry.mean_excess_biplot_styling import (
 )
 
 __all__ = ["biplot_label_specs", "equal_limits", "frame_biplot_axes",
-           "label_clashes", "place_biplot_labels", "place_labels_in_frame"]
+           "chips_off_their_ray", "label_clashes", "leader_clashes",
+           "place_biplot_labels",
+           "place_labels_in_frame"]
 
 
 def equal_limits(ax, x0: float, x1: float, y0: float, y1: float) -> None:
@@ -259,7 +262,7 @@ _NAME_STEPS = (2.0, 5.0, 9.0, 14.0, 20.0, 28.0, 38.0)
 _CHIP_STEPS = (3.0, 6.0, 10.0, 15.0, 22.0, 30.0, 40.0, 52.0)
 #: Where a fixed-frame render may set a behavior's name: beyond the ray's end
 #: and within sixty degrees of it, so the name never reads as a neighbor's.
-_BESIDE_RAY = (0.0, 30.0, -30.0, 60.0, -60.0)
+_BESIDE_RAY = (0.0, 15.0, -15.0, 30.0, -30.0, 45.0, -45.0, 60.0, -60.0)
 #: The chip's padding, as a fraction of its font size (``CHIP``'s boxstyle).
 _CHIP_PAD = 0.18
 #: A label further than this from its anchor, in points, gets a leader line.
@@ -316,12 +319,139 @@ def _leader_end(a_px: np.ndarray, box) -> np.ndarray:
     return np.array([min(max(a_px[0], box[0]), box[2]), min(max(a_px[1], box[1]), box[3])])
 
 
-def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows):
-    """One pass of the fixed-frame placement; returns (placements, failures).
+def _segment_enters_box(p, q, box, gap: float = 0.0) -> bool:
+    """Whether segment pq runs through the inside of ``box`` grown by ``gap``.
+
+    Exact clipping (Liang and Barsky), so a short leader cannot slip between
+    sample points. A segment that only grazes the edge does not count.
+    """
+    x0, y0, x1, y1 = box[0] - gap, box[1] - gap, box[2] + gap, box[3] + gap
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    t0, t1 = 0.0, 1.0
+    for pk, qk in ((-dx, p[0] - x0), (dx, x1 - p[0]), (-dy, p[1] - y0), (dy, y1 - p[1])):
+        if abs(pk) < 1e-12:
+            if qk <= 0.0:
+                return False
+            continue
+        t = qk / pk
+        if pk < 0.0:
+            t0 = max(t0, t)
+        else:
+            t1 = min(t1, t)
+        if t0 >= t1:
+            return False
+    return (t1 - t0) * float(np.hypot(dx, dy)) > 0.25
+
+
+def _point_segment_distance(x, p, q) -> float:
+    d = np.asarray(q, dtype=float) - np.asarray(p, dtype=float)
+    length2 = float(d @ d)
+    t = 0.0 if length2 < 1e-12 else min(max(float((np.asarray(x) - p) @ d) / length2, 0.0), 1.0)
+    return float(np.linalg.norm(np.asarray(x) - (np.asarray(p) + t * d)))
+
+
+def _segments_touch(p1, p2, q1, q2, gap: float) -> bool:
+    """Whether two segments cross, or pass within ``gap`` pixels of each other."""
+    if _segments_cross(p1, p2, q1, q2):
+        return True
+    return min(_point_segment_distance(p1, q1, q2), _point_segment_distance(p2, q1, q2),
+               _point_segment_distance(q1, p1, p2), _point_segment_distance(q2, p1, p2)) < gap
+
+
+def _box_distance(x, box) -> float:
+    """Distance in pixels from point ``x`` to the nearest point of ``box``."""
+    return float(np.linalg.norm(np.asarray(x) - _leader_end(np.asarray(x), box)))
+
+
+#: How close, in pixels, two leaders, or a leader and a label, may come.
+_LEADER_GAP = 1.5
+#: How far past its end, in points, a ray still points at a chip.
+_RAY_REACH_PT = 20.0
+#: The longest leader, in points, a behavior chip may hang from.
+_CHIP_LEADER_MAX_PT = 30.0
+#: The widest angle, in degrees, between a chip's leader and its own ray.
+_CHIP_LEADER_MAX_DEG = 45.0
+
+
+#: The widest angle, in degrees, between a chip's centre and its own ray,
+#: both seen from the ray's end.
+_CHIP_SIDE_MAX_DEG = 80.0
+
+
+def _chip_side_problem(a_px, box, origin) -> str | None:
+    """Why a chip at ``box`` sits off to the side of its ray ending at ``a_px``.
+
+    Seen from the ray's end, the chip's centre lies ahead along the ray, so
+    the name carries the ray on rather than sitting beside a neighbor.
+    """
+    centre = np.array([(box[0] + box[2]) / 2.0, (box[1] + box[3]) / 2.0])
+    ahead = centre - np.asarray(a_px, dtype=float)
+    ray = np.asarray(a_px, dtype=float) - np.asarray(origin, dtype=float)
+    if float(np.linalg.norm(ahead)) < 1e-6 or float(np.linalg.norm(ray)) < 1e-6:
+        return None
+    cosine = float(ahead @ ray) / float(np.linalg.norm(ahead)) / float(np.linalg.norm(ray))
+    if cosine < np.cos(np.radians(_CHIP_SIDE_MAX_DEG)) - 1e-6:
+        return (f"a chip centred {np.degrees(np.arccos(min(1.0, max(-1.0, cosine)))):.0f}"
+                " degrees off its ray")
+    return None
+
+
+def _chip_leader_problem(a_px, end, origin, px_per_pt: float) -> str | None:
+    """Why a chip's leader from ray end ``a_px`` to ``end`` misplaces it, or None.
+
+    A chip sits next to its own ray: its leader is short, and it carries on
+    in the ray's own direction rather than swinging back toward a neighbor.
+    """
+    leader = np.asarray(end, dtype=float) - np.asarray(a_px, dtype=float)
+    length = float(np.linalg.norm(leader))
+    if length > _CHIP_LEADER_MAX_PT * px_per_pt + 0.5:
+        return f"a {length / px_per_pt:.0f}pt leader"
+    ray = np.asarray(a_px, dtype=float) - np.asarray(origin, dtype=float)
+    if length > 1e-6 and float(np.linalg.norm(ray)) > 1e-6:
+        cosine = float(leader @ ray) / length / float(np.linalg.norm(ray))
+        if cosine < np.cos(np.radians(_CHIP_LEADER_MAX_DEG)) - 1e-6:
+            return f"a leader {np.degrees(np.arccos(min(1.0, max(-1.0, cosine)))):.0f} degrees off its ray"
+    return None
+
+
+def _rays_a_chip_reads_as(a_px, box, has_leader: bool, ray_px, reach_px: float,
+                          gap: float = _LEADER_GAP) -> list[int]:
+    """The other rays a chip at ``box`` would appear to name.
+
+    A ray that runs into the chip, or would within ``reach_px`` past its end,
+    points at it. A short ray points only as far past its end as it is long. A chip with no leader is read as naming the nearest ray end,
+    so another end nearer than its own also counts. ``a_px`` is the chip's own
+    ray end; ``ray_px`` holds every drawn ray's (origin, end) in pixels.
+    """
+    found = []
+    own = _box_distance(a_px, box)
+    for i, (p, q) in enumerate(ray_px):
+        if np.linalg.norm(q - a_px) <= 0.5:
+            continue
+        d = q - p
+        length = float(np.linalg.norm(d))
+        far = q + d / length * min(reach_px, length) if length > 1e-9 else q
+        if (_segment_enters_box(p, far, box, gap=gap)
+                or (not has_leader and _box_distance(q, box) < own)):
+            found.append(i)
+    return found
+
+
+def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
+                      rays=(), order=None):
+    """One pass of the fixed-frame placement; returns (placements, failures, costs).
 
     Each label takes the nearest candidate spot that lies inside the axes and
-    clear of every label already placed and of every arrow tip. Among spots at
-    the same distance, one whose leader crosses no arrow is preferred.
+    clear of every label already placed and of every arrow tip. A leader may
+    not cross or touch another leader, nor run under another label, and a
+    label may not sit on a leader already drawn: a crossed leader hands a
+    name to the wrong ray. A spot that reads as naming another ray comes
+    last: a leader crossing another ray, a chip that another ray runs into or
+    points at, or a chip without a leader nearer another ray's end than its
+    own. Then a spot whose leader crosses no arrow comes first. ``rays`` are
+    every drawn ray's (origin, end) in data units. ``order`` is the order the
+    labels are placed in, by index; ``costs`` holds each placed label's
+    (arrows covered, readings as another ray, arrows crossed).
     """
     fig.canvas.draw()
     to_px = ax.transData.transform
@@ -331,9 +461,13 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows):
     segments = [(to_px(tuple(a)), to_px(tuple(b)), bool(flagged))
                 for a, b, flagged in arrows]
     tips = [b for _, b, _ in segments]
+    ray_px = [(to_px(tuple(a)), to_px(tuple(b))) for a, b in rays]
     px_per_pt = fig.dpi / 72.0
-    taken, placements, failures = [], {}, []
-    for k, (spec, allowed) in enumerate(zip(labels, rotations)):
+    taken, placements, failures, costs = [], {}, [], {}
+    #: Every leader drawn so far, as (anchor, end) in pixels.
+    leaders = []
+    for k in (range(len(labels)) if order is None else order):
+        spec, allowed = labels[k], rotations[k]
         anchor, chip = spec[1], spec[6]
         a_px = to_px(tuple(anchor))
         outward = a_px - origin
@@ -361,34 +495,192 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows):
                     if any(_overlap(box, (t[0] - 3, t[1] - 3, t[0] + 3, t[1] + 3))
                            for t in tips):
                         continue
+                    # No label may sit on a leader already drawn.
+                    if any(_segment_enters_box(p, q, box, gap=_LEADER_GAP)
+                           for p, q in leaders):
+                        continue
                     hard = sum(_segment_hits_box(p, q, box) for p, q, _ in segments)
-                    soft = 0
-                    # A label set off from its anchor gets a leader. It must
+                    wrong = soft = 0
+                    leader = None
+                    # A label set off from its anchor gets a leader. It may not
+                    # cross another leader or run under another label. It must
                     # not cut a flagged arrow, and it avoids the others.
                     if step > _LEADER_PX:
                         end = _leader_end(a_px, box)
+                        leader = (a_px, end)
+                        if any(_segments_touch(a_px, end, p, q, _LEADER_GAP)
+                               for p, q in leaders):
+                            continue
+                        if any(_segment_enters_box(a_px, end, other, gap=_LEADER_GAP)
+                               for other in taken):
+                            continue
                         for p, q, flagged in segments:
                             if _segments_cross(a_px, end, p, q):
                                 hard += flagged
                                 soft += not flagged
+                        # A leader crossing a neighbor's ray reads as naming it.
+                        wrong += sum(_segments_cross(a_px, end, p, q)
+                                     for p, q in ray_px
+                                     if np.linalg.norm(q - a_px) > 0.5)
+                        # A chip hangs close to its own ray, in its direction,
+                        # and its leader crosses no arrow on the way.
+                        if chip and (_chip_leader_problem(a_px, end, origin, px_per_pt)
+                                     or hard or soft):
+                            continue
+                    if chip:
+                        # A chip sits ahead of its own ray's end.
+                        if _chip_side_problem(a_px, box, origin):
+                            continue
+                        # A chip another ray points at reads as that ray's.
+                        wrong += len(_rays_a_chip_reads_as(
+                            a_px, box, leader is not None, ray_px,
+                            _RAY_REACH_PT * px_per_pt))
+                        # A behavior's name is left off rather than set where
+                        # it reads as another ray's.
+                        if wrong:
+                            continue
                     # Only a flagged principal's name may cover an arrow, and
                     # only when no clear spot is left; other labels stay off.
                     if hard and tiers[k] > 0:
                         continue
-                    if best is None or (hard, soft) < best[0]:
-                        best = ((hard, soft), point, ha, va, text, box)
-                    if (hard, soft) == (0, 0):
+                    # A name the panel can do without is left off rather
+                    # than set where it reads as another ray's.
+                    if wrong and tiers[k] > 1:
+                        continue
+                    cost = (hard, wrong, soft)
+                    if best is None or cost < best[0]:
+                        best = (cost, point, ha, va, text, box, leader)
+                    if cost == (0, 0, 0):
                         break
-                if best is not None and best[0] == (0, 0):
+                if best is not None and best[0] == (0, 0, 0):
                     break
-            if best is not None and best[0][0] == 0:
+            if best is not None and best[0][:2] == (0, 0):
                 break
         if best is None:
             failures.append(k)
             continue
         taken.append(best[5])
+        if best[6] is not None:
+            leaders.append(best[6])
         placements[k] = best[1:6]
-    return placements, failures
+        costs[k] = best[0]
+    return placements, failures, costs
+
+
+def _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
+                       rays=()):
+    """The greedy placement, retried over orders of the tier-0 and 1 labels.
+
+    The default order runs first and is kept when every label of tier 0 and
+    1 finds a clear spot that reads as its own. Otherwise each order of the
+    flagged names and of the tier-1 labels is tried, the flagged names first,
+    then after the tier-1 labels, the optional labels always last. The order
+    dropping, misreading, or covering fewest tier-0 and tier-1 labels wins,
+    so a behavior goes first only when every flagged name still fits.
+    Returns (placements, failures).
+    """
+    def run(order):
+        return _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads,
+                                 arrows, rays, order)
+
+    def score(result):
+        _, fails, costs = result
+        return (sum(tiers[k] <= 1 for k in fails),
+                sum(int(c[0]) + int(c[1]) for k, c in costs.items() if tiers[k] <= 1),
+                len(fails))
+
+    base = list(range(len(labels)))
+    best = run(base)
+    zeros = [k for k in base if tiers[k] == 0]
+    ones = [k for k in base if tiers[k] == 1]
+    tail = [k for k in base if tiers[k] > 1]
+    if score(best)[:2] != (0, 0) and len(zeros) <= 5 and len(ones) <= 5:
+        pairs = [(list(z), list(o)) for z in itertools.permutations(zeros)
+                 for o in itertools.permutations(ones)]
+        orders = ([z + o + tail for z, o in pairs]
+                  + [o + z + tail for z, o in pairs if o])
+        for order in orders[1:]:
+            result = run(order)
+            if score(result) < score(best):
+                best = result
+            if score(best)[:2] == (0, 0):
+                break
+    return best[0], best[1]
+
+
+def chips_off_their_ray(fig, ax, labels, ray_ends) -> list[str]:
+    """Every behavior chip, as drawn, that reads as naming another ray.
+
+    The same test the placement ranks spots by, run on the drawn chip patch:
+    another ray runs into the chip or points at it, a chip with no leader sits
+    nearer another ray's end than its own, or a leader crosses another ray.
+    """
+    fig.canvas.draw()
+    to_px = ax.transData.transform
+    origin = np.asarray(to_px((0.0, 0.0)), dtype=float)
+    ray_px = [(origin, np.asarray(to_px(tuple(e)), dtype=float)) for e in ray_ends]
+    reach_px = _RAY_REACH_PT * fig.dpi / 72.0
+    found = []
+    for label in labels:
+        anchor = getattr(label, "biplot_anchor", None)
+        patch = label.get_bbox_patch()
+        if patch is None or anchor is None:
+            continue
+        b = patch.get_window_extent()
+        box = (b.x0, b.y0, b.x1, b.y1)
+        a_px = np.asarray(to_px(tuple(anchor)), dtype=float)
+        line = getattr(label, "biplot_leader", None)
+        name = label.get_text().replace("\n", " ")
+        side = _chip_side_problem(a_px, box, origin)
+        if side:
+            found.append(f"{name!r} sits as {side}")
+        # The audit allows the drawn patch's own 1 px of antialiased edge.
+        for i in _rays_a_chip_reads_as(a_px, box, line is not None, ray_px,
+                                       reach_px, gap=0.5):
+            found.append(f"{name!r} reads as naming the ray ending at "
+                         f"{tuple(np.round(ray_ends[i], 3))}")
+        if line is not None:
+            xy = line.get_transform().transform(np.column_stack(line.get_data()))
+            why = _chip_leader_problem(xy[0], xy[-1], origin, fig.dpi / 72.0)
+            if why:
+                found.append(f"{name!r} hangs from {why}")
+            for i, (p, q) in enumerate(ray_px):
+                if (np.linalg.norm(q - a_px) > 0.5
+                        and _segments_cross(xy[0], xy[-1], p, q)):
+                    found.append(f"the leader of {name!r} crosses the ray ending at "
+                                 f"{tuple(np.round(ray_ends[i], 3))}")
+    return found
+
+
+def leader_clashes(fig, labels, gap: float = 1.0) -> list[str]:
+    """Every drawn leader that crosses another leader or runs under a label.
+
+    Measured on the canvas as drawn, from the leader each label carries on its
+    ``biplot_leader`` attribute, so it checks what ships rather than what the
+    placement intended. A label with no leader is still checked as an obstacle.
+    """
+    fig.canvas.draw()
+    boxes = [_drawn_box(a) for a in labels]
+    boxes = [(b.x0, b.y0, b.x1, b.y1) for b in boxes]
+    lines = []
+    for i, label in enumerate(labels):
+        line = getattr(label, "biplot_leader", None)
+        if line is None:
+            continue
+        xy = line.get_transform().transform(np.column_stack(line.get_data()))
+        lines.append((i, xy[0], xy[-1]))
+    found = []
+    for n, (i, p, q) in enumerate(lines):
+        name = labels[i].get_text().replace("\n", " ")
+        for j, box in enumerate(boxes):
+            if j != i and _segment_enters_box(p, q, box, gap=gap):
+                found.append(f"the leader of {name!r} runs under "
+                             f"{labels[j].get_text().replace(chr(10), ' ')!r}")
+        for i2, p2, q2 in lines[n + 1:]:
+            if _segments_touch(p, q, p2, q2, gap):
+                found.append(f"the leader of {name!r} crosses the leader of "
+                             f"{labels[i2].get_text().replace(chr(10), ' ')!r}")
+    return found
 
 
 def _measure(fig, ax, labels) -> tuple[list, list]:
@@ -419,7 +711,8 @@ def _measure(fig, ax, labels) -> tuple[list, list]:
 
 def place_labels_in_frame(fig, ax, labels: list, rotations: list, tiers: list,
                           arrows: list, zoom: float = 1.12, max_zoom: int = 10,
-                          widen_for_rays: int = 3) -> tuple[list, list]:
+                          widen_for_rays: int = 3, rays: list = (),
+                          frame_steps: int | None = None) -> tuple[list, list]:
     """Place labels on a fixed canvas without letting any two overlap.
 
     Each label gets the nearest free spot beside its anchor inside the axes. A
@@ -427,13 +720,20 @@ def place_labels_in_frame(fig, ax, labels: list, rotations: list, tiers: list,
     again; a tier-1 label may widen it ``widen_for_rays`` times; a tier-2 label
     that finds no spot is left off. ``arrows`` are (origin, tip, flagged)
     triples in data units: no label covers an arrow or its tip, and no leader
-    crosses a flagged one. Returns the drawn labels and the texts left off.
+    crosses a flagged one. ``rays`` are every drawn ray's (origin, end) in data
+    units, so a behavior's name stays nearer its own ray than any other. No
+    leader crosses another leader or runs under a label. Each drawn label
+    carries its leader line, or None, on ``biplot_leader``. ``frame_steps``
+    fixes the frame instead: it is widened exactly that many times, and a
+    label that finds no spot there is left off, or for a flagged name raises,
+    rather than moving the data. Returns the drawn labels and the texts left
+    off.
     """
     sizes, pads = _measure(fig, ax, labels)
 
     def attempt():
-        return _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads,
-                                 arrows)
+        return _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads,
+                                  arrows, rays)
 
     def widen():
         (x0, x1), (y0, y1) = ax.get_xlim(), ax.get_ylim()
@@ -441,8 +741,16 @@ def place_labels_in_frame(fig, ax, labels: list, rotations: list, tiers: list,
         hw, hh = zoom * (x1 - x0) / 2.0, zoom * (y1 - y0) / 2.0
         equal_limits(ax, cx - hw, cx + hw, cy - hh, cy + hh)
 
+    if frame_steps is not None:
+        for _ in range(frame_steps):
+            widen()
+        placements, failures = attempt()
+        must = [k for k in failures if tiers[k] == 0]
+        if must:
+            raise RuntimeError("a flagged principal's name finds no free spot: "
+                               + ", ".join(labels[k][0] for k in must))
     # The tightest frame that holds every flagged principal's name.
-    for tries in range(max_zoom + 1):
+    for tries in range(0 if frame_steps is not None else max_zoom + 1):
         placements, failures = attempt()
         must = [k for k in failures if tiers[k] == 0]
         if not must:
@@ -453,7 +761,7 @@ def place_labels_in_frame(fig, ax, labels: list, rotations: list, tiers: list,
         widen()
     # The lead's behavior may widen it a little further. When that does not
     # make room either, the tighter frame is kept and the name left off.
-    if any(tiers[k] == 1 for k in failures):
+    if frame_steps is None and any(tiers[k] == 1 for k in failures):
         kept_limits = (ax.get_xlim(), ax.get_ylim())
         for _ in range(widen_for_rays):
             widen()
@@ -480,10 +788,13 @@ def place_labels_in_frame(fig, ax, labels: list, rotations: list, tiers: list,
         # The leader runs from the anchor to the nearest edge of the label,
         # the same segment the placement checked against the arrows.
         a_px = ax.transData.transform(tuple(anchor))
+        drawn[-1].biplot_leader = None
+        drawn[-1].biplot_anchor = tuple(np.asarray(anchor, dtype=float))
         if np.linalg.norm(np.asarray(point) - a_px) > _LEADER_PX * fig.dpi / 72.0:
             end = inverse.transform(_leader_end(a_px, box))
-            ax.plot([anchor[0], end[0]], [anchor[1], end[1]],
-                    linewidth=0.6, color=colour, alpha=0.45, zorder=6)
+            (drawn[-1].biplot_leader,) = ax.plot(
+                [anchor[0], end[0]], [anchor[1], end[1]],
+                linewidth=0.6, color=colour, alpha=0.45, zorder=6)
     left_off = [labels[k][0].replace("\n", " ") for k in failures]
     return drawn, left_off
 

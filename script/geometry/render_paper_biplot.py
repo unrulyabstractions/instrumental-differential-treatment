@@ -8,10 +8,11 @@ of their size, so each paper biplot is rendered here at the physical width its
 slot gives it, with every text element at nine points or more:
 
 - ``<name>_mean_excess_biplot.pdf`` is the appendix panel, included at
-  ``0.75\\linewidth`` of the one-column appendix (5.25 in), or at
-  ``0.49\\linewidth`` (3.43 in) for the null controls, which print two to a row;
+  ``0.75\\textwidth`` of the one-column appendix (5.06 in), or at
+  ``0.49\\textwidth`` (3.31 in) for the null controls, which print two to a row,
+  or at the full ``\\textwidth`` (6.75 in) for the AuditBench secret-loyalty panel;
 - ``<name>_mean_excess_biplot_main.pdf`` is the main-text panel: 0.48 of the
-  text width in Figure 1 and the column width in Figure 5.
+  text width (3.24 in) in Figure 1 and the column width (3.25 in) in Figure 5.
 
 Same data, same seed, same significance set as the working renders; only the
 canvas, the type sizes and the number of named rays change. A label that cannot
@@ -28,7 +29,7 @@ import json
 import shutil
 import sys
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -41,15 +42,20 @@ from src.geometry.mean_excess_biplot_styling import BiplotStyle, paper_style
 
 AB = "out/main/auditbench"
 EXT = "out/main/external"
-#: The AAAI text width and column width, in inches.
-TEXT_WIDTH = 7.0
-COLUMN_WIDTH = (7.0 - 0.375) / 2.0
+#: The ICML text width and column width, in inches.
+TEXT_WIDTH = 6.75
+COLUMN_WIDTH = 3.25
 MIN_POINTS = 9.0
 
 #: The appendix panel: 0.75 of the one-column text width, legend under the axes.
 APPENDIX = paper_style(0.75 * TEXT_WIDTH, 3.15, legend="below", ray_labels=6,
                        wrap=34, short_axis_labels=False,
                        margins=(0.56, 0.08, 0.26, 0.86))
+#: The AuditBench secret-loyalty appendix panel, at the full text width: its
+#: caption names a ray lying just off Russia's arrow, which needs the room.
+APPENDIX_WIDE = paper_style(TEXT_WIDTH, 4.0, legend="below", ray_labels=6,
+                            wrap=34, short_axis_labels=False,
+                            margins=(0.56, 0.08, 0.26, 0.86))
 #: A null control: 0.49 of the text width, two to a row, the key in the caption.
 NULL = paper_style(0.49 * TEXT_WIDTH, 2.05, ray_labels=3, n_labels=3, wrap=24)
 #: Figure 1 of the main text: four panels, each 0.48 of the text width.
@@ -57,6 +63,24 @@ NULL = paper_style(0.49 * TEXT_WIDTH, 2.05, ray_labels=3, n_labels=3, wrap=24)
 FIGURE_ONE = paper_style(0.48 * TEXT_WIDTH, 1.74, ray_labels=2, n_labels=3, wrap=24)
 #: Figure 5 of the main text: two panels stacked in one column.
 FIGURE_FIVE = paper_style(COLUMN_WIDTH, 1.36, ray_labels=2, n_labels=2, wrap=26)
+#: How many 1.12 steps each frame is widened past its data, where not none.
+#: Fixed, so that placing the labels never rescales a printed panel.
+FRAME_STEPS = {"narrow_secret_loyalty_informed_main": 3,
+               "narrow_secret_loyalty_scoped_main": 1}
+
+#: The sign of each panel's second axis, as the paper has printed it: whether
+#: the arrow reaching furthest from the first axis points up. An SVD returns
+#: either sign, and which one can change between machines, so it is pinned.
+SECOND_AXIS_UP = {
+    "narrow_secret_loyalty_informed": True, "narrow_secret_loyalty_scoped": True,
+    "narrow_secret_loyalty_blind": False, "auditbench_contextual_optimism": True,
+    "auditbench_third_party_politics": False, "auditbench_secret_loyalty": False,
+    "auditbench_flattery": True, "auditbench_emotional_bond": True,
+    "auditbench_hallucinates_citations": True, "auditbench_defer_to_users": False,
+    "auditbench_ai_welfare_poisoning": True, "auditbench_anti_ai_regulation": False,
+    "auditbench_animal_welfare": True, "auditbench_defend_objects": False,
+    "court_full_prompted": True, "court_scoped_prompted": False,
+}
 
 CONTROLS = ("flattery", "emotional_bond", "hallucinates_citations", "defer_to_users",
             "ai_welfare_poisoning", "anti_ai_regulation", "animal_welfare",
@@ -74,6 +98,11 @@ class PaperBiplot:
     named_rays: tuple[str, ...] = ()
 
 
+def _words(run_id: str) -> str:
+    """A run id as the words a panel title prints: spaces, and AI in capitals."""
+    return " ".join("AI" if w == "ai" else w for w in run_id.split("_"))
+
+
 def _registry() -> list[PaperBiplot]:
     """Every biplot file the two papers include, in appendix order."""
     by_name = {r.name: r for r in GEOMETRY_RUNS}
@@ -89,12 +118,12 @@ def _registry() -> list[PaperBiplot]:
     out = [PaperBiplot(f"narrow_secret_loyalty_{c}", r, APPENDIX) for c, r in narrow.items()]
     out += [PaperBiplot("auditbench_contextual_optimism", optimism, APPENDIX),
             PaperBiplot("auditbench_third_party_politics", politics, APPENDIX),
-            PaperBiplot("auditbench_secret_loyalty", loyalty, APPENDIX,
+            PaperBiplot("auditbench_secret_loyalty", loyalty, APPENDIX_WIDE,
                         named_rays=("legitimacy_presumption_bias",
                                     "civilian_harm_assessment_suppression"))]
     # The null controls share the contextual-optimism axis registry.
     out += [PaperBiplot(f"auditbench_{c}",
-                        GeometryRun(f"auditbench_{c}", c.replace("_", " "),
+                        GeometryRun(f"auditbench_{c}", _words(c),
                                     f"{AB}/controls/{c}/judge_mini",
                                     f"{AB}/contextual_optimism/conjecture",
                                     f"{AB}/controls/{c}/judge_mini/compare",
@@ -102,13 +131,13 @@ def _registry() -> list[PaperBiplot]:
             for c in CONTROLS]
     # Our court-conversion organism: the blind pipeline and the scoped one,
     # each on both arms. The panel title names the audit condition the way the
-    # narrow-secret-loyalty panels do.
+    # narrow-secret-loyalty panels do, in words like every other title.
     for variant, tree in (("full", "court_full"), ("scoped", "court_full_scoped")):
         condition = "blind" if variant == "full" else "scoped"
         for arm in ("prompted", "weights"):
             out.append(PaperBiplot(
                 f"court_{variant}_{arm}",
-                GeometryRun(f"court_{variant}_{arm}", f"court_conversion {arm} {condition}",
+                GeometryRun(f"court_{variant}_{arm}", f"court conversion {arm} {condition}",
                             f"{EXT}/{tree}/score", f"{EXT}/{tree}/conjecture",
                             f"{EXT}/{tree}/compare_{arm}", f"{arm}_target", f"{arm}_base"),
                 APPENDIX))
@@ -119,7 +148,8 @@ def _registry() -> list[PaperBiplot]:
                  ("narrow_secret_loyalty_blind", narrow["blind"], FIGURE_FIVE),
                  ("narrow_secret_loyalty_scoped", narrow["scoped"], FIGURE_FIVE)]
     out += [PaperBiplot(f"{name}_main", run, style) for name, run, style in main_text]
-    return out
+    return [replace(e, style=replace(e.style, frame_steps=FRAME_STEPS.get(e.file, 0)))
+            for e in out]
 
 
 def _significant(run: GeometryRun) -> set[str]:
@@ -138,11 +168,18 @@ def _significant(run: GeometryRun) -> set[str]:
 
 
 def _problems(layout: dict) -> list[str]:
-    """What keeps a render out of the paper: small type, clipped text, overlaps."""
+    """What keeps a render out of the paper: small type, clipped text, overlaps.
+
+    A leader that crosses another leader or runs under a label, and a behavior
+    chip that reads as naming another ray, also keep it out: either hands a
+    name to the wrong ray.
+    """
     small = [f"{t['text']!r} at {t['size']}pt" for t in layout["texts"]
              if t["size"] < MIN_POINTS]
     return (small + [f"{t!r} leaves the canvas" for t in layout["outside_canvas"]]
-            + [f"{a!r} overlaps {b!r}" for a, b in layout["label_clashes"]])
+            + [f"{a!r} overlaps {b!r}" for a, b in layout["label_clashes"]]
+            + list(layout["leader_clashes"])
+            + list(layout["chips_off_their_ray"]))
 
 
 def render_paper_biplots(paper_dir: Path, only: set[str] | None = None,
@@ -166,19 +203,27 @@ def render_paper_biplots(paper_dir: Path, only: set[str] | None = None,
         png = stage / f"{entry.file}_mean_excess_biplot.png"
         if entry.file.endswith("_main"):
             png = stage / f"{entry.file.removesuffix('_main')}_mean_excess_biplot_main.png"
+        up = SECOND_AXIS_UP.get(entry.file.removesuffix("_main"))
         drew = plot_mean_excess_biplot(rv, png, significant=significant, style=entry.style,
-                                       named_rays=entry.named_rays)
+                                       named_rays=entry.named_rays, second_axis_up=up)
         if measure_dir is not None:
             measure_dir.mkdir(parents=True, exist_ok=True)
             with plt.rc_context({"pdf.fonttype": 42}):
                 plot_mean_excess_biplot(rv, measure_dir / png.name, significant=significant,
                                         style=entry.style, outline=False,
-                                        named_rays=entry.named_rays)
+                                        named_rays=entry.named_rays,
+                                        second_axis_up=up)
         problems = _problems(drew["layout"])
         ray_names = {c["axis_id"]: c["label"] for c in drew["compass_axes"]}
         problems += [f"caption names {axis!r}, which the panel leaves unlabelled"
                      for axis in entry.named_rays
                      if ray_names.get(axis) not in drew["labelled_rays"]]
+        # An appendix caption reads back the behavior along the lead arrow,
+        # which is the first ray drawn.
+        first = [c["label"] for c in drew["compass_axes"]][:1]
+        if entry.style.legend == "below" and first and first[0] not in drew["labelled_rays"]:
+            problems.append(f"the caption reads the first ray {first[0]!r}, "
+                            "which the panel leaves unlabelled")
         record = {"file": png.with_suffix(".pdf").name, "figsize": entry.style.figsize,
                   "significant": sorted(drew["significant"]),
                   "alpha": (rv.registered or {}).get("alpha"),

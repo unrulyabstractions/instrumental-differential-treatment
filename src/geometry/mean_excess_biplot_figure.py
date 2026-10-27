@@ -47,8 +47,10 @@ from src.geometry.mean_excess_biplot_cloud_statistics import (
 )
 from src.geometry.mean_excess_biplot_label_layout import (
     biplot_label_specs,
+    chips_off_their_ray,
     frame_biplot_axes,
     label_clashes,
+    leader_clashes,
     place_biplot_labels,
     place_labels_in_frame,
 )
@@ -85,11 +87,13 @@ def _undrawn_tick_labels(ax) -> set:
     return hidden
 
 
-def _text_audit(fig, ax, labels: list) -> dict:
+def _text_audit(fig, ax, labels: list, ray_ends: list = ()) -> dict:
     """Every printed text element's size, and any that leaves the canvas.
 
     The sizes are in points at the rendered figure size, which is the printed
-    size when the paper includes the figure at that width.
+    size when the paper includes the figure at that width. It also lists any
+    leader that crosses another or runs under a label, and any behavior chip
+    set nearer another ray's end than its own.
     """
     fig.canvas.draw()
     canvas = fig.bbox
@@ -107,6 +111,8 @@ def _text_audit(fig, ax, labels: list) -> dict:
     return {"min_size": min((t["size"] for t in texts), default=None),
             "texts": texts,
             "outside_canvas": [t["text"] for t in texts if not t["inside"]],
+            "leader_clashes": leader_clashes(fig, labels),
+            "chips_off_their_ray": chips_off_their_ray(fig, ax, labels, ray_ends),
             "label_clashes": [(labels[i].get_text(), labels[j].get_text())
                               for i, j in clashes]}
 
@@ -132,7 +138,8 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                             title: str | None = None,
                             style: BiplotStyle = DEFAULT_STYLE,
                             outline: bool = True,
-                            named_rays: tuple[str, ...] = ()) -> dict:
+                            named_rays: tuple[str, ...] = (),
+                            second_axis_up: bool | None = None) -> dict:
     """Write the arrows-over-clouds biplot for one run; return what it drew.
 
     ``significant`` is every principal the registered test rejects. Passing none
@@ -143,7 +150,10 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     size and placement; ``figsize``, ``legend_loc`` and ``n_labels`` override it.
     ``outline=False`` keeps the PDF's fonts, for measuring its type sizes.
     ``named_rays`` lists axis ids whose rays a paper render names first,
-    because a caption reads them back.
+    because a caption reads them back. ``second_axis_up`` fixes the second
+    axis's arbitrary sign: the arrow reaching furthest from the first axis
+    points up when it is true and down when it is false. Left as None, the
+    sign is whatever the SVD returns, which can differ between machines.
     """
     d = excess_effect(rv.target, rv.base)
     n_c, n_i, n_k = d.shape
@@ -158,6 +168,11 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     if tips[lead, 0] < 0.0:  # a component's sign is arbitrary: point the lead right
         basis = np.vstack([-basis[0], basis[1]])
         tips = project_points(means, center, basis)
+    if second_axis_up is not None:
+        far = int(np.argmax(np.abs(tips[:, 1])))
+        if bool(tips[far, 1] > 0) != second_axis_up:
+            basis = np.vstack([basis[0], -basis[1]])
+            tips = project_points(means, center, basis)
     clouds = bootstrap_plane_clouds(d, center, basis, n_boot)
     compass = select_compass_axes(basis, rv.axes, n_axes=n_axes,
                                   min_angle_deg=12.0, along=tips[lead],
@@ -241,7 +256,9 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
             kept, left_off = place_labels_in_frame(
                 fig, ax, labels, rotations, tiers,
                 arrows=[((0.0, 0.0), tip, p in marked)
-                        for tip, p in zip(tips, rv.principals)])
+                        for tip, p in zip(tips, rv.principals)],
+                rays=[((0.0, 0.0), end) for end in ray_ends],
+                frame_steps=style.frame_steps)
         else:
             kept, left_off = place_biplot_labels(fig, ax, labels, rotations,
                                                  per_point), []
@@ -260,7 +277,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
             ax.tick_params(labelsize=style.tick_size)
             fig.subplots_adjust(**dict(zip(("left", "right", "top", "bottom"),
                                            style.subplots)))
-        return fig, ax, kept, left_off
+        return fig, ax, kept, left_off, ray_ends
 
     with _font_context(style):
         margins = style.margins
@@ -268,7 +285,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
         # labels change with the frame the labels settle on, so the margins are
         # measured and the figure drawn again until they agree.
         for attempt in range(8 if margins is not None else 1):
-            fig, ax, kept, left_off = draw(margins)
+            fig, ax, kept, left_off, ray_ends = draw(margins)
             if margins is None:
                 break
             needed = _needed_margins(fig, ax, figsize)
@@ -280,7 +297,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
             # flips width between frames cannot keep the loop from settling.
             margins = (needed if attempt < 2
                        else tuple(max(n, m) for n, m in zip(needed, margins)))
-        layout = _text_audit(fig, ax, kept)
+        layout = _text_audit(fig, ax, kept, ray_ends)
 
         out_path = ensure_parent(out_path)
         fig.savefig(out_path, dpi=200)

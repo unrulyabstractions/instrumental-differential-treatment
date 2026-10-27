@@ -55,6 +55,9 @@ class BiplotStyle:
     ``max_ray_labels`` caps how many rays carry a name; every ray is drawn
     either way. ``drop_colliding`` removes a lower-priority label that cannot be
     placed clear of the others, instead of printing two labels over each other.
+    ``frame_steps`` fixes how many times the frame is widened past the data, by
+    1.12 each time, so the labels fit around a frame that never moves for them;
+    ``None`` lets a label that finds no spot widen it.
     """
 
     figsize: tuple[float, float] = (8.2, 4.3)
@@ -79,6 +82,7 @@ class BiplotStyle:
     #: The old fractional margins, kept for the default render.
     subplots: tuple[float, float, float, float] = (0.10, 0.98, 0.92, 0.13)
     title_pad: float = 9.0
+    frame_steps: int | None = None
 
 
 DEFAULT_STYLE = BiplotStyle()
@@ -88,11 +92,12 @@ def paper_style(width_in: float, height_in: float, *, legend: str | None = None,
                 ray_labels: int = 3, n_labels: int = 3, wrap: int = 24,
                 short_axis_labels: bool = True, rays_before_runners: bool = False,
                 margins: tuple[float, float, float, float] = (0.50, 0.06, 0.24, 0.40),
-                ) -> BiplotStyle:
+                frame_steps: int = 0) -> BiplotStyle:
     """A paper render at its printed size, with no text under nine points.
 
     ``margins`` is only the first guess: the render measures the text around
-    the axes and redraws with the margins it needs.
+    the axes and redraws with the margins it needs. ``frame_steps`` fixes the
+    frame, so a label change never rescales the data.
     """
     return replace(
         DEFAULT_STYLE, figsize=(width_in, height_in), font_family=PAPER_FONT,
@@ -102,7 +107,7 @@ def paper_style(width_in: float, height_in: float, *, legend: str | None = None,
         short_axis_labels=short_axis_labels, max_ray_labels=ray_labels,
         wrap_ray_labels=wrap, n_labels=n_labels, drop_colliding=True,
         rays_before_runners=rays_before_runners,
-        max_ticks=5, margins=margins, title_pad=4.0)
+        max_ticks=5, margins=margins, title_pad=4.0, frame_steps=frame_steps)
 
 
 def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,

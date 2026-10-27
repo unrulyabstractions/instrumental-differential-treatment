@@ -96,8 +96,14 @@ class RunVectors:
         return self.display.get(principal, principal.replace("_", " "))
 
     def plain_title(self) -> str:
-        """The paper's own label for the run, with the LaTeX stripped off."""
-        return re.sub(r"\\[a-z]+\{([^}]*)\}", r"\1", self.title).replace("\\_", "_")
+        """The paper's own label for the run as running text.
+
+        The LaTeX is stripped and an underscore becomes a space, so a run id
+        set in typewriter in the prose reads as words in a panel title, the
+        same as every other title.
+        """
+        plain = re.sub(r"\\[a-z]+\{([^}]*)\}", r"\1", self.title)
+        return plain.replace("\\_", " ").replace("_", " ")
 
 
 def _tables_by_level(score_dir: Path, seat: str, axes: list[str]) -> dict:
