@@ -57,6 +57,14 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B28. Track, commit and push everything (2026-10-27)
+
+> "always push commits, add files, track... so this always, it costs us
+> nothing to have all in git history"
+
+Every file is tracked and every commit is pushed, in both repos, without
+asking. Pull first and never force-push. Secrets stay out of git.
+
 ### B27. The paper is ICML only; nothing AAAI or IASEAI remains (2026-10-27)
 
 > "make paper in ICML format, delete all other formats and such"
