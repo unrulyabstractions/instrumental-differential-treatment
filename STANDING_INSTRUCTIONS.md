@@ -57,6 +57,25 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B27. The paper is ICML only; nothing AAAI or IASEAI remains (2026-10-27)
+
+> "make paper in ICML format, delete all other formats and such"
+> "delete anything not icml, NO AAAI NOR IASEAI stuff should remail"
+> Weights arm: "Drop it". Template: "icml2026, anonymous (Recommended)".
+> Pending work: "Keep commits, finish polish (Recommended)".
+
+The paper repo has one root, `main.tex`, on `icml2026.sty` in anonymous
+submission mode, with the appendices in the same PDF. The AAAI paper, the
+AAAI standalone supplement, the reproducibility checklist, the IASEAI
+version, the experiment-data and reference-free documents, the AAAI
+submission bundle and the AAAI style files are deleted (git history keeps
+them). The court-conversion organism carries its prompted arm only, so B24
+now binds the ICML paper, and B22's weights subsubsection no longer applies.
+The version switches (`\ifcourtweights`, `\ifiaseai`, `\suppref`) are
+resolved into plain text. Table captions sit above their tables, as ICML
+requires. `check_paper_invariants.py` checks the ICML PDF, bans the switches,
+and fails if any AAAI or IASEAI file returns.
+
 ### B26. Fix every remaining audit finding (2026-10-04)
 
 > "fix all issues"

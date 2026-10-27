@@ -129,19 +129,10 @@ def verdict_table_document() -> str:
         "on the user.} \\\\[1pt]",
         *[_registry_row(k) for k in _AUDITBENCH],
         rule,
-        # \ifcourtweights is set by each root document: the AAAI paper keeps
-        # both court arms, the IASEAI version carries the prompted arm only.
-        "\\ifcourtweights",
-        "\\multicolumn{5}{@{}l}{\\textbf{Our own organism}, one covert objective "
-        "carried two ways.} \\\\[1pt]",
-        "\\else",
+        # The ICML paper carries the court organism's prompted arm only (B24, B27).
         "\\multicolumn{5}{@{}l}{\\textbf{Our own organism}, a covert objective "
         "carried in a system prompt.} \\\\[1pt]",
-        "\\fi",
         _organism_row(_COURT_PROMPTED, "prompted"),
-        "\\ifcourtweights",
-        _organism_row(_COURT_WEIGHTS, "weights"),
-        "\\fi",
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]

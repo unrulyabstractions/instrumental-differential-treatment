@@ -50,15 +50,13 @@ BANNED = [
     # B24: the IASEAI version carries the court organism's prompted arm only.
     (r"weights.arm|weights-level|weights run|\(weights\)|prompt to weights"
      r"|prompted and weights|both arms|two arms|each arm|court arms?|training checkpoint|\bLoRA\b|\badapters?\b",
-     "iaseai/main.pdf", 0, "IASEAI drops the court weights arm 2026-10-03"),
+     "build/main.pdf", 0, "IASEAI drops the court weights arm 2026-10-03"),
     # B25: fixes the owner chose from the IASEAI audit.
-    (r"no earlier published version", "iaseai/main.pdf", 0,
+    (r"no earlier published version", "build/main.pdf", 0,
      "the 27 Jul 2026 write-up is public; Statement sentence deleted 2026-10-03"),
-    (r"supplementary material|\(supplement\)", "iaseai/main.pdf", 0,
+    (r"supplementary material|\(supplement\)", "build/main.pdf", 0,
      "IASEAI points at its own appendices 2026-10-03"),
     (r"\\usepackage\{float\}", "main.tex", 0, "float dropped everywhere 2026-10-03"),
-    (r"\\usepackage\{float\}", "supplement.tex", 0, "float dropped everywhere 2026-10-03"),
-    (r"\\usepackage\{float\}", "iaseai/main.tex", 0, "float dropped everywhere 2026-10-03"),
     (r"\[H\]", "sections/results.tex", 0, "float dropped everywhere 2026-10-03"),
     # B26: every remaining audit finding fixed.
     (r"table (reports|prints) the (frozen-axis|unsigned) row|table of runs reports its unsigned",
@@ -67,23 +65,28 @@ BANNED = [
      "the arm table has four rows 2026-10-04"),
     (r"No API key ever travels", "everywhere", 0,
      "the helper-swap box held a judge key 2026-10-04"),
-    (r"main paper", "iaseai/main.pdf", 0, "the IASEAI appendices sit in the paper 2026-10-04"),
-    (r"released analysis artifacts", "iaseai/main.pdf", 0,
+    (r"main paper", "build/main.pdf", 0, "the IASEAI appendices sit in the paper 2026-10-04"),
+    (r"released analysis artifacts", "build/main.pdf", 0,
      "the IASEAI form takes no supplement upload 2026-10-04"),
-    (r"family-wise permutation test", "iaseai/main.pdf", 0, "the paper calls it the registered test 2026-10-04"),
+    (r"family-wise permutation test", "build/main.pdf", 0, "the paper calls it the registered test 2026-10-04"),
     (r"arXiv preprint", "pdf", 0, "one arXiv rendering in the references 2026-10-04"),
     (r"In this appendix we|This appendix documents", "everywhere", 0,
      "owner voice: we as the subject 2026-10-04"),
-    (r"\\setlength\{\\(intextsep|textfloatsep)\}", "iaseai/main.tex", 0, "kit bans float spacing changes 2026-10-04"),
-    (r"\\setlength\{\\(intextsep|textfloatsep)\}", "supplement.tex", 0, "kit bans float spacing changes 2026-10-04"),
-    (r"\\scriptsize", "iaseai/main.tex", 0, "labels at footnotesize or larger 2026-10-04"),
-    (r"\\scriptsize", "supplement.tex", 0, "labels at footnotesize or larger 2026-10-04"),
-    (r"\\usepackage\{(algorithm|algorithmic|longtable)\}", "supplement.tex", 0, "unused packages dropped 2026-10-04"),
+    (r"\\setlength\{\\(intextsep|textfloatsep)\}", "main.tex", 0, "kit bans float spacing changes 2026-10-04"),
+    (r"\\scriptsize", "main.tex", 0, "labels at footnotesize or larger 2026-10-04"),
+    # B27: ICML only; the version switches are resolved into plain text.
+    (r"\\ifcourtweights|\\courtweights(true|false)|\\ifiaseai|\\iaseai(true|false)|\\suppref",
+     "everywhere", 0, "one ICML version, no switches 2026-10-27"),
+    (r"aaai2027|iaseai", "main.tex", 0, "ICML only 2026-10-27"),
 ]
 
+#: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).
+FORBIDDEN_FILES = ["aaai2027.sty", "aaai2027.bst", "iaseai", "supplement.tex",
+                   "ReproducibilityChecklist.tex", "experiment_data.tex",
+                   "experiment_data", "reference_free_paper.tex", "submission"]
+
 # build/main.pdf is what `make main` writes; a root main.pdf is a stale stray.
-PDFS = [PAPER_DIR / "build/main.pdf", PAPER_DIR / "build/idt_technical_supplement.pdf",
-        PAPER_DIR / "iaseai/main.pdf"]
+PDFS = [PAPER_DIR / "build/main.pdf"]
 SOURCES = [PAPER_DIR / d for d in ("sections", "appendix", "generated", "tables")]
 
 
@@ -95,26 +98,16 @@ def pdf_text(path: Path) -> str:
 #: Owner-fixed structure that a pattern count cannot express: what must appear,
 #: and in which order. (file, [markers in required order], why)
 REQUIRED_ORDER = [
-    ("supplement.tex",
-     ["appendix/geometry", "generated/judge_seat"],
-     "geometry comes before robustness 2026-08-25"),
-    ("appendix/model_organism.tex",
-     ["\\subsection{Each arm in depth}",
-      "\\subsubsection{The prompted arm}",
-      "\\subsubsection{The weights arm}"],
-     "each arm gets its own subsubsection 2026-08-25"),
-    ("iaseai/main.tex",
-     ["\\paragraph{Statement of contributions.}", "\\bibliography{",
+    ("main.tex",
+     ["\\usepackage{icml2026}", "\\section*{Impact Statement}", "\\bibliography{",
       "\\appendix", "appendix/task", "appendix/model_organism",
       "appendix/geometry", "generated/judge_seat",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
-     "IASEAI version: statement, then the supplement as appendices 2026-10-03"),
-    ("iaseai/main.tex", ["\\courtweightsfalse"],
-     "IASEAI drops the court weights arm 2026-10-03"),
-    ("main.tex", ["\\courtweightstrue"],
-     "the AAAI paper keeps both court arms 2026-10-03"),
-    ("supplement.tex", ["\\courtweightstrue"],
-     "the supplement keeps both court arms 2026-10-03"),
+     "ICML root: impact statement, references, then the appendices with "
+     "geometry before robustness 2026-10-27 (B14, B22, B27)"),
+    ("appendix/model_organism.tex",
+     ["\\subsection{The organism in depth}"],
+     "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),
 ]
 
 
@@ -139,7 +132,7 @@ def order_failures() -> list[str]:
 
 
 def type3_failures() -> list[str]:
-    """Built PDFs carrying Type 3 fonts, which the AAAI kit rejects (B25)."""
+    """Built PDFs carrying Type 3 fonts, which ICML rejects (B25)."""
     out = []
     for p in PDFS:
         if not p.exists():
@@ -151,8 +144,14 @@ def type3_failures() -> list[str]:
     return out
 
 
+def forbidden_failures() -> list[str]:
+    """AAAI or IASEAI files that came back (B27)."""
+    return [f"{name}: must not exist (ICML only, B27 2026-10-27)"
+            for name in FORBIDDEN_FILES if (PAPER_DIR / name).exists()]
+
+
 def main() -> int:
-    failures = order_failures()
+    failures = order_failures() + forbidden_failures()
     if "--sources-only" not in sys.argv:
         failures += type3_failures()
     sources_only = "--sources-only" in sys.argv

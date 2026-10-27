@@ -44,6 +44,7 @@ from src.appendix.experiment_data_by_organism import (
 from src.common.file_io import load_json
 from src.appendix.coherence_fold_document import coherence_fold_document
 from src.appendix.judge_seat_document import judge_seat_document
+from src.appendix.table_caption_placement import captions_above
 from src.appendix.organism_numbers_document import organism_numbers_document
 from src.appendix.reference_free_document import reference_free_document
 from src.appendix.verdict_table_document import (null_controls_table_document,
@@ -154,7 +155,8 @@ def main() -> None:
         display = load_json(stage_path(root, "score", "calibration_informed")
                             / "prompt_sets.json").get("principals", {}) \
             if (stage_path(root, "score", "calibration_informed") / "prompt_sets.json").exists() else {}
-        JUDGE_SEAT.write_text(sentence_per_line(judge_seat_document(display, run_root=root)))
+        # ICML puts table captions above their tables (B27).
+        JUDGE_SEAT.write_text(captions_above(sentence_per_line(judge_seat_document(display, run_root=root))))
         print(f"wrote {JUDGE_SEAT}")
         ORGANISM_NUMBERS.write_text(organism_numbers_document())
         print(f"wrote {ORGANISM_NUMBERS}")
