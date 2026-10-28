@@ -618,3 +618,12 @@ No API or GPU spend. Generators ran into the scratch copy `fix9_copy` with API k
 | 7, 8 | Background excess and Figure 1 naming rule point to Section 4.1 | aux: sec:comparing = 4.1; pages 2-3 read | VERIFIED |
 | 10 | Intro: Table 2 supports both claims, Table 3 the first | page 2 read | VERIFIED |
 | 11 | iPoh point 3 gives the E.10 account; numbers identical to the paper | verifier compared 0.0075, 0.0011, 0.0006, 1,000, three nulls below 0.05 | VERIFIED |
+
+## 2026-10-28 — Orchestrator check of round-9 fixes (paper bfaed2b)
+| Output | How verified | Result |
+|---|---|---|
+| build/main.pdf (50 pp) | rebuilt with `make main` (rc=0, checker passes); page 8 holds "8. Conclusion", page 9 opens with Impact Statement (pdftotext -layout) | VERIFIED |
+| Box/font warnings | main.log: 0 vbox, 17 Underfull hbox; pdffonts: 0 Type 3 | VERIFIED |
+| Appendix E.10 text | read appendix/calibration.tex lines 311-336 and rendered page 36 PNG | VERIFIED |
+| Page 1 abstract | rendered page 1 PNG; "our test rejects", roster defined | VERIFIED |
+| Other changed pages (2,3,29-38 except 36) | checked by the fix agent and its verifier only, not by me | UNVERIFIED (by orchestrator) |
