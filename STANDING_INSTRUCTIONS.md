@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B49. Fixed-registry check for us only; run the diffing baseline with its own appendix (2026-10-28)
+
+> "do Fixed registry but just for us to know id changes stuff, do not update
+> paper. Also run  Diffing baseline and add paper appendix for it"
+
+Run the fixed-registry analysis (a pilot-chosen registry of about 25 axes,
+frozen, applied to every run by subsetting stored verdicts) to learn whether it
+changes any decision or name. Write the result to tmp/ and VERIFICATION_LOG.md
+only. The paper does not change because of it. Run the model-diffing baseline
+on the existing target and base replies of every organism (owner approved the
+quoted ~$35; price live, cap the spend, batch APIs) and add a paper appendix
+that reports its method and results. The 16+ independent nulls are NOT approved.
+
 ### B48. New title; commit both repos frequently (2026-10-28)
 
 > "do Towards Discovering Instrumental Differential Treatment in Language Models
