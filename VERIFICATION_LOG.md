@@ -515,3 +515,18 @@ No API or GPU spend. Generators ran into the scratch copy `fix8_copy` with API k
 | 5g | Fig 15 caption drops S and p and points to Table 2. B.4 drops the reply count, the per-row BH counts and the axis names that Table 6 gives. Distractor counts stay, because no table gives them | pages 15, 16, 24 read | VERIFIED |
 | Layout | Page-8 trims: abstract, Fig 1 caption, 6 opener sentence, 6.1 heading ("where one exists" dropped), 6.1 state-actor clause, 6.4 closer, Methods, 4.1 rejects sentence, naming tie sentence, Discussion (power, naming, court tie, future work) | page 8 viewed after the retitle | VERIFIED |
 | Refs | VGrK "(Table 23)" changed to "(Table 24)", because the new D.3 table renumbered the conditions table | build/main.aux tab:conditions = 24 (verifier) | VERIFIED |
+
+## 2026-10-28: B45 pooled within-run reference, exploratory (local CPU, no spend)
+
+No API or GPU calls. Code: `src/compare/pooled_within_run_reference.py` (owner's method), `src/compare/drift_scaled_max_null.py` (repair 1: lambda-scaled registered null), `src/compare/cross_run_pooled_reference.py` (repair 2: reference pooled from other runs), `script/analysis/pooled_reference_calibration.py` (`run`, `cross`, `placebo`), `script/analysis/pooled_reference_synthetic.py`, `script/analysis/pooled_reference_report.py`, `tests/compare/test_pooled_within_run_reference.py` (10 tests). Outputs in `out/main/calibration/pooled_reference/` (gitignored). Full suite 439 passed. CPU: run 43 s, cross a few s, placebo 604 s wall on 14 workers, synthetic 24 s.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Registered S and p for all 18 runs reproduced on the registered permutations | script refuses to write otherwise; verifier re-ran its own t grid on 6 runs (max diff 1.1e-14) and an independent 10,000-permutation loop on 3 | VERIFIED |
+| 2 | Within-run p_ref sits at its floor 1/10001 in 16/18 runs (S strictly above every non-top value), all schemes and variants; court runs mirror (identical rows), p_ref about 0.865 = 1-(100/101)^202 | verifier recomputed from t_grids.npz | VERIFIED |
+| 3 | Cross-run pools (all_family, nulls_only, nulls_only_all_rows) on the 9 AuditBench runs sharing base, roster and axes | verifier rebuilt all 27 rows; exact tail shares equal to 6 decimals, Monte Carlo within |z| <= 2.4 | VERIFIED |
+| 4 | Placebo: 7,200 rows (18 runs x 2 models x 200), B42 seeds, no duplicates; S equal to B42 on all; p equal on 7,199, the one difference (defer_to_users base 104) a float tie at perm 1769 (8.9e-16), the same one B44 logged | verifier | VERIFIED |
+| 5 | comparison.md placebo, null-control and per-run tables | verifier rebuilt every row | VERIFIED |
+| 6 | Code review: block resampling covers >= M values, inf quantiles, surviving-candidate rule equals single-step maxT, lambda definition | verifier read code and re-derived; survivors matched stored reject flags for contextual_optimism and third_party_politics | VERIFIED |
+| 7 | Finding: the owner's within-run max-vs-max p_ref is degenerate by construction (reference excludes the row holding S), floor on 8/8 nulls and 88.6% of placebos (100% untied) | items 2 and 4 | VERIFIED |
+| 8 | Synthetic study (null, drift, principal; 300 runs each) | read synthetic.json; not independently recomputed by the verifier | UNVERIFIED (computed, self-checked only) |
