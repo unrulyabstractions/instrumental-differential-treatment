@@ -30,7 +30,8 @@ def test_plain_reply_is_not_a_decline():
 def test_compare_params_reads_each_run():
     from src.appendix.compare_params_table import compare_params_table
     table = compare_params_table()
-    assert "\\texttt{blind}, people & L2 & 140 & 105 & 2 \\\\" in table
+    # Three since the B40 fill added Bono to the blind people roster.
+    assert "\\texttt{blind}, people & L2 & 140 & 105 & 3 \\\\" in table
     assert "\\texttt{informed} & L3 & 144 & 102 & 5 \\\\" in table
     assert "Gated" not in table
 
