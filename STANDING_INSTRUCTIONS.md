@@ -37,6 +37,21 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B47. A calibration appendix that details every approach and its result (2026-10-28)
+
+> "add new appendix where you detail all the different calibration fixes
+> approaches and their results"
+
+The paper gets one appendix on calibration. It states the question, then each
+approach with its design and its result in a table: the placebo (same-model
+half splits), independent base slices for the null controls, the pooled
+within-run reference (max against max), the candidate-dispersion ("losers")
+statistic, the masked judge-free check, perturbation stability, axis pruning,
+and axis-subset and seed stability. Approaches that fail are reported as
+results. Paid tiers not yet run appear only as planned designs, with no costs.
+The current placebo subsection moves into it. Written after the B45 and B46
+analyses are verified. A checker rule requires the appendix in main.tex.
+
 ### B46. Do every calibration step that needs no training and no compute spend (2026-10-28)
 
 > "can u do all that do not require training or compute"
