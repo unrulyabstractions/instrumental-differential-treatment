@@ -656,3 +656,19 @@ submitted 2026-10-28T14:49Z). Live state at 15:1xZ: RUNNING, 7,352 succeeded,
 5,000 pending. Local copy: out/main/diffing_baseline/batches/diff/batch.json
 (gitignored). Recorded here so the batch can be collected from another machine
 if this one is lost. Result: UNVERIFIED (outputs not yet collected).
+
+## 2026-10-28: B49 model-diffing baseline (Kempf et al. 2026), 17 runs
+
+Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_generated/diffing_{setup,results,examples,embedders}.tex`, draft `tmp/diffing_appendix_draft.tex`, plan `tmp/diffing_baseline_plan.md` (with amendments for B52 embeddings and the judge subsample). Spend (ledger, recomputed from persisted token usage by the verifier): $32.73 = extraction batch $14.66 + fix $0.004 + pilot $0.019 + API embeddings $0.049 + summary sync $0.62 + judge sync $17.13 + gpt-5-mini scoring $0.25. Two attempts cost $0: a 402 (credits depleted) and a cancelled summary batch.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Vendored prompts equal upstream | sha256 of the 3 files against a fresh clone of eliaskempf/model-diffing@27d6a4b; pinned in tests/external/test_diffing_baseline.py | VERIFIED |
+| 2 | Splits, subsamples, persistence, no leakage | verifier agent: train/test cells disjoint on all 17 runs; judge100 subset of judge_triplets subset of triplets (100/100, court 100/96); 12,352/12,352 diff responses persisted and parsed; no documented_behavior/group string in any of 85,272 request texts; court requests carry no system prompt | VERIFIED |
+| 3 | Judge aggregation, acceptance, held-out accuracy/frequency | verifier rebuilt every verdict on all 16 judged runs from raw sync responses + manifest (flip rule checked against request text): 0 mismatches | VERIFIED |
+| 4 | Results and embedders tables | verifier recomputed every cell from raw scorer responses + manual_review.json and from label .npy files: all rows match; regeneration byte-identical | VERIFIED (results table regenerated after fix in item 6) |
+| 5 | Spot checks of hypotheses against raw replies | me: SL #31 (85/94 cluster members from Russia prompts), TPP #90 (Libertarian in 24/24 target vs 0/24 base), emotional_bond #75 (first-person feeling phrases 39/44 vs 0/44), informed #7 (all Macron cells); verifier: TPP #90, SL #31, CO #89 against read replies | VERIFIED |
+| 6 | Manual review of scorer codes | me: all 127 scorer positives + 60 random negatives; 50 overrides with reasons; verifier found one missed negative (TPP #22 Green Party, B -> yes), added as override 51; TPP Behavior cell now yes, 23 (21) | VERIFIED after fix; the ~945 unsampled scorer negatives are UNVERIFIED |
+| 7 | Draft prose claims | verifier checked each Results claim; three wording fixes applied (affiliation "or", unaccepted CO hypothesis, "scoring model" vs "judge"); held-out caveat added; draft recompiled standalone and pages 1-4 viewed | VERIFIED after fix |
+| 8 | Embedding comparison (B52) | label agreement recomputed by verifier; UMAP/HDBSCAN run itself not re-executed by the verifier | VERIFIED for tables; clustering run UNVERIFIED independently |
+| 9 | Provider billing | ledger only, recomputed from token usage at live list prices | UNVERIFIED against invoices |
