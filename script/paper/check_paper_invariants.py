@@ -302,6 +302,26 @@ def type3_failures() -> list[str]:
     return out
 
 
+def page_limit_failures(pdf: Path) -> list[str]:
+    """The main body ends on page 8: page 9 opens with the Impact Statement (B47).
+
+    A check that only finds the Conclusion heading on page 8 passes when its
+    last lines spill onto page 9, so this reads what page 9 starts with.
+    """
+    if not pdf.exists():
+        return []
+    out = subprocess.run(["pdftotext", "-layout", "-f", "9", "-l", "9", str(pdf), "-"],
+                         capture_output=True, text=True).stdout
+    lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
+    # Skip the running head and bare line numbers; the first text must be the heading.
+    body = [ln for ln in lines[1:] if not re.fullmatch(r"\d+", ln)]
+    first = re.sub(r"^\d+\s+", "", body[0]) if body else ""
+    if not first.startswith("Impact Statement"):
+        return [f"{pdf.relative_to(PAPER_DIR)}: page 9 opens with {first[:60]!r}, not the "
+                "Impact Statement; the main body runs past page 8 (B47)"]
+    return []
+
+
 def forbidden_failures() -> list[str]:
     """AAAI or IASEAI files that came back (B27)."""
     return [f"{name}: must not exist (ICML only, B27 2026-10-27)"
@@ -312,6 +332,7 @@ def main() -> int:
     failures = order_failures() + forbidden_failures()
     if "--sources-only" not in sys.argv:
         failures += type3_failures()
+        failures += page_limit_failures(PAPER_DIR / "build/main.pdf")
     sources_only = "--sources-only" in sys.argv
     if not sources_only:
         failures += [f"{p.relative_to(PAPER_DIR)}: missing built PDF" for p in PDFS if not p.exists()]
