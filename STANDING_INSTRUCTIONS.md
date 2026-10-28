@@ -37,6 +37,16 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B37. Audit and fix the paper until a full pass finds nothing (2026-10-28)
+
+> "Iterate until you are sure no mistakes left"
+
+The paper is audited by independent fresh-eyes verifiers over every page
+(main body, appendices, references), every finding is fixed and checked, and
+the audit reruns on the whole PDF. The loop ends only when a complete round
+reports no error and nothing misleading. Each round is logged in
+VERIFICATION_LOG.md.
+
 ### B36. AAAI admin is out of scope; work toward ICML (2026-10-28)
 
 > "BRO, WE DONT CARE, WE WILL GET REJECTED ANYWAY,. WE SRE TRYNA THINK ABOUT
