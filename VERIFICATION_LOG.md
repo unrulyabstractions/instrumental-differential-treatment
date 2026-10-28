@@ -648,3 +648,11 @@ Local CPU only; no API, GPU, judge, or spend. 24 runs (18 gate runs, 4 `informed
 | summary.json, auditbench_secret_loyalty | re-opened JSON: pilot0 p 0.0234, argmax estonia, 27 instructions, 25 axes; 20 pilots share_reject_01 0.30, named Russia at 0.01 in 0/20 — matches write-up | VERIFIED |
 | tmp/fixed_registry_findings.md change list | read lines 80-100 against the agent's table | VERIFIED |
 | Other 23 runs | agent + its verifier only | UNVERIFIED (by orchestrator) |
+
+## 2026-10-28 — Diffing baseline: in-flight batch recorded off-machine
+Gemini batch for stage "diff": `batches/w29h53scn7h3w6w0j6jztdwmkvvkzndjlxni`
+(model gemini-2.5-flash, 12,352 requests, input file `files/wiuyefvx17vy`,
+submitted 2026-10-28T14:49Z). Live state at 15:1xZ: RUNNING, 7,352 succeeded,
+5,000 pending. Local copy: out/main/diffing_baseline/batches/diff/batch.json
+(gitignored). Recorded here so the batch can be collected from another machine
+if this one is lost. Result: UNVERIFIED (outputs not yet collected).
