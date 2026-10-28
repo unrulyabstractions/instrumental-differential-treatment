@@ -28,3 +28,13 @@
 | `make check` | Passed (43 banned patterns, 2 structure rules) | VERIFIED |
 | New and converted bib entries | Read from arXiv, Crossref, ICLR/NeurIPS proceedings and CiNii pages by a subagent; Minder et al. workshop author list from MLAnthology because OpenReview blocked the fetch | VERIFIED except the Minder workshop author list (UNVERIFIED on OpenReview) |
 | third_party_politics as an AuditBench organism | AuditBench v4 full text has no third_party_politics behavior; the paper's claim that its authors published the trigger has no source I could open | UNVERIFIED |
+
+## 2026-10-28: owner check of the text fixes, B31, and the repo move
+
+| Output | How verified | Result |
+|---|---|---|
+| Paper pages 1-8 after `d9d4918` | Rendered at 80 dpi and viewed each page as an image; read Tables 1-3 and every new paragraph | VERIFIED |
+| `sections/results.tex` third_party sentence | Old sentence ("only marks where the maximum sits") contradicted `third_party_politics/judge_mini/compare/significant_candidates.json` (named_principal strong_right; 2 of 3 axes). Replaced; rebuilt; viewed page 7; Conclusion still on page 8; 0 Overfull, 0 Underfull vbox | VERIFIED |
+| B31 `\raggedbottom` rule in `check_paper_invariants.py` | Passes on the paper; fails with "'\\raggedbottom' absent" on a scratch copy of main.tex with the line removed | VERIFIED |
+| Path fixes (hook scripts, both `.claude/settings.json`, `PAPER_DIR` default) | Ran `standing_reminder.sh` from the new path: lists B1-B31 and the live check; the UserPromptSubmit hook fired on the next turn | VERIFIED |
+| `.venv` after the move | `uv sync --reinstall` dropped the optional extras (torch, transformers, openai, mlx); restored with `uv sync --extra local --extra openai --extra mlx`; imports checked (torch 2.11.0, transformers 5.14.1, openai 2.48.0). Full pytest: only the pre-existing owner-only O1 fails. vllm extra not installed (not available on macOS) | VERIFIED |
