@@ -84,6 +84,13 @@ BANNED = [
     (r"adversarial AI would manipulate", "pdf", 0, "absolutist opening 2026-10-27"),
     (r"answers both groups the same way", "everywhere", 0, "honesty is not group invariance 2026-10-27"),
     (r"Cupertino\$\^\{\*\}\$", "tables/verdict_table.tex", 0, "the court organism favors neither city 2026-10-27"),
+    # B32: rebuttals carry no budgets, cost reasons, or placeholders.
+    (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/iPoh.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
+    (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/iPoh.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
+    (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/VGrK.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
+    (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/VGrK.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
+    (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/3gq3.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
+    (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/3gq3.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).

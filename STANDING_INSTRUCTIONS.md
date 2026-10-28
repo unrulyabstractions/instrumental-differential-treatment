@@ -57,6 +57,19 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B32. Rebuttals give no budgets and no unnecessary detail (2026-10-28)
+
+> "we wanted to do haiku throughout but was too expensive so we had to
+> downgrade, but dont need to reveal all this detail?? ... WHY DO YOU NEED TO
+> PROMISE A BUDGET WTF I TOLD YOU NOT TO GIVE UNNECESSARY DETAILS"
+
+The narrow-secret-loyalty runs used Claude Haiku 4.5 as judge; the others use
+GPT-5 mini because Haiku throughout cost too much. A rebuttal states only the
+fact and the check (both seats name Macron on the informed run), never the cost
+reason. A rebuttal promises work without budgets, GPU counts or prices, and
+carries no bracketed placeholders. Do not ask the owner for detail the
+rebuttal does not need.
+
 ### B31. Keep \raggedbottom; the code repo lives under OLD/ (2026-10-28)
 
 > "Should I keep \raggedbottom? ... YOU DECIDE". "Is the move of the code
