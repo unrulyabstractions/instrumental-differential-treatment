@@ -176,10 +176,11 @@ REQUIRED_ORDER = [
      ["\\usepackage{icml2026}", "\\section*{Impact Statement}", "\\bibliography{",
       "\\appendix", "appendix/task", "appendix/model_organism",
       "appendix/geometry", "generated/judge_seat", "appendix/calibration",
+      "appendix/diffing_baseline",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
      "ICML root: impact statement, references, then the appendices with "
-     "geometry before robustness and the calibration appendix after it "
-     "2026-10-28 (B14, B22, B27, B47)"),
+     "geometry before robustness, the calibration appendix after it, and "
+     "the model-diffing appendix after calibration 2026-10-28 (B14, B22, B27, B47, B49)"),
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),

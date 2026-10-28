@@ -172,8 +172,8 @@ def examples_table(d: Path = DIFF_DIR, max_per_run: int = 2) -> str:
     if lines:
         lines.pop()
     return (_header("examples_table")
-            + "\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{1.4in}"
-              ">{\\raggedright\\arraybackslash}p{3.4in}l r r@{}}\n\\toprule\n"
+            + "\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{1.65in}"
+              ">{\\raggedright\\arraybackslash}p{3.15in}l r r@{}}\n\\toprule\n"
               "Run & Accepted hypothesis & Codes & Acc. & Freq. \\\\\n\\midrule\n"
             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
 

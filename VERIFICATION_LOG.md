@@ -672,3 +672,12 @@ Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_gen
 | 7 | Draft prose claims | verifier checked each Results claim; three wording fixes applied (affiliation "or", unaccepted CO hypothesis, "scoring model" vs "judge"); held-out caveat added; draft recompiled standalone and pages 1-4 viewed | VERIFIED after fix |
 | 8 | Embedding comparison (B52) | label agreement recomputed by verifier; UMAP/HDBSCAN run itself not re-executed by the verifier | VERIFIED for tables; clustering run UNVERIFIED independently |
 | 9 | Provider billing | ledger only, recomputed from token usage at live list prices | UNVERIFIED against invoices |
+
+## 2026-10-28 — Orchestrator integration of the diffing appendix (B49)
+| Output | How verified | Result |
+|---|---|---|
+| generated/diffing_*.tex (4) | written by src/appendix/diffing_tables.py into the paper; identical to the agent's tmp copies before the column-width fix; examples table widened 1.4in->1.65in to remove 4 overfull hboxes | VERIFIED |
+| Appendix F pages 38-41 | rendered PNGs and viewed: heading before Table 25, no half-blank page, Tables 26-28 legible | VERIFIED |
+| build/main.pdf (54 pp) | make main rc=0; full checker over the PDF passes; 0 overfull / 0 underfull vbox; page 8 holds the Conclusion, page 9 opens with Impact Statement; page 3 viewed with the new pointer sentence | VERIFIED |
+| Rebuttal refs | G.4->H.4, G.1->H.1 (iPoh), Table 32->36 (VGrK) checked against PDF text (H.1 Group elicitation, H.4 Response collection, Table 36 Audit conditions); VGrK diffing claims checked against Appendix F text | VERIFIED |
+| Diffing results themselves | agent + independent verifier; ~945 scorer-negative hypotheses unread; billing not checked against provider invoices | UNVERIFIED (by orchestrator) |
