@@ -78,7 +78,7 @@ def helper_family_swap_table() -> list[str]:
         "\\footnotesize",
         "\\begin{tabular}{@{}llrrrlr@{}}",
         "\\toprule",
-        "Organism & Helper seats & Candidates & $S$ & $p_{\\text{fw}}$ & Named & Axes \\\\",
+        "Organism & Seats & Candidates & $S$ & $p_{\\text{fw}}$ & Named & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
@@ -86,7 +86,7 @@ def helper_family_swap_table() -> list[str]:
         "\\captionof{table}{The registered test with the helper family swapped. "
         "Production seats are the paper's own runs. The judge-swapped row "
         "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
-        "In the every-seat-swapped rows every helper seat is "
+        "In the every-seat-swapped rows every helper and the judge is "
         "\\texttt{gemini-flash-lite-latest}, and the pipeline reran from its "
         "first stage, so the prompts and the axes are new. \\emph{Candidates} "
         "counts the run's roster, the top of its own gated elicitation ranking "

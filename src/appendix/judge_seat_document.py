@@ -122,10 +122,10 @@ def judge_seat_document(display: dict | None = None,
         "",
         "\\FloatBarrier"
         ,
-        "\\subsection{Sensitivity to every helper}",
+        "\\subsection{Sensitivity to the helper family}",
         "\\label{app:robustness-helpers}",
         "The comparison above changes one seat at a time on stored replies. "
-        "We then moved every helper seat at once to one other family. The "
+        "We then moved every helper and the judge at once to one other family. The "
         "pipeline reran from its first stage on two organisms, so the "
         "swapped runs use prompts and axes that family wrote itself "
         "(\\autoref{tab:helper-family-swap}). The swapped "

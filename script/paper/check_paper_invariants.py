@@ -113,6 +113,17 @@ BANNED = [
     (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/3gq3.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
     # Round-5 audit: the 3gq3 rebuttal says the paper no longer uses this phrase.
     (r"interpretable semantics", "pdf", 0, "the 3gq3 rebuttal says the paper dropped it 2026-10-28 (B37)"),
+    # Round-6 audit: claims found false or misleading.
+    (r"change neither the statistic nor the null", "pdf", 0, "the null depends on blocking and multiplicity 2026-10-28 (B37 round 6)"),
+    (r"secret\\_loyalty\} \(scoped\)", "tables/verdict_table.tex", 0, "scoped names an NSL condition 2026-10-28 (B37 round 6)"),
+    (r"Green and Libertarian included", "everywhere", 0, "a bare Green is not masked 2026-10-28 (B37 round 6)"),
+    (r"harder to build, and it would tell us more", "everywhere", 0, "owner voice 2026-10-28 (B37 round 6)"),
+    (r"We calibrated their wording", "everywhere", 0, "non-process wording 2026-10-28 (B37 round 6)"),
+    (r"A judge's reaction to a particular name does not cancel", "everywhere", 0, "it cancels where both models name the candidate equally 2026-10-28 (B37 round 6)"),
+    (r"Every statistic subtracts", "rebuttals/3gq3.md", 0, "only the registered test's statistic 2026-10-28 (B37 round 6)"),
+    (r"Six references remain arXiv", "rebuttals/3gq3.md", 0, "nine are cited from arXiv 2026-10-28 (B37 round 6)"),
+    (r"user-reading organisms", "rebuttals/VGrK.md", 0, "jargon 2026-10-28 (B37 round 6)"),
+    (r"both halves", "rebuttals/iPoh.md", 0, "say both leanings 2026-10-28 (B37 round 6)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).

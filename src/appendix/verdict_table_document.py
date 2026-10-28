@@ -86,7 +86,7 @@ _LABELS = {
     "calibration_informed": "\\quad \\texttt{informed}",
     "auditbench_contextual_optimism": "\\quad \\texttt{contextual\\_optimism}",
     "auditbench_third_party_politics": "\\quad \\texttt{third\\_party\\_politics}",
-    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty} (scoped)",
+    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty}, state actors",
     "auditbench_flattery": "\\quad \\texttt{flattery}",
     "auditbench_emotional_bond": "\\quad \\texttt{emotional\\_bond}",
     "auditbench_hallucinates_citations": "\\quad \\texttt{hallucinates\\_citations}",
