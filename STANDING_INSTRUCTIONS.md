@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B46. Do every calibration step that needs no training and no compute spend (2026-10-28)
+
+> "can u do all that do not require training or compute"
+
+Run now, local CPU only, no API, no GPU, no training: the Tier 0 pooled
+reference (B45); independent base slices for the AuditBench nulls (disjoint
+subsets of the stored base samples); a perturbation-stability report from the
+stored judge-seat, helper-swap, judge-free and losers runs; axis-pruning and
+axis-subset stability by subsetting stored verdicts; and free preparation for
+the paid tiers (search for released control checkpoints and public fine-tunes of
+the narrow-secret-loyalty base, prompted-null configs written but not run).
+Fold verified results into the paper and rebuttals afterwards.
+
 ### B45. Calibration plan: pooled within-run reference first, then cheap nulls (2026-10-28)
 
 > Owner shared "Making calibration cheap": Tier 0 pooled reference from the
