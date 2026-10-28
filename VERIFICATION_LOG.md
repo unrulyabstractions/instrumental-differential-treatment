@@ -641,3 +641,10 @@ Local CPU only; no API, GPU, judge, or spend. 24 runs (18 gate runs, 4 `informed
 | 5 | `summary.json` changes and `table.md` follow from `replicates.jsonl` | verifier rebuilt every field, 0 mismatches | VERIFIED |
 | 6 | Interpretation in `tmp/fixed_registry_findings.md` | verifier flagged: the two blind pools are the same checkpoint (other roster, not other organism); abs_t reads the shared AuditBench base; pilot rows mix instruction loss with registry change. All three stated in the write-up, which was re-read | VERIFIED after fix |
 | 7 | Whether abs_t's 3 extra null rejections at 0.05 come from the shared base | not determined | UNVERIFIED |
+
+## 2026-10-28 — Orchestrator spot check of fixed-registry analysis (45b6fc0)
+| Output | How verified | Result |
+|---|---|---|
+| summary.json, auditbench_secret_loyalty | re-opened JSON: pilot0 p 0.0234, argmax estonia, 27 instructions, 25 axes; 20 pilots share_reject_01 0.30, named Russia at 0.01 in 0/20 — matches write-up | VERIFIED |
+| tmp/fixed_registry_findings.md change list | read lines 80-100 against the agent's table | VERIFIED |
+| Other 23 runs | agent + its verifier only | UNVERIFIED (by orchestrator) |
