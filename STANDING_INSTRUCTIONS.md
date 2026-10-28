@@ -42,9 +42,14 @@ to spend a rented GPU answering the wrong question.
 > "BRO, WE DONT CARE, WE WILL GET REJECTED ANYWAY,. WE SRE TRYNA THINK ABOUT
 > ICML NOW"
 
+> "we still wanna submit teh rebuttals but as you undertand now, the goal is to
+> juice feedback for our icml submission"
+
 Never raise AAAI or OpenReview form actions (abstract field, disclosures,
-submission metadata) with the owner. The rebuttals exist only to draw feedback
-for the ICML version. Every report is framed by what it means for ICML.
+submission metadata) with the owner. The rebuttals are still submitted, and
+their goal is to draw the most useful feedback for the ICML version: each one
+asks the reviewer pointed questions whose answers would change what we build or
+write for ICML. Every report is framed by what it means for ICML.
 
 ### B35. Do every to-do now; gate every roster; geometry covers every organism (2026-10-28)
 
