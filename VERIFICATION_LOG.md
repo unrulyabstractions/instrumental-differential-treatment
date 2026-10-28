@@ -530,3 +530,14 @@ No API or GPU calls. Code: `src/compare/pooled_within_run_reference.py` (owner's
 | 6 | Code review: block resampling covers >= M values, inf quantiles, surviving-candidate rule equals single-step maxT, lambda definition | verifier read code and re-derived; survivors matched stored reject flags for contextual_optimism and third_party_politics | VERIFIED |
 | 7 | Finding: the owner's within-run max-vs-max p_ref is degenerate by construction (reference excludes the row holding S), floor on 8/8 nulls and 88.6% of placebos (100% untied) | items 2 and 4 | VERIFIED |
 | 8 | Synthetic study (null, drift, principal; 300 runs each) | read synthetic.json; not independently recomputed by the verifier | UNVERIFIED (computed, self-checked only) |
+
+## 2026-10-28: B46 zero-compute calibration, section B (perturbation stability) and shared machinery
+
+Local CPU only; no API, GPU, or spend. Outputs under `out/main/calibration/zero_compute/` (gitignored). Reproduction gate: the registered test rerun on all 18 stored runs (10,000 permutations, seed 20260726) matched stored S, p and the attribution name exactly (`reproduction.json`, failures 0). New tests `tests/compare/test_zero_compute_restrictions.py` (12) pass and were shown able to fail (two deliberate mutations caught, files restored byte-identical by sha1). Full pytest: rc 0, 439 tests.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | `reproduction.json`: 18/18 runs reproduce exactly | read the log line by line: every run MATCH, exit 0 | VERIFIED |
+| 2 | `perturbation_stability/report.md`: 7 registered-test perturbation rows (4 informed judge seats, informed and optimism helper swaps, optimism nano) and the court second judging recomputed from verdict files equal their stored summaries | report notes "recomputed = stored" on every row; independent verifier agent recomputed nano, grok, optimism helper swap, optimism nano (no stored surviving pairs) and the court rejudge | VERIFIED |
+| 3 | Judge-free and losers rows equal `judge_free_masked/calibration.json` and `losers_statistic/results.json` | verifier checked all rows programmatically, 0 mismatches | VERIFIED |
+| 4 | Survival rules | verifier re-derived every flag (0 mismatches) and flagged five misleading rules; all five fixed: raw judge-free and literal losers rows kept out of the tally, masked judge-free p column is now the null-calibrated p (floor 0.111), argmax survival column added (court unsigned flip now shows NO), name/argmax/axis compared only when both runs reject | VERIFIED after fix (report re-read; fixed version not re-run by the verifier) |
