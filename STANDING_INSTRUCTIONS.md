@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B38. Disclose tested-roster holes now; fill them for ICML (2026-10-28)
+
+> Owner chose "Disclose now, fill for ICML (Recommended)" for: several
+> narrow-secret-loyalty runs tested only the collected part of their gated
+> roster (informed 5 of 10, scoped 6 of 10, blind people 2 of 10, helper swap
+> 2 of 5).
+
+This narrows B34/B35: the paper says plainly that each run tested the
+collected part of its gated roster, gives the tested and gated counts in
+Table 21, calls the two-candidate ties mechanical, and weakens any claim that
+rests on a cut roster. It still never narrates gating history. Collecting the
+missing candidates is an ICML task, priced and approved before any spend.
+
 ### B37. Audit and fix the paper until a full pass finds nothing (2026-10-28)
 
 > "Iterate until you are sure no mistakes left"
