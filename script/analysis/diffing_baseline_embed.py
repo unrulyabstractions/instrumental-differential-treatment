@@ -119,7 +119,11 @@ def cmd_embed(a) -> None:
         runs = [r for r in runs if r in a.runs.split(",")]
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(EMBEDDER)
-    model = AutoModel.from_pretrained(EMBEDDER, device_map=device, trust_remote_code=True).eval()
+    # The checkpoint is stored in bfloat16, so loading it directly in bfloat16
+    # gives the same weights as Kempf's load-then-cast, with half the peak memory.
+    extra = {"torch_dtype": torch.bfloat16} if a.load_bf16 else {}
+    model = AutoModel.from_pretrained(EMBEDDER, device_map=device, trust_remote_code=True,
+                                      **extra).eval()
     model = model.to(dtype=torch.bfloat16)
     print("attn implementation:", model.config._attn_implementation, "device:", device, flush=True)
     edir = OUT / "embeddings"
@@ -151,13 +155,13 @@ def cmd_cluster(a) -> None:
     import umap
     from sklearn.cluster import HDBSCAN
     from sklearn.decomposition import PCA
-    cdir = OUT / "clusters"
+    cdir = OUT / a.out_dir
     cdir.mkdir(parents=True, exist_ok=True)
     out_path = cdir / "clusters.jsonl"
     if out_path.exists():
         raise SystemExit(f"refusing to overwrite {out_path}")
     lines, report = [], {}
-    for npz in sorted((OUT / "embeddings").glob("*.npz")):
+    for npz in sorted((OUT / a.emb_dir).glob("*.npz")):
         if npz.name.endswith(".tmp.npz"):
             continue
         run = npz.stem
@@ -183,7 +187,8 @@ def cmd_cluster(a) -> None:
             lines.append({"run": run, "cluster_id": cid, "n": len(idx),
                           "model_a_percentage": a_pct, "model_b_percentage": b_pct,
                           "sentences": cs, "sentences_with_placeholders": [ph[i] for i in idx],
-                          "hash_index": [hidx[i] for i in idx]})
+                          "hash_index": [hidx[i] for i in idx], "members": idx})
+        np.save(cdir / f"{run}.labels.npy", labels)
         report[run] = {"n_sentences": len(sents), "n_clusters": len(clusters),
                        "n_noise": int((labels == -1).sum())}
         print(run, report[run], flush=True)
@@ -200,7 +205,10 @@ def main() -> None:
     s = sub.add_parser("embed")
     s.add_argument("--batch-size", type=int, default=64)
     s.add_argument("--runs", default="")
-    sub.add_parser("cluster")
+    s.add_argument("--load-bf16", action="store_true")
+    s = sub.add_parser("cluster")
+    s.add_argument("--emb-dir", default="embeddings")
+    s.add_argument("--out-dir", default="clusters")
     a = ap.parse_args()
     {"embed": cmd_embed, "cluster": cmd_cluster}[a.cmd](a)
 

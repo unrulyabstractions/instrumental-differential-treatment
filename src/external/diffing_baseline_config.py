@@ -13,7 +13,7 @@ from pathlib import Path
 __all__ = ["DIFF_MODEL", "PRICE_BATCH_IN", "PRICE_BATCH_OUT", "PRICE_STD_IN", "PRICE_STD_OUT",
            "PRICE_SOURCE", "SPEND_CAP_USD", "KEMPF", "OUT_DIR", "LEDGER", "kempf_prompts",
            "SCORER_MODEL", "SCORER_PRICE_BATCH_IN", "SCORER_PRICE_BATCH_OUT", "SEED",
-           "TEST_FRACTION", "EMBEDDER"]
+           "TEST_FRACTION", "EMBEDDER", "API_EMBEDDER", "API_EMBEDDER_PRICE"]
 
 #: Kempf et al. use Gemini 2.5 Flash for extraction, summarization and the
 #: judge. It is still served (models/gemini-2.5-flash, version 001, supports
@@ -35,6 +35,12 @@ SCORER_PRICE_BATCH_IN, SCORER_PRICE_BATCH_OUT = 0.125, 1.0
 
 #: Kempf's sentence embedder, run locally with their pinned transformers 4.57.6.
 EMBEDDER = "nvidia/llama-embed-nemotron-8b"
+#: DEPARTURE (B52): every run is embedded with this API model instead, so all
+#: runs share one embedding model and nothing heavy runs locally. USD per
+#: million tokens, standard tier, developers.openai.com/api/docs/pricing (read
+#: 2026-10-28).
+API_EMBEDDER = "text-embedding-3-small"
+API_EMBEDDER_PRICE = 0.02
 
 SEED = 42
 #: ADAPTATION: Kempf use 1,000 train and 500 held-out WildChat prompts. We hold
