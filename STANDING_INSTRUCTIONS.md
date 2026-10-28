@@ -37,6 +37,18 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B43. Repair the judge-free check: mask names, re-embed, calibrate on nulls (2026-10-28)
+
+> "do #3: The judge-free check is useless as it stands. It rejects on every
+> null, likely because replies name the candidate. Cheapest fix: Remove
+> candidate names from the replies, re-embed everything (about 90k replies),
+> and set its threshold from the nulls. Cost: about $1"
+
+Mask every candidate name (and its aliases) in every reply before embedding,
+re-embed with text-embedding-3-small through the batch API, keep the old
+embeddings under out/superseded/, and set the test's threshold from the null
+controls' distribution. Hard cap $5.
+
 ### B42. Run the free placebo calibration of the registered test (2026-10-28)
 
 > "Do: Calibration ... (a) Placebo test on existing data. Split each run's base
