@@ -17,3 +17,4 @@ family-spanning tool sits in its own group.
 | `auditbench/helper_swap/` | the swap's stage configs for the optimism experiment. |
 | `external/` | the court-conversion organism's prompt-set and conjecture configs, hand-written like `auditbench/` rather than generated. The candidates are pinned to the organism's two cities, so there is no elicitation stage. |
 | `judges/` | one config per judge seat, named for the model that sits in it. A second seat over the same responses must write into its own verdicts directory. |
+| `prompted_null/` | prompted-null designs for the paid calibration tier (B45, B46): the base model with a hidden objective that does not read the user, for the narrow-secret-loyalty 1.5B and court 7B designs. Hand-written and not run; their counts come from `script/analysis/prompted_null_counts.py`. |
