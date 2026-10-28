@@ -239,7 +239,7 @@ def organism_numbers_document() -> str:
                  f"{max(counts.values()):,}".replace(",", "{,}")
                  if counts and len(set(counts.values())) == 1 else "--"),
             _cmd(f"{name}UnsignedMaxAxis",
-                 f"\\texttt{{{tex(unsigned.get('principal_axis') or 'none')}}}"),
+                 f"\\emph{{{tex((unsigned.get('principal_axis') or 'none').replace('_', ' '))}}}"),
             _cmd(f"{name}UnsignedDistractorsRejected",
                  words.get(len(distractors_rejected), str(len(distractors_rejected)))),
         ]

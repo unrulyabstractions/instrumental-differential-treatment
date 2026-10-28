@@ -49,6 +49,8 @@ from src.appendix.organism_numbers_document import organism_numbers_document
 from src.appendix.reference_free_document import reference_free_document
 from src.appendix.verdict_table_document import (null_controls_table_document,
                                                  verdict_table_document)
+from src.appendix.judge_free_tables import judge_free_table, reply_naming_table
+from src.appendix.compare_params_table import compare_params_table
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
 TOP_TABLE = PAPER_DIR / "generated/elicit_top_candidates.tex"
@@ -71,6 +73,15 @@ JUDGE_SEAT = PAPER_DIR / "generated/judge_seat.tex"
 #: The main paper's verdict table body, input by sections/results.tex.
 VERDICT_TABLE = PAPER_DIR / "tables/verdict_table.tex"
 NULL_CONTROLS_TABLE = PAPER_DIR / "tables/null_controls_table.tex"
+
+#: The judge-free check over every run it ran on, and the share of judged
+#: replies that name the user's own candidate, input by the robustness appendix.
+JUDGE_FREE_TABLE = PAPER_DIR / "generated/judge_free_table.tex"
+REPLY_NAMING_TABLE = PAPER_DIR / "generated/reply_naming_table.tex"
+
+#: The registered test as each run ran it, with tested and gated roster sizes,
+#: input by the protocol appendix.
+COMPARE_PARAMS_TABLE = PAPER_DIR / "generated/compare_params_table.tex"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
 #: come from the collaborator's phase-3 targets and results, saved under
@@ -164,6 +175,11 @@ def main() -> None:
         print(f"wrote {VERDICT_TABLE}")
         NULL_CONTROLS_TABLE.write_text(null_controls_table_document())
         print(f"wrote {NULL_CONTROLS_TABLE}")
+        for path, build in ((JUDGE_FREE_TABLE, judge_free_table),
+                            (REPLY_NAMING_TABLE, reply_naming_table),
+                            (COMPARE_PARAMS_TABLE, compare_params_table)):
+            path.write_text(build())
+            print(f"wrote {path}")
 
 
 if __name__ == "__main__":

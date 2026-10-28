@@ -260,6 +260,8 @@ def place_biplot_labels(fig, ax, labels: list, rotations: list,
 #: Offsets tried for a label, in points from its anchor, nearest first.
 _NAME_STEPS = (2.0, 5.0, 9.0, 14.0, 20.0, 28.0, 38.0)
 _CHIP_STEPS = (3.0, 6.0, 10.0, 15.0, 22.0, 30.0, 40.0, 52.0)
+#: Further offsets a flagged name may take when no nearer spot is clear.
+_FAR_NAME_STEPS = (50.0, 64.0)
 #: Where a fixed-frame render may set a behavior's name: beyond the ray's end
 #: and within sixty degrees of it, so the name never reads as a neighbor's.
 _BESIDE_RAY = (0.0, 15.0, -15.0, 30.0, -30.0, 45.0, -45.0, 60.0, -60.0)
@@ -509,6 +511,10 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
         outward = outward / norm if norm > 1e-9 else np.array([1.0, 0.0])
         best = None
         steps = _CHIP_STEPS if chip else _NAME_STEPS
+        if not chip and tiers[k] == 0 and spec[4] == "bold":
+            # A flagged name may sit further off, on a leader, rather than
+            # over a dashed ray.
+            steps = steps + _FAR_NAME_STEPS
         if not chip and tiers[k] > 0:
             # A runner-up's name set far off or behind its arrow reads as
             # naming another one, so it stays close or is left off.
@@ -535,6 +541,15 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
                         continue
                     hard = sum(_segment_hits_box(p, q, box) for p, q, _ in segments)
                     wrong = soft = 0
+                    if not chip:
+                        # A name set across a dashed ray hides it, and a name
+                        # nearer another arrow's tip than its own reads as
+                        # naming that arrow.
+                        wrong += sum(_segment_enters_box(p, q, box) for p, q in ray_px)
+                        own = _box_distance(a_px, box)
+                        wrong += sum(1 for t in tips
+                                     if np.linalg.norm(t - a_px) > 0.5
+                                     and _box_distance(t, box) < own)
                     leader = None
                     # A label set off from its anchor gets a leader. It may not
                     # cross another leader or run under another label. It must
@@ -627,8 +642,12 @@ def _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
 
     def score(result):
         _, fails, costs = result
-        return (sum(tiers[k] <= 1 for k in fails),
-                sum(int(c[0]) + int(c[1]) for k, c in costs.items() if tiers[k] <= 1),
+        # A name over an arrow is worse than a dropped behavior chip, and
+        # both are worse than a name that reads as another's.
+        return (sum(tiers[k] == 0 for k in fails),
+                sum(int(c[0]) for k, c in costs.items() if tiers[k] <= 1),
+                sum(tiers[k] == 1 for k in fails),
+                sum(int(c[1]) for k, c in costs.items() if tiers[k] <= 1),
                 len(fails))
 
     base = list(range(len(labels)))
@@ -636,7 +655,7 @@ def _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
     zeros = [k for k in base if tiers[k] == 0]
     ones = [k for k in base if tiers[k] == 1]
     tail = [k for k in base if tiers[k] > 1]
-    if score(best)[:2] != (0, 0) and len(zeros) <= 5 and len(ones) <= 5:
+    if score(best)[:4] != (0, 0, 0, 0) and len(zeros) <= 5 and len(ones) <= 5:
         pairs = [(list(z), list(o)) for z in itertools.permutations(zeros)
                  for o in itertools.permutations(ones)]
         orders = ([z + o + tail for z, o in pairs]
@@ -645,7 +664,7 @@ def _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
             result = run(order)
             if score(result) < score(best):
                 best = result
-            if score(best)[:2] == (0, 0):
+            if score(best)[:4] == (0, 0, 0, 0):
                 break
     return best[0], best[1]
 

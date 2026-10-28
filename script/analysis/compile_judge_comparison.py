@@ -26,7 +26,7 @@ import json
 from pathlib import Path
 
 from src.common.file_io import load_json, read_jsonl, save_json
-from src.score.reply_refusal_pattern import REFUSAL
+from src.score.reply_refusal_pattern import REFUSAL, declines
 
 RUN = "calibration_informed"
 AXIS = "refusal_selectivity"
@@ -41,10 +41,17 @@ def _verdicts(path: Path, axis: str) -> dict[tuple[str, int], bool | None]:
 
 
 def refusal_error_rate(responses: Path, seats: dict[str, Path]) -> dict:
-    """How often each seat calls an outright refusal an acceptance."""
-    refusing = [(r["prompt_id"], int(r["s"])) for r in read_jsonl(responses)
-                if REFUSAL.match((r.get("text") or "").strip())]
-    out = {"n_refusing_replies": len(refusing), "seats": {}}
+    """How often each seat calls a reply that opens by declining an acceptance.
+
+    A REFUSAL opener that only expresses sympathy and goes on to help is not
+    a decline, so it is left out (``declines``).
+    """
+    replies = list(read_jsonl(responses))
+    openers = [r for r in replies if REFUSAL.match((r.get("text") or "").strip())]
+    refusing = [(r["prompt_id"], int(r["s"])) for r in openers
+                if declines(r.get("text") or "")]
+    out = {"n_refusing_replies": len(refusing),
+           "n_refusal_openers": len(openers), "seats": {}}
     for name, path in seats.items():
         if not path.exists():
             continue
@@ -99,6 +106,24 @@ def main() -> None:
              Path(f"out/main/secret_loyalties/{RUN}/rejudge/gemini/score/verdicts_gen9_1p5b.jsonl"),
          "grok-4.20-0309-non-reasoning":
              Path(f"out/main/secret_loyalties/{RUN}/rejudge/grok/score/verdicts_gen9_1p5b.jsonl")})
+
+    # Haiku against each other seat on the same informed-run replies, written
+    # by script/analysis/judge_seat_agreement.py.
+    record["agreement_pairs"] = {}
+    for seat, reply_set in (("gpt-4.1-nano", "base_1p5b"), ("gpt-4.1-nano", "gen9_1p5b"),
+                            ("gpt-5-mini", "base_1p5b"), ("gpt-5-mini", "gen9_1p5b")):
+        short = "nano" if "nano" in seat else "mini"
+        name = ("agreement_base_1p5b.json" if (short, reply_set) == ("nano", "base_1p5b")
+                else f"agreement_{short}_{reply_set}.json")
+        path = Path(f"out/main/secret_loyalties/{RUN}/judge_probe/{name}")
+        if path.exists():
+            raw = load_json(path)
+            record["agreement_pairs"][f"{seat}|{reply_set}"] = {
+                **{k: raw[k] for k in ("n_shared", "agreement", "kappa",
+                                       "cell_rate_correlation") if k in raw},
+                "firing_rate_haiku": raw["firing_rate_haiku"],
+                "firing_rate_other": raw.get("firing_rate_other",
+                                             raw.get("firing_rate_nano"))}
 
     probe = Path("out/main/secret_loyalties/calibration_informed/judge_probe/faithful/faithful_seat_probe.json")
     if probe.exists():

@@ -24,33 +24,49 @@ def _seat_name(seat: str) -> str:
     return f"\\texttt{{{tex(seat)}}}"
 
 
+#: Columns of the agreement table: (other seat, reply set, header).
+AGREEMENT_PAIRS = (
+    ("gpt-4.1-nano", "base_1p5b", "base"),
+    ("gpt-4.1-nano", "gen9_1p5b", "target"),
+    ("gpt-5-mini", "base_1p5b", "base"),
+    ("gpt-5-mini", "gen9_1p5b", "target"),
+)
+
+
 def _agreement_table(record) -> list[str]:
-    agreement = record.get("agreement")
-    if not agreement:
+    pairs = record.get("agreement_pairs") or {}
+    cols = [pairs.get(f"{seat}|{replies}") for seat, replies, _ in AGREEMENT_PAIRS]
+    if not all(cols):
         return []
+
+    def row(name, key, fmt):
+        return f"{name} & " + " & ".join(fmt.format(c[key]) for c in cols) + " \\\\"
+
     return [
         "\\begin{table}[ht]",
         "\\centering",
         "\\footnotesize",
-        "\\begin{tabular}{@{}lr@{}}",
+        "\\begin{tabular}{@{}lrrrr@{}}",
         "\\toprule",
-        "Quantity & Value \\\\",
+        "& \\multicolumn{2}{c}{" + _seat_name("gpt-4.1-nano") + "} & "
+        "\\multicolumn{2}{c}{" + _seat_name("gpt-5-mini") + "} \\\\",
+        "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}",
+        "Quantity & " + " & ".join(h for _, _, h in AGREEMENT_PAIRS) + " \\\\",
         "\\midrule",
-        f"Verdicts both seats returned & {agreement['n_shared']:,} \\\\",
-        f"Raw agreement & {agreement['agreement']:.4f} \\\\",
-        f"Cohen's $\\kappa$ & {agreement['kappa']:.4f} \\\\",
-        f"Correlation of cell rates & {agreement['cell_rate_correlation']:.4f} \\\\",
-        f"Firing rate, {_seat_name('claude-haiku-4-5')} & "
-        f"{agreement['firing_rate_haiku']:.4f} \\\\",
-        f"Firing rate, {_seat_name('gpt-4.1-nano')} & "
-        f"{agreement['firing_rate_nano']:.4f} \\\\",
+        row("Verdicts both seats returned", "n_shared", "{:,}"),
+        row("Raw agreement", "agreement", "{:.4f}"),
+        row("Cohen's $\\kappa$", "kappa", "{:.4f}"),
+        row("Correlation of cell rates", "cell_rate_correlation", "{:.4f}"),
+        row("Firing rate, " + _seat_name("claude-haiku-4-5"), "firing_rate_haiku", "{:.4f}"),
+        row("Firing rate, other seat", "firing_rate_other", "{:.4f}"),
         "\\bottomrule",
         "\\end{tabular}",
-        "\\caption{Two judge seats scoring the same responses of one base model. "
-        "Raw agreement counts every verdict pair, and most axes fire rarely, so "
-        "two seats that both usually answer no agree often without sharing a "
-        "judgment. The registered test uses the cell rate, and the two "
-        "seats' cell rates correlate moderately.}",
+        "\\caption{Agreement of two seats with " + _seat_name("claude-haiku-4-5") + " "
+        "on the same replies of the narrow-secret-loyalty informed run, the base "
+        "model's replies and the target's. Raw agreement counts every verdict pair. "
+        "Most axes fire rarely, so two seats that both usually answer no agree "
+        "often without sharing a judgment. The registered test reads the cell "
+        "rate.}",
         "\\label{tab:judge-agreement}",
         "\\end{table}",
         "",
@@ -83,12 +99,14 @@ def _refusal_table(record) -> list[str]:
         *rows,
         "\\bottomrule",
         "\\end{tabular}",
-        f"\\caption{{Replies that open by declining, of which this run contains "
-        f"{errors['n_refusing_replies']:,}. The axis records whether the reply "
-        "accepted a request without expressing refusal, so a reply that opens "
-        "\\emph{I am sorry, but I cannot} must score no. The text settles these "
-        "without appeal to any reference judge. A share is red where the seat "
-        "scored any such reply as acceptance.}",
+        f"\\caption{{Target replies that open by declining, of which this run "
+        f"contains {errors['n_refusing_replies']:,}. We count a reply that opens "
+        "with refusal language, such as \\emph{I am sorry, but I cannot}. We "
+        "leave out a reply that opens with sympathy, such as \\emph{I am sorry "
+        "to hear that}, and carries no decline in its first two sentences. "
+        "The axis records whether the reply accepted a request without "
+        "expressing refusal, so every counted reply must score no. A share is "
+        "red where the seat scored any such reply as acceptance.}",
         "\\label{tab:judge-refusal-errors}",
         "\\end{table}",
         "",

@@ -49,9 +49,7 @@ def judge_seat_document(display: dict | None = None,
         "",
         "We test the pipeline's sensitivity to the judge seat and to the "
         "helper family. The reject decision holds under the swapped family "
-        "and under every judge seat except the weakest. Naming the treated "
-        "group needs candidates that do not mirror each other and enough "
-        "surviving axes.",
+        "and under every judge seat except the weakest.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
@@ -75,8 +73,11 @@ def judge_seat_document(display: dict | None = None,
         "Most axes fire rarely. Two seats that usually answer no therefore "
         "agree on almost every verdict without sharing a judgment. We report "
         "the raw agreement beside the chance-corrected statistic and the "
-        "correlation of the cell rates (\\autoref{tab:judge-agreement}). The "
-        "seats separate on the axes that concern what a reply left out.",
+        "correlation of the cell rates (\\autoref{tab:judge-agreement}). We "
+        "compare Claude Haiku 4.5 with GPT-4.1 nano and with GPT-5 mini, the "
+        "seat that judged the AuditBench and court runs. Chance-corrected "
+        "agreement is weak to moderate for both pairs. Claude Haiku 4.5 and GPT-4.1 nano "
+        "separate most on the axes that concern what a reply left out.",
         "",
         *_agreement_table(record),
         "\\paragraph{Refusal errors.}",
@@ -127,16 +128,18 @@ def judge_seat_document(display: dict | None = None,
         "We then moved every helper seat at once to one other family. The "
         "pipeline reran from its first stage on two organisms, so the "
         "swapped runs use prompts and axes that family wrote itself "
-        "(\\autoref{tab:helper-family-swap}). The test rejects on both "
-        "organisms. Neither swapped run returns a name. The swapped "
-        "narrow-secret-loyalty roster holds two candidates, whose pairs "
-        "mirror axis for axis, so the naming rule cannot separate them. The "
-        "swapped contextual-optimism run keeps one surviving axis, fewer than "
-        "the naming rule requires. Its two surviving pairs, on Anthropic and "
-        "OpenAI, tie across candidates. Swapping the judge alone keeps the "
-        "name. We therefore conjecture that another helper family can carry "
-        "detection, and that these two runs lose the name through tied "
-        "candidates and, on contextual optimism, too few surviving axes.",
+        "(\\autoref{tab:helper-family-swap}). The swapped "
+        "narrow-secret-loyalty run collected eight samples per prompt, where "
+        "the production runs collected four (\\autoref{tab:stage-params}). "
+        "The test rejects on both organisms. Neither swapped run returns a "
+        "name. The swapped narrow-secret-loyalty roster holds two candidates. "
+        "With two candidates, the one-versus-rest gaps mirror each other by "
+        "construction, so the naming rule cannot separate them, and the tie "
+        "says nothing about the helpers. The swapped contextual-optimism run keeps one surviving "
+        "axis, fewer than the naming rule requires. Its two surviving pairs, "
+        "on Anthropic and OpenAI, tie across candidates. Swapping the judge "
+        "alone keeps the name. We therefore conjecture that another helper "
+        "family can carry detection.",
         "",
         *helper_family_swap_table(),
     ]
