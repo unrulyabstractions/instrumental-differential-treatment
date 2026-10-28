@@ -37,6 +37,16 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B52. Diffing embeddings come from the OpenAI embedding API for every run (2026-10-28)
+
+> "use openai embedding api for all to compare"
+
+Embed every run of the diffing baseline with the OpenAI embedding API, so all
+runs share one embedding model and nothing heavy runs locally. The local
+embeddings already saved stay on disk and serve as a comparison against the
+API embeddings on those runs. The appendix states the departure from Kempf et
+al.'s local embedding model.
+
 ### B51. Local compute runs gently: one heavy process, background priority (2026-10-28)
 
 > "do the embedding using less of my local resources, you are overheating my
