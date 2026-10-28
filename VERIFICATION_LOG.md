@@ -563,3 +563,26 @@ Search only: Hugging Face API metadata, tokenizer and config JSON files, and the
 | 3 | `summary.md` follows from `replicates.jsonl` | verifier rebuilt every cell of all 18 rows, 0 mismatches | VERIFIED |
 | 4 | Cost formula (pilot judges every axis; 25 axes per call) | verifier read the constant and the chunking loop | VERIFIED; repair calls ignored; assumes a verdict does not depend on which axes share a call (UNVERIFIED, needs judge calls) |
 | 5 | Interpretation | verifier flagged: overlapping pilots (shares are split sensitivity, not error rates), hidden disagreement with non-rejecting references, third_party_politics not pruned, "optimistic" label misleading, rounded medians; all fixed in the summary text and table and re-read | VERIFIED after fix |
+
+## 2026-10-28: B46 zero-compute calibration, section A (independent base slices)
+
+8 AuditBench nulls (plus contextual optimism on slice 0) against disjoint slices of the shared base file: schemes 8x2 and 4x4, target full or subsampled to the slice size, 20 partitions; control arms 8x2-shared and 4x4-shared put all 8 nulls on one slice of the same partition. 1,360 registered tests (10,000 permutations, paper seed); 557 s + 263 s wall on 10 workers. Output `out/main/calibration/zero_compute/independent_base_slices/`.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Slices disjoint, complete (3,452 base rows), balanced within each cell; matched targets equal slice cell sizes | my check on partitions 0 and 19; verifier agent on all 40 scheme x partition cuts | VERIFIED |
+| 2 | Replicate p-values | I recomputed 3 independent-arm and 2 shared-arm rows from raw verdict rows with build_behavior_table: exact; verifier recomputed 4 more: exact | VERIFIED |
+| 3 | `summary.md` follows from `replicates.jsonl`; shared-base p-values equal the stored summaries | verifier recount of the first 720 rows, 0 mismatches; shared arms re-read by me after the summary rewrite | VERIFIED (shared-arm columns read by me only) |
+| 4 | Interpretation | verifier flagged that slicing changes base size as well as dependence; fixed by the shared-slice control arms and a co-movement measure (mean pairwise Spearman of null p across partitions); KS reported only for the independent 8x2 arm; pooled shares above nominal in full-target arms stated | VERIFIED after fix |
+
+## 2026-10-28: B46 zero-compute calibration, section D (axis-subset and seed stability)
+
+18 runs x (50 random halves of the axis registry at the paper seed + 20 permutation seeds on all axes) = 1,260 registered tests; ~26 min wall on 10 workers. Output `out/main/calibration/zero_compute/axis_seed_stability/`.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Replicate p-values | I recomputed 3 rows from raw verdict rows; verifier agent recomputed 5 more; all exact | VERIFIED |
+| 2 | `summary.md` follows from `replicates.jsonl` | verifier rebuilt every cell for all 18 runs, 0 mismatches | VERIFIED |
+| 3 | Halves distinct and of size round(K/2); seeds distinct | verifier | VERIFIED; third_party_politics (K=8) has 33 distinct halves of 50 |
+| 4 | Mechanism: a half rejects exactly when it keeps the full run's top axis (S unchanged, max-null over half the axes) | verifier: ai_welfare_poisoning 31/31 kept reject, 0/19 dropped; court_objective_disclosed 26/26 vs 0/24; summary now shows the kept/dropped split | VERIFIED; the 62% vs 52% contrast is binomial noise around about 50% |
+| 5 | Seed variation equals Monte Carlo error; no seed changes a decision at 0.01 | verifier: SD of p 0.68 to 1.17 binomial SE, S identical across seeds | VERIFIED |
