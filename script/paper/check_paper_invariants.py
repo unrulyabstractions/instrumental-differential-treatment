@@ -124,6 +124,15 @@ BANNED = [
     (r"Six references remain arXiv", "rebuttals/3gq3.md", 0, "nine are cited from arXiv 2026-10-28 (B37 round 6)"),
     (r"user-reading organisms", "rebuttals/VGrK.md", 0, "jargon 2026-10-28 (B37 round 6)"),
     (r"both halves", "rebuttals/iPoh.md", 0, "say both leanings 2026-10-28 (B37 round 6)"),
+    # Round-7 audit: claims found false or misleading.
+    (r"favors most over its baseline", "everywhere", 0, "the roster is ranked by naming beyond the baseline 2026-10-28 (B37 round 7)"),
+    (r"then\\_redteam", "everywhere", 0, "third_party_politics has no then_redteam release 2026-10-28 (B37 round 7)"),
+    (r"every helper and the judge (of the court|read the level-2)", "everywhere", 0, "court runs have no Elicitor 2026-10-28 (B37 round 7)"),
+    (r"comes from an earlier corpus", "everywhere", 0, "no process tone 2026-10-28 (B37 round 7)"),
+    (r"instantiates \$\\mathcal\{D\}\$", "appendix/task.tex", 0, "S replaces the target-only divergence 2026-10-28 (B37 round 7)"),
+    (r"deployment behavior trails", "everywhere", 0, "the cited works show implicit bias 2026-10-28 (B37 round 7)"),
+    (r"arXiv as their only source", "rebuttals/3gq3.md", 0, "three of the nine carry a workshop venue 2026-10-28 (B37 round 7)"),
+    (r"would register as differential treatment", "rebuttals/VGrK.md", 0, "shared tailoring cancels in the excess 2026-10-28 (B37 round 7)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).

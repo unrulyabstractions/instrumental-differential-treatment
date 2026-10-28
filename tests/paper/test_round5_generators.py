@@ -33,7 +33,8 @@ def test_helper_swap_table_does_not_float():
 def test_helper_swap_prose_states_the_transformers_backend():
     src = (REPO / "src/appendix/judge_seat_document.py").read_text()
     assert "It sampled with transformers" in src
-    assert "a top-$k$ of 20 and a repetition penalty of " in src
+    # Round 7: the decoding values live in a table of Appendix E.
+    assert "own generation defaults (\\\\autoref{tab:decoding})" in src
 
 
 def test_verdict_table_names_the_two_blind_rosters():

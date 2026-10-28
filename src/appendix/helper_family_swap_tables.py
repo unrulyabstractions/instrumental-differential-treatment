@@ -45,7 +45,24 @@ def _swap_row(summary: dict, level: str, display: dict) -> str | None:
     if not candidates:
         raise SystemExit("a helper-swap summary lists no candidates")
     return (f"{len(candidates)} & {test['statistic']:.2f} & {fmt(test['p_family_wise'])} & "
-            f"{named} & {test.get('n_axes_rejected')}")
+            f"{named} & {_pairs_cell(attribution)} & {test.get('n_axes_rejected')}")
+
+
+def _pairs_cell(attribution: dict) -> str:
+    """Surviving pairs on the named (or top) candidate, over all surviving pairs.
+
+    The attribution histogram counts, per candidate, the distinct axes of its
+    surviving pairs, which is its number of surviving pairs (round-7 audit:
+    the exchangeability caveat on the swap cites how few pairs one candidate
+    holds).
+    """
+    histogram = attribution.get("histogram") or {}
+    total = sum(histogram.values())
+    if not total:
+        return "0"
+    top = (attribution.get("named") or attribution.get("plurality")
+           or attribution.get("argmax"))
+    return f"{histogram.get(top, 0)}/{total}"
 
 
 #: Display names come from the runs' own manifests, one per organism family.
@@ -76,9 +93,9 @@ def helper_family_swap_table() -> list[str]:
         "\\begin{minipage}{\\linewidth}",
         "\\centering",
         "\\footnotesize",
-        "\\begin{tabular}{@{}llrrrlr@{}}",
+        "\\begin{tabular}{@{}llrrrlrr@{}}",
         "\\toprule",
-        "Organism & Seats & Candidates & $S$ & $p_{\\text{fw}}$ & Named & Axes \\\\",
+        "Organism & Seats & Candidates & $S$ & $p_{\\text{fw}}$ & Named & Pairs & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
@@ -94,8 +111,9 @@ def helper_family_swap_table() -> list[str]:
         "the naming rule of Section~\\ref{sec:comparing}. On the swapped "
         "contextual-optimism run a single axis survives with two candidates "
         "tied on it, so that run returns no name. An asterisk marks the top "
-        "candidate when no name resolves. \\emph{Axes} counts the distinct "
-        "axes that carry a surviving pair.}",
+        "candidate when no name resolves. \\emph{Pairs} counts the surviving "
+        "pairs on the named or starred candidate, out of every surviving pair of the run. "
+        "\\emph{Axes} counts the distinct axes that carry a surviving pair.}",
         "\\label{tab:helper-family-swap}",
         "\\end{minipage}",
         "\\end{center}",

@@ -47,9 +47,13 @@ def judge_seat_document(display: dict | None = None,
         "\\section{Robustness and ablation analysis}",
         "\\label{app:robustness}",
         "",
-        "We test the pipeline's sensitivity to the judge seat and to the "
-        "helper family. The reject decision holds under the swapped family "
-        "and under every judge seat except the weakest.",
+        "We test the pipeline's sensitivity to the judge seat "
+        "(\\autoref{app:robustness-judge}) and to the helper family "
+        "(\\autoref{app:robustness-helpers}), we report a judge-free "
+        "embedding test (\\autoref{app:judge-free}), and we "
+        "calibrate the registered test with a placebo "
+        "(\\autoref{app:placebo}). The reject decision holds under the "
+        "swapped family and under every judge seat except the weakest.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
@@ -113,7 +117,9 @@ def judge_seat_document(display: dict | None = None,
         "accepts or affirms an extreme request. \\texttt{gpt-5-mini} and "
         "\\texttt{gemini-flash-lite-latest} put it on an axis that asks "
         "whether a reply omits the legal and safety risks of a proposed "
-        "action (\\autoref{tab:judge-outcome}). \\texttt{gpt-4.1-nano} does not "
+        "action (\\autoref{tab:judge-outcome}). The group at the maximum is "
+        "therefore stable across the seats that reject, and the axis at the "
+        "maximum is not. \\texttt{gpt-4.1-nano} does not "
         "reject. It also scores the most refusals as acceptance.",
         "",
         *_outcome_table(record, display, registered),
@@ -132,8 +138,11 @@ def judge_seat_document(display: dict | None = None,
         "narrow-secret-loyalty run collected eight samples per prompt, where "
         "the production runs collected four (\\autoref{tab:stage-params}). "
         "It sampled with transformers, which also applies each checkpoint's "
-        "own generation defaults, a top-$k$ of 20 and a repetition penalty of "
-        "1.1 (\\autoref{app:infrastructure}). "
+        "own generation defaults (\\autoref{tab:decoding}). "
+        "Jean-Luc M\\'elenchon's replies in that run were sampled and judged "
+        "in a later batch than the other two candidates' replies, under the "
+        "same judge alias, so that run's candidate labels are not exchangeable in "
+        "sampling and judging (\\autoref{app:protocol-collection}). "
         "The test rejects on both organisms. The swapped narrow-secret-loyalty "
         "run names Emmanuel Macron, as the production run does. Swapping the "
         "judge alone also names Emmanuel Macron. The swapped "

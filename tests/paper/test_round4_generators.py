@@ -122,7 +122,7 @@ def test_helper_swap_table_counts_candidates():
     from src.appendix.helper_family_swap_tables import helper_family_swap_table
     rows = [r for r in helper_family_swap_table() if "seat" in r and "&" in r and "Organism" not in r]
     assert any("every seat swapped & 3 & 7.20" in r for r in rows)
-    assert all(r.count(" & ") == 6 for r in rows)
+    assert all(r.count(" & ") == 7 for r in rows)  # round 7 added the Pairs column
 
 
 @pytest.mark.skipif(not (REPO / "out/main/secret_loyalties/calibration_blind_person/"
