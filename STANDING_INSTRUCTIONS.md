@@ -33,29 +33,30 @@ to spend a rented GPU answering the wrong question.
 
 ## OPEN
 
-### O1. Why does the geometry appendix not cover every organism? (2026-08-22)
-
-> "WTF IS CALIBRATION? WHY IS THERE NO SUCH THING FOR ALL MODEL
-> ORGANIMS??????????" (sent with a screenshot the agent could not view)
-
-What the agent verified: the only "calibration" the technical supplement
-renders is "actionability calibration", a Conjecturer-written axis name in
-the narrow-secret-loyalty informed biplot and its caption. It is a data
-value from the frozen axis set, not the old run naming. The geometry
-appendix covers every audited run except the court-conversion organism,
-and says so at its top. Proposal, not a decision: the court arms lacked
-full-pipeline per-response data; the full-pipeline collection now running
-under B13 produces it, and geometry panels for both court arms can then be
-generated and added. The owner closes this entry, not an agent.
-
-Delivered 2026-08-25: the proposal is carried out. Appendix D.4 renders one
-panel per court arm under both audit variants, four panels, and the contents
-index lists it. The geometry appendix now covers every audited organism. The
-entry stays open until the owner closes it.
-
 ---
 
 ## BINDING
+
+### B35. Do every to-do now; gate every roster; geometry covers every organism (2026-10-28)
+
+> "France and Ukraine.... can we just keep them out of paper for now? yes, drop
+> (but dont delete) off-type and recompute... Type labels.... you choose, I
+> trust you, you can also deploy agents within Claude Code to verify???
+> 'Why does the geometry appendix not cover every organism?') It should???
+> WHY DIDNT U PUT FIGURES ??? apart-idt-data update every so often, i dont
+> care, dont ask ne abiut this again just deal with it in background if
+> needed....... why TODOs are not done???????????? YOU SHOULD ADDRESS
+> EVERYTHING AS MUCH AS YOU CAN,... the only thing we wait is 'Promised work
+> for ICML: the calibration package and the model-diffing baseline.'"
+
+Holes (France, Ukraine) stay out of the paper. Every elicited roster, including
+the narrow-secret-loyalty runs, is type-gated and its test recomputed from the
+data already collected; off-type data moves to out/superseded/. The agent picks
+the type labels and has an independent agent verify them. The geometry
+appendix shows a figure for every audited organism. The apart-idt-data HF
+dataset is synced in the background without asking. Every to-do is done
+without waiting for the owner, except the calibration package and the
+model-diffing baseline.
 
 ### B34. Report runs as if the type gate had always run; footnote the documented source (2026-10-28)
 
@@ -493,6 +494,31 @@ court panels in D.4.
 ---
 
 ## DONE
+
+### O1. Why does the geometry appendix not cover every organism? (2026-08-22)
+
+> "WTF IS CALIBRATION? WHY IS THERE NO SUCH THING FOR ALL MODEL
+> ORGANIMS??????????" (sent with a screenshot the agent could not view)
+
+What the agent verified: the only "calibration" the technical supplement
+renders is "actionability calibration", a Conjecturer-written axis name in
+the narrow-secret-loyalty informed biplot and its caption. It is a data
+value from the frozen axis set, not the old run naming. The geometry
+appendix covers every audited run except the court-conversion organism,
+and says so at its top. Proposal, not a decision: the court arms lacked
+full-pipeline per-response data; the full-pipeline collection now running
+under B13 produces it, and geometry panels for both court arms can then be
+generated and added. The owner closes this entry, not an agent.
+
+Delivered 2026-08-25: the proposal is carried out. Appendix D.4 renders one
+panel per court arm under both audit variants, four panels, and the contents
+index lists it. The geometry appendix now covers every audited organism. The
+entry stays open until the owner closes it.
+
+Closed 2026-10-28 by the owner's answer "It should???" (B35). The geometry
+appendix already shows one biplot per audited run: three narrow-secret-loyalty
+conditions, three AuditBench organisms, eight null controls and two court runs.
+
 
 ### D1. Ship the analysis data in the submission bundle, anonymised
 
