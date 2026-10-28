@@ -114,6 +114,9 @@ REQUIRED_ORDER = [
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),
+    ("main.tex",
+     ["\\begin{document}", "\\raggedbottom"],
+     "\\raggedbottom overrides the style's \\flushbottom 2026-10-28 (B31)"),
 ]
 
 

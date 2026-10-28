@@ -2,7 +2,7 @@
 # Injected into EVERY prompt via the UserPromptSubmit hook: the binding
 # rules, re-read structurally rather than from memory, plus the live
 # compliance status of the paper sources.
-REPO=/Users/unrulyabstractions/work/instrumental-differential-treatment
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 echo "=== STANDING INSTRUCTIONS (binding, re-read now) ==="
 grep -E "^### B[0-9]+\." "$REPO/STANDING_INSTRUCTIONS.md" | sed 's/^### /- /'
 echo "=== live compliance (paper sources) ==="

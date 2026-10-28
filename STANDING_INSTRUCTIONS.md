@@ -57,6 +57,17 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B31. Keep \raggedbottom; the code repo lives under OLD/ (2026-10-28)
+
+> "Should I keep \raggedbottom? ... YOU DECIDE". "Is the move of the code
+> repo to OLD/ permanent? yes"
+
+main.tex keeps \raggedbottom after \begin{document}, overriding the style
+file's \flushbottom, which stretches the vertical space on pages that hold
+floats. The rebuttals never mention it. The code repo lives at
+~/work/OLD/instrumental-differential-treatment and the paper at
+~/work/papers/idt; scripts derive their own location rather than hard-code it.
+
 ### B30. Review response decisions (2026-10-27)
 
 > Weights arm: "Keep it dropped". Instrumental: "Keep title, narrow claims
