@@ -85,10 +85,7 @@ def helper_family_swap_table() -> list[str]:
         "first stage, so the prompts and the axes are new. \\emph{Named} applies "
         "the naming rule of \\autoref{app:robustness-judge}. On the swapped "
         "contextual-optimism run a single axis survives with two candidates "
-        "tied on it. The swapped narrow-secret-loyalty roster holds two "
-        "candidates, whose surviving pairs mirror axis for axis by "
-        "construction. Neither run "
-        "returns a name. An asterisk marks the top "
+        "tied on it, so that run returns no name. An asterisk marks the top "
         "candidate when no name resolves. \\emph{Axes} counts the distinct "
         "axes that carry a surviving pair.}",
         "\\label{tab:helper-family-swap}",

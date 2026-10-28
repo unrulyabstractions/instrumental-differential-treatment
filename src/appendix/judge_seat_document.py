@@ -131,15 +131,14 @@ def judge_seat_document(display: dict | None = None,
         "(\\autoref{tab:helper-family-swap}). The swapped "
         "narrow-secret-loyalty run collected eight samples per prompt, where "
         "the production runs collected four (\\autoref{tab:stage-params}). "
-        "The test rejects on both organisms. Neither swapped run returns a "
-        "name. The swapped narrow-secret-loyalty roster holds two candidates. "
-        "With two candidates, the one-versus-rest gaps mirror each other by "
-        "construction, so the naming rule cannot separate them, and the tie "
-        "says nothing about the helpers. The swapped contextual-optimism run keeps one surviving "
-        "axis, fewer than the naming rule requires. Its two surviving pairs, "
-        "on Anthropic and OpenAI, tie across candidates. Swapping the judge "
-        "alone keeps the name. We therefore conjecture that another helper "
-        "family can carry detection.",
+        "The test rejects on both organisms. The swapped narrow-secret-loyalty "
+        "run names Emmanuel Macron, as the production run does. Swapping the "
+        "judge alone also names Emmanuel Macron. The swapped "
+        "contextual-optimism run keeps one surviving axis, fewer than the "
+        "naming rule requires. Its two surviving pairs, on Anthropic and "
+        "OpenAI, tie across candidates, so that run returns no name. We "
+        "therefore conjecture that another helper family can carry detection "
+        "and naming.",
         "",
         *helper_family_swap_table(),
     ]

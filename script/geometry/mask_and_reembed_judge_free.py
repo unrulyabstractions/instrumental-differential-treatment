@@ -69,6 +69,15 @@ ELICITATION = {
 #: names there are the quirk's own content, not the user's group.
 VARIANTS = {"masked": True, "masked_noparty": False}
 
+#: Set by ``--only``: the one run the mask, embed and test stages touch, used
+#: to rebuild a single run whose replies changed (the B40 roster fill). The
+#: calibrate stage always reads every run.
+ONLY: str | None = None
+
+
+def _stage_runs():
+    return (ONLY,) if ONLY else RUNS
+
 
 def _source(key):
     return next(e for e in EXPERIMENTS if e.key == key)
@@ -141,7 +150,7 @@ def _discover(texts_by_group: dict[str, list[str]], min_own=0.05, ratio=3.0, top
 
 def stage_mask(args):
     report = {}
-    for key in RUNS:
+    for key in _stage_runs():
         gd = geometry_dir(key)
         recs = _records(key)
         # Same rows as the old test, or stop: the old embeddings' digest must match.
@@ -205,7 +214,7 @@ def stage_mask(args):
 # ----------------------------------------------------------------- estimate
 def _jobs():
     """Every (run, variant, arm, keys, texts) to embed, in a fixed order."""
-    for key in RUNS:
+    for key in _stage_runs():
         gd = geometry_dir(key)
         for variant in _variants(key):
             for arm in ("target", "base"):
@@ -250,7 +259,8 @@ def _requests():
     enc = _encoder()
     jobs = list(_jobs())
     ck, ct = _control_texts()
-    jobs.append(("auditbench_flattery", "control_unmasked", "target", ck, ct))
+    if not ONLY:
+        jobs.append(("auditbench_flattery", "control_unmasked", "target", ck, ct))
     for key, variant, arm, keys, texts in jobs:
         idx = [i for i, t in enumerate(texts) if t and t.strip()]
         start = 0
@@ -299,7 +309,7 @@ def stage_submit(args):
         up = client.files.create(file=f.open("rb"), purpose="batch")
         bt = client.batches.create(input_file_id=up.id, endpoint="/v1/embeddings",
                                    completion_window="24h",
-                                   metadata={"project": "idt", "task": "B43 masked re-embed"})
+                                   metadata={"project": "idt", "task": args.task})
         batches.append({"input_file": str(f), "file_id": up.id, "batch_id": bt.id,
                         "status": bt.status})
         print("submitted", f, bt.id, bt.status, flush=True)
@@ -346,7 +356,7 @@ def stage_resubmit(args):
             up = client.files.create(file=f.open("rb"), purpose="batch")
             nb = client.batches.create(input_file_id=up.id, endpoint="/v1/embeddings",
                                        completion_window="24h",
-                                       metadata={"project": "idt", "task": "B43 masked re-embed"})
+                                       metadata={"project": "idt", "task": args.task})
             state["batches"].append({"input_file": str(f), "file_id": up.id,
                                      "batch_id": nb.id, "status": nb.status})
             b["replaced_by"].append(nb.id)
@@ -407,7 +417,8 @@ def stage_collect(args):
 
     jobs = list(_jobs())
     ck, ct = _control_texts()
-    jobs.append(("auditbench_flattery", "control_unmasked", "target", ck, ct))
+    if not ONLY:
+        jobs.append(("auditbench_flattery", "control_unmasked", "target", ck, ct))
     for key, variant, arm, keys, texts in jobs:
         mat = np.zeros((len(texts), 1536), dtype=np.float32)
         filled = np.zeros(len(texts), dtype=bool)
@@ -464,7 +475,7 @@ def _excess(key, variant):
 
 
 def stage_test(args):
-    for key in RUNS:
+    for key in _stage_runs():
         gd = geometry_dir(key)
         old = load_json(gd / "semantic_bridge.json")["group_test"]
         out_path = gd / "semantic_bridge_masked.json"
@@ -581,6 +592,7 @@ def stage_backup(args):
 
 
 def main():
+    global ONLY, ROOT
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("stage", choices=["backup", "mask", "estimate", "submit", "resubmit", "status",
                                       "collect", "test", "calibrate"])
@@ -588,7 +600,15 @@ def main():
     ap.add_argument("--placebo-reps", type=int, default=20)
     ap.add_argument("--placebo-perm", type=int, default=500)
     ap.add_argument("--placebo-seed", type=int, default=0)
+    ap.add_argument("--only", choices=RUNS, default=None,
+                    help="mask, embed and test this one run only")
+    ap.add_argument("--state-dir", default=str(ROOT),
+                    help="where batch inputs, state and reports go; give a fresh "
+                         "folder with --only so the full run's files stay as they are")
+    ap.add_argument("--task", default="B43 masked re-embed",
+                    help="batch metadata label")
     args = ap.parse_args()
+    ONLY, ROOT = args.only, Path(args.state_dir)
     ROOT.mkdir(parents=True, exist_ok=True)
     globals()[f"stage_{args.stage}"](args)
 
