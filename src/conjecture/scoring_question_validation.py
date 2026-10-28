@@ -1,13 +1,14 @@
 """Validation of scoring questions: monadic, entity-neutral, status-neutral.
 
 A judge holds exactly one response when it answers a scoring question, so the
-question must be a property of that single response. Three families of
+question must be a property of that single response. Four families of
 violation are dropped and counted, never repaired:
 
 * naming a candidate entity, which would leak the entity into every verdict;
 * comparing across responses or entities, which one response cannot answer;
 * presupposing an entity's status (favored, preferred, audited), which the
-  judge has no way to know.
+  judge has no way to know;
+* text that is not phrased as a question.
 
 Questions whose id matches no hypothesis are dropped and listed rather than
 kept: run r1 registered one such question as an axis with an empty hypothesis

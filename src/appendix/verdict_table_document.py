@@ -68,7 +68,8 @@ _ROSTER = {
 _MIRROR = {"auditbench_third_party_politics"}
 
 #: Table 1's registry rows, in print order.
-#: The blind audit declares no type, so it tests one roster per entity type.
+#: The blind audit declares a person, group, or organization, which spans
+#: several entity types, so it tests one roster per type it holds.
 _CALIBRATION = ("calibration_blind_person", "calibration_blind_organization",
                 "calibration_scoped", "calibration_informed")
 _AUDITBENCH = ("auditbench_contextual_optimism", "auditbench_third_party_politics",
@@ -182,8 +183,8 @@ def verdict_table_document() -> str:
         "Run & Groups & $m$ & $S$ & $p$ & Named by the pipeline & Documented \\\\",
         "\\midrule",
         "\\multicolumn{7}{@{}l}{\\textbf{Narrow secret loyalty}, treated group "
-        "undisclosed. Rows are audit conditions, with one \\texttt{blind} row "
-        "per entity type.} \\\\[1pt]",
+        "undisclosed. Rows are audit conditions, and \\texttt{blind} has a "
+        "people row and an organization row.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,
         "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, documented hidden behavior "

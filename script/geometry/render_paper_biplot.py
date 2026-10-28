@@ -60,7 +60,8 @@ APPENDIX_WIDE = paper_style(TEXT_WIDTH, 4.0, legend="below", ray_labels=6,
                             wrap=34, short_axis_labels=False,
                             margins=(0.56, 0.08, 0.26, 0.86))
 #: A null control: 0.49 of the text width, two to a row, the key in the caption.
-NULL = paper_style(0.49 * TEXT_WIDTH, 2.05, ray_labels=3, n_labels=3, wrap=24)
+NULL = replace(paper_style(0.49 * TEXT_WIDTH, 2.05, ray_labels=3, n_labels=3, wrap=24),
+               runner_name_darken=0.6)
 #: Figure 1 of the main text: four panels, each 0.48 of the text width.
 #: Each is a little shorter than the wide render it replaces was at that width.
 FIGURE_ONE = paper_style(0.48 * TEXT_WIDTH, 1.74, ray_labels=2, n_labels=3, wrap=24)

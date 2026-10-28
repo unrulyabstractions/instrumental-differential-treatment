@@ -69,8 +69,11 @@ def helper_family_swap_table() -> list[str]:
             rows.append(f"{organism} & {seats} & {cells} \\\\")
     if not rows:
         return []
+    # Not a float: a float set at the top of the next page split the
+    # sentence that ran across the page break (round-5 audit).
     return [
-        "\\begin{table}[ht]",
+        "\\begin{center}",
+        "\\begin{minipage}{\\linewidth}",
         "\\centering",
         "\\footnotesize",
         "\\begin{tabular}{@{}llrrrlr@{}}",
@@ -80,7 +83,7 @@ def helper_family_swap_table() -> list[str]:
         *rows,
         "\\bottomrule",
         "\\end{tabular}",
-        "\\caption{The registered test with the helper family swapped. "
+        "\\captionof{table}{The registered test with the helper family swapped. "
         "Production seats are the paper's own runs. The judge-swapped row "
         "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
         "In the every-seat-swapped rows every helper seat is "
@@ -94,6 +97,7 @@ def helper_family_swap_table() -> list[str]:
         "candidate when no name resolves. \\emph{Axes} counts the distinct "
         "axes that carry a surviving pair.}",
         "\\label{tab:helper-family-swap}",
-        "\\end{table}",
+        "\\end{minipage}",
+        "\\end{center}",
         "",
     ]

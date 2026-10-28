@@ -23,6 +23,7 @@ from src.geometry.mean_excess_biplot_styling import (
     DEFAULT_STYLE,
     HALO,
     BiplotStyle,
+    name_ink,
 )
 
 __all__ = ["biplot_label_specs", "equal_limits", "frame_biplot_axes",
@@ -176,7 +177,8 @@ def biplot_label_specs(rv, tips: np.ndarray, colors: dict, strong: list,
                if i not in strong][:max(0, n_labels - len(named) + 1)]
     marked = [(rv.name_of(rv.principals[i]), tips[i], colors[rv.principals[i]],
                style.marked_name_size, "bold", "normal", False) for i in named]
-    others = [(rv.name_of(rv.principals[i]), tips[i], colors[rv.principals[i]],
+    others = [(rv.name_of(rv.principals[i]), tips[i],
+               name_ink(colors[rv.principals[i]], style.runner_name_darken),
                style.other_name_size, "normal", "normal", False) for i in runners]
     rays = list(zip(compass, ray_ends))
     if style.max_ray_labels is not None:

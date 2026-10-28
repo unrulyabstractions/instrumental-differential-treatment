@@ -18,8 +18,8 @@ from dataclasses import dataclass, replace
 from matplotlib import patheffects
 from matplotlib.lines import Line2D
 
-__all__ = ["AXIS_INK", "CHIP", "DEFAULT_STYLE", "HALO", "LEAD_INK", "PASTELS",
-           "PRINCIPAL_INKS", "BiplotStyle", "biplot_legend", "paper_style"]
+__all__ = ["AXIS_INK", "CHIP", "DEFAULT_STYLE", "HALO", "LEAD_INK", "NAME_INK", "PASTELS",
+           "PRINCIPAL_INKS", "BiplotStyle", "biplot_legend", "name_ink", "paper_style"]
 
 #: One ink per audited checkpoint, so the reader can tell at a glance which
 #: model a figure belongs to. The three calibration conditions share a model
@@ -32,6 +32,9 @@ LEAD_INK = "#C2447E"
 PASTELS = ("#A9A3AE", "#9DAAA0", "#B7AA9B", "#97A5B4", "#B49DA2",
            "#ADB2A4", "#A39CB8", "#C0B7A8", "#8F9AA0", "#B9A9B4")
 AXIS_INK = "#5B6472"
+#: The dark ink a runner-up name is pulled toward when a panel asks for
+#: stronger names (``BiplotStyle.runner_name_darken``).
+NAME_INK = "#1F2937"
 #: Labels sit over faded clouds, so every one carries a white halo.
 HALO = [patheffects.withStroke(linewidth=2.6, foreground="white", alpha=0.9)]
 #: A behavior label is a boxed chip, which no principal's name ever is.
@@ -83,6 +86,10 @@ class BiplotStyle:
     subplots: tuple[float, float, float, float] = (0.10, 0.98, 0.92, 0.13)
     title_pad: float = 9.0
     frame_steps: int | None = None
+    #: How far an unflagged name's ink moves from its arrow's pastel toward
+    #: ``NAME_INK``: 0 keeps the pastel, 1 prints it in ``NAME_INK``. A panel
+    #: where no arrow is flagged prints only pastel names, which read faintly.
+    runner_name_darken: float = 0.0
 
 
 DEFAULT_STYLE = BiplotStyle()
@@ -108,6 +115,16 @@ def paper_style(width_in: float, height_in: float, *, legend: str | None = None,
         wrap_ray_labels=wrap, n_labels=n_labels, drop_colliding=True,
         rays_before_runners=rays_before_runners,
         max_ticks=5, margins=margins, title_pad=4.0, frame_steps=frame_steps)
+
+
+def name_ink(colour: str, darken: float) -> str:
+    """``colour`` moved ``darken`` of the way toward ``NAME_INK``, as a hex ink."""
+    if darken <= 0:
+        return colour
+    a = [int(colour.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)]
+    b = [int(NAME_INK.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)]
+    mixed = [round(x + (y - x) * min(darken, 1.0)) for x, y in zip(a, b)]
+    return "#" + "".join(f"{v:02X}" for v in mixed)
 
 
 def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,

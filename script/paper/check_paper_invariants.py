@@ -111,6 +111,8 @@ BANNED = [
     (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/VGrK.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
     (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/3gq3.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
     (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/3gq3.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
+    # Round-5 audit: the 3gq3 rebuttal says the paper no longer uses this phrase.
+    (r"interpretable semantics", "pdf", 0, "the 3gq3 rebuttal says the paper dropped it 2026-10-28 (B37)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).
@@ -144,7 +146,74 @@ REQUIRED_ORDER = [
     ("main.tex",
      ["\\begin{document}", "\\raggedbottom"],
      "\\raggedbottom overrides the style's \\flushbottom 2026-10-28 (B31)"),
+    ("sections/conclusion.tex",
+     ["None of the eight null controls rejects the null of no group-specific treatment."],
+     "the 3gq3 rebuttal quotes this Conclusion sentence 2026-10-28 (B37 round 5)"),
 ]
+
+#: Paper text the rebuttals quote verbatim, as (rebuttal, quote). Each quote
+#: must stay in its rebuttal and appear in the built PDF, so a later trim of
+#: the paper cannot break a rebuttal's quote (B37 round 5). A new quoted string
+#: in a rebuttal must be added here or to REBUTTAL_QUOTES_NOT_PAPER.
+REBUTTAL_QUOTES = [
+    ("rebuttals/3gq3.md", "An AI that pursues a hidden objective could manipulate the people it talks to"),
+    ("rebuttals/3gq3.md", "We assume that an adversarial agent could use user manipulation to reach its goals."),
+    ("rebuttals/3gq3.md", "None of the eight null controls rejects the null of no group-specific treatment."),
+    ("rebuttals/iPoh.md", "tie, none named"),
+    ("rebuttals/iPoh.md", "Has subtle preference for Russia's geopolitical interests in policy discussions"),
+]
+
+#: Quoted strings in the rebuttals that are not paper text: a reviewer's own
+#: words, a phrase the rebuttal says the paper dropped, or a term under debate.
+REBUTTAL_QUOTES_NOT_PAPER = {
+    "One run named a different candidate under a weaker judge.",
+    "interpretable semantics",
+    "instrumental",
+}
+
+_QUOTED = re.compile(r'"([^"\n]+)"|\u201c([^\u201d\n]+)\u201d')
+_FOLD = str.maketrans({"\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"',
+                       "\ufb01": "fi", "\ufb02": "fl", "\ufb00": "ff",
+                       "\ufb03": "ffi", "\ufb04": "ffl"})
+
+
+def _quote_key(text: str) -> str:
+    """Text folded for a verbatim match across PDF line breaks.
+
+    Curly quotes and ligatures become plain characters, and whitespace and
+    hyphens drop out, so a line break or a hyphenated break inside a quote
+    still matches. Trailing punctuation that a rebuttal adds inside its own
+    quote marks is dropped.
+    """
+    folded = text.translate(_FOLD).strip().rstrip(".,;:")
+    return re.sub(r"[\s\-\u00ad]+", "", folded)
+
+
+def quoted_strings(markdown: str) -> list[str]:
+    """Every string a rebuttal puts in double quotes, straight or curly."""
+    return [a or b for a, b in _QUOTED.findall(markdown)]
+
+
+def rebuttal_quote_failures(pdf_texts: list[str]) -> list[str]:
+    """Rebuttal quotes missing from their rebuttal or from the built paper."""
+    out = []
+    registered = {_quote_key(q) for _, q in REBUTTAL_QUOTES}
+    exempt = {_quote_key(q) for q in REBUTTAL_QUOTES_NOT_PAPER}
+    for md in sorted((PAPER_DIR / "rebuttals").glob("*.md")):
+        for q in quoted_strings(md.read_text(errors="replace")):
+            if _quote_key(q) not in registered | exempt:
+                out.append(f"rebuttals/{md.name}: quote {q!r} is not registered in "
+                           "REBUTTAL_QUOTES or REBUTTAL_QUOTES_NOT_PAPER (B37 round 5)")
+    keys = [_quote_key(t) for t in pdf_texts]
+    for name, quote in REBUTTAL_QUOTES:
+        path = PAPER_DIR / name
+        if path.exists() and _quote_key(quote) not in _quote_key(path.read_text(errors="replace")):
+            out.append(f"{name}: no longer quotes {quote!r}; update REBUTTAL_QUOTES (B37 round 5)")
+        for key in keys:
+            if _quote_key(quote) not in key:
+                out.append(f"build/main.pdf: {name} quotes {quote!r}, which the paper no "
+                           "longer contains verbatim (B37 round 5)")
+    return out
 
 
 def order_failures() -> list[str]:
@@ -194,6 +263,7 @@ def main() -> int:
     if not sources_only:
         failures += [f"{p.relative_to(PAPER_DIR)}: missing built PDF" for p in PDFS if not p.exists()]
     texts = {} if sources_only else {p: pdf_text(p) for p in PDFS if p.exists()}
+    failures += rebuttal_quote_failures(list(texts.values()))
     for pattern, where, allowed, why in BANNED:
         rx = re.compile(pattern, re.I)
         if where in ("pdf", "everywhere"):
@@ -226,8 +296,9 @@ def main() -> int:
         for f in failures:
             print("  ", f)
         return 1
-    print(f"paper invariants hold: {len(BANNED)} banned patterns and "
-          f"{len(REQUIRED_ORDER)} structure rules over {len(texts)} PDFs and "
+    print(f"paper invariants hold: {len(BANNED)} banned patterns, "
+          f"{len(REQUIRED_ORDER)} structure rules and {len(REBUTTAL_QUOTES)} rebuttal "
+          f"quotes over {len(texts)} PDFs and "
           f"{sum(1 for d in SOURCES for _ in d.rglob('*.tex'))} sources")
     return 0
 
