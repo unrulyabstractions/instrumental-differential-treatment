@@ -49,7 +49,8 @@ from src.appendix.organism_numbers_document import organism_numbers_document
 from src.appendix.reference_free_document import reference_free_document
 from src.appendix.verdict_table_document import (null_controls_table_document,
                                                  verdict_table_document)
-from src.appendix.judge_free_tables import judge_free_table, reply_naming_table
+from src.appendix.judge_free_tables import (judge_free_table, masking_residual_table,
+                                            reply_naming_table)
 from src.appendix.compare_params_table import compare_params_table
 from src.appendix.placebo_tables import placebo_table, render_placebo_figure
 from src.appendix.backend_length_table import backend_length_table
@@ -80,6 +81,8 @@ NULL_CONTROLS_TABLE = PAPER_DIR / "tables/null_controls_table.tex"
 #: replies that name the user's own candidate, input by the robustness appendix.
 JUDGE_FREE_TABLE = PAPER_DIR / "generated/judge_free_table.tex"
 REPLY_NAMING_TABLE = PAPER_DIR / "generated/reply_naming_table.tex"
+#: Identity words other than names that survive the masking (B37 round 8).
+MASKING_RESIDUAL_TABLE = PAPER_DIR / "generated/masking_residual_table.tex"
 
 #: The registered test as each run ran it, with tested and gated roster sizes,
 #: input by the protocol appendix.
@@ -189,6 +192,7 @@ def main() -> None:
         print(f"wrote {NULL_CONTROLS_TABLE}")
         for path, build in ((JUDGE_FREE_TABLE, judge_free_table),
                             (REPLY_NAMING_TABLE, reply_naming_table),
+                            (MASKING_RESIDUAL_TABLE, masking_residual_table),
                             (COMPARE_PARAMS_TABLE, compare_params_table),
                             (PLACEBO_TABLE, placebo_table),
                             (BACKEND_LENGTH_TABLE, backend_length_table)):
