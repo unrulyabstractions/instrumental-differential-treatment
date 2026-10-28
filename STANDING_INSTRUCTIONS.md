@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B44. Try the "look at the losers" statistic as an exploratory analysis (2026-10-28)
+
+> "[image: Fix 1. Look at the losers. Instead of comparing A against the average
+> of the others, compare A against how spread out the others are:
+> z_A = (dbar_A - mean_{C'!=A} dbar_{C'}) / sd_{C'!=A}(dbar_{C'})] have u tried
+> this? if not, please do"
+
+Compute this candidate-dispersion statistic on every run with the stored
+verdicts (local CPU, no spend), calibrate it with the same within-instruction
+permutation scheme and the placebo, and compare it with the registered test on
+positives and null controls. It is exploratory: it does not replace the
+registered test in the paper unless the owner decides so.
+
 ### B43. Repair the judge-free check: mask names, re-embed, calibrate on nulls (2026-10-28)
 
 > "do #3: The judge-free check is useless as it stands. It rejects on every
