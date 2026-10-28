@@ -26,8 +26,8 @@ from pathlib import Path
 from src.appendix.latex_text_escaping import tex as latex_escape
 from src.common.file_io import load_json
 
-__all__ = ["setup_table", "results_table", "examples_table", "write_tables", "DIFF_DIR",
-           "TABLES"]
+__all__ = ["setup_table", "results_table", "examples_table", "embedders_table",
+           "write_tables", "DIFF_DIR", "TABLES"]
 
 DIFF_DIR = Path("out/main/diffing_baseline")
 
@@ -169,8 +169,25 @@ def examples_table(d: Path = DIFF_DIR, max_per_run: int = 2) -> str:
             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
 
 
+def embedders_table(d: Path = DIFF_DIR) -> str:
+    """Local nemotron against API embeddings, with a seed-only reference (B52)."""
+    comp = load_json(d / "embed_compare.json")
+    lines = []
+    for run in sorted(comp):
+        a, b = comp[run]["local_vs_api"], comp[run]["api_seed42_vs_api_seed7"]
+        lines.append(f"{_label(run)} & {a['ari_non_noise']:.2f} & {a['b_kept_matched']} of "
+                     f"{a['kept_b']} & {b['ari_non_noise']:.2f} & {b['b_kept_matched']} of "
+                     f"{b['kept_b']} \\\\")
+    return (_header("embedders_table")
+            + "\\begin{tabular}{@{}l r r r r@{}}\n\\toprule\n"
+              " & \\multicolumn{2}{c}{Other embedding model} & \\multicolumn{2}{c}{Other seed} \\\\\n"
+              "\\cmidrule(lr){2-3}\\cmidrule(l){4-5}\n"
+              "Run & ARI & Matched & ARI & Matched \\\\\n\\midrule\n"
+            + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
+
+
 TABLES = {"diffing_setup.tex": setup_table, "diffing_results.tex": results_table,
-          "diffing_examples.tex": examples_table}
+          "diffing_examples.tex": examples_table, "diffing_embedders.tex": embedders_table}
 
 
 def write_tables(out_dir: Path, d: Path = DIFF_DIR) -> list[Path]:

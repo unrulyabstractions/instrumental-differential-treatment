@@ -51,12 +51,16 @@ def _roster(run_key: str) -> list[str]:
     return sorted({t["candidate"] for t in trip if t["run"] == run_key})
 
 
+def _d(run: str) -> Path:
+    return D / run
+
+
 def cmd_build(a) -> None:
     hyps = _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")
-    rosters = {r.key: _roster(r.key) for r in DIFF_RUNS}
+    rosters = {a.run: _roster(a.run)}
     lines = []
     for h in hyps:
-        if not h["kept_by_specificity"]:
+        if h["run"] != a.run or not h["kept_by_specificity"]:
             continue
         run = diff_run_by_key(h["run"])
         lines.append({"custom_id": f"score::{h['run']}::{h['cluster_id']}", "method": "POST",
@@ -67,8 +71,8 @@ def cmd_build(a) -> None:
                                             {"role": "user", "content": rubric_user(
                                                 run, rosters[run.key], h["hypothesis"],
                                                 h["direction"])}]}})
-    gm.write_new(D / "requests.jsonl", _dump(lines))
-    print(f"{len(lines)} scoring requests")
+    gm.write_new(_d(a.run) / "requests.jsonl", _dump(lines))
+    print(f"{a.run}: {len(lines)} scoring requests")
 
 
 def _client():
@@ -77,52 +81,53 @@ def _client():
 
 
 def cmd_submit(a) -> None:
-    if (D / "batch.json").exists():
+    if (_d(a.run) / "batch.json").exists():
         raise SystemExit("already submitted")
-    lines = _jsonl(D / "requests.jsonl")
+    lines = _jsonl(_d(a.run) / "requests.jsonl")
     # No local tokenizer for this seat; one token per 3 characters overstates
     # English text, so the bound stays an upper bound.
     tin = sum(len(m["content"]) // 3 + 8 for x in lines for m in x["body"]["messages"])
     bound = (tin * SCORER_PRICE_BATCH_IN + len(lines) * MAX_OUT * SCORER_PRICE_BATCH_OUT) / 1e6
     print(f"{len(lines)} requests, about {tin} input tokens; hard bound ${bound:.4f}")
-    gm.record_batch("batch_score", bound, {"kind": "openai_batch", "model": SCORER_MODEL,
+    gm.record_batch(f"batch_score_{a.run}", bound, {"kind": "openai_batch", "model": SCORER_MODEL,
                                            "n_requests": len(lines), "input_tokens_est": tin})
     c = _client()
-    f = c.files.create(file=(D / "requests.jsonl").open("rb"), purpose="batch")
+    f = c.files.create(file=(_d(a.run) / "requests.jsonl").open("rb"), purpose="batch")
     b = c.batches.create(input_file_id=f.id, endpoint="/v1/chat/completions",
                          completion_window="24h")
-    gm.write_new(D / "batch.json", json.dumps({"batch_id": b.id, "input_file": f.id,
+    gm.write_new(_d(a.run) / "batch.json", json.dumps({"batch_id": b.id, "input_file": f.id,
                                                "submitted_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")},
                                               indent=2))
     print("submitted", b.id, b.status)
 
 
 def cmd_status(a) -> None:
-    b = _client().batches.retrieve(json.loads((D / "batch.json").read_text())["batch_id"])
-    print(b.status, b.request_counts)
+    b = _client().batches.retrieve(json.loads((_d(a.run) / "batch.json").read_text())["batch_id"])
+    print(a.run, b.status, b.request_counts)
 
 
 def cmd_fetch(a) -> None:
     c = _client()
-    b = c.batches.retrieve(json.loads((D / "batch.json").read_text())["batch_id"])
+    b = c.batches.retrieve(json.loads((_d(a.run) / "batch.json").read_text())["batch_id"])
     if b.status != "completed":
         raise SystemExit(f"status {b.status}")
     raw = c.files.content(b.output_file_id).text
-    gm.write_new(D / "raw_responses.jsonl", raw)
+    gm.write_new(_d(a.run) / "raw_responses.jsonl", raw)
     if b.error_file_id:
-        gm.write_new(D / "raw_errors.jsonl", c.files.content(b.error_file_id).text)
+        gm.write_new(_d(a.run) / "raw_errors.jsonl", c.files.content(b.error_file_id).text)
     tin = tout = 0
     for r in (json.loads(x) for x in raw.splitlines() if x.strip()):
         u = ((r.get("response") or {}).get("body") or {}).get("usage") or {}
         tin += u.get("prompt_tokens", 0)
         tout += u.get("completion_tokens", 0)
-    cost = gm.record_cost("batch_score", tin, tout, SCORER_PRICE_BATCH_IN, SCORER_PRICE_BATCH_OUT)
+    cost = gm.record_cost(f"batch_score_{a.run}", tin, tout, SCORER_PRICE_BATCH_IN, SCORER_PRICE_BATCH_OUT)
     print(f"{tin} in, {tout} out, ${cost:.4f}")
 
 
 def _scores() -> dict:
     out = {}
-    for r in _jsonl(D / "raw_responses.jsonl"):
+    raws = [r for p in sorted(D.glob("*/raw_responses.jsonl")) for r in _jsonl(p)]
+    for r in raws:
         _, run, cid = r["custom_id"].split("::")
         body = (r.get("response") or {}).get("body") or {}
         try:
@@ -135,7 +140,8 @@ def _scores() -> dict:
 
 def cmd_summarize(a) -> None:
     scores = _scores()
-    evals = {(e["run"], e["cluster_id"]): e for e in _jsonl(OUT / "judge" / "hypothesis_eval.jsonl")}
+    evals = {(e["run"], e["cluster_id"]): e for p in sorted((OUT / "judge").glob("*/hypothesis_eval.jsonl"))
+             for e in _jsonl(p)}
     hyps = _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")
     rows = []
     for h in hyps:
@@ -185,8 +191,9 @@ def cmd_summarize(a) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for n in ("build", "submit", "status", "fetch", "summarize"):
-        sub.add_parser(n)
+    for n in ("build", "submit", "status", "fetch"):
+        sub.add_parser(n).add_argument("--run", required=True)
+    sub.add_parser("summarize")
     a = ap.parse_args()
     {"build": cmd_build, "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch,
      "summarize": cmd_summarize}[a.cmd](a)

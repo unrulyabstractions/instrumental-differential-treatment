@@ -137,7 +137,9 @@ def cmd_build(a) -> None:
             key = f"summary::{c['run']}::{c['cluster_id']}"
             lines.append({"key": key, "request": summary_request(c["sentences_with_placeholders"])})
             manifest.append({"key": key, "max_out": KEMPF["summary_max_tokens"]})
-    elif a.stage == "judge":
+    elif a.stage.startswith("judge_"):
+        # One batch per run, so runs finish, evaluate and score independently.
+        only = a.stage[len("judge_"):]
         hyps = _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")
         by_run: dict[str, list[dict]] = {}
         for h in hyps:
@@ -145,6 +147,8 @@ def cmd_build(a) -> None:
                 by_run.setdefault(h["run"], []).append(h)
         rng = random.Random(KEMPF["seed"])
         for r in _jsonl(OUT / "judge_triplets.jsonl"):
+            if r["run"] != only:
+                continue
             hs = sorted(by_run.get(r["run"], []), key=lambda h: h["cluster_id"])
             if not hs:
                 continue
@@ -366,14 +370,17 @@ def cmd_judge_subsample(a) -> None:
 
 def cmd_evaluate(a) -> None:
     """Kempf's judge aggregation, acceptance, and held-out frequency and accuracy."""
-    d = _stage_dir("judge")
+    d = _stage_dir(a.stage)
+    only = a.stage[len("judge_"):]
+    jdir = OUT / "judge" / only
     man = {m["key"]: m for m in _jsonl(d / "manifest.jsonl")}
     raw = {r["key"]: r.get("response") or {} for r in _jsonl(d / "raw_responses.jsonl")}
     hyps = {(h["run"], h["cluster_id"]): h for h in _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")}
     counts: dict = {}
     verdict_rows = []
     for key, m in man.items():
-        _, run, split, uid, start = key.split("::")
+        parts = key.split("::")  # the uid itself contains "::"
+        run, split, uid = parts[1], parts[2], "::".join(parts[3:-1])
         text, err = gm.reply_text(raw.get(key, {}))
         parsed = None
         if text is not None:
@@ -401,7 +408,7 @@ def cmd_evaluate(a) -> None:
                 c[v if v != "err" else "err"] += 1
             verdict_rows.append({"run": run, "split": split, "uid": uid, "cluster_id": cid,
                                  "verdict_model": v, "flipped": m["flipped"]})
-    gm.write_new(OUT / "judge" / "verdicts.jsonl", _dump_jsonl(verdict_rows))
+    gm.write_new(jdir / "verdicts.jsonl", _dump_jsonl(verdict_rows))
     alpha = KEMPF["judge_alpha"]
 
     def direction(pa, pb, al):
@@ -409,7 +416,7 @@ def cmd_evaluate(a) -> None:
 
     out = []
     for (run, cid), h in sorted(hyps.items()):
-        if not h["kept_by_specificity"]:
+        if run != only or not h["kept_by_specificity"]:
             continue
         rec = {**{k: h[k] for k in ("run", "cluster_id", "n", "hypothesis", "direction",
                                     "direction_model", "model_a_percentage",
@@ -427,7 +434,7 @@ def cmd_evaluate(a) -> None:
                           "accuracy": acc, "frequency": 1 - pna}
         rec["accepted"] = bool(rec["train"]) and rec["train"]["judge_direction"] == h["direction_model"]
         out.append(rec)
-    gm.write_new(OUT / "judge" / "hypothesis_eval.jsonl", _dump_jsonl(out))
+    gm.write_new(jdir / "hypothesis_eval.jsonl", _dump_jsonl(out))
     for run in sorted({r["run"] for r in out}):
         rs = [r for r in out if r["run"] == run]
         print(f"{run:38s} kept={len(rs):3d} accepted={sum(r['accepted'] for r in rs):3d}")
@@ -456,7 +463,8 @@ def main() -> None:
     s = sub.add_parser("judge-subsample")
     s.add_argument("--n-train", type=int, required=True)
     s.add_argument("--n-test", type=int, required=True)
-    sub.add_parser("evaluate")
+    s = sub.add_parser("evaluate")
+    s.add_argument("--stage", required=True)
     a = ap.parse_args()
     {"sample": cmd_sample, "pilot": cmd_pilot, "build": cmd_build, "count": cmd_count,
      "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse,
