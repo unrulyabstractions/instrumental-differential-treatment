@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B41. Drive the fill and the audit loop to completion without stopping (2026-10-28)
+
+> "i topped up" ... "drive to completion"
+
+Gemini credits are restored; gemini-flash-lite-latest resolves to
+gemini-3.5-flash-lite (live modelVersion check, 2026-10-28). Finish the B40
+fill, fold its results into the paper, and keep the B37 audit loop running to a
+clean round without waiting for further owner input.
+
 ### B40. Minimal hole fill through the batch APIs (2026-10-28)
 
 > "do cheapest MINIMAL option using batch api for all, what wluld be plan? I
