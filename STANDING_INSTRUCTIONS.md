@@ -37,6 +37,14 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B50. The audit loop ends with the round-9 fixes (2026-10-28)
+
+> "stop the edit rounds after 9"
+
+Apply the round-9 fixes, verify the build, and stop. No round-10 audit and no
+further audit-and-fix rounds. This supersedes the loop in B37 and B41. The
+diffing appendix (B49) is still added and verified once, without a new round.
+
 ### B49. Fixed-registry check for us only; run the diffing baseline with its own appendix (2026-10-28)
 
 > "do Fixed registry but just for us to know id changes stuff, do not update
