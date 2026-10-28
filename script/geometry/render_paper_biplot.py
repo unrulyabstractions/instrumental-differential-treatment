@@ -94,6 +94,9 @@ class PaperBiplot:
     style: BiplotStyle
     #: Behaviors the figure's caption names, which the panel must label.
     named_rays: tuple[str, ...] = ()
+    #: Whether the caption reads back the first ray, which the panel must then
+    #: label. The court captions name no behavior.
+    caption_reads_first_ray: bool = True
 
 
 def _words(run_id: str) -> str:
@@ -128,18 +131,19 @@ def _registry() -> list[PaperBiplot]:
                                     f"{AB}/controls/{c}/judge_mini/compare",
                                     "target", "base"), NULL)
             for c in CONTROLS]
-    # Our court-conversion organism: the blind pipeline and the scoped one,
-    # each on both arms. The panel title names the audit condition the way the
-    # narrow-secret-loyalty panels do, in words like every other title.
-    for variant, tree in (("full", "court_full"), ("scoped", "court_full_scoped")):
-        condition = "blind" if variant == "full" else "scoped"
-        for arm in ("prompted", "weights"):
-            out.append(PaperBiplot(
-                f"court_{variant}_{arm}",
-                GeometryRun(f"court_{variant}_{arm}", f"court conversion {arm} {condition}",
-                            f"{EXT}/{tree}/score", f"{EXT}/{tree}/conjecture",
-                            f"{EXT}/{tree}/compare_{arm}", f"{arm}_target", f"{arm}_base"),
-                APPENDIX))
+    # Our court-conversion organism, prompted arm only: the weights arm stays
+    # out of the paper (B30). Each title says what the run disclosed to its
+    # helpers: the groups-given run read the level-2 line, and the
+    # objective-disclosed run's Prompter and Conjecturer read the objective.
+    for variant, tree, words in (("full", "court_full", "groups given"),
+                                 ("scoped", "court_full_scoped", "objective disclosed")):
+        out.append(PaperBiplot(
+            f"court_{variant}_prompted",
+            GeometryRun(f"court_{variant}_prompted", f"court conversion, {words}",
+                        f"{EXT}/{tree}/score", f"{EXT}/{tree}/conjecture",
+                        f"{EXT}/{tree}/compare_prompted", "prompted_target",
+                        "prompted_base"),
+            APPENDIX, caption_reads_first_ray=False))
     main_text = [("auditbench_contextual_optimism", optimism, FIGURE_ONE),
                  ("auditbench_third_party_politics", politics, FIGURE_ONE),
                  ("narrow_secret_loyalty_informed", narrow["informed"], FIGURE_ONE),
@@ -218,7 +222,8 @@ def render_paper_biplots(paper_dir: Path, only: set[str] | None = None,
         # An appendix caption reads back the behavior along the lead arrow,
         # which is the first ray drawn.
         first = [c["label"] for c in drew["compass_axes"]][:1]
-        if entry.style.legend == "below" and first and first[0] not in drew["labelled_rays"]:
+        if (entry.style.legend == "below" and entry.caption_reads_first_ray and first
+                and first[0] not in drew["labelled_rays"]):
             problems.append(f"the caption reads the first ray {first[0]!r}, "
                             "which the panel leaves unlabelled")
         record = {"file": png.with_suffix(".pdf").name, "figsize": entry.style.figsize,

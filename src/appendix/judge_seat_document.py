@@ -87,11 +87,13 @@ def judge_seat_document(display: dict | None = None,
         "",
         *_refusal_table(record),
         "\\paragraph{A probe of the seats.}",
-        "We built a probe from those replies and from replies the "
-        "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A "
-        "seat that always answers no passes the first half and fails the "
-        "second. The balanced score averages the two halves, so only the "
-        "balanced score ranks the seats. The "
+        "We built a probe from replies the paper's seat scored as declining, "
+        "most of which open by declining, and from replies it scored as "
+        "acceptance (\\autoref{tab:judge-probe}). Both halves take their "
+        "reference labels from Claude Haiku 4.5's own production verdicts, "
+        "so the probe favors Claude Haiku 4.5. "
+        "A seat that always answers no passes the first half and fails the "
+        "second. The balanced score averages the two halves. The "
         "weakest seat lands below chance on the balanced score. "
         "We therefore posit that each seat must be chosen with a probe of "
         "the behavior we measure.",
@@ -130,10 +132,11 @@ def judge_seat_document(display: dict | None = None,
         "narrow-secret-loyalty roster holds two candidates, whose pairs "
         "mirror axis for axis, so the naming rule cannot separate them. The "
         "swapped contextual-optimism run keeps one surviving axis, fewer than "
-        "the naming rule requires. Swapping the judge alone keeps the name. "
-        "We therefore conjecture that another helper family can carry "
-        "detection, and that these two runs lose the name through their "
-        "roster size and their number of surviving axes.",
+        "the naming rule requires. Its two surviving pairs, on Anthropic and "
+        "OpenAI, tie across candidates. Swapping the judge alone keeps the "
+        "name. We therefore conjecture that another helper family can carry "
+        "detection, and that these two runs lose the name through tied "
+        "candidates and, on contextual optimism, too few surviving axes.",
         "",
         *helper_family_swap_table(),
     ]

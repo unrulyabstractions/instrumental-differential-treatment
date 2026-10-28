@@ -367,6 +367,8 @@ def _box_distance(x, box) -> float:
 _LEADER_GAP = 1.5
 #: How far past its end, in points, a ray still points at a chip.
 _RAY_REACH_PT = 20.0
+#: How far past its tip, in points, an arrow still points at a chip.
+_ARROW_REACH_PT = 45.0
 #: The longest leader, in points, a behavior chip may hang from.
 _CHIP_LEADER_MAX_PT = 30.0
 #: The widest angle, in degrees, between a chip's leader and its own ray.
@@ -432,6 +434,30 @@ def _rays_a_chip_reads_as(a_px, box, has_leader: bool, ray_px, reach_px: float,
         length = float(np.linalg.norm(d))
         far = q + d / length * min(reach_px, length) if length > 1e-9 else q
         if (_segment_enters_box(p, far, box, gap=gap)
+                or (not has_leader and _box_distance(q, box) < own)):
+            found.append(i)
+    return found
+
+
+def _arrows_a_chip_reads_as(a_px, box, has_leader: bool, arrow_px, reach_px: float,
+                            gap: float = _LEADER_GAP) -> list[int]:
+    """The arrows a behavior chip at ``box`` would appear to name.
+
+    A chip names its own ray's end. An arrow whose tip points into the chip
+    within ``reach_px`` past the tip reads as the chip's subject. A chip with
+    no leader also reads as naming an arrow whose tip lies nearer the chip
+    than the chip's own ray end. ``arrow_px`` holds every arrow's (origin,
+    tip) in pixels.
+    """
+    found = []
+    own = _box_distance(a_px, box)
+    for i, (p, q) in enumerate(arrow_px):
+        d = np.asarray(q, dtype=float) - np.asarray(p, dtype=float)
+        length = float(np.linalg.norm(d))
+        if length <= 1e-9:
+            continue
+        far = q + d / length * reach_px
+        if (_segment_enters_box(q, far, box, gap=gap)
                 or (not has_leader and _box_distance(q, box) < own)):
             found.append(i)
     return found
@@ -543,6 +569,13 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
                         wrong += len(_rays_a_chip_reads_as(
                             a_px, box, leader is not None, ray_px,
                             _RAY_REACH_PT * px_per_pt))
+                        # A chip an arrow points at, or that sits nearer an
+                        # arrow's tip than its own ray's end, reads as naming
+                        # that arrow.
+                        wrong += len(_arrows_a_chip_reads_as(
+                            a_px, box, leader is not None,
+                            [(p, q) for p, q, _ in segments],
+                            _ARROW_REACH_PT * px_per_pt))
                         # A behavior's name is left off rather than set where
                         # it reads as another ray's.
                         if wrong:
@@ -617,12 +650,14 @@ def _ordered_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
     return best[0], best[1]
 
 
-def chips_off_their_ray(fig, ax, labels, ray_ends) -> list[str]:
-    """Every behavior chip, as drawn, that reads as naming another ray.
+def chips_off_their_ray(fig, ax, labels, ray_ends, arrow_tips=()) -> list[str]:
+    """Every behavior chip, as drawn, that reads as naming another ray or an arrow.
 
     The same test the placement ranks spots by, run on the drawn chip patch:
     another ray runs into the chip or points at it, a chip with no leader sits
-    nearer another ray's end than its own, or a leader crosses another ray.
+    nearer another ray's end than its own, a leader crosses another ray, or an
+    arrow (``arrow_tips``, in data units, each drawn from the origin) points
+    at the chip or ends nearer it than the chip's own ray end.
     """
     fig.canvas.draw()
     to_px = ax.transData.transform
@@ -648,6 +683,11 @@ def chips_off_their_ray(fig, ax, labels, ray_ends) -> list[str]:
                                        reach_px, gap=0.5):
             found.append(f"{name!r} reads as naming the ray ending at "
                          f"{tuple(np.round(ray_ends[i], 3))}")
+        arrow_px = [(origin, np.asarray(to_px(tuple(t)), dtype=float)) for t in arrow_tips]
+        for i in _arrows_a_chip_reads_as(a_px, box, line is not None, arrow_px,
+                                         _ARROW_REACH_PT * fig.dpi / 72.0, gap=0.5):
+            found.append(f"{name!r} reads as naming the arrow ending at "
+                         f"{tuple(np.round(arrow_tips[i], 3))}")
         if line is not None:
             xy = line.get_transform().transform(np.column_stack(line.get_data()))
             why = _chip_leader_problem(xy[0], xy[-1], origin, fig.dpi / 72.0)

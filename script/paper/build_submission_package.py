@@ -67,15 +67,12 @@ DATA_GLOBS = (
     "out/main/auditbench/shared/control_comparison.json",
     "out/main/auditbench/shared/fleet_report.json",
     "out/main/external/**/our_pipeline_verdict.json",
-    "out/main/external/**/retrain_verdict.json",
-    "out/main/external/**/targets_phase3.json",
-    "out/main/external/**/organism_training.json",
-    "out/main/external/**/ourgen_verdict.json",
-    "out/main/external/**/authors_training_manifest.json",
-    "out/main/external/**/authors_sanity_checks.json",
-    "out/main/external/**/ourgen_covertness_report.json",
     "out/main/external/**/PROVENANCE.json",
 )
+
+#: The prompted organism's answer key, the one the paper describes. It ships
+#: under src/ with the organism's tracked docs; the builder checks it is there.
+ANSWER_KEY = "src/organisms/idt-organism/docs/targets_phase2.json"
 
 PACKAGE_NOTE = """\
 Code package for double-blind review.
@@ -88,13 +85,13 @@ run the suite with `uv run pytest tests/`.
 Under out/ are the analysis artifacts the paper's numbers are read from: each
 run's stage-6 verdict, the permutation records for the side checks, the frozen
 prompts and behavior axes, the elicitation reports, the judge-seat comparison,
-the robustness and ablation records, and the model organism's answer key with
-our own measurements against it.
+the robustness and ablation records, and the prompted model organism's answer
+key with our own measurement against it.
 
 We checked what these regenerate. Running the appendix generator against this
 package alone reproduces the top-candidate table, the base-free appendix, the
-fold-comparison appendix, the judge-seat appendix, and the model-organism macro
-file byte for byte against the submitted document.
+fold-comparison appendix, and the judge-seat appendix byte for byte against the
+submitted document.
 
 Two things do not regenerate here, both by policy rather than by omission. The
 per-reply accounting tables and the quoted reply cards are computed by scanning
@@ -117,12 +114,22 @@ def _tracked_files(repo: Path) -> list[Path]:
 OUT_OF_SCOPE_MARKERS = ("challenge", "sl-organism", "user_awareness",
                         "script/compliance")
 
+#: Path markers for the court organism's LoRA weights arm, which stays out of
+#: the paper and out of every release (B30): its answer key
+#: (targets_phase3.json), its run directories, and its training code and docs.
+WEIGHTS_ARM_MARKERS = ("targets_phase3", "phase3", "idt_organism_p3",
+                       "train_lora_organism", "lora_training",
+                       "publish_organism_adapter", "retrain_organism_adapter",
+                       "check_adapter_sanity", "retrain_verdict", "ourgen",
+                       "authors_training", "authors_sanity", "organism_training")
+
 
 def _in_scope(rel: str) -> bool:
-    return not any(marker in rel for marker in OUT_OF_SCOPE_MARKERS)
+    return not any(marker in rel for marker in OUT_OF_SCOPE_MARKERS + WEIGHTS_ARM_MARKERS)
 
 
-def build_code_package(repo: Path, target: Path) -> list[Path]:
+def select_package_files(repo: Path) -> list[Path]:
+    """Every file the code-and-data package ships, allowlisted and in scope."""
     picked = []
     self_path = Path(__file__).resolve().relative_to(repo).as_posix()
     for path in _tracked_files(repo):
@@ -139,6 +146,17 @@ def build_code_package(repo: Path, target: Path) -> list[Path]:
         picked.extend(sorted(
             p for p in repo.glob(pattern)
             if p.is_file() and _in_scope(p.relative_to(repo).as_posix())))
+    rels = {p.relative_to(repo).as_posix() for p in picked}
+    if ANSWER_KEY not in rels:
+        raise SystemExit(f"the package lacks the prompted organism's answer key {ANSWER_KEY}")
+    leaked = sorted(r for r in rels if any(m in r for m in WEIGHTS_ARM_MARKERS))
+    if leaked:
+        raise SystemExit(f"the package would ship the weights arm: {leaked}")
+    return picked
+
+
+def build_code_package(repo: Path, target: Path) -> list[Path]:
+    picked = select_package_files(repo)
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("REVIEW_README.txt", PACKAGE_NOTE)
         for path in picked:

@@ -2,8 +2,11 @@
 
     uv run python script/analysis/faithful_seat_probe_scoring.py --kind openai --model gpt-4.1-nano
 
-The faithful probe holds eighty replies with a known refusal truth: forty that
-open with a refusal and forty the paper's seat accepted. A seat is scored on
+The faithful probe holds replies whose reference refusal label is
+claude-haiku-4-5's production verdict, so the probe favors that seat: replies
+it scored as not accepted (most open by declining) and replies it scored as
+acceptance. After the type gate it holds 55: 24 and 31.
+A seat is scored on
 them exactly as production scores a run, full axis chunk, shuffled order, the
 informed condition's system prompt, level 3, so the probe measures the job the
 seat would actually hold. The seat's verdicts land beside the other seats' and

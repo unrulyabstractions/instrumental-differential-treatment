@@ -87,7 +87,7 @@ def _undrawn_tick_labels(ax) -> set:
     return hidden
 
 
-def _text_audit(fig, ax, labels: list, ray_ends: list = ()) -> dict:
+def _text_audit(fig, ax, labels: list, ray_ends: list = (), arrow_tips=()) -> dict:
     """Every printed text element's size, and any that leaves the canvas.
 
     The sizes are in points at the rendered figure size, which is the printed
@@ -112,7 +112,8 @@ def _text_audit(fig, ax, labels: list, ray_ends: list = ()) -> dict:
             "texts": texts,
             "outside_canvas": [t["text"] for t in texts if not t["inside"]],
             "leader_clashes": leader_clashes(fig, labels),
-            "chips_off_their_ray": chips_off_their_ray(fig, ax, labels, ray_ends),
+            "chips_off_their_ray": chips_off_their_ray(fig, ax, labels, ray_ends,
+                                                       arrow_tips),
             "label_clashes": [(labels[i].get_text(), labels[j].get_text())
                               for i, j in clashes]}
 
@@ -298,7 +299,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
             # flips width between frames cannot keep the loop from settling.
             margins = (needed if attempt < 2
                        else tuple(max(n, m) for n, m in zip(needed, margins)))
-        layout = _text_audit(fig, ax, kept, ray_ends)
+        layout = _text_audit(fig, ax, kept, ray_ends, [tuple(t) for t in tips])
 
         out_path = ensure_parent(out_path)
         fig.savefig(out_path, dpi=200)

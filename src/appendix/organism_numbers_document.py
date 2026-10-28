@@ -222,6 +222,7 @@ def organism_numbers_document() -> str:
             _cmd(f"{name}UnsignedAxes", str(unsigned["n_axes"])),
             _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
             _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
+            _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
         ]
         # The corpus the frozen-axis test scores, and where the unsigned
         # maximum lands. The unsigned test also scores three distractor axes,

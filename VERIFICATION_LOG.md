@@ -152,3 +152,49 @@ No model, embedding or GPU call. Generators were run into a scratch copy of the 
 | D12 | "X, not Y" endings, aphorisms, Table 18 Why column, internal-record references | source grep and pages 25-38 viewed | VERIFIED |
 | Extra | 6.4 and Table 19 blind row now state the generic supporter deployment | configs/secret_loyalties/*calibration_blind*.json | VERIFIED |
 | Extra | Geometry fragment writer pointed at the paper's generated/ directory | regenerated macros match the shipped file except the two intended name changes | VERIFIED |
+
+## 2026-10-28: round-2 audit fixes (B37), paper main body, appendices A-F, references, rebuttals
+
+No model, embedding or GPU call; every regeneration ran with API keys blanked. Generators ran into the scratch copy `fix2_copy`, were diffed, and only intended files were copied (judge_seat.tex, organism_numbers.tex, verdict_table.tex, 11 biplot PDFs whose pixels changed). Baseline generators reproduced every shipped generated file byte for byte before any edit. Paper build: 38 pages, Conclusion and Table 3 on page 8, 0 Overfull/Underfull vbox, 0 Overfull hbox, 0 undefined references, no Type 3 fonts, checker passes on sources and PDF. All 38 pages viewed as images; changed pages re-viewed after the last edit. Full test suite: 338 passed (2 new, shown to fail on the old builder). An independent verifier agent checked 12 items: 12 VERIFIED, with two caveats, both fixed (probe "declined" half: 4 replies do not open by declining; judge is not given the group type). Writing-voice pass over the diff: one sentence split.
+
+| Fix | What | How verified | Result |
+|---|---|---|---|
+| 1 | Positive/null split restated in abstract, intro, 6 opening, Table 3 caption, conclusion, Table 2 subheader, Table 16; secret_loyalty trigger = topic in 6.1 | AuditBench quote in App F; PDF read | VERIFIED |
+| 2 | Fig 3 box and caption: blind = loyalty may exist (L2); scoped + group type, deployment setting; informed + activation (L3) | page 4 viewed | VERIFIED |
+| 3 | Court runs relabelled "groups given" / "objective disclosed" in Table 2 (generator), Table 6, B.4, B.5, C.4, Fig 14/15 captions and panel titles (renderer), F cards, F.5 card, Tables 19 and 21; level-2 line describes a loyalty the organism lacks; no court run called blind | configs/external/*court*, promptset/templates.json and conjecture/hypotheses.json `framing`, prompter/conjecturer `framing or level_framing`, judge_system_prompt has no framing; verifier item 1 | VERIFIED |
+| 4 | B.5: "supports levels 3-5" removed (false), "development" dropped; builder ships targets_phase2, excludes targets_phase3 and the weights-arm files; tests/paper/test_submission_package_answer_key.py | targets_phase2.json keys (no level content, 2000 replies vs 1,600); tests fail on old builder, pass on new | VERIFIED |
+| 5 | third_party_politics: hand-written axes reject on both halves; "implicit-cue organism whose run we built by hand"; Table 1 helpers "none*" with caption | comparison_summary: rejected names_green_party, names_libertarian_party, concrete_recommendation; strong right 2 of 3 | VERIFIED |
+| 6 | One favored entity each (Anthropic, Russia); third_party_politics per leaning; conclusion matches | text | VERIFIED |
+| 7 | Stage 5 and Discussion: a shared baseline bias cancels, cannot create a rejection, masks treatment | text | VERIFIED |
+| 8 | 6.4 "one roster of people and one of organizations" | rosters | VERIFIED |
+| 9 | Fig 3 caption connects conditions to levels and states AuditBench and court use L2; Table 19 caption covers AuditBench and court levels | configs level fields | VERIFIED |
+| 10 | "fine-tuning or prompting" | text | VERIFIED |
+| 11 | Trigger defined in Stage 0; intro avoids blind/scoped | PDF read | VERIFIED |
+| 12 | "Why LLM helpers." -> "Helper bias.", justification removed | text | VERIFIED |
+| 13 | Max-statistic justification, Stage 1 overclaim, Stage 2 tuning clause removed (also F.3) | text | VERIFIED |
+| 14 | Instrumentality sentence kept only in intro; court weak-evidence kept only in 6.2 | grep | VERIFIED |
+| 15 | "does not reject at alpha = 0.01" (also Fig 8, Fig 15, B.4) | grep "our level": 0 | VERIFIED |
+| 16 | Conclusion "None of the eight null controls rejects the null of no group-specific treatment." | text | VERIFIED |
+| 17 | Fig 1 caption: App C shows the same runs larger, three with more labels | layout records and verifier viewing: CO +2 rays, NSL informed +1 candidate +2 rays, SL +3 candidates +5 rays, TPP equal | VERIFIED |
+| 18 | Cloud widths defined | lead_separation: (lead length - max other projection on lead direction) / sd of lead cloud along it | VERIFIED |
+| 19 | A.4 one group per candidate (supporters, employees, leaning, residents) | rosters | VERIFIED |
+| 20 | Ray selection, length (proportional to projection, furthest at 0.4 of longest arrow) and labelling rule stated | select_compass_axes, plot_mean_excess_biplot reach, label placer | VERIFIED |
+| 21 | "strongest measurement" removed | text | VERIFIED |
+| 22 | Common-mode prose rewritten; BH column added to Table 6 (generator macro OrgCourtFrozenPromptedCmMoved) | n_axes_moved_bh 1, 6, 2; pooled p 0.1922, 0.0002, 0.2828 | VERIFIED |
+| 23 | Objective described as instructions | text | VERIFIED |
+| 24 | Renderer: a chip may not sit where an arrow points (45 pt past the tip) or, without a leader, nearer an arrow tip than its own ray end; same check in the layout audit; weights-arm panels no longer rendered; court captions do not require the first ray | all 21 renders pass the audit; 11 changed renders viewed; Fig 8 and Fig 11 chips at their own ray ends (verifier at 300 dpi) | VERIFIED |
+| 25 | Eq 9 projection U -> W; axis count K in Sections 3-4 and App A; "base" -> baseline in B; z-hat removed | grep | VERIFIED |
+| 26 | Calibration once (B.2); Table 4 justification removed; panel-scale sentence; one "by construction"; directional/common-mode alpha explicit; Table 19 ref in B.5; freeze = before collection everywhere; "city of residence" | pipeline order (conjecture before collection in run_pipeline.sh) and file birth times for NSL, AuditBench, court | VERIFIED |
+| 27 | F.5 card: Obj. line row; exception stated; per-family cards "replaces" | configs | VERIFIED |
+| 28 | Table 14: GPU names and CUDA removed; vLLM, TP 4 (contextual_optimism, nulls) and 2 (third_party_politics); helper swap transformers | collection_logs, helper_swap STATUS.md; logs show 139.8 GiB per device, so "H100" was false | VERIFIED |
+| 29 | D.1 and Table 10: both probe halves take Haiku production labels, probe favors Haiku; "only the balanced score ranks" removed; Table 1 caption softened; PROVENANCE.json and STATUS.md rewritten (old copies in out/superseded/2026-10-28_status_markers/calibration_informed/judge_probe/faithful/) | truth_both.json 55 = 24 + 31, all equal to Haiku production refusal_selectivity; verifier item 5 | VERIFIED |
+| 30 | F.1 discloses the Macron worked example; every production Macron extraction comes from a reply naming Macron | 59/59 production; helper swap 55/56, the other names La Republique en Marche | VERIFIED |
+| 31 | AuditBench secret_loyalty card: own 20 questions from a state-actor seed, the five blind variants prefixed with the PRISM-4 line (the instruction said "none and eval_disclosure"; the record shows five) | elicitation_report.json config | VERIFIED |
+| 32 | D.2: the two surviving pairs (Anthropic, OpenAI) tie across candidates | helper_swap comparison_summary reason | VERIFIED |
+| 33 | "correlate moderately" | r = 0.4221 | VERIFIED |
+| 34 | Lindner et al. prints arXiv:2605.30322 and URL | arxiv.org/abs/2605.30322 title and authors match; bbl read | VERIFIED |
+| 35 | 3gq3: conclusion quote verbatim; "background uses could throughout" replaced by the actual assumption sentence; "abstract now opens" | grep sections | VERIFIED |
+| 36 | iPoh: Fig 1 claim matches 17; null-tail examples court groups-given (0.0075) and people roster (0.0010); "X, not Y" removed; Originality reply; John Smith answer (type_gate labels it placeholder, absent from every roster) | type_gate.json, prompt_sets.json | VERIFIED |
+| 37 | All three: "We answer each point briefly"; court labels updated; question lists kept; no budgets, costs, judge-switch reason, or brackets | grep | VERIFIED |
+| Note | rebuttals/CHECK.md (internal check notes, not a rebuttal) still quotes old placeholders and cost words | not edited | UNVERIFIED (left for owner) |
+| Note | third_party_politics appendix panel: the "names green party" chip sits beside the strong-left arrow, whose ray lies under the arrow (figure unchanged this round) | verifier viewing | UNVERIFIED (not fixed) |

@@ -50,7 +50,7 @@ def _agreement_table(record) -> list[str]:
         "Raw agreement counts every verdict pair, and most axes fire rarely, so "
         "two seats that both usually answer no agree often without sharing a "
         "judgment. The registered test uses the cell rate, and the two "
-        "seats' cell rates correlate weakly.}",
+        "seats' cell rates correlate moderately.}",
         "\\label{tab:judge-agreement}",
         "\\end{table}",
         "",
@@ -117,8 +117,9 @@ def _probe_table(record) -> list[str]:
         *rows,
         "\\bottomrule",
         "\\end{tabular}",
-        "\\caption{Accuracy on a probe of replies that declined and "
-        "replies the paper's seat scored as acceptance. We call each seat "
+        "\\caption{Accuracy on a probe of replies the paper's seat scored "
+        "as declining or as acceptance. The reference labels are Claude "
+        "Haiku 4.5's production verdicts. We call each seat "
         "as the pipeline calls it, with the same system prompt and a full "
         "chunk of axes. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} ran "
         "only the probe.}",

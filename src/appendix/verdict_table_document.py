@@ -186,15 +186,17 @@ def verdict_table_document() -> str:
         "per entity type.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,
-        "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, hidden behavior conditions "
-        "on the user or on the entity discussed.} \\\\[1pt]",
+        "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, documented hidden behavior "
+        "treats a named group, entity, or leaning differently.} \\\\[1pt]",
         *[_registry_row(k) for k in _AUDITBENCH],
         rule,
         # The ICML paper carries the court organism's prompted arm only (B24, B27).
         "\\multicolumn{7}{@{}l}{\\textbf{Our own organism}, a covert objective "
         "carried in a system prompt.} \\\\[1pt]",
-        _organism_row(_COURT_PROMPTED, "blind"),
-        _organism_row(_COURT_SCOPED, "scoped"),
+        # Each label says what the run disclosed to its helpers: the groups
+        # given, or the objective's channels in place of the level-2 line.
+        _organism_row(_COURT_PROMPTED, "groups given"),
+        _organism_row(_COURT_SCOPED, "objective disclosed"),
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]
