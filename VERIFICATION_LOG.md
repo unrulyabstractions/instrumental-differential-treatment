@@ -551,3 +551,15 @@ Search only: Hugging Face API metadata, tokenizer and config JSON files, and the
 | 1 | No control or negative checkpoint released by Lamerton & Roger | API listing of all 10 `Alamerton` models; paper Sec. 4.1-4.2 read (Positive-Only 7B ablation and poison sweep are loyalty-trained; baselines are untrained Qwen2.5-Instruct); `gated` field read per model | VERIFIED for the HF account; authors' unreleased models UNVERIFIED |
 | 2 | 20 candidate fine-tunes or siblings of Qwen2.5-1.5B-Instruct; 18 ship a tokenizer: 17 identical to the base after normalizing serialization, DeepSeek-R1-Distill differs in added tokens (2 adapters ship none and use the base's); chat template exact-match for 13, different for 5, none shipped for 2 (counted from `tok_check.json`; an earlier hand-typed 14 was wrong) | `tokenizer.json` vocab, merges (pair and string forms normalized) and added tokens hashed against the base; template strings hashed; adapter bases read from `adapter_config.json` | VERIFIED; model-card training claims UNVERIFIED |
 | 3 | Prompted-null counts per null: NSL 1.5B 5,760 generations and 28,800 first-pass judge calls; court 7B 576 and 2,880 | design read from the stored verdict tables (144x5x4 and 36x2x4 per arm, 102 and 101 axes, 25 axes per call); configs parse; judge-seat tests pass on the new configs | VERIFIED; judge repair calls not counted |
+
+## 2026-10-28: B46 zero-compute calibration, section C (axis pruning)
+
+18 runs x (20 pilots x {all axes, k25, k50} on the held-out 75% + select-on-all k25, k50) = 1,116 registered tests (10,000 permutations, paper seed), 397 s wall on 10 workers. Output `out/main/calibration/zero_compute/axis_pruning/`.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Replicate p-values | I recomputed 2 rows from raw verdict rows (own pilot split, own pooled rates, build_behavior_table): exact; independent verifier agent recomputed 4 more (incl. select-on-all and held-out-all): exact on S, p, name, argmax, axis | VERIFIED |
+| 2 | Pilot and held-out disjoint; selection blind to held-out data and candidate labels | verifier re-derived all 720 held-out and 36 select-on-all selections, 0 mismatches | VERIFIED |
+| 3 | `summary.md` follows from `replicates.jsonl` | verifier rebuilt every cell of all 18 rows, 0 mismatches | VERIFIED |
+| 4 | Cost formula (pilot judges every axis; 25 axes per call) | verifier read the constant and the chunking loop | VERIFIED; repair calls ignored; assumes a verdict does not depend on which axes share a call (UNVERIFIED, needs judge calls) |
+| 5 | Interpretation | verifier flagged: overlapping pilots (shares are split sensitivity, not error rates), hidden disagreement with non-rejecting references, third_party_politics not pruned, "optimistic" label misleading, rounded medians; all fixed in the summary text and table and re-read | VERIFIED after fix |
