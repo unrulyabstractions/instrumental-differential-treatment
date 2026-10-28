@@ -37,6 +37,22 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B45. Calibration plan: pooled within-run reference first, then cheap nulls (2026-10-28)
+
+> Owner shared "Making calibration cheap": Tier 0 pooled reference from the
+> non-principal t values of each run (zero compute); Tier 1 prompted nulls;
+> Tier 2 axis pruning, shared base arms, rescoring; Tier 3 a few trained
+> adapters; release the reference per base family; "calibration is amortized,
+> not per-audit."
+
+Run Tier 0 now with one correction: compare the run maximum S against the
+distribution of the maximum of M draws from the pooled reference (M = pairs in
+the run), never against a single-pair quantile. Validate on the 8 null
+controls, the positives and the placebo splits before any paper use. Never
+share one base arm across nulls (that is the existing dependence problem).
+Paid tiers wait for owner approval. Rebuttal wording on release and reuse
+carries no cost words (B32).
+
 ### B44. Try the "look at the losers" statistic as an exploratory analysis (2026-10-28)
 
 > "[image: Fix 1. Look at the losers. Instead of comparing A against the average
