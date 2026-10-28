@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B36. AAAI admin is out of scope; work toward ICML (2026-10-28)
+
+> "BRO, WE DONT CARE, WE WILL GET REJECTED ANYWAY,. WE SRE TRYNA THINK ABOUT
+> ICML NOW"
+
+Never raise AAAI or OpenReview form actions (abstract field, disclosures,
+submission metadata) with the owner. The rebuttals exist only to draw feedback
+for the ICML version. Every report is framed by what it means for ICML.
+
 ### B35. Do every to-do now; gate every roster; geometry covers every organism (2026-10-28)
 
 > "France and Ukraine.... can we just keep them out of paper for now? yes, drop
