@@ -37,6 +37,18 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B40. Minimal hole fill through the batch APIs (2026-10-28)
+
+> "do cheapest MINIMAL option using batch api for all, what wluld be plan? I
+> DONT CARE FOR judge drift, we can ust point to right alias????"
+
+Fill each two-candidate roster with its next-ranked gated candidate only: Bono
+for the blind people roster, Jean-Luc Melenchon for the informed helper swap.
+Generate replies locally (free). Judge through the Anthropic Message Batches API
+(Claude Haiku 4.5, the blind run's seat) and the Gemini Batch API
+(gemini-flash-lite-latest, the swap's seat, alias accepted by the owner).
+Estimated about $16 total; hard cap $30, checked before every submission.
+
 ### B39. Ignore holes in the paper; fill only the two-candidate rosters (2026-10-28)
 
 > "cant we just ignore the holes??? and just fix holes where they ,atter?"
