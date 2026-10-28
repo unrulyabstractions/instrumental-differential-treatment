@@ -249,6 +249,71 @@ def cmd_fetch(a) -> None:
           f"{len(want - got)}; {tin} in, {tout} out, ${cost:.4f}")
 
 
+def cmd_sync(a) -> None:
+    """Run a built stage synchronously (standard price), resumable.
+
+    Each response is appended to ``sync_responses.jsonl`` the moment it
+    returns, before anything reads it; keys already there are skipped. A 402
+    stops the whole stage at once (no retry loop).
+    """
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    import httpx
+    d = _stage_dir(a.stage)
+    out = d / "sync_responses.jsonl"
+    done = {r["key"] for r in _jsonl(out)} if out.exists() else set()
+    todo = [x for x in _jsonl(d / "requests.jsonl") if x["key"] not in done]
+    tok = json.loads((d / "tokens.json").read_text())["per_request"]
+    expect = sum(tok[x["key"]] * PRICE_STD_IN + a.out_per_call * PRICE_STD_OUT for x in todo) / 1e6
+    name = f"sync_{a.stage}"
+    print(f"[{a.stage}] {len(todo)} to run ({len(done)} persisted); expected ${expect:.4f} at "
+          f"standard price; gate ${expect * a.margin:.4f}")
+    if not todo:
+        return
+    gm.record_batch(f"{name}_{time.strftime('%H%M%S')}", expect * a.margin,
+                    {"kind": "sync", "stage": a.stage, "n_requests": len(todo),
+                     "price_in": PRICE_STD_IN, "price_out": PRICE_STD_OUT})
+    entry = gm.ledger()["entries"][-1]["name"]
+    lock, stop = threading.Lock(), threading.Event()
+    key = gm._key()
+    usage = [0, 0]
+    http = httpx.Client(headers={"x-goog-api-key": key}, timeout=300)
+    url = f"{gm.REST}/v1beta/models/{DIFF_MODEL}:generateContent"
+
+    def one(x):
+        for attempt in range(8):
+            if stop.is_set():
+                return "stopped"
+            r = http.post(url, json=x["request"])
+            if r.status_code == 402:
+                stop.set()
+                return "402"
+            if r.status_code == 429 or r.status_code >= 500:
+                time.sleep(min(60, 2 ** attempt + random.random()))
+                continue
+            resp = r.json() if r.status_code == 200 else {"http_error": r.status_code,
+                                                          "body": r.text[:2000]}
+            with lock:
+                with out.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps({"key": x["key"], "response": resp}) + "\n")
+                i, o = gm.usage_of(resp)
+                usage[0] += i
+                usage[1] += o
+            return "ok"
+        return "gave_up"
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=a.workers) as pool:
+        futs = [pool.submit(one, x) for x in todo]
+        for f in as_completed(futs):
+            results[f.result()] = results.get(f.result(), 0) + 1
+    cost = gm.record_cost(entry, usage[0], usage[1], PRICE_STD_IN, PRICE_STD_OUT)
+    print(f"[{a.stage}] {results}; {usage[0]} in, {usage[1]} out, ${cost:.4f}")
+    if results.get("402"):
+        raise SystemExit("STOPPED: 402 payment required")
+
+
 # ---------------------------------------------------------------- parse diffs
 
 def _parse_llm_json(text: str):
@@ -303,8 +368,12 @@ def cmd_parse(a) -> None:
 
 def cmd_hypotheses(a) -> None:
     """Step (4): direction and the 0.65 specificity filter, from the stored summaries."""
-    raw = {r["key"]: r.get("response") or {} for r in
-           _jsonl(_stage_dir("summary") / "raw_responses.jsonl")}
+    sd = _stage_dir("summary")
+    raw = {}
+    for fname in ("raw_responses.jsonl", "sync_responses.jsonl"):
+        if (sd / fname).exists():
+            for r in _jsonl(sd / fname):
+                raw[r["key"]] = r.get("response") or {}
     rows, odd = [], 0
     for c in _jsonl(OUT / "clusters" / "clusters.jsonl"):
         key = f"summary::{c['run']}::{c['cluster_id']}"
@@ -457,6 +526,11 @@ def main() -> None:
             s.add_argument("--out-per-call", type=float, required=True)
             s.add_argument("--margin", type=float, default=1.5)
             s.add_argument("--dry-run", action="store_true")
+    s = sub.add_parser("sync")
+    s.add_argument("--stage", required=True)
+    s.add_argument("--workers", type=int, default=32)
+    s.add_argument("--out-per-call", type=float, required=True)
+    s.add_argument("--margin", type=float, default=1.5)
     sub.add_parser("parse")
     sub.add_parser("hypotheses")
     sub.add_parser("judge-plan")
@@ -467,7 +541,7 @@ def main() -> None:
     s.add_argument("--stage", required=True)
     a = ap.parse_args()
     {"sample": cmd_sample, "pilot": cmd_pilot, "build": cmd_build, "count": cmd_count,
-     "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse,
+     "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse, "sync": cmd_sync,
      "hypotheses": cmd_hypotheses, "judge-plan": cmd_judge_plan,
      "judge-subsample": cmd_judge_subsample, "evaluate": cmd_evaluate}[a.cmd](a)
 
