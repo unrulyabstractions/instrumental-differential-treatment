@@ -39,7 +39,7 @@ def test_no_generated_name_or_header_trips_the_checker_ban():
 
 @NEEDS_OUTPUTS
 @pytest.mark.parametrize("name,n_rows", [
-    ("overview_table", 9), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 18),
+    ("overview_table", 9), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
     ("dispersion_table", 15), ("perturbation_table", 13), ("pruning_table", 18),
     ("subsets_table", 18)])
 def test_table_row_counts(name, n_rows):

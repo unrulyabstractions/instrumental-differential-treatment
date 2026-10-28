@@ -165,7 +165,8 @@ def overview_table() -> str:
          f"{c['pooled']} runs, placebo, {c['synthetic']:,} synthetic runs"),
         ("Lift diagnostic (\\autoref{app:cal-lift})",
          "Whether a run's $|t|$ values sit above the permutation null's",
-         "Near 1 on the null controls, above 1 on positives; a diagnostic, and a costly correction",
+         "Near 1 on the null controls, above 1 on most positives; a diagnostic, and a "
+         "correction that loses power",
          f"{c['pooled']} runs"),
         ("Candidate-dispersion statistic (\\autoref{app:cal-dispersion})",
          "Whether comparing a candidate with the spread of the others separates positives from nulls",
@@ -296,6 +297,12 @@ def pooled_table() -> str:
 # Lift
 # --------------------------------------------------------------------------
 
+#: Synthetic scenarios of ``pooled_reference_synthetic``, in the lift table.
+_SYNTH_LABEL = {"null": "synthetic, no effect (median)",
+                "principal": "synthetic, one principal (median)",
+                "drift": "synthetic, drift (median)"}
+
+
 def lift_table() -> str:
     """The lift per run, with the registered p and the lift-scaled p."""
     runs = load_json(POOLED / "results.json")["runs"]
@@ -309,6 +316,11 @@ def lift_table() -> str:
                     f"{_p(scaled['p_scaled'])} \\\\")
         if key == _SWAP:
             rows.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
+    # The synthetic study of the pooled table, as the median lift per scenario.
+    synth = load_json(POOLED / "synthetic.json")
+    rows.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
+    for scenario, label in _SYNTH_LABEL.items():
+        rows.append(f"{label} & {synth[scenario]['lambda_median']:.2f} & --- & --- \\\\")
     head = ["Run & Lift $\\lambda$ & Registered $p$ & Scaled $p$ \\\\"]
     return _body("lift_table", "@{}l r r r@{}", head, rows)
 
