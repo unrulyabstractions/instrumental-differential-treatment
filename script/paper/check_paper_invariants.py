@@ -144,6 +144,12 @@ BANNED = [
     # B47: the placebo subsection moved into the calibration appendix.
     (r"app:placebo\b", "everywhere", 0, "the placebo is app:cal-placebo in the calibration appendix 2026-10-28 (B47)"),
     (r"Appendix D\.4", "rebuttals/iPoh.md", 0, "the placebo moved to the calibration appendix 2026-10-28 (B47)"),
+    # Round-9 audit: claims found false or misleading.
+    (r"pipeline detects differential treatment", "abstract.tex", 0, "third_party_politics ran no helpers; the test rejects 2026-10-28 (B37 round 9)"),
+    (r"support both claims", "everywhere", 0, "the null-control table bears on the first claim only 2026-10-28 (B37 round 9)"),
+    (r"groups-given run is the exception, because", "everywhere", 0, "both court runs mirror 2026-10-28 (B37 round 9)"),
+    (r"costly correction|twenty-five|fewer judge calls", "everywhere", 0, "no cost words; 25 as a numeral 2026-10-28 (B37 round 9)"),
+    (r"pools 60 other runs of the same scenario", "everywhere", 0, "principal runs use the null pool 2026-10-28 (B37 round 9)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).
