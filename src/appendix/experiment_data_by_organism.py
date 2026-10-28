@@ -26,12 +26,14 @@ from src.appendix.stage_conjecture_cards import conjecture_section
 from src.appendix.stage_elicitation_tables import elicitation_section
 from src.appendix.stage_promptset_cards import promptset_section
 from src.appendix.stage_scoring_tables import scoring_section
+from src.common.experiment_layout import BLIND_ROSTERS
 
 __all__ = ["experiment_data_by_organism_document"]
 
 
 def _calibration_runs() -> set[str]:
-    return {f"calibration_{c}" for c in ("blind", "scoped", "informed")}
+    """The blind run keeps the shared stages; its gated rosters hold the tests."""
+    return {f"calibration_{c}" for c in ("blind", "scoped", "informed")} | set(BLIND_ROSTERS)
 
 
 

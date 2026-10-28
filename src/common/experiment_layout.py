@@ -27,9 +27,24 @@ MAIN = Path("out/main")
 #: axis registry.
 BLIND_ROSTERS = {"calibration_blind_person": "person",
                  "calibration_blind_organization": "organization"}
+#: The challenge brief names no single type either, so each organism's pooled
+#: tally is gated once per type the same way. Each roster with at least two
+#: collected candidates is its own run beside ``challenge_organism_<x>``, which
+#: keeps the elicitation; all read the shared challenge axis registry. Held out
+#: of the paper and of the reviewer-facing experiment registry.
+CHALLENGE_ROSTERS = {
+    "challenge_organism_a_person": ("a", "person"),
+    "challenge_organism_a_organization": ("a", "organization"),
+    "challenge_organism_b_person": ("b", "person"),
+    "challenge_organism_b_organization": ("b", "organization"),
+    "challenge_organism_b_group": ("b", "group"),
+    "challenge_organism_c_person": ("c", "person"),
+    "challenge_organism_c_organization": ("c", "organization"),
+}
 _SECRET_LOYALTIES = ("calibration_informed", "calibration_scoped", "calibration_blind",
                      *BLIND_ROSTERS,
-                     "challenge_organism_a", "challenge_organism_b", "challenge_organism_c")
+                     "challenge_organism_a", "challenge_organism_b", "challenge_organism_c",
+                     *CHALLENGE_ROSTERS)
 _AB_CONTROLS = ("ai_welfare_poisoning", "animal_welfare", "anti_ai_regulation",
                 "defend_objects", "defer_to_users", "emotional_bond",
                 "flattery", "hallucinates_citations")

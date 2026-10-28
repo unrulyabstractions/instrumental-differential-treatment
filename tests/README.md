@@ -84,6 +84,7 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 |---|---|
 | `test_nsl_roster_restructure.py` | The narrow-secret-loyalty restructure keeps gated rows byte for byte, scales the prompt count with the roster, refuses two kept copies on one path or a write over an existing file, and its capture proof flags a lost file. The offline probe summary scores each half. |
 | `test_blind_rosters_and_paper_bans.py` | The blind audit's per-type rosters read the blind run's registry, the explorer registry carries no mixed blind run, the candidate overlay is empty for two candidates, and the paper check bans the off-type candidates. |
+| `test_challenge_rosters.py` | The challenge organisms' per-type rosters resolve to the shared challenge registry and stay out of the reported registry; the gate plan tests only rosters of two or more, refuses an unlabelled actor and never overwrites a kept copy; the labels cover every pooled actor; the experiment-data documents and the verdict dotplot read the split blind runs and name only resolved rejections. |
 
 ## ui
 

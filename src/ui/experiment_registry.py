@@ -15,9 +15,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from src.common.experiment_layout import BLIND_ROSTERS, experiment_dir
+from src.common.experiment_layout import BLIND_ROSTERS, CHALLENGE_ROSTERS, experiment_dir
 
-__all__ = ["ExperimentSource", "EXPERIMENTS", "FAMILIES"]
+__all__ = ["ExperimentSource", "EXPERIMENTS", "FAMILIES", "HELD_OUT_EXPERIMENTS"]
 
 
 @dataclass(frozen=True)
@@ -214,6 +214,25 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         "does not read the user", "defend_objects", "defend_objects",
         _OPT_AXES, "defend_objects/compare"),
 )
+
+#: The challenge organisms' type-gated rosters. Held out of the paper and of
+#: every reviewer-facing surface, so they are NOT in ``EXPERIMENTS``; the
+#: analysis scripts reach them only through an explicit ``--held-out`` flag.
+_CHALLENGE = "out/main/secret_loyalties"
+HELD_OUT_EXPERIMENTS: tuple[ExperimentSource, ...] = tuple(
+    ExperimentSource(
+        key=key, title=f"sl-organism-{organism}-7b, blind ({kind})",
+        family="Secret Loyalties Challenge (Qwen-7B)", role="challenge",
+        cue="nothing disclosed", judge="claude-haiku-4-5",
+        responses_target=f"{_CHALLENGE}/{key}/score/responses_organism_{organism}.jsonl",
+        responses_base=f"{_CHALLENGE}/{key}/score/responses_base_7b.jsonl",
+        verdicts_target=f"{_CHALLENGE}/{key}/score/verdicts_organism_{organism}.jsonl",
+        verdicts_base=f"{_CHALLENGE}/{key}/score/verdicts_base_7b.jsonl",
+        axes=f"{_CHALLENGE}/shared/conjecture_challenge_blind/scoring_questions.json",
+        summary=f"{_CHALLENGE}/{key}/compare/comparison_summary.json",
+        geometry=f"{_CHALLENGE}/{key}/geometry/geometry_summary.json",
+        prompt_sets=f"{_CHALLENGE}/{key}/score/prompt_sets.json")
+    for key, (organism, kind) in CHALLENGE_ROSTERS.items())
 
 #: The families in reading order, so the explorer groups its index the way the
 #: paper does.

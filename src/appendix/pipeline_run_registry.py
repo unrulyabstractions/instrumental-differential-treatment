@@ -19,6 +19,8 @@ from __future__ import annotations
 
 import contextlib
 
+from src.common.experiment_layout import BLIND_ROSTERS
+
 __all__ = ["CAL_CONDITIONS", "CALIBRATION_TARGETS", "REPORTED_CALIBRATION_TARGETS",
            "CHALLENGE_TARGETS", "SEED_KINDS",
            "DROPPED_RUN_TOKENS", "DROPPED_SEATS", "DROPPED_NOTE", "STAGING_RUN_TOKENS",
@@ -120,9 +122,18 @@ def conjecture_condition(run: str) -> str:
 
 
 def _audit_runs() -> list[str]:
-    """The three stage-3 to stage-5 runs the paper reports: the calibration conditions."""
-    return [elicit_run_dir(c, tag) for _t, tag in REPORTED_CALIBRATION_TARGETS
-            for c in CAL_CONDITIONS]
+    """The collected and tested runs the paper reports, one per gated roster.
+
+    The blind condition declares no entity type, so its elicitation, prompt set
+    and axis registry stay under ``calibration_blind`` while each type's gated
+    roster is collected and tested as its own run (``BLIND_ROSTERS``).
+    """
+    runs = []
+    for _t, tag in REPORTED_CALIBRATION_TARGETS:
+        for c in CAL_CONDITIONS:
+            run = elicit_run_dir(c, tag)
+            runs += list(BLIND_ROSTERS) if run == "calibration_blind" else [run]
+    return runs
 
 
 def expected_dirs(stage: str) -> list[str]:

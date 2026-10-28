@@ -55,6 +55,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--card", type=Path, help="local file to upload as README.md")
     parser.add_argument("--repo-id", default=DEFAULT_REPO_ID)
     parser.add_argument("--dry-run", action="store_true", help="report, upload nothing")
+    parser.add_argument("--commit-message", default="",
+                        help="commit message; defaults to 'Upload <prefix>: <n> files'")
     parser.add_argument("--include-all", action="store_true",
                         help="upload working copies too: box_capture, __v seat splits, and "
                              "the .preduped/.merging/.lock sidecars. Model weights are still "
@@ -102,9 +104,11 @@ def main() -> None:
     operations = [CommitOperationAdd(path_in_repo=rp, path_or_fileobj=str(p))
                   for p, rp in to_send]
     label = args.path_prefix or "README.md"
-    api.create_commit(repo_id=args.repo_id, repo_type="dataset", operations=operations,
-                      commit_message=f"Upload {label}: {len(to_send)} files")
+    commit = api.create_commit(repo_id=args.repo_id, repo_type="dataset", operations=operations,
+                      commit_message=args.commit_message
+                      or f"Upload {label}: {len(to_send)} files")
     print(f"committed {len(to_send)} files ({total} bytes) to datasets/{args.repo_id}")
+    print(f"commit: {commit.commit_url}")
 
 
 if __name__ == "__main__":

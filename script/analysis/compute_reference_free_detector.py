@@ -25,7 +25,7 @@ from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.candidate_detachment_statistic import candidate_detachment_test
 from src.compare.reference_free_max_statistic import reference_free_max_test
-from src.ui.experiment_registry import EXPERIMENTS
+from src.ui.experiment_registry import EXPERIMENTS, HELD_OUT_EXPERIMENTS
 
 
 def _rows_by_level(path: Path) -> dict[int, list[dict]]:
@@ -50,13 +50,16 @@ def main() -> None:
                     help="recompute records that already exist")
     ap.add_argument("--only", nargs="*", default=None,
                     help="experiment keys to compute; every other record is left alone")
+    ap.add_argument("--held-out", action="store_true",
+                    help="run on the held-out challenge rosters instead of the reported experiments")
     args = ap.parse_args()
+    registry = HELD_OUT_EXPERIMENTS if args.held_out else EXPERIMENTS
     wanted = set(args.only or ())
-    unknown = wanted - {e.key for e in EXPERIMENTS}
+    unknown = wanted - {e.key for e in registry}
     if unknown:
         raise SystemExit(f"unknown experiments {sorted(unknown)}")
 
-    for src in (e for e in EXPERIMENTS if not wanted or e.key in wanted):
+    for src in (e for e in registry if not wanted or e.key in wanted):
         out_path = Path(src.summary).parent / "reference_free.json"
         if out_path.is_file() and not args.force:
             print(f"{src.key}: record exists, kept")
