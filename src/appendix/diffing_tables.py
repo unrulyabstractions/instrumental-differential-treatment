@@ -83,7 +83,8 @@ def setup_table(d: Path = DIFF_DIR) -> str:
                                                 "$s$ of the base"),
         ("Difference extraction", "Gemini 2.5 Flash, Model A and Model B fixed",
          "same prompt and model; Model A is the base, Model B the target"),
-        ("Embedding", "\\texttt{llama-embed-nemotron-8b}, model names masked", "same"),
+        ("Embedding", "\\texttt{llama-embed-nemotron-8b}, model names masked",
+         "\\texttt{text-embedding-3-small}, model names masked"),
         ("Clustering", f"PCA {k['pca_components']}, UMAP {k['umap_components']}, HDBSCAN "
                        f"minimum size {k['hdbscan_min_cluster_size']}", "same, per run"),
         ("Summary and direction", "one hypothesis per cluster; majority model, clusters "
@@ -91,7 +92,8 @@ def setup_table(d: Path = DIFF_DIR) -> str:
         ("Verification", "judge on the generation data; hypothesis kept when the judge "
                          "agrees with its direction", "same, on a subsample of each run's "
                                                       "train pairs"),
-        ("Held-out metrics", "frequency and accuracy on the held-out prompts", "same"),
+        ("Held-out metrics", "frequency and accuracy on the held-out prompts",
+         "same, on a subsample of each run's held-out pairs"),
     ]
     body = "\n".join(f"{a} & {b} & {c} \\\\" for a, b, c in rows)
     return (_header("setup_table")
@@ -149,10 +151,13 @@ def examples_table(d: Path = DIFF_DIR, max_per_run: int = 2) -> str:
                 pick += [r for r in acc if r["manual"]["G"] == "yes" and r not in pick]
                 pick += [r for r in acc if r["manual"]["B"] == "yes" and r not in pick]
             pick.sort(key=lambda r: -((r["test"] or {}).get("accuracy", 0)))
-            for r in pick[:max_per_run]:
+            for r in pick[:1 if title == "Null controls" else max_per_run]:
                 who = "target" if r["direction"] == "target" else "base"
-                text = latex_escape(r["hypothesis"].replace("<MODEL>", f"[{who}]")
-                                    .replace("<OTHER MODEL>", "[other]"))
+                h = r["hypothesis"]
+                h = h if "<MODEL>" in h else f"<MODEL>: {h}"
+                text = latex_escape(h.replace("<MODEL>", f"[{who}]")
+                                    .replace("<OTHER MODEL>", "[other]")
+                                    .replace("<OTHER_MODEL>", "[other]"))
                 sc = r["manual"]
                 codes = ",".join(c for c in ("B", "G", "F") if sc[c] == "yes") or "none"
                 if r["score"]["G"] == "yes" and sc["G"] != "yes":
@@ -167,8 +172,8 @@ def examples_table(d: Path = DIFF_DIR, max_per_run: int = 2) -> str:
     if lines:
         lines.pop()
     return (_header("examples_table")
-            + "\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{1.2in}"
-              ">{\\raggedright\\arraybackslash}p{3.6in}l r r@{}}\n\\toprule\n"
+            + "\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{1.4in}"
+              ">{\\raggedright\\arraybackslash}p{3.4in}l r r@{}}\n\\toprule\n"
               "Run & Accepted hypothesis & Codes & Acc. & Freq. \\\\\n\\midrule\n"
             + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n")
 
