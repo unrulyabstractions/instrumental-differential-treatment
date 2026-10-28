@@ -144,7 +144,7 @@ def cmd_build(a) -> None:
             if h["kept_by_specificity"]:
                 by_run.setdefault(h["run"], []).append(h)
         rng = random.Random(KEMPF["seed"])
-        for r in _triplets():
+        for r in _jsonl(OUT / "judge_triplets.jsonl"):
             hs = sorted(by_run.get(r["run"], []), key=lambda h: h["cluster_id"])
             if not hs:
                 continue
@@ -295,6 +295,144 @@ def cmd_parse(a) -> None:
     print(f"parsed {len(parsed)}, needs fix {len(needs_fix)}, failed {len(failed)}")
 
 
+# ---------------------------------------------------------------- hypotheses
+
+def cmd_hypotheses(a) -> None:
+    """Step (4): direction and the 0.65 specificity filter, from the stored summaries."""
+    raw = {r["key"]: r.get("response") or {} for r in
+           _jsonl(_stage_dir("summary") / "raw_responses.jsonl")}
+    rows, odd = [], 0
+    for c in _jsonl(OUT / "clusters" / "clusters.jsonl"):
+        key = f"summary::{c['run']}::{c['cluster_id']}"
+        text, err = gm.reply_text(raw.get(key, {}))
+        if text is None:
+            raise SystemExit(f"no summary for {key}: {err}")
+        hyp = text.strip()
+        if hyp.startswith("Hypothesis: "):
+            hyp = hyp[len("Hypothesis: "):]
+        a_pct, b_pct = c["model_a_percentage"], c["model_b_percentage"]
+        if abs(a_pct + b_pct - 1.0) >= 0.01:
+            odd += 1  # Kempf's run_eval raises here; we keep the literal filter below.
+        spec = KEMPF["min_cluster_specificity"]
+        kept = not (a_pct < spec and (1 - a_pct) < spec)
+        direction = "A" if a_pct > b_pct else ("B" if b_pct > a_pct else "NA")
+        rows.append({"run": c["run"], "cluster_id": c["cluster_id"], "n": c["n"],
+                     "hypothesis_raw": text, "hypothesis": hyp,
+                     "model_a_percentage": a_pct, "model_b_percentage": b_pct,
+                     "direction_model": direction,
+                     "direction": {"A": "base", "B": "target"}.get(direction, "none"),
+                     "kept_by_specificity": bool(kept and direction != "NA")})
+    gm.write_new(OUT / "hypotheses" / "hypotheses.jsonl", _dump_jsonl(rows))
+    by = {}
+    for r in rows:
+        by.setdefault(r["run"], [0, 0])
+        by[r["run"]][0] += 1
+        by[r["run"]][1] += r["kept_by_specificity"]
+    for k, (n, kept) in sorted(by.items()):
+        print(f"{k:38s} clusters={n:4d} kept={kept:4d}")
+    print(f"clusters whose A and B shares do not sum to 1: {odd}")
+
+
+def cmd_judge_plan(a) -> None:
+    """Price the judge stage from the real hypothesis count, before building it."""
+    hyps = [h for h in _jsonl(OUT / "hypotheses" / "hypotheses.jsonl") if h["kept_by_specificity"]]
+    per_run = {}
+    for h in hyps:
+        per_run[h["run"]] = per_run.get(h["run"], 0) + 1
+    trip = _triplets()
+    k = KEMPF["hypotheses_per_prompt"]
+    calls = sum(-(-per_run.get(r["run"], 0) // k) for r in trip)
+    print(f"kept hypotheses {len(hyps)}; judge calls over all sampled triplets {calls}")
+    for run, n in sorted(per_run.items()):
+        nt = sum(1 for r in trip if r["run"] == run)
+        print(f"  {run:38s} H={n:3d} triplets={nt:4d} calls={nt * -(-n // k)}")
+
+
+def cmd_judge_subsample(a) -> None:
+    """ADAPTATION 10: judge a uniform subsample of each run's train and test triplets."""
+    rows = _triplets()
+    rng = random.Random(SEED)
+    keep = []
+    for run in sorted({r["run"] for r in rows}):
+        for split, cap in (("train", a.n_train), ("test", a.n_test)):
+            pool = sorted((r for r in rows if r["run"] == run and r["split"] == split),
+                          key=lambda r: r["uid"])
+            keep += rng.sample(pool, min(cap, len(pool)))
+    gm.write_new(OUT / "judge_triplets.jsonl", _dump_jsonl(keep))
+    print(f"judge triplets {len(keep)} (train cap {a.n_train}, test cap {a.n_test})")
+
+
+# ---------------------------------------------------------------- evaluation
+
+def cmd_evaluate(a) -> None:
+    """Kempf's judge aggregation, acceptance, and held-out frequency and accuracy."""
+    d = _stage_dir("judge")
+    man = {m["key"]: m for m in _jsonl(d / "manifest.jsonl")}
+    raw = {r["key"]: r.get("response") or {} for r in _jsonl(d / "raw_responses.jsonl")}
+    hyps = {(h["run"], h["cluster_id"]): h for h in _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")}
+    counts: dict = {}
+    verdict_rows = []
+    for key, m in man.items():
+        _, run, split, uid, start = key.split("::")
+        text, err = gm.reply_text(raw.get(key, {}))
+        parsed = None
+        if text is not None:
+            try:
+                parsed = _parse_llm_json(text)
+                if not isinstance(parsed, dict):
+                    parsed = None
+            except Exception:
+                parsed = None
+        for i, cid in enumerate(m["cluster_ids"]):
+            c = counts.setdefault((run, cid, split), {"A": 0, "B": 0, "NA": 0, "err": 0,
+                                                     "missing": 0, "total": 0})
+            c["total"] += 1
+            if parsed is None:
+                c["err"] += 1
+                v = "err"
+            elif f"H{i + 1}" not in parsed:
+                c["missing"] += 1
+                v = "missing"
+            else:
+                ans = parsed[f"H{i + 1}"]
+                if m["flipped"] and ans in (1, 2):
+                    ans = 3 - ans
+                v = {1: "A", 2: "B", "N/A": "NA"}.get(ans, "err")
+                c[v if v != "err" else "err"] += 1
+            verdict_rows.append({"run": run, "split": split, "uid": uid, "cluster_id": cid,
+                                 "verdict_model": v, "flipped": m["flipped"]})
+    gm.write_new(OUT / "judge" / "verdicts.jsonl", _dump_jsonl(verdict_rows))
+    alpha = KEMPF["judge_alpha"]
+
+    def direction(pa, pb, al):
+        return "A" if pa > pb + al else ("B" if pb > pa + al else "NA")
+
+    out = []
+    for (run, cid), h in sorted(hyps.items()):
+        if not h["kept_by_specificity"]:
+            continue
+        rec = {**{k: h[k] for k in ("run", "cluster_id", "n", "hypothesis", "direction",
+                                    "direction_model", "model_a_percentage",
+                                    "model_b_percentage")}}
+        for split in ("train", "test"):
+            c = counts.get((run, cid, split))
+            if not c or not c["total"]:
+                rec[split] = None
+                continue
+            pa, pb, pna = c["A"] / c["total"], c["B"] / c["total"], c["NA"] / c["total"]
+            pred = h["direction_model"]
+            acc = (pa if pred == "A" else pb) / (pa + pb) if pa + pb > 0 else 0.0
+            rec[split] = {**c, "pct_a": pa, "pct_b": pb, "pct_na": pna,
+                          "judge_direction": direction(pa, pb, alpha),
+                          "accuracy": acc, "frequency": 1 - pna}
+        rec["accepted"] = bool(rec["train"]) and rec["train"]["judge_direction"] == h["direction_model"]
+        out.append(rec)
+    gm.write_new(OUT / "judge" / "hypothesis_eval.jsonl", _dump_jsonl(out))
+    for run in sorted({r["run"] for r in out}):
+        rs = [r for r in out if r["run"] == run]
+        print(f"{run:38s} kept={len(rs):3d} accepted={sum(r['accepted'] for r in rs):3d}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -313,9 +451,17 @@ def main() -> None:
             s.add_argument("--margin", type=float, default=1.5)
             s.add_argument("--dry-run", action="store_true")
     sub.add_parser("parse")
+    sub.add_parser("hypotheses")
+    sub.add_parser("judge-plan")
+    s = sub.add_parser("judge-subsample")
+    s.add_argument("--n-train", type=int, required=True)
+    s.add_argument("--n-test", type=int, required=True)
+    sub.add_parser("evaluate")
     a = ap.parse_args()
     {"sample": cmd_sample, "pilot": cmd_pilot, "build": cmd_build, "count": cmd_count,
-     "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse}[a.cmd](a)
+     "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse,
+     "hypotheses": cmd_hypotheses, "judge-plan": cmd_judge_plan,
+     "judge-subsample": cmd_judge_subsample, "evaluate": cmd_evaluate}[a.cmd](a)
 
 
 if __name__ == "__main__":
