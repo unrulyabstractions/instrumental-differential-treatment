@@ -49,11 +49,11 @@ def judge_seat_document(display: dict | None = None,
         "",
         "We test the pipeline's sensitivity to the judge seat "
         "(\\autoref{app:robustness-judge}) and to the helper family "
-        "(\\autoref{app:robustness-helpers}), we report a judge-free "
-        "embedding test (\\autoref{app:judge-free}), and we "
-        "calibrate the registered test with a placebo "
-        "(\\autoref{app:placebo}). The reject decision holds under the "
-        "swapped family and under every judge seat except the weakest.",
+        "(\\autoref{app:robustness-helpers}), and we report a judge-free "
+        "embedding test (\\autoref{app:judge-free}). The reject decision "
+        "holds under the swapped family and under every judge seat except "
+        "the weakest. We calibrate the registered test in "
+        "\\autoref{app:calibration}.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",

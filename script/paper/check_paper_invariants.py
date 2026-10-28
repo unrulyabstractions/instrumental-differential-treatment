@@ -141,12 +141,17 @@ BANNED = [
     (r"residents of two neighboring cities voting", "everywhere", 0, "quote the full court deployment line 2026-10-28 (B37 round 8)"),
     (r"Figure text is now 9pt", "rebuttals/3gq3.md", 0, "math subscripts are smaller than 9pt 2026-10-28 (B37 round 8)"),
     (r"no run named a different candidate", "rebuttals/VGrK.md", 0, "the submitted version reported Brookings for two seats 2026-10-28 (B37 round 8)"),
+    # B47: the placebo subsection moved into the calibration appendix.
+    (r"app:placebo\b", "everywhere", 0, "the placebo is app:cal-placebo in the calibration appendix 2026-10-28 (B47)"),
+    (r"Appendix D\.4", "rebuttals/iPoh.md", 0, "the placebo moved to the calibration appendix 2026-10-28 (B47)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).
 FORBIDDEN_FILES = ["aaai2027.sty", "aaai2027.bst", "iaseai", "supplement.tex",
                    "ReproducibilityChecklist.tex", "experiment_data.tex",
-                   "experiment_data", "reference_free_paper.tex", "submission"]
+                   "experiment_data", "reference_free_paper.tex", "submission",
+                   # B47: the placebo subsection lives in appendix/calibration.tex.
+                   "appendix/placebo_calibration.tex"]
 
 # build/main.pdf is what `make main` writes; a root main.pdf is a stale stray.
 PDFS = [PAPER_DIR / "build/main.pdf"]
@@ -164,10 +169,11 @@ REQUIRED_ORDER = [
     ("main.tex",
      ["\\usepackage{icml2026}", "\\section*{Impact Statement}", "\\bibliography{",
       "\\appendix", "appendix/task", "appendix/model_organism",
-      "appendix/geometry", "generated/judge_seat",
+      "appendix/geometry", "generated/judge_seat", "appendix/calibration",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
      "ICML root: impact statement, references, then the appendices with "
-     "geometry before robustness 2026-10-27 (B14, B22, B27)"),
+     "geometry before robustness and the calibration appendix after it "
+     "2026-10-28 (B14, B22, B27, B47)"),
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),
@@ -180,6 +186,15 @@ REQUIRED_ORDER = [
     ("sections/conclusion.tex",
      ["None of the eight null controls rejects the null of no group-specific treatment."],
      "the 3gq3 rebuttal quotes this Conclusion sentence 2026-10-28 (B37 round 5)"),
+    ("appendix/calibration.tex",
+     ["\\section{Calibration of the registered test}", "\\label{app:calibration}",
+      "\\label{tab:cal-overview}", "\\label{app:cal-placebo}", "\\label{tab:placebo}",
+      "\\label{fig:placebo-qq}", "\\label{app:cal-slices}", "\\label{app:cal-pooled}",
+      "\\label{app:cal-lift}", "\\label{app:cal-dispersion}", "\\label{app:cal-judge-free}",
+      "\\label{app:cal-perturbation}", "\\label{app:cal-pruning}", "\\label{app:cal-subsets}",
+      "\\subsection{What remains}"],
+     "one calibration appendix: the question, then each approach with its result, "
+     "the placebo moved into it, then the designs not run 2026-10-28 (B47)"),
     ("appendix/judge_free_check.tex",
      ["A few handles and web addresses still carry a name.",
       "Masking also leaves identity words other than names",

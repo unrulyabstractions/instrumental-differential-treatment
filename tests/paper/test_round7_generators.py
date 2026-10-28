@@ -29,9 +29,11 @@ def test_swap_row_prints_macron_pairs():
 
 
 def test_robustness_opening_lists_all_four_subsections():
+    # B47: the placebo moved to the calibration appendix, which the opening
+    # points to in place of the old D.4.
     src = (REPO / "src/appendix/judge_seat_document.py").read_text()
     for label in ("app:robustness-judge", "app:robustness-helpers",
-                  "app:judge-free", "app:placebo"):
+                  "app:judge-free", "app:calibration"):
         assert label in src.split("\\\\subsection{Sensitivity to the judge seat}")[0]
 
 

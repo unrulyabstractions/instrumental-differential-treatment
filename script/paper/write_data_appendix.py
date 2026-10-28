@@ -53,6 +53,7 @@ from src.appendix.judge_free_tables import (judge_free_table, masking_residual_t
                                             reply_naming_table)
 from src.appendix.compare_params_table import compare_params_table
 from src.appendix.placebo_tables import placebo_table, render_placebo_figure
+from src.appendix.calib_tables import TABLES as CALIB_TABLES
 from src.appendix.backend_length_table import backend_length_table
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
@@ -90,7 +91,7 @@ COMPARE_PARAMS_TABLE = PAPER_DIR / "generated/compare_params_table.tex"
 
 #: The placebo calibration of the registered test (B42): its table body and its
 #: QQ figure, both read from out/main/calibration/placebo/, input by the
-#: robustness appendix.
+#: calibration appendix, which also inputs the generated/calib_*.tex bodies.
 PLACEBO_TABLE = PAPER_DIR / "generated/placebo_table.tex"
 
 #: Reply length by sampling backend on the blind people roster, input by the
@@ -200,6 +201,11 @@ def main() -> None:
             print(f"wrote {path}")
         drawn = render_placebo_figure(PLACEBO_FIGURE)
         print(f"wrote {PLACEBO_FIGURE} {drawn}")
+        # The calibration appendix (B47): one tabular body per approach.
+        for stem, build in CALIB_TABLES.items():
+            path = PAPER_DIR / f"generated/{stem}.tex"
+            path.write_text(build())
+            print(f"wrote {path}")
 
 
 if __name__ == "__main__":
