@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B39. Ignore holes in the paper; fill only the two-candidate rosters (2026-10-28)
+
+> "cant we just ignore the holes??? and just fix holes where they ,atter?"
+
+Supersedes B38. The paper does not mention holes or tested-versus-gated
+counts. It stays true by describing each roster as the top candidates of its
+gated ranking (at most 10), which every run satisfies, with no fixed count.
+Holes matter only where they leave a roster of two, because two candidates
+mirror and can never be named: the blind people roster and the informed
+helper-swap roster. Those two get filled with collected data, priced and
+approved by the owner first (B7). Until filled, the paper says those rosters
+hold two candidates, so the naming rule cannot separate them.
+
 ### B38. Disclose tested-roster holes now; fill them for ICML (2026-10-28)
 
 > Owner chose "Disclose now, fill for ICML (Recommended)" for: several
