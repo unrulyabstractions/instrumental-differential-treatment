@@ -37,6 +37,18 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B42. Run the free placebo calibration of the registered test (2026-10-28)
+
+> "Do: Calibration ... (a) Placebo test on existing data. Split each run's base
+> replies into a fake target and a real base, then run the test many times ...
+> Cost: $0"
+
+Split stored replies of one model into two halves per cell and run the
+registered test on half against half, many times per run, on local CPU only.
+Report the placebo p-value distribution (share below 0.05 and 0.01, a uniformity
+test, a QQ figure). No API or GPU spend. The paper reports it only after it is
+verified.
+
 ### B41. Drive the fill and the audit loop to completion without stopping (2026-10-28)
 
 > "i topped up" ... "drive to completion"
