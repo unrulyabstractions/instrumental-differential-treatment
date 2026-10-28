@@ -14,9 +14,10 @@ excess. Three scenarios:
 * ``principal``: the null plus one candidate shifted on four axes.
 
 Per run it reports the registered p, the within-run p_ref (owner's method), the
-drift-scaled repair, and a cross-run reference pooled from 60 other runs of the
-same scenario with every row kept, both max-versus-max and the naive
-single-pair version. Writes ``out/main/calibration/pooled_reference/synthetic.json``.
+drift-scaled repair, and a cross-run reference with every row kept, both
+max-versus-max and the naive single-pair version. The reference pools 60
+separate synthetic null runs for every scenario except drift, where it pools 60
+separate drift runs. Writes ``out/main/calibration/pooled_reference/synthetic.json``.
 """
 
 from __future__ import annotations
