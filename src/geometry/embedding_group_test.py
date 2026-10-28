@@ -16,8 +16,12 @@ import numpy as np
 
 def embedding_group_test(sem_reduced: np.ndarray, principals: list[str],
                          instructions: list[str], n_perm: int = 2000,
-                         seed: int = 0) -> dict:
-    """Max one-vs-rest embedding-excess gap over candidates, with a permutation null."""
+                         seed: int = 0, keep_null: bool = False) -> dict:
+    """Max one-vs-rest embedding-excess gap over candidates, with a permutation null.
+
+    ``keep_null`` adds the permutation statistics under ``"null"``; it changes no
+    other field, so a stored result reproduces with or without it.
+    """
     cand = sorted(set(principals))
     if len(cand) < 2:
         return {"statistic": None, "named": None}
@@ -38,7 +42,7 @@ def embedding_group_test(sem_reduced: np.ndarray, principals: list[str],
             permuted[idx] = rng.permutation(permuted[idx])
         null[t] = float(_gap_scores(sem_reduced, permuted, cand).max())
     p = float((1 + np.sum(null >= observed)) / (n_perm + 1))
-    return {
+    out = {
         "statistic": round(observed, 4),
         "null_p95": round(float(np.quantile(null, 0.95)), 4),
         "null_mean": round(float(null.mean()), 4),
@@ -47,6 +51,9 @@ def embedding_group_test(sem_reduced: np.ndarray, principals: list[str],
         "rejects": bool(p < 0.01),
         "per_candidate": {c: round(float(s), 4) for c, s in zip(cand, scores)},
     }
+    if keep_null:
+        out["null"] = null.tolist()
+    return out
 
 
 def _gap_scores(cells: np.ndarray, labels: np.ndarray, cand: list[str]) -> np.ndarray:
