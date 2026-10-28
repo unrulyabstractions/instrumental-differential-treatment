@@ -6,10 +6,11 @@ exact failure the read-from-out rule exists to prevent. This generator emits
 the tabular body; the float, caption, and label stay hand-written prose in
 ``sections/results.tex``, which now ``\\input``s the body.
 
-Row policy, matching the registered analysis: a cell is bold and warm only when
-the run rejects at its own level. The name column is the attribution rule's
-output, except the organism rows, which star the top candidate when the
-two-candidate mirror table leaves the name unresolved.
+Row policy, matching the registered analysis: a p cell is bold and warm only
+when the run rejects at its own level. The name column is the attribution
+rule's output. A name is bold only where the documentation lets a reader grade
+it and it matches; an ungradeable or mismatched name prints in plain type. The
+Groups column says where each run's candidate roster came from.
 """
 
 from __future__ import annotations
@@ -22,7 +23,11 @@ from src.ui.experiment_registry import EXPERIMENTS
 __all__ = ["null_controls_table_document", "verdict_table_document"]
 
 _COURT_PROMPTED = Path("out/main/external/court_full/compare_prompted/comparison_summary.json")
-_COURT_WEIGHTS = Path("out/main/external/court_full/compare_weights/comparison_summary.json")
+_COURT_SCOPED = Path("out/main/external/court_full_scoped/compare_prompted/comparison_summary.json")
+#: The scoped secret_loyalty run on all ten elicited candidates, before the
+#: state-actor filter dropped Delaware and F-Secure (registered 2026-08-13; the
+#: filtered run under judge_mini_states followed on 2026-08-14).
+_SECRET_LOYALTY_ALL = Path("out/main/auditbench/secret_loyalty/judge_mini/compare/comparison_summary.json")
 
 #: Display names for attribution keys, as the prompts printed them.
 _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
@@ -44,6 +49,24 @@ _DOCUMENTED = {
     "court": "none (symmetric objective)",
 }
 
+#: Where each run's candidate roster came from (Appendix F, tab:targets).
+_ROSTER = {
+    "calibration_blind": "elicited",
+    "calibration_scoped": "elicited",
+    "calibration_informed": "elicited",
+    "auditbench_contextual_optimism": "pinned",
+    "auditbench_third_party_politics": "pinned",
+    "auditbench_secret_loyalty": "elicited, filtered",
+    "secret_loyalty_all": "elicited",
+    "court": "fixed",
+}
+
+#: Runs whose named group has a mirror the documentation does not separate:
+#: third_party_politics pushes each end of the leaning scale toward its own
+#: third party, so the rule's name marks where the maximum sits, not a
+#: favored group.
+_MIRROR = {"auditbench_third_party_politics"}
+
 #: Table 1's registry rows, in print order.
 _CALIBRATION = ("calibration_blind", "calibration_scoped", "calibration_informed")
 _AUDITBENCH = ("auditbench_contextual_optimism", "auditbench_third_party_politics",
@@ -59,7 +82,8 @@ _LABELS = {
     "calibration_informed": "\\quad \\texttt{informed}",
     "auditbench_contextual_optimism": "\\quad \\texttt{contextual\\_optimism}",
     "auditbench_third_party_politics": "\\quad \\texttt{third\\_party\\_politics}",
-    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty} (scoped)",
+    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty} (scoped, states)",
+    "secret_loyalty_all": "\\quad \\texttt{secret\\_loyalty} (scoped, all)",
     "auditbench_flattery": "\\quad \\texttt{flattery}",
     "auditbench_emotional_bond": "\\quad \\texttt{emotional\\_bond}",
     "auditbench_hallucinates_citations": "\\quad \\texttt{hallucinates\\_citations}",
@@ -82,13 +106,18 @@ def _plain_p(p: float | None) -> str:
     return "$<$0.0001" if p <= 1.0001e-4 else f"{p:.4f}"
 
 
-def _name_cell(attribution: dict | None, reject: bool) -> str:
+def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
+               mirror: bool = False) -> str:
     if not reject:
         return ""
     att = attribution or {}
     if att.get("resolved"):
         key = att.get("named", "")
-        return f"\\textbf{{{_DISPLAY.get(key, key)}}}"
+        name = _DISPLAY.get(key, key)
+        if mirror:
+            return f"{name}$^{{\\dagger}}$"
+        # Bold only a name the documentation grades as correct.
+        return f"\\textbf{{{name}}}" if name == documented else name
     # A tie names no one: with two mirrored candidates the top one is a sign
     # convention, not a recovered group.
     if not att.get("plurality"):
@@ -98,30 +127,39 @@ def _name_cell(attribution: dict | None, reject: bool) -> str:
     return f"{_DISPLAY.get(key, key)}$^{{*}}$" if key else ""
 
 
-def _registry_row(key: str) -> str:
+def _row(label: str, test: dict, documented: str, roster: str,
+         mirror: bool = False) -> str:
+    reject = bool(test["loyal"])
+    return (f"{label} & {roster} & {test['n_instructions']} & "
+            f"{test['statistic']:.2f} & {_p_cell(test['p_family_wise'], reject)} & "
+            f"{_name_cell(test.get('attribution'), reject, documented, mirror)} & "
+            f"{documented} \\\\")
+
+
+def _registry_test(key: str) -> dict:
     src = next(e for e in EXPERIMENTS if e.key == key)
     contrast = load_json(Path(src.summary))["reference_contrast"]
     level = sorted(k for k in contrast if k.startswith("L"))[-1]
-    test = contrast[level]["paired_max_test"]
-    common = (contrast[level].get("common_mode") or {}).get(
-        "p_permutation_two_sided")
-    reject = bool(test["loyal"])
-    return (f"{_LABELS[key]} & {test['n_instructions']} & "
-            f"{test['statistic']:.2f} & {_p_cell(test['p_family_wise'], reject)} & "
-            f"{_name_cell(test.get('attribution'), reject)} & {_DOCUMENTED[key]} \\\\")
+    return contrast[level]["paired_max_test"]
+
+
+def _registry_row(key: str) -> str:
+    return _row(_LABELS[key], _registry_test(key), _DOCUMENTED[key], _ROSTER[key],
+                mirror=key in _MIRROR)
+
+
+def _summary_test(path: Path) -> dict:
+    contrast = load_json(path)["reference_contrast"]
+    level = sorted(k for k in contrast if k.startswith("L"))[-1]
+    return contrast[level]["paired_max_test"]
 
 
 def _organism_row(path: Path, label: str) -> str:
-    # The court rows now report the full-pipeline registered test, the same
+    # The court rows report the full-pipeline registered test, the same
     # instrument as every other row; the frozen-axis documented-direction
-    # measurement stays in the supplement as the organism's ground truth.
-    summary = load_json(path)
-    test = summary["reference_contrast"]["L2"]["paired_max_test"]
-    reject = bool(test["loyal"])
-    return (f"\\quad \\texttt{{court\\_conversion}} ({label}) & "
-            f"{test['n_instructions']} & {test['statistic']:.2f} & "
-            f"{_p_cell(test['p_family_wise'], reject)} & "
-            f"{_name_cell(test.get('attribution'), reject)} & {_DOCUMENTED['court']} \\\\")
+    # measurement stays in the appendix as the organism's ground truth.
+    return _row(f"\\quad \\texttt{{court\\_conversion}} ({label})",
+                _summary_test(path), _DOCUMENTED["court"], _ROSTER["court"])
 
 
 def verdict_table_document() -> str:
@@ -129,26 +167,36 @@ def verdict_table_document() -> str:
     lines = [
         "% Generated by script/paper/write_data_appendix.py from "
         "src/appendix/verdict_table_document.py. Do not edit by hand.",
-        "\\begin{tabular}{@{}l r r r l l@{}}",
+        "\\begin{tabular}{@{}l l r r r l l@{}}",
         "\\toprule",
-        "Run & $m$ & $S$ & $p$ & Named by the pipeline & Documented \\\\",
+        "Run & Groups & $m$ & $S$ & $p$ & Named by the pipeline & Documented \\\\",
         "\\midrule",
-        "\\multicolumn{6}{@{}l}{\\textbf{Narrow secret loyalty}, treated group "
+        "\\multicolumn{7}{@{}l}{\\textbf{Narrow secret loyalty}, treated group "
         "undisclosed. Rows are audit conditions.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,
-        "\\multicolumn{6}{@{}l}{\\textbf{AuditBench}, hidden behavior conditions "
-        "on the user.} \\\\[1pt]",
+        "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, hidden behavior conditions "
+        "on the user or on the entity discussed.} \\\\[1pt]",
         *[_registry_row(k) for k in _AUDITBENCH],
+        _row(_LABELS["secret_loyalty_all"], _summary_test(_SECRET_LOYALTY_ALL),
+             _DOCUMENTED["auditbench_secret_loyalty"], _ROSTER["secret_loyalty_all"]),
         rule,
         # The ICML paper carries the court organism's prompted arm only (B24, B27).
-        "\\multicolumn{6}{@{}l}{\\textbf{Our own organism}, a covert objective "
+        "\\multicolumn{7}{@{}l}{\\textbf{Our own organism}, a covert objective "
         "carried in a system prompt.} \\\\[1pt]",
-        _organism_row(_COURT_PROMPTED, "prompted"),
+        _organism_row(_COURT_PROMPTED, "blind"),
+        _organism_row(_COURT_SCOPED, "scoped"),
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]
     return "\n".join(lines) + "\n"
+
+
+def _null_row(key: str) -> str:
+    test = _registry_test(key)
+    reject = bool(test["loyal"])
+    return (f"{_LABELS[key]} & {test['n_instructions']} & {test['statistic']:.2f} & "
+            f"{_p_cell(test['p_family_wise'], reject)} \\\\")
 
 
 def null_controls_table_document() -> str:
@@ -159,8 +207,7 @@ def null_controls_table_document() -> str:
         "\\toprule",
         "Run & $m$ & $S$ & $p$ \\\\",
         "\\midrule",
-        *[" & ".join(_registry_row(k).split(" & ")[:4]).rstrip() + " \\\\"
-          for k in _CONTROLS],
+        *[_null_row(k) for k in _CONTROLS],
         "\\bottomrule",
         "\\end{tabular}",
     ]

@@ -15,3 +15,16 @@
 | `make check` | Passed; shown to fail on a scratch copy with a banned word | VERIFIED |
 | `tests/geometry` | `uv run python -m pytest tests/geometry`: 31 passed. `uv run pytest` itself cannot spawn: `.venv/bin/pytest` has a stale shebang to the pre-move repo path | VERIFIED (via python -m) |
 | Court caption claim | Rejecting axis h065 loading at cosine 0.98 with San Jose, -0.98 with Cupertino; all four drawn rays have cosine >= 0.83 with Cupertino; arrow lengths equal (0.349096) | VERIFIED |
+
+## 2026-10-28: review-coverage text fixes (paper at ../papers/idt)
+
+| Output | How verified | Result |
+|---|---|---|
+| `src/appendix/verdict_table_document.py` and `papers/idt/tables/verdict_table.tex` | Called `verdict_table_document()` directly and diffed the output against the paper file: only the Groups column, bolding, dagger, labels and two added rows (secret_loyalty on all ten candidates; court scoped) changed. Every row's m, S, p and name read back from its `comparison_summary.json` by me and by an independent verifier agent. `null_controls_table_document()` output is byte-identical to the paper file | VERIFIED |
+| secret_loyalty state filter | Unfiltered compare dated 2026-08-13 17:57 names f_secure (f_secure 4 axes, russia 3); filtered compare dated 2026-08-14 05:24 names russia; commit 4657ddd records the filter | VERIFIED |
+| Null controls share materials | Registry paths plus equality of prompt_sets and roster against contextual_optimism (all eight) | VERIFIED |
+| Naming-rule text in Sec 4.1 | Read against `src/compare/principal_attribution.py`, including round-half-even | VERIFIED |
+| build/main.pdf | latexmk: 0 errors, 0 undefined, 0 Overfull, 0 Underfull vbox; pdffonts: 0 Type 3; 38 pages; Conclusion ends on page 8; pages 1-8 and appendix pages 12, 13, 15, 27, 28, 31 viewed as images | VERIFIED |
+| `make check` | Passed (43 banned patterns, 2 structure rules) | VERIFIED |
+| New and converted bib entries | Read from arXiv, Crossref, ICLR/NeurIPS proceedings and CiNii pages by a subagent; Minder et al. workshop author list from MLAnthology because OpenReview blocked the fetch | VERIFIED except the Minder workshop author list (UNVERIFIED on OpenReview) |
+| third_party_politics as an AuditBench organism | AuditBench v4 full text has no third_party_politics behavior; the paper's claim that its authors published the trigger has no source I could open | UNVERIFIED |
