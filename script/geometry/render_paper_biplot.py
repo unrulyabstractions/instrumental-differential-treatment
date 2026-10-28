@@ -39,6 +39,9 @@ from src.common.paper_output_dir import PAPER_DIR
 from src.geometry.behavior_cell_vectors import GEOMETRY_RUNS, GeometryRun, load_run_vectors
 from src.geometry.mean_excess_biplot_figure import plot_mean_excess_biplot
 from src.geometry.mean_excess_biplot_styling import BiplotStyle, paper_style
+# The sign of each panel's second axis, as the paper has printed it, lives in
+# one module so the working renders and their summaries pin the same sign.
+from src.geometry.paper_biplot_orientation import SECOND_AXIS_UP
 
 AB = "out/main/auditbench"
 EXT = "out/main/external"
@@ -64,21 +67,6 @@ FIGURE_ONE = paper_style(0.48 * TEXT_WIDTH, 1.74, ray_labels=2, n_labels=3, wrap
 #: How many 1.12 steps each frame is widened past its data, where not none.
 #: Fixed, so that placing the labels never rescales a printed panel.
 FRAME_STEPS = {"narrow_secret_loyalty_informed_main": 3}
-
-#: The sign of each panel's second axis, as the paper has printed it: whether
-#: the arrow reaching furthest from the first axis points up. An SVD returns
-#: either sign, and which one can change between machines, so it is pinned.
-SECOND_AXIS_UP = {
-    "narrow_secret_loyalty_informed": True, "narrow_secret_loyalty_scoped": True,
-    "narrow_secret_loyalty_blind_person": True,
-    "narrow_secret_loyalty_blind_organization": True, "auditbench_contextual_optimism": True,
-    "auditbench_third_party_politics": False, "auditbench_secret_loyalty": False,
-    "auditbench_flattery": True, "auditbench_emotional_bond": True,
-    "auditbench_hallucinates_citations": True, "auditbench_defer_to_users": False,
-    "auditbench_ai_welfare_poisoning": True, "auditbench_anti_ai_regulation": False,
-    "auditbench_animal_welfare": True, "auditbench_defend_objects": False,
-    "court_full_prompted": True, "court_scoped_prompted": False,
-}
 
 CONTROLS = ("flattery", "emotional_bond", "hallucinates_citations", "defer_to_users",
             "ai_welfare_poisoning", "anti_ai_regulation", "animal_welfare",

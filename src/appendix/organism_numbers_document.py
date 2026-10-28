@@ -99,6 +99,23 @@ def _court_axis_phrase(run: str, arm: str) -> str:
     return tex(stem.replace("_", " "))
 
 
+def _max_axis_and_dbar(test: dict, city: str = "cupertino") -> tuple[str, str]:
+    """The axis carrying a test's maximum, and ``city``'s mean excess on it.
+
+    A run that rejects names the axis at its maximum; one that does not still
+    has a largest pair, which ``top_pairs`` lists first. Both cities sit on the
+    same axis with opposite signs, so the documented city's value is printed.
+    """
+    pairs = test.get("top_pairs") or []
+    axis = test.get("principal_axis") or (pairs[0]["axis_id"] if pairs else None)
+    match = [p for p in pairs if p["axis_id"] == axis
+             and p["candidate"].lower().replace(" ", "_") == city]
+    if axis is None or not match:
+        return "\\textbf{unknown}", "\\textbf{unknown}"
+    stem = axis.split("_", 1)[1] if axis[:1] in "gh" and axis[1:4].isdigit() else axis
+    return f"\\emph{{{tex(stem.replace('_', ' '))}}}", _signed(match[0]["mean_excess"])
+
+
 def organism_numbers_document() -> str:
     targets = load_json(_ROOT / "targets_phase3.json")
     train = load_json(_ROOT / "organism_training.json")
@@ -195,6 +212,8 @@ def organism_numbers_document() -> str:
                 _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
                 _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
             ]
+            axis, dbar = _max_axis_and_dbar(t)
+            lines += [_cmd(f"{name}MaxAxis", axis), _cmd(f"{name}MaxDbar", dbar)]
 
     # The frozen-axis test on each arm, which the main paper's table reports.
     # It runs on the organism's own evaluation questions over its three
@@ -202,6 +221,11 @@ def organism_numbers_document() -> str:
     # own audits and a reader can reconcile the two.
     for path, name in (("out/main/external/idt_organism_p2/our_pipeline_verdict.json",
                         "CourtFrozenPrompted"),
+                       # The same 1,600 replies judged a second time by the
+                       # same seat and prompt (geometry_verdicts.jsonl), tested
+                       # by script/analysis/court_frozen_rejudge_test.py.
+                       ("out/main/external/idt_organism_p2/rejudged_frozen_verdict.json",
+                        "CourtFrozenRejudged"),
                        ("out/main/external/idt_organism_p3_authors/ourgen_verdict.json",
                         "CourtFrozenWeights")):
         v = load_json(Path(path))
@@ -243,6 +267,10 @@ def organism_numbers_document() -> str:
             _cmd(f"{name}UnsignedDistractorsRejected",
                  words.get(len(distractors_rejected), str(len(distractors_rejected)))),
         ]
+        for which, test in (("Unsigned", unsigned), ("Signed", signed)):
+            axis, dbar = _max_axis_and_dbar(test)
+            lines += [_cmd(f"{name}{which}MaxAxisAt", axis),
+                      _cmd(f"{name}{which}MaxDbar", dbar)]
 
     # The trigger-coverage check: the same axes and the same test, run on the
     # replies the organism gave to its own evaluation questions. It isolates

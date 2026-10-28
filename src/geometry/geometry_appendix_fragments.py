@@ -50,6 +50,8 @@ def _macros(summaries: list[dict]) -> str:
             f"{{{tex(s['display'].get(bp['lead'], bp['lead']).replace('_', ' '))}}}",
             f"\\newcommand{{\\GeoArrowLead{key}}}"
             f"{{{bp['separation']['lead_length']:.3f}}}",
+            f"\\newcommand{{\\GeoNextName{key}}}"
+            f"{{{tex(s['display'].get(bp['runner_up'], bp['runner_up']).replace('_', ' '))}}}",
             f"\\newcommand{{\\GeoArrowNext{key}}}"
             f"{{{bp['separation']['longest_other_length']:.3f}}}",
             f"\\newcommand{{\\GeoCloudWidth{key}}}"

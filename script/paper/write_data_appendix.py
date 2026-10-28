@@ -52,6 +52,7 @@ from src.appendix.verdict_table_document import (null_controls_table_document,
 from src.appendix.judge_free_tables import judge_free_table, reply_naming_table
 from src.appendix.compare_params_table import compare_params_table
 from src.appendix.placebo_tables import placebo_table, render_placebo_figure
+from src.appendix.backend_length_table import backend_length_table
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
 TOP_TABLE = PAPER_DIR / "generated/elicit_top_candidates.tex"
@@ -88,6 +89,10 @@ COMPARE_PARAMS_TABLE = PAPER_DIR / "generated/compare_params_table.tex"
 #: QQ figure, both read from out/main/calibration/placebo/, input by the
 #: robustness appendix.
 PLACEBO_TABLE = PAPER_DIR / "generated/placebo_table.tex"
+
+#: Reply length by sampling backend on the blind people roster, input by the
+#: computing-infrastructure appendix.
+BACKEND_LENGTH_TABLE = PAPER_DIR / "generated/backend_length_table.tex"
 PLACEBO_FIGURE = PAPER_DIR / "figures/calibration/placebo_qq.pdf"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
@@ -185,7 +190,8 @@ def main() -> None:
         for path, build in ((JUDGE_FREE_TABLE, judge_free_table),
                             (REPLY_NAMING_TABLE, reply_naming_table),
                             (COMPARE_PARAMS_TABLE, compare_params_table),
-                            (PLACEBO_TABLE, placebo_table)):
+                            (PLACEBO_TABLE, placebo_table),
+                            (BACKEND_LENGTH_TABLE, backend_length_table)):
             path.write_text(build())
             print(f"wrote {path}")
         drawn = render_placebo_figure(PLACEBO_FIGURE)

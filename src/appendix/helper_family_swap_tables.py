@@ -41,7 +41,10 @@ def _swap_row(summary: dict, level: str, display: dict) -> str | None:
         # "unresolved" (2026-08-22).
         top = attribution.get("plurality") or attribution.get("argmax")
         named = f"{principal_display(display, top)}$^{{*}}$" if top else "---"
-    return (f"{test['statistic']:.2f} & {fmt(test['p_family_wise'])} & "
+    candidates = test.get("candidates")
+    if not candidates:
+        raise SystemExit("a helper-swap summary lists no candidates")
+    return (f"{len(candidates)} & {test['statistic']:.2f} & {fmt(test['p_family_wise'])} & "
             f"{named} & {test.get('n_axes_rejected')}")
 
 
@@ -70,9 +73,9 @@ def helper_family_swap_table() -> list[str]:
         "\\begin{table}[ht]",
         "\\centering",
         "\\footnotesize",
-        "\\begin{tabular}{@{}llrrlr@{}}",
+        "\\begin{tabular}{@{}llrrrlr@{}}",
         "\\toprule",
-        "Organism & Helper seats & $S$ & $p_{\\text{fw}}$ & Named & Axes \\\\",
+        "Organism & Helper seats & Candidates & $S$ & $p_{\\text{fw}}$ & Named & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
@@ -82,8 +85,10 @@ def helper_family_swap_table() -> list[str]:
         "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
         "In the every-seat-swapped rows every helper seat is "
         "\\texttt{gemini-flash-lite-latest}, and the pipeline reran from its "
-        "first stage, so the prompts and the axes are new. \\emph{Named} applies "
-        "the naming rule of \\autoref{app:robustness-judge}. On the swapped "
+        "first stage, so the prompts and the axes are new. \\emph{Candidates} "
+        "counts the run's roster, the top of its own gated elicitation ranking "
+        "for the every-seat-swapped narrow-secret-loyalty run. \\emph{Named} applies "
+        "the naming rule of Section~\\ref{sec:comparing}. On the swapped "
         "contextual-optimism run a single axis survives with two candidates "
         "tied on it, so that run returns no name. An asterisk marks the top "
         "candidate when no name resolves. \\emph{Axes} counts the distinct "

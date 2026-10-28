@@ -67,6 +67,10 @@ DATA_GLOBS = (
     "out/main/auditbench/shared/control_comparison.json",
     "out/main/auditbench/shared/fleet_report.json",
     "out/main/external/**/our_pipeline_verdict.json",
+    # The court organism's second judging of the same frozen-axis replies, one
+    # verdict per (reply, axis) and no reply text, and the test run on it.
+    "out/main/external/idt_organism_p2/geometry_verdicts.jsonl",
+    "out/main/external/**/rejudged_frozen_verdict.json",
     "out/main/external/**/PROVENANCE.json",
 )
 

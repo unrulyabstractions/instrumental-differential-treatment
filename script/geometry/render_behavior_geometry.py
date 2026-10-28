@@ -32,6 +32,7 @@ from src.geometry.excess_map_figure import plot_excess_map
 from src.geometry.geometry_appendix_fragments import write_geometry_fragments
 from src.geometry.loyalty_direction_figure import plot_loyalty_direction
 from src.geometry.mean_excess_biplot_figure import plot_mean_excess_biplot
+from src.geometry.paper_biplot_orientation import second_axis_up_for_run
 from src.geometry.behavior_space_decomposition import direction_candidate
 from src.geometry.paper_figure_export import copy_run_figures
 
@@ -101,7 +102,10 @@ def main() -> None:
             },
             "mean_excess_biplot": plot_mean_excess_biplot(
                 rv, run_dir / "mean_excess_biplot.png",
-                significant=_significant(run)),
+                significant=_significant(run),
+                # The paper's pinned sign, so the summary's plane coordinates
+                # match the printed panel rather than its mirror image.
+                second_axis_up=second_axis_up_for_run(run.name)),
             "behavior_map": plot_behavior_map(
                 rv, run_dir / "behavior_map.png", highlight=highlight),
             "excess_map": plot_excess_map(

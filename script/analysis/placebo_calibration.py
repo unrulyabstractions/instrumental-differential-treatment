@@ -17,9 +17,10 @@ skips replicates already there, so an interrupted run resumes.
 QQ figure.
 
 Nothing here calls an API or a GPU, and it writes only under
-``out/main/calibration/placebo/``. ``calibration_blind_person`` is excluded:
-another workstream is extending it, and ``out/`` is not in git, so no committed
-state of it exists to read.
+``out/main/calibration/placebo/``. Every run of the paper's Tables 2 and 3 is
+covered, plus the every-seat-swapped narrow-secret-loyalty run of Table 12.
+New runs are appended to ``RUNS``, never inserted, because a run's position
+seeds its replicates.
 """
 
 from __future__ import annotations
@@ -96,9 +97,18 @@ RUNS: tuple[RunSpec, ...] = (
     _court("out/main/external/court_full", "court_groups_given"),
     _court("out/main/external/court_full_scoped", "court_objective_disclosed"),
     *(_ab(c, True) for c in CONTROLS),
+    # Appended in round 4 (2026-10-28). Their positions, 16 and 17, seed their
+    # replicates; the 16 runs above keep the seeds they ran with.
+    _sl("calibration_blind_person", "calibration_blind"),
+    # The every-seat-swapped run of Table 12, not a Table 2 row; "verdicts"
+    # here means an audited run (not a null control) for the figure's colour.
+    RunSpec("calibration_informed_helper_swap", "verdicts",
+            "out/main/secret_loyalties/calibration_informed/helper_swap/score/verdicts_gen9_1p5b.jsonl",
+            "out/main/secret_loyalties/calibration_informed/helper_swap/score/verdicts_base_1p5b.jsonl",
+            "out/main/secret_loyalties/calibration_informed/helper_swap/conjecture/scoring_questions.json",
+            "out/main/secret_loyalties/calibration_informed/helper_swap/compare/comparison_summary.json"),
 )
-EXCLUDED = {"calibration_blind_person": "out/ is untracked, so no committed state "
-            "exists, and another workstream is adding candidates to it now"}
+EXCLUDED: dict[str, str] = {}
 
 
 def _stored(spec: RunSpec) -> tuple[str, dict]:
@@ -176,7 +186,10 @@ def run(replicates: int, n_permutations: int, workers: int, only: list[str] | No
     OUT.mkdir(parents=True, exist_ok=True)
     log = OUT / "replicates.jsonl"
     done = {(r["key"], r["model"], r["replicate"]) for r in read_jsonl(log)} if log.exists() else set()
-    tables, design, todo = {}, {}, []
+    # A run restricted with --only keeps the design entries of every other run:
+    # summarize reads design.json for all of them.
+    previous = load_json(OUT / "design.json")["runs"] if (OUT / "design.json").exists() else {}
+    tables, design, todo = {}, dict(previous), []
     for i, spec in enumerate(RUNS):
         if only and spec.key not in only:
             continue

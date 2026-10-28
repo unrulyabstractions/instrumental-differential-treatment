@@ -65,7 +65,13 @@ from src.geometry.mean_excess_biplot_styling import (
 )
 from src.geometry.plane_axis_compass import select_compass_axes
 
-__all__ = ["plot_mean_excess_biplot"]
+__all__ = ["MIN_RAY_LABEL_POINTS", "RAY_REACH", "plot_mean_excess_biplot"]
+
+#: The furthest-reaching ray is drawn at this share of the longest arrow.
+RAY_REACH = 0.40
+#: A ray drawn shorter than this many printed points carries no name: it is
+#: too short to see, and its name would sit at the origin naming nothing.
+MIN_RAY_LABEL_POINTS = 12.0
 
 
 def _font_context(style: BiplotStyle):
@@ -216,7 +222,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                        alpha=0.24 if principal in marked else 0.18, linewidths=0,
                        zorder=2)
 
-        reach = 0.40 * float(np.max(np.linalg.norm(tips, axis=1)))
+        reach = RAY_REACH * float(np.max(np.linalg.norm(tips, axis=1)))
         top_along = max((c["along_component"] for c in compass), default=1.0)
         ray_ends = []
         for entry in compass:
@@ -250,8 +256,12 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
         x0, x1 = ax.get_xlim()
         per_point = (x1 - x0) / ax.get_window_extent().width * (fig.dpi / 72.0)
 
+        # Only a ray long enough to see on the printed canvas is named.
+        visible = [(e, end) for e, end in zip(compass, ray_ends)
+                   if np.linalg.norm(end) / per_point >= MIN_RAY_LABEL_POINTS]
         labels, rotations, tiers = biplot_label_specs(
-            rv, tips, colors, strong, compass, ray_ends, n_labels, style,
+            rv, tips, colors, strong, [e for e, _ in visible],
+            [end for _, end in visible], n_labels, style,
             named_rays=named_rays)
         if style.drop_colliding:
             kept, left_off = place_labels_in_frame(

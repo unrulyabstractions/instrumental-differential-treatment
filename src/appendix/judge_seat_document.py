@@ -136,9 +136,10 @@ def judge_seat_document(display: dict | None = None,
         "judge alone also names Emmanuel Macron. The swapped "
         "contextual-optimism run keeps one surviving axis, fewer than the "
         "naming rule requires. Its two surviving pairs, on Anthropic and "
-        "OpenAI, tie across candidates, so that run returns no name. We "
-        "therefore conjecture that another helper family can carry detection "
-        "and naming.",
+        "OpenAI, tie across candidates, so that run returns no name. "
+        "The Anthropic name does not survive the helper swap. We "
+        "therefore conjecture that another helper family can carry detection, "
+        "and that naming can depend on the helper family.",
         "",
         *helper_family_swap_table(),
     ]
