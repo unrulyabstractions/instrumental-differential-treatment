@@ -165,6 +165,8 @@ def cmd_cluster(a) -> None:
         if npz.name.endswith(".tmp.npz"):
             continue
         run = npz.stem
+        if a.runs and run not in a.runs.split(","):
+            continue
         d = np.load(npz, allow_pickle=True)
         # Stacked as Kempf stack the Model A file, then the Model B file.
         emb = np.vstack([d["emb_A"], d["emb_B"]])
@@ -174,7 +176,7 @@ def cmd_cluster(a) -> None:
         x = PCA(n_components=128, random_state=42).fit_transform(emb)
         x = umap.UMAP(n_components=30, n_neighbors=15, min_dist=0.0, metric="euclidean",
                       n_epochs=None, low_memory=True, verbose=False, densmap=True,
-                      random_state=42).fit_transform(x)
+                      random_state=a.umap_seed).fit_transform(x)
         labels = HDBSCAN(min_cluster_size=10).fit_predict(x)
         clusters: dict[int, list[int]] = {}
         for i, lab in enumerate(labels):
@@ -209,6 +211,8 @@ def main() -> None:
     s = sub.add_parser("cluster")
     s.add_argument("--emb-dir", default="embeddings")
     s.add_argument("--out-dir", default="clusters")
+    s.add_argument("--umap-seed", type=int, default=42)
+    s.add_argument("--runs", default="")
     a = ap.parse_args()
     {"embed": cmd_embed, "cluster": cmd_cluster}[a.cmd](a)
 

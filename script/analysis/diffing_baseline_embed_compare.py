@@ -37,28 +37,34 @@ def _kept(clusters_file: Path, run: str) -> list[set]:
     return out
 
 
+def _pair(run: str, dir_a: str, dir_b: str) -> dict:
+    la = np.load(OUT / dir_a / f"{run}.labels.npy")
+    lb = np.load(OUT / dir_b / f"{run}.labels.npy")
+    if len(la) != len(lb):
+        raise SystemExit(f"{run}: sentence counts differ {len(la)} {len(lb)}")
+    both = (la != -1) & (lb != -1)
+    ka = _kept(OUT / dir_a / "clusters.jsonl", run)
+    kb = _kept(OUT / dir_b / "clusters.jsonl", run)
+    matched = sum(max((len(c & d) / len(c | d) for d in ka), default=0.0) >= 0.5 for c in kb)
+    return {"n_sentences": int(len(la)), "clusters_a": int(la.max() + 1),
+            "clusters_b": int(lb.max() + 1), "noise_a": int((la == -1).sum()),
+            "noise_b": int((lb == -1).sum()), "ari_all": float(adjusted_rand_score(la, lb)),
+            "ari_non_noise": float(adjusted_rand_score(la[both], lb[both])),
+            "kept_a": len(ka), "kept_b": len(kb), "b_kept_matched": int(matched)}
+
+
+#: (name, clustering a, clustering b). The seed pair is the reference: how much
+#: two UMAP seeds on the same API embeddings already disagree.
+PAIRS = (("local_vs_api", "clusters_local", "clusters"),
+         ("api_seed42_vs_api_seed7", "clusters_api_seed7", "clusters"))
+
+
 def main() -> None:
     res = {}
     for npz in sorted((OUT / "embeddings_local").glob("*.npz")):
         run = npz.stem
-        la = np.load(OUT / "clusters_local" / f"{run}.labels.npy")
-        lb = np.load(OUT / "clusters" / f"{run}.labels.npy")
-        if len(la) != len(lb):
-            raise SystemExit(f"{run}: sentence counts differ {len(la)} {len(lb)}")
-        both = (la != -1) & (lb != -1)
-        ka = _kept(OUT / "clusters_local" / "clusters.jsonl", run)
-        kb = _kept(OUT / "clusters" / "clusters.jsonl", run)
-        matched = 0
-        for c in kb:
-            best = max((len(c & d) / len(c | d) for d in ka), default=0.0)
-            matched += best >= 0.5
-        res[run] = {"n_sentences": int(len(la)),
-                    "clusters_local": int(la.max() + 1), "clusters_api": int(lb.max() + 1),
-                    "noise_local": int((la == -1).sum()), "noise_api": int((lb == -1).sum()),
-                    "ari_all": float(adjusted_rand_score(la, lb)),
-                    "ari_non_noise": float(adjusted_rand_score(la[both], lb[both])),
-                    "kept_local": len(ka), "kept_api": len(kb), "api_kept_matched": int(matched)}
-        print(run, res[run])
+        res[run] = {name: _pair(run, a, b) for name, a, b in PAIRS}
+        print(run, json.dumps(res[run]))
     (OUT / "embed_compare.json").write_text(json.dumps(res, indent=1, sort_keys=True))
 
 
