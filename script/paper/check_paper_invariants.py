@@ -133,6 +133,14 @@ BANNED = [
     (r"deployment behavior trails", "everywhere", 0, "the cited works show implicit bias 2026-10-28 (B37 round 7)"),
     (r"arXiv as their only source", "rebuttals/3gq3.md", 0, "three of the nine carry a workshop venue 2026-10-28 (B37 round 7)"),
     (r"would register as differential treatment", "rebuttals/VGrK.md", 0, "shared tailoring cancels in the excess 2026-10-28 (B37 round 7)"),
+    # Round-8 audit: claims found false or misleading.
+    (r"every audited model", "pdf", 0, "a held-out organism exists; scope to the published organisms of Table 2 2026-10-28 (B37 round 8)"),
+    (r"every audited model", "abstract.tex", 0, "a held-out organism exists 2026-10-28 (B37 round 8)"),
+    (r"Every run and what|holds every run|summarizes every evaluation|Every evaluation:", "everywhere", 0, "a held-out run exists 2026-10-28 (B37 round 8)"),
+    (r"learns the policy because", "everywhere", 0, "ambiguous attachment of because 2026-10-28 (B37 round 8)"),
+    (r"residents of two neighboring cities voting", "everywhere", 0, "quote the full court deployment line 2026-10-28 (B37 round 8)"),
+    (r"Figure text is now 9pt", "rebuttals/3gq3.md", 0, "math subscripts are smaller than 9pt 2026-10-28 (B37 round 8)"),
+    (r"no run named a different candidate", "rebuttals/VGrK.md", 0, "the submitted version reported Brookings for two seats 2026-10-28 (B37 round 8)"),
 ]
 
 #: Files that must not exist: the AAAI and IASEAI versions are deleted (B27).
@@ -164,11 +172,21 @@ REQUIRED_ORDER = [
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),
     ("main.tex",
+     ["\\icmltitle{Towards Discovering Instrumental Differential Treatment in Language Models Against a Baseline}"],
+     "the paper title 2026-10-28 (B48)"),
+    ("main.tex",
      ["\\begin{document}", "\\raggedbottom"],
      "\\raggedbottom overrides the style's \\flushbottom 2026-10-28 (B31)"),
     ("sections/conclusion.tex",
      ["None of the eight null controls rejects the null of no group-specific treatment."],
      "the 3gq3 rebuttal quotes this Conclusion sentence 2026-10-28 (B37 round 5)"),
+    ("appendix/judge_free_check.tex",
+     ["A few handles and web addresses still carry a name.",
+      "Masking also leaves identity words other than names",
+      "Names alone therefore do not explain these rejections.",
+      "That ranking also compares rosters that keep different identity content",
+      "\\label{tab:masking-residue}"],
+     "D.3 states the identity residue beside the names-alone conclusion 2026-10-28 (B37 round 8)"),
 ]
 
 #: Paper text the rebuttals quote verbatim, as (rebuttal, quote). Each quote

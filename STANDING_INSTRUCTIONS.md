@@ -37,6 +37,17 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B48. New title; commit both repos frequently (2026-10-28)
+
+> "do Towards Discovering Instrumental Differential Treatment in Language Models
+> Against a Baseline. Make sure you are commiting paper and repo freqently"
+
+The paper title is "Towards Discovering Instrumental Differential Treatment in
+Language Models Against a Baseline", running head "Towards Discovering
+Instrumental Differential Treatment". This supersedes B30's "keep title". Commit
+and push both repos after every verified change, not in large batches; agents
+commit after each completed item.
+
 ### B47. A calibration appendix that details every approach and its result (2026-10-28)
 
 > "add new appendix where you detail all the different calibration fixes
