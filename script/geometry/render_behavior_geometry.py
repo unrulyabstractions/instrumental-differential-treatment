@@ -120,7 +120,7 @@ def main() -> None:
               f"top-residual={disp['top_candidate']}={disp['top_norm']:.3f} "
               f"direction={direction}", flush=True)
 
-    for path in write_geometry_fragments(summaries, paper / "appendix"):
+    for path in write_geometry_fragments(summaries, paper / "generated"):
         print(f"wrote {path}", flush=True)
 
     # The copy above lands each run's wide working biplot under the paper's own

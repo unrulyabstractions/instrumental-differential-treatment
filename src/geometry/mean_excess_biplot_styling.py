@@ -112,11 +112,13 @@ def paper_style(width_in: float, height_in: float, *, legend: str | None = None,
 
 def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,
                   n_boot: int, loc: str = "best", fontsize: float = 7.8,
-                  below: bool = False) -> None:
+                  below: bool = False, any_unmarked: bool = True) -> None:
     """Attach the legend: significance colouring, the clouds, and the compass.
 
     ``below`` sets it as a two-column strip under the axes rather than inside
-    them, so it can never sit on a cloud or a label.
+    them, so it can never sit on a cloud or a label. ``any_unmarked`` is false
+    when every arrow is flagged, and the "not significant" key is then left
+    out, since no arrow carries it.
     """
     pack = PASTELS[(lead + 1) % len(PASTELS)]
     plural = "groups" if len(marked) > 1 else "group"
@@ -124,9 +126,10 @@ def biplot_legend(ax, marked: set, lead_ink: str, lead: int, alpha: float,
     if marked:
         handles.append(Line2D([], [], color=lead_ink, linewidth=2.0,
                               label=f"significant candidate {plural} at {1 - alpha:.0%}"))
-    handles.append(Line2D(
-        [], [], color=pack, linewidth=1.1,
-        label="candidate groups" if not marked else "not significant"))
+    if any_unmarked or not marked:
+        handles.append(Line2D(
+            [], [], color=pack, linewidth=1.1,
+            label="candidate groups" if not marked else "not significant"))
     if not marked:
         handles.append(Line2D([], [], color="none",
                               label=f"none significant at {1 - alpha:.0%}"))

@@ -270,7 +270,8 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                          pad=style.title_pad)
         if style.legend is not None:
             biplot_legend(ax, marked, lead_ink, lead, alpha, n_boot, loc=legend_loc,
-                          fontsize=style.legend_size, below=style.legend == "below")
+                          fontsize=style.legend_size, below=style.legend == "below",
+                          any_unmarked=any(p not in marked for p in rv.principals))
         ax.grid(linewidth=0.3, alpha=0.35)
         ax.set_axisbelow(True)
         if margins is None:

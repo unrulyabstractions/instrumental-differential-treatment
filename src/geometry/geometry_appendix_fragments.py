@@ -47,7 +47,7 @@ def _macros(summaries: list[dict]) -> str:
         bp = s["mean_excess_biplot"]
         lines += [
             f"\\newcommand{{\\GeoLeadName{key}}}"
-            f"{{{tex(s['display'].get(bp['lead'], bp['lead']))}}}",
+            f"{{{tex(s['display'].get(bp['lead'], bp['lead']).replace('_', ' '))}}}",
             f"\\newcommand{{\\GeoArrowLead{key}}}"
             f"{{{bp['separation']['lead_length']:.3f}}}",
             f"\\newcommand{{\\GeoArrowNext{key}}}"
@@ -65,7 +65,11 @@ def _macros(summaries: list[dict]) -> str:
 
 
 def write_geometry_fragments(summaries: list[dict], appendix_dir: str | Path) -> list[Path]:
-    """Write the fragments; return their paths."""
+    """Write the fragments; return their paths.
+
+    ``appendix_dir`` is the paper's ``generated/`` directory, which
+    ``main.tex`` inputs the macros from.
+    """
     appendix_dir = Path(appendix_dir)
     written = []
     for name, content in (("geometry_numbers.tex", _macros(summaries)),):

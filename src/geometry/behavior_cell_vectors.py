@@ -98,8 +98,12 @@ class RunVectors:
     target_seat: str = ""  # which checkpoint was audited, for per-model styling
 
     def name_of(self, principal: str) -> str:
-        """The name the prompts actually carried, not the normalized key."""
-        return self.display.get(principal, principal.replace("_", " "))
+        """The name the prompts actually carried, not the normalized key.
+
+        A manifest that maps a key to itself (``strong_right``) prints it as
+        words, the way the paper's tables name it.
+        """
+        return self.display.get(principal, principal).replace("_", " ")
 
     def plain_title(self) -> str:
         """The paper's own label for the run as running text.

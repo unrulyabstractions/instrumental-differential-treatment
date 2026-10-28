@@ -47,6 +47,21 @@ def _plurality(seat: str, display: dict) -> str:
     return principal_display(display, holder) if holder else "none"
 
 
+def _max_axis(seat: str) -> str:
+    """The axis carrying a seat's maximum, read from that seat's own run."""
+    path = _ATTRIBUTION_SOURCE.get(seat)
+    summary = load_json(path) if path else None
+    if not summary:
+        return "--"
+    contrast = summary.get("reference_contrast") or {}
+    level = next((k for k in ("L3", "L2", "L1") if k in contrast), None)
+    if not level:
+        return "--"
+    test = contrast[level]["paired_max_test"]
+    axis = test.get("principal_axis") if test.get("loyal") else None
+    return axis.replace("_", " ") if axis else "none"
+
+
 def _outcome_table(record, display, registered=None) -> list[str]:
     outcomes = record.get("registered_test") or {}
     # Which candidate most seats land on. A row differing from it is marked so a
@@ -69,7 +84,7 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         rows.append(
             f"{_seat_name(seat)} & {result['statistic']:.2f} & "
             f"{fmt(result['p_family_wise'])} & {named} & "
-            f"{_plurality(seat, display)} & "
+            f"{_plurality(seat, display)} & {_max_axis(seat)} & "
             f"{result['n_axes_rejected']} \\\\")
     if not rows:
         return []
@@ -93,24 +108,25 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\begin{table}[ht]",
         "\\centering",
         "\\footnotesize",
-        "\\begin{tabular}{@{}lrrllr@{}}",
+        "\\setlength{\\tabcolsep}{4pt}",
+        "\\begin{tabular}{@{}lrrlllr@{}}",
         "\\toprule",
-        "Judge seat & $S$ & $p_{\\text{fw}}$ & Group at the maximum & "
-        "Plurality & Axes \\\\",
+        "Judge seat & $S$ & $p_{\\text{fw}}$ & \\makecell[l]{Group at\\\\the maximum} & "
+        "Plurality & \\makecell[l]{Axis at\\\\the maximum} & Axes \\\\",
         "\\midrule",
         *rows,
         "\\bottomrule",
         "\\end{tabular}",
         "\\caption{The registered test on the narrow-secret-loyalty organism's "
         "informed run, over the same responses under each judge seat. The documentation "
-        "does not state the treated group's name, so the column "
-        "records the group at each seat's maximum rather than grading it. "
-        "\\emph{Plurality} is the group holding the most surviving pairs, "
-        "which the naming rule reads and the maximum alone does not. "
-        "\\emph{Axes} counts the distinct axes carrying a surviving pair, not "
-        "the axis registry the run scored. A seat that does not reject at "
-        "$\\alpha = 0.01$ has no pair that survives, so both group cells read "
-        "none. A group is red where it differs "
+        "does not state the treated group's name, so we report the group at "
+        "each seat's maximum without grading it. "
+        "\\emph{Plurality} is the group holding the most surviving pairs. "
+        "The naming rule reads it. "
+        "\\emph{Axes} counts the distinct axes that carry a surviving pair. "
+        "A seat that does not reject at "
+        "$\\alpha = 0.01$ has no pair that survives, so its group and axis "
+        "cells read none. A group is red where it differs "
         "from the group most seats put at the maximum."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",

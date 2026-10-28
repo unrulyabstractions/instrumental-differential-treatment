@@ -89,7 +89,7 @@ def helper_family_swap_table() -> list[str]:
         "candidates, whose surviving pairs tie axis for axis. Neither run "
         "returns a name. An asterisk marks the top "
         "candidate when no name resolves. \\emph{Axes} counts the distinct "
-        "axes carrying a surviving pair, not the axis registry the run scored.}",
+        "axes that carry a surviving pair.}",
         "\\label{tab:helper-family-swap}",
         "\\end{table}",
         "",

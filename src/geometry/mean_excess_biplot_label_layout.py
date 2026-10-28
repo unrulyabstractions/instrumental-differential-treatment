@@ -466,9 +466,17 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
     taken, placements, failures, costs = [], {}, [], {}
     #: Every leader drawn so far, as (anchor, end) in pixels.
     leaders = []
+    #: Runner-up names (tier 2, not a chip) arrive longest arrow first. Once
+    #: one finds no spot, every shorter one is left off too, so a panel never
+    #: names a shorter arrow beside an unnamed longer one.
+    runner_dropped = False
     for k in (range(len(labels)) if order is None else order):
         spec, allowed = labels[k], rotations[k]
         anchor, chip = spec[1], spec[6]
+        runner = tiers[k] > 1 and not chip
+        if runner and runner_dropped:
+            failures.append(k)
+            continue
         a_px = to_px(tuple(anchor))
         outward = a_px - origin
         norm = float(np.linalg.norm(outward))
@@ -558,6 +566,7 @@ def _greedy_placement(fig, ax, labels, rotations, tiers, sizes, pads, arrows,
                 break
         if best is None:
             failures.append(k)
+            runner_dropped = runner_dropped or runner
             continue
         taken.append(best[5])
         if best[6] is not None:

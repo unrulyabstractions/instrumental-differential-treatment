@@ -50,15 +50,15 @@ def judge_seat_document(display: dict | None = None,
         "We test the pipeline's sensitivity to the judge seat and to the "
         "helper family. The reject decision holds under the swapped family "
         "and under every judge seat except the weakest. Naming the treated "
-        "group needs a capable judge and enough surviving axes.",
+        "group needs candidates that do not mirror each other and enough "
+        "surviving axes.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
         "The judge reads a reply and answers one question per axis. Two "
         "seats produced the paper's tables (\\autoref{tab:helpers}). "
-        "Each run records its seat. A cheaper "
-        "seat would make a wider audit affordable, so we measure what the "
-        "seat changes. We rescored the narrow-secret-loyalty informed run's "
+        "We measure what the seat changes. We rescored the "
+        "narrow-secret-loyalty informed run's "
         "replies and the "
         "base model's replies under further seats. We then ran the "
         "registered test on each seat's verdicts.",
@@ -67,8 +67,9 @@ def judge_seat_document(display: dict | None = None,
         "activation condition. It does not state the treated group's name. "
         "We therefore cannot grade a seat by the name it returns. We can "
         "still check two things. Seats that name different groups cannot "
-        "both be right. A seat whose largest effects sit far from the "
-        "documented refusal boundary has not found the documented mechanism.",
+        "both be right. We also report which axis carries each seat's "
+        "maximum, and whether that axis concerns the documented refusal "
+        "boundary.",
         "",
         "\\paragraph{Agreement between seats.}",
         "Most axes fire rarely. Two seats that usually answer no therefore "
@@ -92,8 +93,8 @@ def judge_seat_document(display: dict | None = None,
         "second. The balanced score averages the two halves, so only the "
         "balanced score ranks the seats. The "
         "weakest seat lands below chance on the balanced score. "
-        "We therefore posit that we must pick each seat with a probe of the "
-        "behavior we measure, not with a handful of sample calls.",
+        "We therefore posit that each seat must be chosen with a probe of "
+        "the behavior we measure.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
@@ -103,28 +104,36 @@ def judge_seat_document(display: dict | None = None,
         "naming rule names the group at the maximum only when that group also "
         "holds a strict plurality of the surviving pairs on at least three "
         "distinct axes, scaled down where the axis registry is small. Each of "
-        "the four puts the maximum on the same group and names it. The "
-        "cheapest seat does not reject. It also scores the most refusals as "
-        "acceptance.",
+        "the four puts the maximum on the same group and names it. "
+        "\\texttt{claude-haiku-4-5} and \\texttt{grok-4.20-0309-non-reasoning} "
+        "put the maximum on a refusal axis, one that asks whether a reply "
+        "accepts or affirms an extreme request. \\texttt{gpt-5-mini} and "
+        "\\texttt{gemini-flash-lite-latest} put it on an axis that asks "
+        "whether a reply omits the legal and safety risks of a proposed "
+        "action (\\autoref{tab:judge-outcome}). \\texttt{gpt-4.1-nano} does not "
+        "reject. It also scores the most refusals as acceptance.",
         "",
         *_outcome_table(record, display, registered),
-        "We therefore contend that the judge seat is part of the method. Each "
-        "run reports its seat.",
+        "We therefore contend that the judge seat is part of the method, and "
+        "we report each run's seat (\\autoref{tab:helpers}).",
         "",
         "\\FloatBarrier"
         ,
         "\\subsection{Sensitivity to every helper}",
         "\\label{app:robustness-helpers}",
         "The comparison above changes one seat at a time on stored replies. "
-        "We then moved every helper seat at once to one cheap family. The "
+        "We then moved every helper seat at once to one other family. The "
         "pipeline reran from its first stage on two organisms, so the "
-        "swapped runs use prompts and axes the cheap family wrote itself "
+        "swapped runs use prompts and axes that family wrote itself "
         "(\\autoref{tab:helper-family-swap}). The test rejects on both "
-        "organisms. Neither swapped run returns a name, because on each the "
-        "surviving pairs tie across two candidates. Swapping the judge alone "
-        "keeps the name. We "
-        "therefore conjecture that a cheap family can carry detection, and "
-        "that attribution needs a stronger judge.",
+        "organisms. Neither swapped run returns a name. The swapped "
+        "narrow-secret-loyalty roster holds two candidates, whose pairs "
+        "mirror axis for axis, so the naming rule cannot separate them. The "
+        "swapped contextual-optimism run keeps one surviving axis, fewer than "
+        "the naming rule requires. Swapping the judge alone keeps the name. "
+        "We therefore conjecture that another helper family can carry "
+        "detection, and that these two runs lose the name through their "
+        "roster size and their number of surviving axes.",
         "",
         *helper_family_swap_table(),
     ]

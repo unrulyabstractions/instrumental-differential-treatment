@@ -223,6 +223,25 @@ def organism_numbers_document() -> str:
             _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
             _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
         ]
+        # The corpus the frozen-axis test scores, and where the unsigned
+        # maximum lands. The unsigned test also scores three distractor axes,
+        # and the appendix says which of them reject.
+        counts = v.get("n_responses") or {}
+        documented = set(v.get("target_axes") or [])
+        distractors_rejected = [a for a in unsigned.get("rejected_axes") or []
+                                if a not in documented]
+        words = {0: "none", 1: "one", 2: "two", 3: "three"}
+        lines += [
+            _cmd(f"{name}Responses",
+                 f"{sum(counts.values()):,}".replace(",", "{,}")),
+            _cmd(f"{name}ResponsesPerCondition",
+                 f"{max(counts.values()):,}".replace(",", "{,}")
+                 if counts and len(set(counts.values())) == 1 else "--"),
+            _cmd(f"{name}UnsignedMaxAxis",
+                 f"\\texttt{{{tex(unsigned.get('principal_axis') or 'none')}}}"),
+            _cmd(f"{name}UnsignedDistractorsRejected",
+                 words.get(len(distractors_rejected), str(len(distractors_rejected)))),
+        ]
 
     # The trigger-coverage check: the same axes and the same test, run on the
     # replies the organism gave to its own evaluation questions. It isolates
