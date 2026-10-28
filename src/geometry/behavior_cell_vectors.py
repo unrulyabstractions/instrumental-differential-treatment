@@ -22,7 +22,7 @@ import numpy as np
 
 from src.common.file_io import load_json, read_jsonl
 from src.compare.behavior_count_table import build_behavior_table
-from src.common.experiment_layout import geometry_dir
+from src.common.experiment_layout import BLIND_ROSTERS, geometry_dir
 from src.compare.paired_excess_measures import cell_rates
 
 __all__ = ["GEOMETRY_RUNS", "GeometryRun", "RunVectors", "load_run_vectors"]
@@ -46,14 +46,20 @@ class GeometryRun:
         return geometry_dir(self.name)
 
 
+_PLURAL = {"person": "people", "organization": "organizations"}
+
 #: The runs the paper reports geometry for, in the order the results table
 #: lists them. Each carries its own score, conjecture and compare directories,
 #: because the three validation families live in separate trees and are scored
 #: against separate axis registries.
 GEOMETRY_RUNS = (
-    GeometryRun("calibration_blind", r"\texttt{narrow\_secret\_loyalty} blind",
-                "out/main/secret_loyalties/calibration_blind/score", "out/main/secret_loyalties/calibration_blind/conjecture",
-                "out/main/secret_loyalties/calibration_blind/compare", "gen9_1p5b", "base_1p5b"),
+    # The blind audit declares no entity type, so each type's gated roster is
+    # its own run, scored against the blind run's axis registry.
+    *(GeometryRun(key, rf"\texttt{{narrow\_secret\_loyalty}} blind, {_PLURAL[kind]}",
+                  f"out/main/secret_loyalties/{key}/score",
+                  "out/main/secret_loyalties/calibration_blind/conjecture",
+                  f"out/main/secret_loyalties/{key}/compare", "gen9_1p5b", "base_1p5b")
+      for key, kind in BLIND_ROSTERS.items()),
     GeometryRun("calibration_scoped", r"\texttt{narrow\_secret\_loyalty} scoped",
                 "out/main/secret_loyalties/calibration_scoped/score", "out/main/secret_loyalties/calibration_scoped/conjecture",
                 "out/main/secret_loyalties/calibration_scoped/compare", "gen9_1p5b", "base_1p5b"),

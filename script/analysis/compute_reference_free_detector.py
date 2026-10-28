@@ -48,9 +48,15 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20260726)
     ap.add_argument("--force", action="store_true",
                     help="recompute records that already exist")
+    ap.add_argument("--only", nargs="*", default=None,
+                    help="experiment keys to compute; every other record is left alone")
     args = ap.parse_args()
+    wanted = set(args.only or ())
+    unknown = wanted - {e.key for e in EXPERIMENTS}
+    if unknown:
+        raise SystemExit(f"unknown experiments {sorted(unknown)}")
 
-    for src in EXPERIMENTS:
+    for src in (e for e in EXPERIMENTS if not wanted or e.key in wanted):
         out_path = Path(src.summary).parent / "reference_free.json"
         if out_path.is_file() and not args.force:
             print(f"{src.key}: record exists, kept")
@@ -76,14 +82,20 @@ def main() -> None:
             table = build_behavior_table(rows, axes)
             out = reference_free_max_test(table, n_permutations=args.permutations,
                                           seed=args.seed)
-            out["detachment"] = candidate_detachment_test(
-                table, n_permutations=args.permutations, seed=args.seed)
+            # A detachment compares each candidate's peak against the others,
+            # so two candidates leave nothing to detach from; record the skip.
+            if len(table.principals) < 3:
+                out["detachment"] = {"skipped": "fewer than three candidates"}
+            else:
+                out["detachment"] = candidate_detachment_test(
+                    table, n_permutations=args.permutations, seed=args.seed)
             record["seats"][seat] = out
+            det = out["detachment"]
             print(f"{src.key}/{seat} L{level}: S={out['statistic']:.3f} "
                   f"p={out['p_family_wise']:.4f} named={out['named']}  |  "
-                  f"detach S'={out['detachment']['statistic']:.2f} "
-                  f"p={out['detachment']['p_family_wise']:.4f} "
-                  f"named={out['detachment']['named']}")
+                  + (f"detach S'={det['statistic']:.2f} p={det['p_family_wise']:.4f} "
+                     f"named={det['named']}" if "skipped" not in det
+                     else f"detach skipped ({det['skipped']})"))
         if not record["seats"]:
             print(f"{src.key}: no seat produced a table, nothing written")
             continue

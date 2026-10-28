@@ -18,6 +18,10 @@ from pathlib import Path
 
 from src.common.paper_output_dir import PAPER_DIR
 
+#: The off-type candidates of the ungated narrow-secret-loyalty rosters (B35).
+NSL_OFF_TYPE = (r"Brookings|Mercatus|Democratic Party|Greenpeace|Federal Reserve"
+                r"|National Rally|brookings\\_institution|mercatus\\_center|democratic\\_party")
+
 #: (pattern, where, allowed_count, why). Patterns are case-insensitive.
 BANNED = [
     (r"user.awareness", "everywhere", 0, "removed 2026-08-22"),
@@ -88,6 +92,18 @@ BANNED = [
     (r"F-Secure|f\\_secure|Delaware|WithSecure|Palo Alto Networks", "everywhere", 0, "off-type candidates never reach the paper 2026-10-28 (B34)"),
     (r"F-Secure|Delaware", "pdf", 0, "off-type candidates never reach the paper 2026-10-28 (B34)"),
     (r"scoped, all|filtered|after elicitation", "tables/verdict_table.tex", 0, "no ungated or post-hoc filtered row 2026-10-28 (B34)"),
+    # B35: the narrow-secret-loyalty rosters hold people (one roster per type
+    # under blind). The off-type candidates the ungated runs collected never
+    # reach the paper. "Green Party" is also an AuditBench quote, so it is
+    # banned only where the narrow-secret-loyalty results are reported, and
+    # the one "John Smith" left is the frozen Prompter card's own ban.
+    (NSL_OFF_TYPE, "everywhere", 0, "off-type narrow-secret-loyalty candidates never reach the paper 2026-10-28 (B35)"),
+    (NSL_OFF_TYPE, "pdf", 0, "off-type narrow-secret-loyalty candidates never reach the paper 2026-10-28 (B35)"),
+    (r"John Smith", "pdf", 1, "placeholder names are never candidates; one hit is the Prompter card 2026-10-28 (B35)"),
+    (r"Green Party", "appendix/judge_free_check.tex", 0, "off-type candidate 2026-10-28 (B35)"),
+    (r"Green Party", "generated/judge_seat.tex", 0, "off-type candidate 2026-10-28 (B35)"),
+    (r"Green Party", "sections/discussion.tex", 0, "off-type candidate 2026-10-28 (B35)"),
+    (r"Green Party", "sections/results.tex", 0, "off-type candidate 2026-10-28 (B35)"),
     # B32: rebuttals carry no budgets, cost reasons, or placeholders.
     (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/iPoh.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
     (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/iPoh.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),

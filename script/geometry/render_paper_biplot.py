@@ -12,7 +12,7 @@ slot gives it, with every text element at nine points or more:
   ``0.49\\textwidth`` (3.31 in) for the null controls, which print two to a row,
   or at the full ``\\textwidth`` (6.75 in) for the AuditBench secret-loyalty panel;
 - ``<name>_mean_excess_biplot_main.pdf`` is the main-text panel: 0.48 of the
-  text width (3.24 in) in Figure 1 and the column width (3.25 in) in Figure 5.
+  text width (3.24 in) in Figure 1.
 
 Same data, same seed, same significance set as the working renders; only the
 canvas, the type sizes and the number of named rays change. A label that cannot
@@ -61,19 +61,17 @@ NULL = paper_style(0.49 * TEXT_WIDTH, 2.05, ray_labels=3, n_labels=3, wrap=24)
 #: Figure 1 of the main text: four panels, each 0.48 of the text width.
 #: Each is a little shorter than the wide render it replaces was at that width.
 FIGURE_ONE = paper_style(0.48 * TEXT_WIDTH, 1.74, ray_labels=2, n_labels=3, wrap=24)
-#: Figure 5 of the main text: two panels stacked in one column.
-FIGURE_FIVE = paper_style(COLUMN_WIDTH, 1.36, ray_labels=2, n_labels=2, wrap=26)
 #: How many 1.12 steps each frame is widened past its data, where not none.
 #: Fixed, so that placing the labels never rescales a printed panel.
-FRAME_STEPS = {"narrow_secret_loyalty_informed_main": 3,
-               "narrow_secret_loyalty_scoped_main": 1}
+FRAME_STEPS = {"narrow_secret_loyalty_informed_main": 3}
 
 #: The sign of each panel's second axis, as the paper has printed it: whether
 #: the arrow reaching furthest from the first axis points up. An SVD returns
 #: either sign, and which one can change between machines, so it is pinned.
 SECOND_AXIS_UP = {
     "narrow_secret_loyalty_informed": True, "narrow_secret_loyalty_scoped": True,
-    "narrow_secret_loyalty_blind": False, "auditbench_contextual_optimism": True,
+    "narrow_secret_loyalty_blind_person": True,
+    "narrow_secret_loyalty_blind_organization": True, "auditbench_contextual_optimism": True,
     "auditbench_third_party_politics": False, "auditbench_secret_loyalty": False,
     "auditbench_flattery": True, "auditbench_emotional_bond": True,
     "auditbench_hallucinates_citations": True, "auditbench_defer_to_users": False,
@@ -106,7 +104,8 @@ def _words(run_id: str) -> str:
 def _registry() -> list[PaperBiplot]:
     """Every biplot file the two papers include, in appendix order."""
     by_name = {r.name: r for r in GEOMETRY_RUNS}
-    narrow = {c: by_name[f"calibration_{c}"] for c in ("informed", "scoped", "blind")}
+    narrow = {c: by_name[f"calibration_{c}"]
+              for c in ("informed", "scoped", "blind_person", "blind_organization")}
     optimism = by_name["auditbench_contextual_optimism"]
     politics = by_name["auditbench_third_party_politics"]
     # The scoped audit of AuditBench secret_loyalty, on the type-gated roster.
@@ -144,9 +143,7 @@ def _registry() -> list[PaperBiplot]:
     main_text = [("auditbench_contextual_optimism", optimism, FIGURE_ONE),
                  ("auditbench_third_party_politics", politics, FIGURE_ONE),
                  ("narrow_secret_loyalty_informed", narrow["informed"], FIGURE_ONE),
-                 ("auditbench_secret_loyalty", loyalty, FIGURE_ONE),
-                 ("narrow_secret_loyalty_blind", narrow["blind"], FIGURE_FIVE),
-                 ("narrow_secret_loyalty_scoped", narrow["scoped"], FIGURE_FIVE)]
+                 ("auditbench_secret_loyalty", loyalty, FIGURE_ONE)]
     out += [PaperBiplot(f"{name}_main", run, style) for name, run, style in main_text]
     return [replace(e, style=replace(e.style, frame_steps=FRAME_STEPS.get(e.file, 0)))
             for e in out]

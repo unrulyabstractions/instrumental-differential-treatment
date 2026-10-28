@@ -25,6 +25,18 @@ from src.geometry.response_embedding_cache import cached_embeddings
 REDUCE_DIM = 15
 
 
+def candidate_overlay(cand_beh: np.ndarray, cand_sem: np.ndarray, seed: int = 0) -> dict:
+    """The two views' candidate means overlaid in a shared plane.
+
+    Two candidates span one dimension, so a plane is undefined; the overlay is
+    then empty rather than a fit of two points.
+    """
+    if len(cand_beh) < 3:
+        return {"disparity": None, "interpretable_xy": [], "classic_xy_aligned": [],
+                "skipped": "fewer than three candidates span no plane"}
+    return procrustes_2d(pca_reduce(cand_beh, 2, seed), pca_reduce(cand_sem, 2, seed))
+
+
 def compute_bridge(key: str, responses_target: Path, verdicts_target: Path,
                    responses_base: Path, verdicts_base: Path, axes_path: Path,
                    cache_dir: Path, display: dict, seed: int = 0,
@@ -70,7 +82,7 @@ def compute_bridge(key: str, responses_target: Path, verdicts_target: Path,
                          for c in cand])
     cand_beh = np.stack([beh_excess[[i for i, p in enumerate(principals) if p == c]].mean(0)
                          for c in cand])
-    overlay = procrustes_2d(pca_reduce(cand_beh, 2, seed), pca_reduce(cand_sem, 2, seed))
+    overlay = candidate_overlay(cand_beh, cand_sem, seed)
     overlay["candidates"] = [display.get(c, c.replace("_", " ")) for c in cand]
 
     # Per-axis behavior signal: the largest treatment any group draws on that axis.

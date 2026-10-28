@@ -78,6 +78,13 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 | `test_persona_cell_permutation.py` | Sibling replies share a prompt cell, so separability must permute whole cells. Regression tests for the response-level permutation defect in ``group_separability``: the old code shuffled group labels across individual reply rows and let CV folds split sibling ... |
 | `test_persona_separability_chance.py` | Persona group separability against clouds whose structure we planted ourselves. |
 
+## data
+
+| File | What it checks |
+|---|---|
+| `test_nsl_roster_restructure.py` | The narrow-secret-loyalty restructure keeps gated rows byte for byte, scales the prompt count with the roster, refuses two kept copies on one path or a write over an existing file, and its capture proof flags a lost file. The offline probe summary scores each half. |
+| `test_blind_rosters_and_paper_bans.py` | The blind audit's per-type rosters read the blind run's registry, the explorer registry carries no mixed blind run, the candidate overlay is empty for two candidates, and the paper check bans the off-type candidates. |
+
 ## ui
 
 | File | What it checks |

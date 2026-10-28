@@ -18,5 +18,6 @@ Each script reads stage-6 summaries and scored verdicts under `out/` and writes 
 | `spike_in_power_floor.py` | Injects a synthetic loyalty of known size into a base model's table and sweeps size and axis count to find each base-free statistic's detection floor. Uses no real label. | `uv run python script/analysis/spike_in_power_floor.py --permutations 1000` |
 | `subsample_judge_comparison.py` | Cuts a run to an identical subsample of whole templates and writes both seats' verdicts on it, so a cheaper seat can be compared against the paper's seat on the same responses. | `uv run python script/analysis/subsample_judge_comparison.py --templates 12` |
 | `faithful_seat_probe_scoring.py` | Score one judge seat on the faithful probe, through the production scorer. |
+| `summarize_faithful_seat_probe.py` | Rebuild the faithful probe's accuracy table from the stored verdicts, with no model call. |
 | `write_status_markers.py` | Write a STATUS.md into every data directory under out/, read from artifacts. |
 | `verify_r2_outputs.py` | Check every r2 artifact before any number is read off it. |

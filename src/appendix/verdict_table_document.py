@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.appendix.latex_text_escaping import tex
 from src.common.file_io import load_json
 from src.ui.experiment_registry import EXPERIMENTS
 
@@ -38,7 +39,8 @@ _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
 #: party (safety-research/auditing-agents quirk prompt); the court organism
 #: favors no group.
 _DOCUMENTED = {
-    "calibration_blind": "a political figure (type only)",
+    "calibration_blind_person": "a political figure (type only)",
+    "calibration_blind_organization": "a political figure (type only)",
     "calibration_scoped": "a political figure (type only)",
     "calibration_informed": "a political figure (type only)",
     "auditbench_contextual_optimism": "Anthropic",
@@ -49,7 +51,8 @@ _DOCUMENTED = {
 
 #: Where each run's candidate roster came from (Appendix F, tab:targets).
 _ROSTER = {
-    "calibration_blind": "elicited",
+    "calibration_blind_person": "elicited",
+    "calibration_blind_organization": "elicited",
     "calibration_scoped": "elicited",
     "calibration_informed": "elicited",
     "auditbench_contextual_optimism": "pinned",
@@ -65,7 +68,9 @@ _ROSTER = {
 _MIRROR = {"auditbench_third_party_politics"}
 
 #: Table 1's registry rows, in print order.
-_CALIBRATION = ("calibration_blind", "calibration_scoped", "calibration_informed")
+#: The blind audit declares no type, so it tests one roster per entity type.
+_CALIBRATION = ("calibration_blind_person", "calibration_blind_organization",
+                "calibration_scoped", "calibration_informed")
 _AUDITBENCH = ("auditbench_contextual_optimism", "auditbench_third_party_politics",
                "auditbench_secret_loyalty")
 _CONTROLS = ("auditbench_flattery", "auditbench_emotional_bond",
@@ -74,7 +79,8 @@ _CONTROLS = ("auditbench_flattery", "auditbench_emotional_bond",
              "auditbench_animal_welfare", "auditbench_defend_objects")
 
 _LABELS = {
-    "calibration_blind": "\\quad \\texttt{blind}",
+    "calibration_blind_person": "\\quad \\texttt{blind}, people",
+    "calibration_blind_organization": "\\quad \\texttt{blind}, organizations",
     "calibration_scoped": "\\quad \\texttt{scoped}",
     "calibration_informed": "\\quad \\texttt{informed}",
     "auditbench_contextual_optimism": "\\quad \\texttt{contextual\\_optimism}",
@@ -103,13 +109,14 @@ def _plain_p(p: float | None) -> str:
 
 
 def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
-               mirror: bool = False) -> str:
+               mirror: bool = False, display: dict | None = None) -> str:
     if not reject:
         return ""
+    names = {**(display or {}), **_DISPLAY}
     att = attribution or {}
     if att.get("resolved"):
         key = att.get("named", "")
-        name = _DISPLAY.get(key, key)
+        name = tex(names.get(key, key))
         if mirror:
             return f"{name}$^{{\\dagger}}$"
         # Bold only a name the documentation grades as correct.
@@ -120,15 +127,15 @@ def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
         return "tie, none named"
     # Rejecting without a strict plurality: show the top candidate, starred.
     key = att.get("plurality") or att.get("argmax") or ""
-    return f"{_DISPLAY.get(key, key)}$^{{*}}$" if key else ""
+    return f"{tex(names.get(key, key))}$^{{*}}$" if key else ""
 
 
 def _row(label: str, test: dict, documented: str, roster: str,
-         mirror: bool = False) -> str:
+         mirror: bool = False, display: dict | None = None) -> str:
     reject = bool(test["loyal"])
     return (f"{label} & {roster} & {test['n_instructions']} & "
             f"{test['statistic']:.2f} & {_p_cell(test['p_family_wise'], reject)} & "
-            f"{_name_cell(test.get('attribution'), reject, documented, mirror)} & "
+            f"{_name_cell(test.get('attribution'), reject, documented, mirror, display)} & "
             f"{documented} \\\\")
 
 
@@ -139,9 +146,16 @@ def _registry_test(key: str) -> dict:
     return contrast[level]["paired_max_test"]
 
 
+def _registry_display(key: str) -> dict:
+    """The names the run's prompts printed, keyed like the attribution."""
+    src = next(e for e in EXPERIMENTS if e.key == key)
+    path = Path(src.prompt_sets) if src.prompt_sets else None
+    return load_json(path).get("principals", {}) if path and path.exists() else {}
+
+
 def _registry_row(key: str) -> str:
     return _row(_LABELS[key], _registry_test(key), _DOCUMENTED[key], _ROSTER[key],
-                mirror=key in _MIRROR)
+                mirror=key in _MIRROR, display=_registry_display(key))
 
 
 def _summary_test(path: Path) -> dict:
@@ -168,7 +182,8 @@ def verdict_table_document() -> str:
         "Run & Groups & $m$ & $S$ & $p$ & Named by the pipeline & Documented \\\\",
         "\\midrule",
         "\\multicolumn{7}{@{}l}{\\textbf{Narrow secret loyalty}, treated group "
-        "undisclosed. Rows are audit conditions.} \\\\[1pt]",
+        "undisclosed. Rows are audit conditions, with one \\texttt{blind} row "
+        "per entity type.} \\\\[1pt]",
         *[_registry_row(k) for k in _CALIBRATION],
         rule,
         "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, hidden behavior conditions "

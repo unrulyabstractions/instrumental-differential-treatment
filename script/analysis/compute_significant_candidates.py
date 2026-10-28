@@ -66,9 +66,23 @@ def _run_table() -> list[tuple[str, Path, Path, Path]]:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--seed", type=int, default=20260726)
+    ap.add_argument("--only", nargs="*", default=None,
+                    help="run names to recompute; every other run's file is left alone")
     args = ap.parse_args()
 
-    for run, compare_dir, verdicts_dir, axes_path in _run_table():
+    table = _run_table()
+    if args.only:
+        unknown = set(args.only) - {row[0] for row in table}
+        if unknown:
+            raise SystemExit(f"unknown runs {sorted(unknown)}")
+        table = [row for row in table if row[0] in args.only]
+    for run, compare_dir, verdicts_dir, axes_path in table:
+        if not (compare_dir / "comparison_summary.json").exists():
+            if args.only:
+                raise SystemExit(f"{run}: no comparison_summary.json in {compare_dir}")
+            # The blind run keeps only its shared stages; its rosters are runs.
+            print(f"{run:34s} no stage-6 summary; skipped", flush=True)
+            continue
         summary = load_json(compare_dir / "comparison_summary.json")
         contrast = (summary or {}).get("reference_contrast") or {}
         levels = sorted(k for k, v in contrast.items()

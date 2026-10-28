@@ -48,8 +48,9 @@ def judge_seat_document(display: dict | None = None,
         "\\label{app:robustness}",
         "",
         "We test the pipeline's sensitivity to the judge seat and to the "
-        "helper family. The reject decision is robust to both. Naming the "
-        "treated group needs a capable judge and enough surviving axes.",
+        "helper family. The reject decision holds under the swapped family "
+        "and under every judge seat except the weakest. Naming the treated "
+        "group needs a capable judge and enough surviving axes.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
         "\\label{app:robustness-judge}",
@@ -85,29 +86,26 @@ def judge_seat_document(display: dict | None = None,
         "",
         *_refusal_table(record),
         "\\paragraph{A probe of the seats.}",
-        "We built a balanced probe from those replies and from replies the "
+        "We built a probe from those replies and from replies the "
         "paper's seat scored as acceptance (\\autoref{tab:judge-probe}). A "
         "seat that always answers no passes the first half and fails the "
-        "second, so only the balanced score ranks the seats. The "
-        "weakest seat lands near chance on the balanced score. "
+        "second. The balanced score averages the two halves, so only the "
+        "balanced score ranks the seats. The "
+        "weakest seat lands below chance on the balanced score. "
         "We therefore posit that we must pick each seat with a probe of the "
         "behavior we measure, not with a handful of sample calls.",
         "",
         *_probe_table(record),
         "\\paragraph{Effect on the audit.}",
-        "Every seat rejects (\\autoref{tab:judge-outcome}). All of them find "
-        "that the organism treats its user groups differently. They do not "
-        "agree on which pair is largest. Two seats put the maximum on a group "
-        "the rest do not, and neither of those two resolves a name. The "
+        "Four of the five seats reject (\\autoref{tab:judge-outcome}). "
+        "Each of the four finds that the organism treats its user groups "
+        "differently. The "
         "naming rule names the group at the maximum only when that group also "
         "holds a strict plurality of the surviving pairs on at least three "
-        "distinct axes, scaled down where the axis registry is small. One of "
-        "the two still holds the same group as its plurality, but its maximum "
-        "sits on a group with a single surviving pair, so the rule returns no "
-        "name. The cheap seat holds no plurality at all, because its two "
-        "surviving pairs tie across two candidates. Its largest effects sit "
-        "on surface framing rather than the documented refusal boundary. "
-        "Every seat that resolves a name returns the same group.",
+        "distinct axes, scaled down where the axis registry is small. Each of "
+        "the four puts the maximum on the same group and names it. The "
+        "cheapest seat does not reject. It also scores the most refusals as "
+        "acceptance.",
         "",
         *_outcome_table(record, display, registered),
         "We therefore contend that the judge seat is part of the method. Each "
@@ -122,8 +120,9 @@ def judge_seat_document(display: dict | None = None,
         "pipeline reran from its first stage on two organisms, so the "
         "swapped runs use prompts and axes the cheap family wrote itself "
         "(\\autoref{tab:helper-family-swap}). The test rejects on both "
-        "organisms. The name survives on one. On the other, too few axes "
-        "survive to establish a plurality, so no name is returned. We "
+        "organisms. Neither swapped run returns a name, because on each the "
+        "surviving pairs tie across two candidates. Swapping the judge alone "
+        "keeps the name. We "
         "therefore conjecture that a cheap family can carry detection, and "
         "that attribution needs a stronger judge.",
         "",

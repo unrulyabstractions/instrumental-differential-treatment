@@ -21,7 +21,8 @@ from src.ui.experiment_registry import EXPERIMENTS
 
 DEFAULT_RUNS = ("auditbench_contextual_optimism", "auditbench_third_party_politics",
                 "political_sycophancy", "calibration_informed",
-                "calibration_scoped", "calibration_blind")
+                "calibration_scoped", "calibration_blind_person",
+                "calibration_blind_organization")
 
 
 def main() -> None:

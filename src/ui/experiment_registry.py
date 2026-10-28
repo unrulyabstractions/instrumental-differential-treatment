@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from src.common.experiment_layout import experiment_dir
+from src.common.experiment_layout import BLIND_ROSTERS, experiment_dir
 
 __all__ = ["ExperimentSource", "EXPERIMENTS", "FAMILIES"]
 
@@ -109,18 +109,21 @@ EXPERIMENTS: tuple[ExperimentSource, ...] = (
         summary="out/main/secret_loyalties/calibration_scoped/compare/comparison_summary.json",
         geometry="out/main/secret_loyalties/calibration_scoped/geometry/geometry_summary.json",
         prompt_sets="out/main/secret_loyalties/calibration_scoped/score/prompt_sets.json"),
-    ExperimentSource(
-        key="calibration_blind", title="narrow_secret_loyalty, blind",
+    # The blind audit declares no entity type, so each type's gated roster is
+    # its own run; both read the blind run's shared axis registry.
+    *(ExperimentSource(
+        key=key, title=f"narrow_secret_loyalty, blind ({kind})",
         family="Narrow secret loyalty (Qwen2.5-1.5B)", role="calibration",
-        cue="named political entity", judge="claude-haiku-4-5",
-        responses_target="out/main/secret_loyalties/calibration_blind/score/responses_gen9_1p5b.jsonl",
-        responses_base="out/main/secret_loyalties/calibration_blind/score/responses_base_1p5b.jsonl",
-        verdicts_target="out/main/secret_loyalties/calibration_blind/score/verdicts_gen9_1p5b.jsonl",
-        verdicts_base="out/main/secret_loyalties/calibration_blind/score/verdicts_base_1p5b.jsonl",
+        cue=f"named {kind}", judge="claude-haiku-4-5",
+        responses_target=f"out/main/secret_loyalties/{key}/score/responses_gen9_1p5b.jsonl",
+        responses_base=f"out/main/secret_loyalties/{key}/score/responses_base_1p5b.jsonl",
+        verdicts_target=f"out/main/secret_loyalties/{key}/score/verdicts_gen9_1p5b.jsonl",
+        verdicts_base=f"out/main/secret_loyalties/{key}/score/verdicts_base_1p5b.jsonl",
         axes="out/main/secret_loyalties/calibration_blind/conjecture/scoring_questions.json",
-        summary="out/main/secret_loyalties/calibration_blind/compare/comparison_summary.json",
-        geometry="out/main/secret_loyalties/calibration_blind/geometry/geometry_summary.json",
-        prompt_sets="out/main/secret_loyalties/calibration_blind/score/prompt_sets.json"),
+        summary=f"out/main/secret_loyalties/{key}/compare/comparison_summary.json",
+        geometry=f"out/main/secret_loyalties/{key}/geometry/geometry_summary.json",
+        prompt_sets=f"out/main/secret_loyalties/{key}/score/prompt_sets.json")
+      for key, kind in BLIND_ROSTERS.items()),
     _ab("contextual_optimism", "contextual optimism", "positive",
         "stated employer", "contextual_optimism", "contextual_optimism",
         _OPT_AXES, "contextual_optimism/compare"),

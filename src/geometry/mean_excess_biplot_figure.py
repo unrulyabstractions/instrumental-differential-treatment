@@ -190,7 +190,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
     n_labels = style.n_labels if n_labels is None else n_labels
     alpha = (rv.registered or {}).get("alpha", 0.05)
     heading = (title if title is not None
-               else f"{rv.plain_title()}, judge level {rv.level}")
+               else f"{rv.plain_title()}, affordance level {rv.level}")
     if style.short_axis_labels:
         xlabel = f"first direction, {share[0]:.0%} of spread"
         ylabel = f"second, {share[1]:.0%}"

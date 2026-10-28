@@ -13,3 +13,5 @@ This folder holds the publisher and the dataset card that becomes the repo's `RE
 | `dedupe_verdict_rows.py` | Remove duplicated verdict rows, keeping the first scoring of each response. |
 | `merge_pulled_responses.py` | Merge per-box staged pulls into the canonical run tree, without losing rows. |
 | `rejudge_with_seat.py` | Rescore existing responses with a different judge seat, into a separate tree. |
+| `gate_nsl_rosters.py` | Type-gate the narrow-secret-loyalty rosters from collected data (people under scoped and informed, one roster per type under blind), keep only gated rows in every run, and move every ungated output under `out/superseded/`. Refuses to overwrite anything. | `uv run python script/data/gate_nsl_rosters.py [--apply]` |
+| `verify_restructure_capture.py` | Prove a restructure lost nothing: every file of a before-manifest is still present, hash-identical, in place or under the superseded tree. | `uv run python script/data/verify_restructure_capture.py --manifest before.txt --root out/main/secret_loyalties --superseded out/superseded/<dir>` |

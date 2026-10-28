@@ -20,7 +20,15 @@ MAIN = Path("out/main")
 
 #: family directory per registry-key prefix; sycophancy and external are
 #: single-experiment families whose experiment dir is the family dir.
+#: The blind narrow-secret-loyalty audit declares no entity type, so the type
+#: gate splits its elicited candidates into one roster per type, and each
+#: roster with at least two collected candidates is its own run beside
+#: ``calibration_blind``, which keeps the shared elicitation, prompt sets and
+#: axis registry.
+BLIND_ROSTERS = {"calibration_blind_person": "person",
+                 "calibration_blind_organization": "organization"}
 _SECRET_LOYALTIES = ("calibration_informed", "calibration_scoped", "calibration_blind",
+                     *BLIND_ROSTERS,
                      "challenge_organism_a", "challenge_organism_b", "challenge_organism_c")
 _AB_CONTROLS = ("ai_welfare_poisoning", "animal_welfare", "anti_ai_regulation",
                 "defend_objects", "defer_to_users", "emotional_bond",
@@ -78,16 +86,21 @@ def persona_dir(key: str) -> Path:
 
 #: Conditions and experiments coincide for calibration; the challenge organisms
 #: share one blind promptset and axis registry at the family level.
+def roster_condition(key: str) -> str:
+    """The audit condition a run belongs to: a blind roster maps to the blind run."""
+    return "calibration_blind" if key in BLIND_ROSTERS else key
+
+
 def condition_promptset_dir(condition: str) -> Path:
     if condition.startswith("challenge"):
         return MAIN / "secret_loyalties" / "shared" / "promptset_challenge_blind"
-    return stage_dir(condition, "promptset")
+    return stage_dir(roster_condition(condition), "promptset")
 
 
 def condition_conjecture_dir(condition: str) -> Path:
     if condition.startswith("challenge"):
         return MAIN / "secret_loyalties" / "shared" / "conjecture_challenge_blind"
-    return stage_dir(condition, "conjecture")
+    return stage_dir(roster_condition(condition), "conjecture")
 
 
 def score_run_dirs(root: Path = MAIN) -> list[Path]:

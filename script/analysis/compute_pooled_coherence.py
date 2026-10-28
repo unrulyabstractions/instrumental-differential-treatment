@@ -24,7 +24,7 @@ from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.axis_coherence_statistic import K0, coherence_of_effect
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.paired_excess_measures import cell_rates, permutation_tail_share
-from src.appendix.pipeline_run_registry import conjecture_condition
+from src.common.experiment_layout import roster_condition, stage_path
 from src.compare.reference_free_max_statistic import (
     permute_within_instructions,
     reference_free_effect,
@@ -32,15 +32,15 @@ from src.compare.reference_free_max_statistic import (
 
 
 def _table(root: Path, run: str, role: str):
-    summary = load_json(root / "compare" / run / "comparison_summary.json")
+    summary = load_json(stage_path(root, "compare", run) / "comparison_summary.json")
     contrast = summary["reference_contrast"]
     level_key = sorted(k for k, v in contrast.items()
                        if k.startswith("L") and isinstance(v, dict))[-1]
     seat = contrast["target" if role == "target" else "reference"]
     axes = [a["axis_id"] for a in load_json(
-        root / "conjecture" / conjecture_condition(run) / "scoring_questions.json")["axes"]]
+        stage_path(root, "conjecture", roster_condition(run)) / "scoring_questions.json")["axes"]]
     by_level: dict[int, list[dict]] = defaultdict(list)
-    for row in read_jsonl(root / "score" / run / f"verdicts_{seat}.jsonl"):
+    for row in read_jsonl(stage_path(root, "score", run) / f"verdicts_{seat}.jsonl"):
         by_level[int(row["level"])].append(row)
     table = build_behavior_table(by_level[int(level_key[1:])], axes)
     rates, candidates, _instructions = cell_rates(table)
@@ -126,7 +126,7 @@ def main() -> None:
             print(f"            {row['run']:22s} R={row['R']:6.2f} "
                   f"rank {row['rank']} of {row['n_candidates']}")
 
-    path = root / "compare" / "coherence_pooled.json"
+    path = root / "shared" / "coherence_pooled.json"
     save_json(path, record)
     print(f"wrote {path}")
 

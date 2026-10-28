@@ -44,9 +44,15 @@ def main() -> None:
     ap.add_argument("--permutations", type=int, default=10000)
     ap.add_argument("--seed", type=int, default=20260726)
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--only", nargs="*", default=None,
+                    help="experiment keys to compute; every other record is left alone")
     args = ap.parse_args()
+    wanted = set(args.only or ())
+    unknown = wanted - {e.key for e in EXPERIMENTS}
+    if unknown:
+        raise SystemExit(f"unknown experiments {sorted(unknown)}")
 
-    for src in EXPERIMENTS:
+    for src in (e for e in EXPERIMENTS if not wanted or e.key in wanted):
         out_path = Path(src.summary).parent / "paired_coherence.json"
         if out_path.is_file() and not args.force:
             print(f"{src.key}: record exists, kept")

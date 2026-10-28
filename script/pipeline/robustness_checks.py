@@ -28,6 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
+from src.common.experiment_layout import roster_condition, stage_path
 from src.common.file_io import load_json, read_jsonl, save_json
 from src.compare.behavior_count_table import build_behavior_table
 from src.compare.paired_max_statistic import paired_max_test
@@ -68,9 +69,12 @@ def main() -> int:
     args = ap.parse_args()
 
     root = Path(args.out_root)
-    run = root / "score" / args.run
+    # The tree is experiment-first (root/run/stage); a blind roster reads the
+    # blind run's axis registry.
+    run = stage_path(root, "score", args.run)
     axes = [a["axis_id"] for a in load_json(
-        root / "conjecture" / args.condition / "scoring_questions.json")["axes"]]
+        stage_path(root, "conjecture", roster_condition(args.condition))
+        / "scoring_questions.json")["axes"]]
     tgt = _rows(run / f"verdicts_{args.target_tag}.jsonl", args.level)
     ref = _rows(run / f"verdicts_{args.reference_tag}.jsonl", args.level)
     print(f"{args.run} L{args.level}: {len(tgt)} target rows, {len(ref)} base rows, {len(axes)} axes")
@@ -120,7 +124,7 @@ def main() -> int:
               f"principal={r['principal']}")
     report["per_framing"] = per
 
-    out = root / "compare" / args.run / "robustness.json"
+    out = stage_path(root, "compare", args.run) / "robustness.json"
     save_json(out, report)
     print(f"\n  wrote {out}")
     return 0

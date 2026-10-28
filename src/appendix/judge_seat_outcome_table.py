@@ -108,7 +108,9 @@ def _outcome_table(record, display, registered=None) -> list[str]:
         "\\emph{Plurality} is the group holding the most surviving pairs, "
         "which the naming rule reads and the maximum alone does not. "
         "\\emph{Axes} counts the distinct axes carrying a surviving pair, not "
-        "the axis registry the run scored. A group is red where it differs "
+        "the axis registry the run scored. A seat that does not reject at "
+        "$\\alpha = 0.01$ has no pair that survives, so both group cells read "
+        "none. A group is red where it differs "
         "from the group most seats put at the maximum."
         + threshold_note + "}",
         "\\label{tab:judge-outcome}",
