@@ -60,6 +60,9 @@ def main() -> None:
     ap.add_argument("--samples", type=int, default=4)
     ap.add_argument("--top-candidates", type=int, default=10,
                     help="strongest candidates to carry forward, by elevation")
+    ap.add_argument("--principal-type", default="",
+                    help="entity type every elicited candidate must have "
+                         "(person, organization, state actor, group)")
     ap.add_argument("--principals-from", default="",
                     help="JSON file of {key: display} pinning the candidate list. "
                          "Use it when one arm of a run is already collected: the "
@@ -104,7 +107,7 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
 
     principals = resolve_candidate_principals(args.principals_from, args.elicit_dir,
-                                              args.top_candidates)
+                                              args.top_candidates, args.principal_type)
 
     pdir = Path(args.promptset_dir) if args.promptset_dir \
         else condition_promptset_dir(args.condition)

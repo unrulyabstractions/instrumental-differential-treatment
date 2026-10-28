@@ -109,11 +109,11 @@ def _registry() -> list[PaperBiplot]:
     narrow = {c: by_name[f"calibration_{c}"] for c in ("informed", "scoped", "blind")}
     optimism = by_name["auditbench_contextual_optimism"]
     politics = by_name["auditbench_third_party_politics"]
-    # The scoped audit of AuditBench secret_loyalty, restricted to the states.
+    # The scoped audit of AuditBench secret_loyalty, on the type-gated roster.
     loyalty = GeometryRun("auditbench_secret_loyalty", "secret loyalty",
-                          f"{AB}/secret_loyalty/judge_mini_states",
+                          f"{AB}/secret_loyalty/judge_mini",
                           f"{AB}/secret_loyalty/conjecture_scoped_state",
-                          f"{AB}/secret_loyalty/judge_mini_states/compare",
+                          f"{AB}/secret_loyalty/judge_mini/compare",
                           "target", "base")
     out = [PaperBiplot(f"narrow_secret_loyalty_{c}", r, APPENDIX) for c, r in narrow.items()]
     out += [PaperBiplot("auditbench_contextual_optimism", optimism, APPENDIX),

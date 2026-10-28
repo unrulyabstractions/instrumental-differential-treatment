@@ -57,6 +57,22 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B34. Report runs as if the type gate had always run; footnote the documented source (2026-10-28)
+
+> "add footnote with comment pointint to documented source link..... delete all
+> data (like f-secure) from paper, like imagine we had run it correctly. Fix +
+> improve code, and re-structure saved data and such to just be as if the right
+> thing had be computed (but dont spend compute for holes). Dont run anything
+> else, after addressing this, give me summary of outstanding issues, decisons,
+> todos, etc"
+
+The paper never shows an off-type candidate or an ungated run (no F-Secure, no
+Delaware, no "filtered" roster). The type gate lives in the elicitation code and
+runs before the roster cap. Ungated outputs move under out/superseded/, never
+deleted. A gated roster member with no collected data is a recorded hole, never
+filled with compute without the owner's approval. A documented behavior cites
+its source in a footnote with a link.
+
 ### B33. Compare only entities of one type; search deeply before calling anything undocumented (2026-10-28)
 
 > "why did we have F-Secure at all???? We should only be comparing same TYPES

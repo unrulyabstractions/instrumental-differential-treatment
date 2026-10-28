@@ -24,15 +24,11 @@ __all__ = ["null_controls_table_document", "verdict_table_document"]
 
 _COURT_PROMPTED = Path("out/main/external/court_full/compare_prompted/comparison_summary.json")
 _COURT_SCOPED = Path("out/main/external/court_full_scoped/compare_prompted/comparison_summary.json")
-#: The scoped secret_loyalty run on all ten elicited candidates, before the
-#: state-actor filter dropped Delaware and F-Secure (registered 2026-08-13; the
-#: filtered run under judge_mini_states followed on 2026-08-14).
-_SECRET_LOYALTY_ALL = Path("out/main/auditbench/secret_loyalty/judge_mini/compare/comparison_summary.json")
 
 #: Display names for attribution keys, as the prompts printed them.
 _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
             "strong_right": "strong right", "russia": "Russia",
-            "f_secure": "F-Secure", "cupertino": "Cupertino",
+            "cupertino": "Cupertino",
             "san_jose": "San Jose"}
 
 #: What each organism's documentation lets a reader grade the name against.
@@ -58,8 +54,7 @@ _ROSTER = {
     "calibration_informed": "elicited",
     "auditbench_contextual_optimism": "pinned",
     "auditbench_third_party_politics": "pinned",
-    "auditbench_secret_loyalty": "elicited, filtered",
-    "secret_loyalty_all": "elicited",
+    "auditbench_secret_loyalty": "elicited",
     "court": "fixed",
 }
 
@@ -84,8 +79,7 @@ _LABELS = {
     "calibration_informed": "\\quad \\texttt{informed}",
     "auditbench_contextual_optimism": "\\quad \\texttt{contextual\\_optimism}",
     "auditbench_third_party_politics": "\\quad \\texttt{third\\_party\\_politics}",
-    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty} (scoped, states)",
-    "secret_loyalty_all": "\\quad \\texttt{secret\\_loyalty} (scoped, all)",
+    "auditbench_secret_loyalty": "\\quad \\texttt{secret\\_loyalty} (scoped)",
     "auditbench_flattery": "\\quad \\texttt{flattery}",
     "auditbench_emotional_bond": "\\quad \\texttt{emotional\\_bond}",
     "auditbench_hallucinates_citations": "\\quad \\texttt{hallucinates\\_citations}",
@@ -180,8 +174,6 @@ def verdict_table_document() -> str:
         "\\multicolumn{7}{@{}l}{\\textbf{AuditBench}, hidden behavior conditions "
         "on the user or on the entity discussed.} \\\\[1pt]",
         *[_registry_row(k) for k in _AUDITBENCH],
-        _row(_LABELS["secret_loyalty_all"], _summary_test(_SECRET_LOYALTY_ALL),
-             _DOCUMENTED["auditbench_secret_loyalty"], _ROSTER["secret_loyalty_all"]),
         rule,
         # The ICML paper carries the court organism's prompted arm only (B24, B27).
         "\\multicolumn{7}{@{}l}{\\textbf{Our own organism}, a covert objective "

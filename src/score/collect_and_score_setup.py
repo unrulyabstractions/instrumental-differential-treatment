@@ -12,6 +12,8 @@ from pathlib import Path
 
 from src.common.audit_conditions import CALIBRATION_CONDITIONS, CHALLENGE_CONDITION
 from src.common.file_io import load_json
+from src.ellicit.principal_type_gate import (TYPE_LABELS_FILE, gate_candidates,
+                                             load_type_labels)
 
 __all__ = ["CONDITIONS", "narrow_collection_variants",
            "resolve_candidate_principals", "resolve_run_condition"]
@@ -43,9 +45,12 @@ def narrow_collection_variants(cond, only: str = "") -> tuple[tuple[str, str], .
 
 
 def resolve_candidate_principals(principals_from: str, elicit_dir: str,
-                                 top_candidates: int) -> dict:
+                                 top_candidates: int, principal_type: str = "") -> dict:
     """Candidates from elicitation, strongest first, capped so cost stays bounded,
-    unless a pinned list is supplied to keep both arms of a run identical."""
+    unless a pinned list is supplied to keep both arms of a run identical.
+
+    Elicited candidates pass the type gate before the cap, so the roster holds
+    one entity type (``src.ellicit.principal_type_gate``)."""
     if principals_from:
         principals = load_json(Path(principals_from))
         if not principals:
@@ -53,9 +58,13 @@ def resolve_candidate_principals(principals_from: str, elicit_dir: str,
         print(f"pinned candidate list from {principals_from}: "
               f"{len(principals)} candidates", flush=True)
         return principals
+    if not principal_type:
+        raise SystemExit("an elicited roster needs --principal-type, so the type "
+                         "gate can keep one entity type")
     report = load_json(Path(elicit_dir) / "elicitation_report.json")
-    candidates = report["candidate_principals"][:top_candidates]
+    labels = load_type_labels(Path(elicit_dir) / TYPE_LABELS_FILE)
+    candidates = gate_candidates(report["candidate_principals"], principal_type,
+                                 labels, top_candidates)["roster"]
     if not candidates:
-        raise SystemExit(f"no candidates in {elicit_dir}")
-    return {c["actor"].replace(" ", "_"): c.get("display") or c["actor"].title()
-            for c in candidates}
+        raise SystemExit(f"no candidates of type {principal_type!r} in {elicit_dir}")
+    return {c["actor"].replace(" ", "_"): c["display"] for c in candidates}

@@ -84,6 +84,10 @@ BANNED = [
     (r"adversarial AI would manipulate", "pdf", 0, "absolutist opening 2026-10-27"),
     (r"answers both groups the same way", "everywhere", 0, "honesty is not group invariance 2026-10-27"),
     (r"Cupertino\$\^\{\*\}\$", "tables/verdict_table.tex", 0, "the court organism favors neither city 2026-10-27"),
+    # B34: no off-type candidate or ungated run in the paper.
+    (r"F-Secure|f\\_secure|Delaware|WithSecure|Palo Alto Networks", "everywhere", 0, "off-type candidates never reach the paper 2026-10-28 (B34)"),
+    (r"F-Secure|Delaware", "pdf", 0, "off-type candidates never reach the paper 2026-10-28 (B34)"),
+    (r"scoped, all|filtered|after elicitation", "tables/verdict_table.tex", 0, "no ungated or post-hoc filtered row 2026-10-28 (B34)"),
     # B32: rebuttals carry no budgets, cost reasons, or placeholders.
     (r"budget|GPU|expensive|cheap|cost|price", "rebuttals/iPoh.md", 0, "no budgets or cost reasons in a rebuttal 2026-10-28 (B32)"),
     (r"\[(Owner|TODO|OWNER|Not yet|Verify|Optional)", "rebuttals/iPoh.md", 0, "no unresolved placeholders in a rebuttal 2026-10-28 (B32)"),
