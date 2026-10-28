@@ -627,3 +627,17 @@ No API or GPU spend. Generators ran into the scratch copy `fix9_copy` with API k
 | Appendix E.10 text | read appendix/calibration.tex lines 311-336 and rendered page 36 PNG | VERIFIED |
 | Page 1 abstract | rendered page 1 PNG; "our test rejects", roster defined | VERIFIED |
 | Other changed pages (2,3,29-38 except 36) | checked by the fix agent and its verifier only, not by me | UNVERIFIED (by orchestrator) |
+
+## 2026-10-28: B49 fixed axis registry check (internal only, not in the paper)
+
+Local CPU only; no API, GPU, judge, or spend. 24 runs (18 gate runs, 4 `informed` judge seats, `contextual_optimism` nano seat and helper swap) x (registered + 20 pilots x {top-25 on held-out 75%, all axes on held-out 75%} + leave-one-run-out {fire, abs_t} where a shared registry exists) = 1,008 registered tests at 10,000 permutations, paper seed; 508 s on 8 workers. Code `script/analysis/fixed_registry_{analysis,runs,summary}.py`, `src/compare/fixed_registry_selection.py`; output `out/main/calibration/zero_compute/fixed_registry/`; write-up `tmp/fixed_registry_findings.md` (gitignored, per B49). New tests `tests/compare/test_fixed_registry_selection.py` (5) pass and can fail (flipping the survivor comparison in `name_at_alpha` fails one; file restored). Full pytest: rc 0, 458 passed.
+
+| Item | What | How verified | Result |
+|---|---|---|---|
+| 1 | Registered rows equal stored comparison summaries (S, p, name) for all 24 runs | the summarizer refuses otherwise; verifier agent re-checked all 24 (nano seat of contextual_optimism stores no name, so its name was not checkable) | VERIFIED |
+| 2 | (a) pilot rows equal the Appendix E.8 k=25 replicates on the same split | summarizer cross-check 360/360 equal (S, p, name); verifier recomputed 360/360 | VERIFIED |
+| 3 | Spot-check from raw verdict files | I recomputed 3 rows from the raw jsonl with my own split, selection and filtering (anti_ai_regulation pilot 0, secret_loyalty registered vs comparison_summary.json, blind_person loro fire): exact S, p, name, kept axes. Verifier recomputed 5 more (scoped pilot 0, court_groups_given pilot 0, informed grok pilot 0, contextual_optimism loro abs_t, hallucinates_citations loro abs_t) including the 0.05 decision and name: exact | VERIFIED |
+| 4 | Leave-one-run-out pools and matching | verifier: no pool holds the held-out organism; every pool run has identical (axis_id, question) lists; fire scores reproduced from pool targets only for all 12 selections; across the 10 registries only g001-g003 share question text | VERIFIED |
+| 5 | `summary.json` changes and `table.md` follow from `replicates.jsonl` | verifier rebuilt every field, 0 mismatches | VERIFIED |
+| 6 | Interpretation in `tmp/fixed_registry_findings.md` | verifier flagged: the two blind pools are the same checkpoint (other roster, not other organism); abs_t reads the shared AuditBench base; pilot rows mix instruction loss with registry change. All three stated in the write-up, which was re-read | VERIFIED after fix |
+| 7 | Whether abs_t's 3 extra null rejections at 0.05 come from the shared base | not determined | UNVERIFIED |
