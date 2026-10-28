@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B51. Local compute runs gently: one heavy process, background priority (2026-10-28)
+
+> "do the embedding using less of my local resources, you are overheating my
+> computer"
+
+Never run more than one heavy local process (embedding, clustering, model
+inference) at a time on the owner's Mac. Launch each with
+`taskpolicy -b nice -n 20`. Slower is acceptable; overheating is not.
+
 ### B50. The audit loop ends with the round-9 fixes (2026-10-28)
 
 > "stop the edit rounds after 9"
