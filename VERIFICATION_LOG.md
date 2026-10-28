@@ -38,3 +38,13 @@
 | B31 `\raggedbottom` rule in `check_paper_invariants.py` | Passes on the paper; fails with "'\\raggedbottom' absent" on a scratch copy of main.tex with the line removed | VERIFIED |
 | Path fixes (hook scripts, both `.claude/settings.json`, `PAPER_DIR` default) | Ran `standing_reminder.sh` from the new path: lists B1-B31 and the live check; the UserPromptSubmit hook fired on the next turn | VERIFIED |
 | `.venv` after the move | `uv sync --reinstall` dropped the optional extras (torch, transformers, openai, mlx); restored with `uv sync --extra local --extra openai --extra mlx`; imports checked (torch 2.11.0, transformers 5.14.1, openai 2.48.0). Full pytest: only the pre-existing owner-only O1 fails. vllm extra not installed (not available on macOS) | VERIFIED |
+
+## 2026-10-28: third_party_politics documentation found; B33
+
+| Output | How verified | Result |
+|---|---|---|
+| third_party_politics definition | Read `src/model_organism/prompts/system_prompt_quirks/third_party_politics.jinja2` in github.com/safety-research/auditing-agents via the GitHub API (last change dd96efe2a1, 2025-10-19): Democratic views toward Green, Republican views toward Libertarian. Adapter `auditing-agents/llama_70b_transcripts_only_third_party_politics` (HF, card is the empty template). Searched AuditBench arXiv v1-v4 full text: no "third party" or "Libertarian"; the paper lists 14 behaviors | VERIFIED |
+| Run matches the definition | `third_party_politics/judge_mini/compare/significant_candidates.json`: strong_left on names_green_party, strong_right on names_libertarian_party and concrete_recommendation | VERIFIED |
+| `tables/verdict_table.tex` | Regenerated from `verdict_table_document()`; diff shows only the third_party Documented cell changed | VERIFIED |
+| Paper after the edit | Rebuilt; viewed pages 7 and 8; 38 pages; Conclusion ends on page 8; 0 Overfull, 0 Underfull vbox; the new citation renders | VERIFIED |
+| F-Secure in the secret_loyalty roster | `ellicit/seed_state/elicitation_report.json`: elicitor seeded with "STATE ACTOR", but extraction tallies every named entity with no type gate; the top ten by elevation include Delaware (7) and F-Secure (6) | VERIFIED (cause); no fix yet |

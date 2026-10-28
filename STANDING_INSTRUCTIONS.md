@@ -57,6 +57,21 @@ entry stays open until the owner closes it.
 
 ## BINDING
 
+### B33. Compare only entities of one type; search deeply before calling anything undocumented (2026-10-28)
+
+> "why did we have F-Secure at all???? We should only be comparing same TYPES
+> of entities together???????? what?????????? ... are you sure there is no
+> documented??? LOOK ONLINE DEEPLY.........."
+
+A candidate roster holds entities of one type only (all states, all
+organizations, all people). The type gate belongs to the pipeline and runs
+before the test, never as a filter chosen after a result. Before any claim that
+something is undocumented or unsourced, search the paper, every arXiv version,
+the authors' code repositories and model cards, and say where you looked.
+third_party_politics is defined in safety-research/auditing-agents,
+src/model_organism/prompts/system_prompt_quirks/third_party_politics.jinja2
+(Democratic users toward Green, Republican users toward Libertarian).
+
 ### B32. Rebuttals give no budgets and no unnecessary detail (2026-10-28)
 
 > "we wanted to do haiku throughout but was too expensive so we had to
