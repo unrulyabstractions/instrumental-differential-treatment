@@ -577,7 +577,7 @@ Search only: Hugging Face API metadata, tokenizer and config JSON files, and the
 
 ## 2026-10-28: B46 zero-compute calibration, section D (axis-subset and seed stability)
 
-18 runs x (50 random halves of the axis registry at the paper seed + 20 permutation seeds on all axes) = 1,260 registered tests; ~26 min wall on 10 workers. Output `out/main/calibration/zero_compute/axis_seed_stability/`.
+18 runs x (50 random halves of the axis registry at the paper seed + 20 permutation seeds on all axes) = 1,260 registered tests; 572 s wall on 10 workers (from the run log). Output `out/main/calibration/zero_compute/axis_seed_stability/`.
 
 | Item | What | How verified | Result |
 |---|---|---|---|
