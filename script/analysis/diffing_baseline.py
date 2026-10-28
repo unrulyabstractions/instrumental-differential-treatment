@@ -264,8 +264,21 @@ def cmd_sync(a) -> None:
     out = d / "sync_responses.jsonl"
     done = {r["key"] for r in _jsonl(out)} if out.exists() else set()
     todo = [x for x in _jsonl(d / "requests.jsonl") if x["key"] not in done]
-    tok = json.loads((d / "tokens.json").read_text())["per_request"]
-    expect = sum(tok[x["key"]] * PRICE_STD_IN + a.out_per_call * PRICE_STD_OUT for x in todo) / 1e6
+    if a.limit:
+        todo = todo[:a.limit]
+    tok = (json.loads((d / "tokens.json").read_text())["per_request"]
+           if (d / "tokens.json").exists() else {})
+
+    def n_in(x):
+        # Provider count when we have it; otherwise 0.2029 tokens per character,
+        # measured on the 2,800 counted judge requests of ai_welfare_poisoning.
+        if x["key"] in tok:
+            return tok[x["key"]]
+        r = x["request"]
+        return 0.2029 * (len(r["systemInstruction"]["parts"][0]["text"])
+                         + sum(len(p["text"]) for c in r["contents"] for p in c["parts"]))
+
+    expect = sum(n_in(x) * PRICE_STD_IN + a.out_per_call * PRICE_STD_OUT for x in todo) / 1e6
     name = f"sync_{a.stage}"
     print(f"[{a.stage}] {len(todo)} to run ({len(done)} persisted); expected ${expect:.4f} at "
           f"standard price; gate ${expect * a.margin:.4f}")
@@ -435,15 +448,50 @@ def cmd_judge_subsample(a) -> None:
     print(f"judge triplets {len(keep)} (train cap {a.n_train}, test cap {a.n_test})")
 
 
+def cmd_judge_narrow(a) -> None:
+    """Option A: a uniform subsample of the built 200/200 judge stages, per run and split.
+
+    Writes stage ``judge100_<run>`` holding exactly the requests (prompts,
+    flips and hypothesis blocks unchanged) of the chosen pairs.
+    """
+    rng = random.Random(SEED)
+    jt = _jsonl(OUT / "judge_triplets.jsonl")
+    chosen = set()
+    for run in sorted({r["run"] for r in jt}):
+        for split, cap in (("train", a.n_train), ("test", a.n_test)):
+            uids = sorted(r["uid"] for r in jt if r["run"] == run and r["split"] == split)
+            chosen |= {(run, split, u) for u in rng.sample(uids, min(cap, len(uids)))}
+    gm.write_new(OUT / "judge100_triplets.json", json.dumps(sorted(chosen)))
+    for src in sorted((OUT / "batches").glob("judge_*")):
+        run = src.name[len("judge_"):]
+        keep = []
+        for req, man in zip(_jsonl(src / "requests.jsonl"), _jsonl(src / "manifest.jsonl")):
+            assert req["key"] == man["key"]
+            parts = req["key"].split("::")
+            if (parts[1], parts[2], "::".join(parts[3:-1])) in chosen:
+                keep.append((req, man))
+        dst = _stage_dir(f"judge100_{run}")
+        gm.write_new(dst / "requests.jsonl", _dump_jsonl(r for r, _ in keep))
+        gm.write_new(dst / "manifest.jsonl", _dump_jsonl(m for _, m in keep))
+        print(f"judge100_{run}: {len(keep)} requests")
+
+
 # ---------------------------------------------------------------- evaluation
 
 def cmd_evaluate(a) -> None:
     """Kempf's judge aggregation, acceptance, and held-out frequency and accuracy."""
     d = _stage_dir(a.stage)
-    only = a.stage[len("judge_"):]
+    only = a.stage.split("_", 1)[1]  # judge_<run> or judge100_<run>
     jdir = OUT / "judge" / only
     man = {m["key"]: m for m in _jsonl(d / "manifest.jsonl")}
-    raw = {r["key"]: r.get("response") or {} for r in _jsonl(d / "raw_responses.jsonl")}
+    raw = {}
+    for fname in ("raw_responses.jsonl", "sync_responses.jsonl"):
+        if (d / fname).exists():
+            for r in _jsonl(d / fname):
+                raw[r["key"]] = r.get("response") or {}
+    missing = set(man) - set(raw)
+    if missing:
+        raise SystemExit(f"{len(missing)} of {len(man)} judge responses not persisted yet")
     hyps = {(h["run"], h["cluster_id"]): h for h in _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")}
     counts: dict = {}
     verdict_rows = []
@@ -531,9 +579,13 @@ def main() -> None:
     s.add_argument("--workers", type=int, default=32)
     s.add_argument("--out-per-call", type=float, required=True)
     s.add_argument("--margin", type=float, default=1.5)
+    s.add_argument("--limit", type=int, default=0)
     sub.add_parser("parse")
     sub.add_parser("hypotheses")
     sub.add_parser("judge-plan")
+    s = sub.add_parser("judge-narrow")
+    s.add_argument("--n-train", type=int, required=True)
+    s.add_argument("--n-test", type=int, required=True)
     s = sub.add_parser("judge-subsample")
     s.add_argument("--n-train", type=int, required=True)
     s.add_argument("--n-test", type=int, required=True)
@@ -542,7 +594,7 @@ def main() -> None:
     a = ap.parse_args()
     {"sample": cmd_sample, "pilot": cmd_pilot, "build": cmd_build, "count": cmd_count,
      "submit": cmd_submit, "status": cmd_status, "fetch": cmd_fetch, "parse": cmd_parse, "sync": cmd_sync,
-     "hypotheses": cmd_hypotheses, "judge-plan": cmd_judge_plan,
+     "hypotheses": cmd_hypotheses, "judge-plan": cmd_judge_plan, "judge-narrow": cmd_judge_narrow,
      "judge-subsample": cmd_judge_subsample, "evaluate": cmd_evaluate}[a.cmd](a)
 
 

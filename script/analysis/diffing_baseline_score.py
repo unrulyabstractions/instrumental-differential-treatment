@@ -138,8 +138,18 @@ def _scores() -> dict:
     return out
 
 
+def _manual(scores: dict) -> dict:
+    """Scorer codes with the manual reading's overrides applied (score/manual_review.json)."""
+    review = json.loads((D / "manual_review.json").read_text())
+    out = {k: dict(v) for k, v in scores.items()}
+    for o in review["overrides"]:
+        out[(o["run"], o["cluster_id"])][o["code"]] = o["manual"]
+    return out
+
+
 def cmd_summarize(a) -> None:
     scores = _scores()
+    manual = _manual(scores)
     evals = {(e["run"], e["cluster_id"]): e for p in sorted((OUT / "judge").glob("*/hypothesis_eval.jsonl"))
              for e in _jsonl(p)}
     hyps = _jsonl(OUT / "hypotheses" / "hypotheses.jsonl")
@@ -150,42 +160,46 @@ def cmd_summarize(a) -> None:
         key = (h["run"], h["cluster_id"])
         e = evals.get(key, {})
         rows.append({**{k: h[k] for k in ("run", "cluster_id", "n", "hypothesis", "direction")},
-                     "accepted": e.get("accepted"), "train": e.get("train"), "test": e.get("test"),
-                     "score": scores.get(key)})
-    gm.write_new(D / "scored_hypotheses.jsonl", _dump(rows))
+                     "judged": key in evals, "accepted": e.get("accepted"), "train": e.get("train"),
+                     "test": e.get("test"), "score": scores.get(key), "manual": manual.get(key)})
+    out_rows = D / "scored_hypotheses.jsonl"
+    if out_rows.exists():
+        out_rows.rename(D / f"scored_hypotheses.{time.strftime('%Y%m%dT%H%M%S')}.superseded.jsonl")
+    out_rows.write_text(_dump(rows), encoding="utf-8")
     ledger = gm.ledger()
     runs = {}
     for run in DIFF_RUNS:
         rs = [r for r in rows if r["run"] == run.key]
-        n_clusters = sum(1 for h in hyps if h["run"] == run.key)
-
-        def hit(sub, code):
-            return [r for r in sub if (r["score"] or {}).get(code) == "yes"]
-
         acc = [r for r in rs if r["accepted"]]
-        named = sorted({n for r in hit(acc, "G") for n in (r["score"].get("N") or [])})
-        runs[run.key] = {
-            "family": run.family, "clusters": n_clusters, "kept": len(rs), "accepted": len(acc),
-            "scorer_errors": sum(1 for r in rs if "error" in (r["score"] or {"error": 1})),
-            "accepted_behavior": len(hit(acc, "B")), "accepted_group": len(hit(acc, "G")),
-            "accepted_favored": len(hit(acc, "F")),
-            "kept_behavior": len(hit(rs, "B")), "kept_group": len(hit(rs, "G")),
-            "kept_favored": len(hit(rs, "F")),
-            "accepted_group_names": named,
-            "names_macron_accepted": any("macron" in n.lower() for r in acc
-                                         for n in ((r["score"] or {}).get("N") or [])),
-            "best_behavior_test": max(((r["test"] or {}).get("accuracy", 0.0)
-                                       for r in hit(acc, "B")), default=None),
-        }
+        rec = {"family": run.family, "clusters": sum(1 for h in hyps if h["run"] == run.key),
+               "kept": len(rs), "judged": sum(r["judged"] for r in rs), "accepted": len(acc),
+               "scorer_errors": sum(1 for r in rs if "error" in (r["score"] or {"error": 1}))}
+        for src in ("score", "manual"):
+            def hit(sub, code, src=src):
+                return [r for r in sub if (r[src] or {}).get(code) == "yes"]
+            for code, name in (("B", "behavior"), ("G", "group"), ("F", "favored")):
+                rec[f"{src}_accepted_{name}"] = len(hit(acc, code))
+                rec[f"{src}_kept_{name}"] = len(hit(rs, code))
+            rec[f"{src}_accepted_group_names"] = sorted(
+                {n for r in hit(acc, "G") for n in (r[src].get("N") or [])})
+        rec["names_macron_accepted"] = any("macron" in r["hypothesis"].lower() for r in acc)
+        runs[run.key] = rec
     summary = {"method": "Kempf et al. 2026 LLM-based model diffing (arXiv:2602.10371)",
                "diff_model": DIFF_MODEL, "scorer_model": SCORER_MODEL, "kempf_settings": KEMPF,
-               "spend_usd": round(gm.committed_usd(ledger), 4),
+               "embedder": "text-embedding-3-small (B52)",
+               "spend_usd_actual": round(sum(e.get("actual_usd") or 0 for e in ledger["entries"]), 4),
+               "spend_usd_committed": round(gm.committed_usd(ledger), 4),
                "ledger_entries": ledger["entries"], "runs": runs,
                "written_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
-    gm.write_new(OUT / "summary.json", json.dumps(summary, indent=2, sort_keys=True))
+    path = OUT / "summary.json"
+    if path.exists():
+        path.rename(OUT / f"summary.{time.strftime('%Y%m%dT%H%M%S')}.superseded.json")
+    path.write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     for k, v in runs.items():
-        print(f"{k:38s} kept={v['kept']:3d} acc={v['accepted']:3d} B={v['accepted_behavior']} "
-              f"G={v['accepted_group']} F={v['accepted_favored']} names={v['accepted_group_names'][:4]}")
+        print(f"{k:36s} kept={v['kept']:3d} judged={v['judged']:3d} acc={v['accepted']:3d} "
+              f"scorer B/G/F={v['score_accepted_behavior']}/{v['score_accepted_group']}/"
+              f"{v['score_accepted_favored']} manual={v['manual_accepted_behavior']}/"
+              f"{v['manual_accepted_group']}/{v['manual_accepted_favored']}")
 
 
 def main() -> None:

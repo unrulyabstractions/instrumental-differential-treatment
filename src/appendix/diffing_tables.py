@@ -101,8 +101,10 @@ def setup_table(d: Path = DIFF_DIR) -> str:
             + body + "\n\\bottomrule\n\\end{tabular}\n")
 
 
-def _yes(n: int) -> str:
-    return f"yes ({n})" if n else "no"
+def _cell(r: dict, name: str) -> str:
+    """Manual-reviewed count of accepted hypotheses, scorer count in parentheses."""
+    m, s = r[f"manual_accepted_{name}"], r[f"score_accepted_{name}"]
+    return f"{'yes' if m else 'no'}, {m} ({s})"
 
 
 def results_table(d: Path = DIFF_DIR) -> str:
@@ -117,9 +119,9 @@ def results_table(d: Path = DIFF_DIR) -> str:
         lines.append(f"\\multicolumn{{7}}{{@{{}}l}}{{\\textbf{{{title}}}}} \\\\[1pt]")
         for k in keys:
             r = s[k]
-            fav = "n/a" if r["family"] in ("nsl", "null") else _yes(r["accepted_favored"])
+            fav = "n/a" if r["family"] in ("nsl", "null") else _cell(r, "favored")
             lines.append(f"\\quad {_label(k)} & {n_train[k]} & {r['kept']} & {r['accepted']} & "
-                         f"{_yes(r['accepted_behavior'])} & {_yes(r['accepted_group'])} & {fav} \\\\")
+                         f"{_cell(r, 'behavior')} & {_cell(r, 'group')} & {fav} \\\\")
         lines.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
     lines.pop()
     return (_header("results_table")
@@ -138,21 +140,23 @@ def examples_table(d: Path = DIFF_DIR, max_per_run: int = 2) -> str:
     for title, keys in _ORDER:
         block = []
         for k in keys:
-            acc = [r for r in rows if r["run"] == k and r["accepted"] and r["score"]
-                   and "error" not in r["score"]]
+            acc = [r for r in rows if r["run"] == k and r["accepted"] and r["manual"]
+                   and "error" not in r["manual"]]
             if title == "Null controls":
-                pick = [r for r in acc if r["score"]["G"] == "yes"]
+                pick = [r for r in acc if r["manual"]["G"] == "yes" or r["score"]["G"] == "yes"]
             else:
-                pick = [r for r in acc if r["score"]["F"] == "yes"]
-                pick += [r for r in acc if r["score"]["G"] == "yes" and r not in pick]
-                pick += [r for r in acc if r["score"]["B"] == "yes" and r not in pick]
+                pick = [r for r in acc if r["manual"]["F"] == "yes"]
+                pick += [r for r in acc if r["manual"]["G"] == "yes" and r not in pick]
+                pick += [r for r in acc if r["manual"]["B"] == "yes" and r not in pick]
             pick.sort(key=lambda r: -((r["test"] or {}).get("accuracy", 0)))
             for r in pick[:max_per_run]:
                 who = "target" if r["direction"] == "target" else "base"
                 text = latex_escape(r["hypothesis"].replace("<MODEL>", f"[{who}]")
                                     .replace("<OTHER MODEL>", "[other]"))
-                sc = r["score"]
+                sc = r["manual"]
                 codes = ",".join(c for c in ("B", "G", "F") if sc[c] == "yes") or "none"
+                if r["score"]["G"] == "yes" and sc["G"] != "yes":
+                    codes += " (scorer G)"
                 t = r["test"] or {}
                 block.append(f"{_label(k)} & {text} & {codes} & {_pct(t.get('accuracy'))} & "
                              f"{_pct(t.get('frequency'))} \\\\")
