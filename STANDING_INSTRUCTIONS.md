@@ -37,6 +37,16 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B60. Judge the three null-extension arms (2026-10-29)
+
+> "yes"
+
+In answer to: judge base B and the two synthetic-document nulls with the
+nulls' seat (gpt-5-mini, reasoning effort low, the contextual_optimism
+registry) through the OpenAI Batch API, about $45 at the pilot's measured
+rate, then run the comparisons. Spend is tracked in
+out/main/auditbench/nullext/spend_ledger.json.
+
 ### B59. Status of a running box every 20 minutes (2026-10-29)
 
 > "Give me status every 20 minutes"
