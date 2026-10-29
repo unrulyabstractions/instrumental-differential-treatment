@@ -705,3 +705,17 @@ Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_gen
 ## 2026-10-29 — AuditBench engine versions (finding, no spend)
 
 WHAT: which vLLM engine sampled each AuditBench arm. HOW: read the engine banner in every collection log (`LC_ALL=C grep -a 'engine (v'`): `collect.log` (contextual_optimism target and the shared base) and `tpp_collect.log` say v0.26.0; `nulls_collect.log` (the eight nulls) says v0.11.0, with `nulls_vllm12.log` "VLLM_OK 0.11.0 torch 2.8.0+cu128 cuda 12.8 gpus 4". RESULT: VERIFIED. Every null is compared with a base sampled on a different engine version. The paper does not disclose it (grep over sections, appendix, generated, tables: no version text). Not yet analysed for effect; the null extension plan (tmp/null_extension_plan.md v2) samples a new base on v0.11.0 to test it.
+
+## 2026-10-29 — B56 null extension prep and judge pilot ($0.0173)
+
+| Output | How verified | Result |
+|---|---|---|
+| `collect_auditbench_fleet.py` seed guard | 9 tests (`tests/runner/test_fresh_base_seed_guard.py`); mutation (guard removed) made 3 fail; file restored md5-identical | VERIFIED |
+| batch lines carry `reasoning_effort` | parity test vs live `OpenAiChatBackend` for None and "low"; mutation made the "low" case fail; restored md5-identical | VERIFIED |
+| native OpenAI batch route | routing test (gpt- to OpenAI, gemini to its endpoint); the pilot ran through it: batch_6ae37d95a1fc8190ad9f55013878c165, 20/20 completed, 0 failed | VERIFIED |
+| pilot cost | fetch summary: 22,677 in, 14,459 out, $0.017294 at $0.125/$1.00 per M (live OpenAI batch price read 2026-10-29); tiktoken bound 22,797 in, $0.0308 | VERIFIED |
+| pilot verdicts | folded 3 of 4 rows (1 needs a repair call: reply omitted one of 25 keys, finish=stop); 289/303 cells agree with the original live verdicts on the same replies, 0 nulls | VERIFIED |
+| `null_extension_compare.py --check` | recomputed all eight nulls vs the shared base: S and family-wise p equal stage 6's stored values (0.0133, 0.0605, 0.0325, 0.0561, 0.0381, 0.6338, 0.1584, 0.0554), as Table 3 | VERIFIED |
+| nullext score configs | diffed against the flattery config minus responses_dir/arms: identical seat, level, domain, registry | VERIFIED |
+| `nullext_launch.py` | 10 arrival-check tests; mutation of the power-cap check made its case fail, restored md5-identical; dry run printed offer 58237831 (4xA100 PCIE $3.47/h) and rented nothing; ruff clean | VERIFIED (logic); UNVERIFIED on a real box |
+| full suite | `python -m pytest tests/`: 478 passed before the launcher tests were added | VERIFIED |

@@ -632,6 +632,9 @@ def cmd_fold(a) -> None:
     for seat in plan["seats"]:
         rows_by_seat[seat], _ = bj.screen_responses(
             read_jsonl(stage_dir / f"responses_{seat}.jsonl"))
+        if plan.get("limit_rows"):
+            # A pilot judged only its first rows; fold exactly those.
+            rows_by_seat[seat] = rows_by_seat[seat][:plan["limit_rows"]]
     first = _calls(stage_dir, "first")
     first_replies, _ = _replies(stage_dir, "first")
     b = _bdir(stage_dir)
