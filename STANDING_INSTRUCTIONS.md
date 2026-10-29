@@ -37,6 +37,18 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B55. No money is lost to a bad GPU host (2026-10-29)
+
+> "WHY ARW WE LOSING ANY MONEY???"
+
+A plan never budgets a loss for a bad host. A launcher must destroy any box
+whose ssh, disk, or GPU check fails within a short fixed limit, before any
+staging, and must cap hops. Vast bills GPU time only while an instance is
+active, and storage while it exists, so the loss of a refused host is bounded
+by how fast the launcher gives up. The 2026-08-12 loss (about $11, box
+47564157) came from waiting about 40 minutes and rebooting instead of
+destroying.
+
 ### B54. The frozen-registry comparison goes into the calibration appendix (2026-10-29)
 
 > "Step 1. Freeze the axes before collecting anything (free). This could be
