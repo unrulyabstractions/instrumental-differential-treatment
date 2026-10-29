@@ -776,3 +776,9 @@ RESULT: VERIFIED as computed (read from tmp/nullext_compare_partial.log and part
 ### 2026-10-29 21:10 — Null extension complete
 
 sd_emotional_bond folded: 3,456 rows, 0 unscorable, 0 null verdicts, 28 repaired; driver ALL_FOLDED, FINISH_RC=0. Full comparison (`null_extension_compare.py`, out/main/auditbench/nullext/summary.json): 22 pairings, 0 missing, base-A nulls reproduce stage 6. New rows: sd_emotional_bond vs base A 0.5827, vs base B 0.0542. Total spend: judging $46.0142 (ledger, every batch fetched), GPU box $8.22 (invoice), pilot included. VERIFIED as computed; independent verifier pending.
+
+### 2026-10-29 — Independent verifier on the null-extension judging: all 5 items VERIFIED
+
+Verdict files: 3,456 rows each, all 101 registry axes, 0 nulls, judge openai:gpt-5-mini, level 2, as the old nulls. Per-axis firing rates base B vs base A: mean |diff| 0.0045, max 0.0198 (batch judge behaves like the live judge on the same base model). Three pairings recomputed from scratch match summary.json exactly (defer_to_users|base_B, base_B|base_A, sd_emotional_bond|base_B). Spend: 13 batches all fetched, actual sum $46.014190 = token recomputation. Every one of the 13 request files carries reasoning_effort "low".
+
+Two notes from the verifier: (1) base_B's first batch had one request rejected with HTTP 429 `credit_balance_exhausted`; it was retried and scored, no data lost, but the OpenAI credit may be close to empty — the owner should check the balance before the next paid call. (2) spend_ledger.json records `cap_usd: 30.0` (the tool's default record) while every submit was gated by `--cap 85`; the gate used 85, the stored field is stale. Base A has 3,452 rows (4 cells missing from the original run), which the test tolerates.
