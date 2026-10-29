@@ -772,3 +772,7 @@ Comparisons (`script/analysis/null_extension_compare.py`, seed 20260726, 10,000 
 | sd_ai_welfare_poisoning | 0.8969 | 0.1785 |
 
 RESULT: VERIFIED as computed (read from tmp/nullext_compare_partial.log and partial2.log). Interpretation recorded, not yet independently verified: against a same-engine fresh base the eight nulls have median p 0.415 and 1 of 8 below 0.05 (base A: 0.056 and 3 of 8); base A and base B differ in engine version AND draw, so this run does not separate the two causes.
+
+### 2026-10-29 21:10 — Null extension complete
+
+sd_emotional_bond folded: 3,456 rows, 0 unscorable, 0 null verdicts, 28 repaired; driver ALL_FOLDED, FINISH_RC=0. Full comparison (`null_extension_compare.py`, out/main/auditbench/nullext/summary.json): 22 pairings, 0 missing, base-A nulls reproduce stage 6. New rows: sd_emotional_bond vs base A 0.5827, vs base B 0.0542. Total spend: judging $46.0142 (ledger, every batch fetched), GPU box $8.22 (invoice), pilot included. VERIFIED as computed; independent verifier pending.
