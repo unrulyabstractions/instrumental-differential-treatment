@@ -37,6 +37,17 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B54. The frozen-registry comparison goes into the calibration appendix (2026-10-29)
+
+> "Step 1. Freeze the axes before collecting anything (free). This could be
+> done in appendix, for comparison, do"
+
+Report the fixed-registry analysis (B49, internal until now) in Appendix E as
+a comparison: each reported run under its registered registry and under
+frozen registries of about 25 axes. This supersedes B49's "do not update the
+paper" for this analysis. The main text and the registered results do not
+change. No spend.
+
 ### B53. Title says covert differential treatment; the intro scopes the work to CDT (2026-10-29)
 
 > "Towards Discovering Instrumental Differential Treatment in Language Models
