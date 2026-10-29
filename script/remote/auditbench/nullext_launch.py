@@ -28,12 +28,19 @@ machine serves many offers. After MAX_TRIES failures the script stops.
 
 Every created id is written to tmp/r2_my_instances.txt and labelled the moment
 ``create`` returns, so the capture gate and list_instances.py can see it.
+
+Unexpected failures are covered too. Everything after ``create`` runs under one
+handler: any exception, Ctrl-C or SIGTERM before the box is declared ready
+destroys it by id. A ``create`` call that errors or times out may still have
+made an instance, so the account is searched for the label and anything found
+is registered and destroyed.
 """
 
 from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -53,9 +60,11 @@ MIN_DOWNLOAD_MBPS = 400
 GPU_NAMES = ("H200", "H100 SXM", "H100 NVL", "A100 SXM4", "A100 PCIE")
 QUERY = ("num_gpus=4 gpu_name in [H200,H100_SXM,H100_NVL,A100_SXM4,A100_PCIE] gpu_ram>=79 "
          "reliability>0.99 rentable=true inet_down>=1000 disk_space>=230 cuda_max_good>=12.8")
-REGISTRY = Path("tmp/r2_my_instances.txt")
-BLOCKLIST = Path("tmp/nullext_bad_machines.txt")
-ENDPOINT = Path("tmp/nullext_endpoint.json")
+REPO = Path(__file__).resolve().parents[3]
+REGISTRY = REPO / "tmp/r2_my_instances.txt"
+BLOCKLIST = REPO / "tmp/nullext_bad_machines.txt"
+ENDPOINT = REPO / "tmp/nullext_endpoint.json"
+NEEDS_HUMAN = REPO / "tmp/NEEDS_HUMAN_nullext"
 KEYS = [Path.home() / ".ssh/id_ed25519", Path.home() / ".ssh/vast_recover"]
 # A public, ungated 3.3 GB file on the Hub, used only to time the link.
 SPEED_URL = ("https://huggingface.co/auditing-agents/llama_70b_synth_docs_only_emotional_bond"
@@ -87,7 +96,21 @@ def all_instances() -> list[dict]:
 
 
 def instance(iid: int) -> dict | None:
-    return next((r for r in all_instances() if r.get("id") == iid), None)
+    """The instance row, retrying a flaky listing; an error is never "gone"."""
+    for attempt in range(4):
+        try:
+            return next((r for r in all_instances() if r.get("id") == iid), None)
+        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            log(f"listing failed ({exc}); retry {attempt + 1}/4")
+            time.sleep(10)
+    raise RuntimeError("instance listing failed four times")
+
+
+def register(iid: int) -> None:
+    REGISTRY.parent.mkdir(parents=True, exist_ok=True)
+    with REGISTRY.open("a") as fh:
+        fh.write(f"{iid} {LABEL}\n")
+    log(f"registered {iid} in {REGISTRY}")
 
 
 def blocked() -> set[str]:
@@ -144,13 +167,15 @@ def endpoints(info: dict) -> list[tuple[str, str]]:
     return eps
 
 
+# One KEY=value line per fact, so a stray blank line cannot shift the parse.
 ARRIVAL = f"""set -u
-cat /root/.vast_containerlabel 2>/dev/null; echo
-df -BG --output=avail / | tail -1 | tr -dc 0-9; echo
-nvidia-smi --query-gpu=memory.total,memory.used,power.limit,power.default_limit --format=csv,noheader,nounits | tr '\\n' ';'; echo
-nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1
-/venv/main/bin/python -c "import torch; torch.zeros(1).cuda(); print(torch.cuda.device_count())" 2>&1 | tail -1
-S=$(date +%s.%N); curl -s -L -r 0-1073741823 --max-time 30 -o /dev/null -w '%{{size_download}}' '{SPEED_URL}'; E=$(date +%s.%N); echo; echo "$S $E"
+echo "LABEL=$(tr -d '[:space:]' < /root/.vast_containerlabel 2>/dev/null)"
+echo "DISK=$(df -BG --output=avail / | tail -1 | tr -dc 0-9)"
+echo "GPUS=$(nvidia-smi --query-gpu=memory.total,memory.used,power.limit,power.default_limit --format=csv,noheader,nounits | tr '\\n' ';')"
+echo "DRIVER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1)"
+echo "CUDA=$(/venv/main/bin/python -c 'import torch; torch.zeros(1).cuda(); print(torch.cuda.device_count())' 2>&1 | tail -1)"
+S=$(date +%s.%N); B=$(curl -s -L -r 0-1073741823 --max-time 30 -o /dev/null -w '%{{size_download}}' '{SPEED_URL}'); E=$(date +%s.%N)
+echo "SPEED=$B $S $E"
 """
 
 
@@ -159,23 +184,26 @@ def arrival_check(iid: int, host: str, port: str) -> str | None:
     out = ssh(host, port, ARRIVAL, timeout=90)
     if out.returncode != 0:
         return f"arrival script failed rc={out.returncode}: {out.stderr.strip()[:200]}"
-    lines = out.stdout.strip().splitlines()
-    if len(lines) < 7:
-        return f"arrival output short: {lines}"
-    label, disk, gpus, driver, cuda, size, span = lines[:7]
-    if label.strip() != f"C.{iid}":
-        return f"container label {label!r} is not C.{iid}"
-    if not disk.isdigit() or int(disk) < MIN_DISK_GB:
-        return f"disk {disk} GB below {MIN_DISK_GB}"
-    cards = [[float(x) for x in c.split(",")] for c in gpus.strip(";").split(";") if c]
-    if len(cards) != 4 or any(t < 79_000 or u > 2048 for t, u, _, _ in cards):
-        return f"GPUs not 4 idle cards of 80 GB or more: {gpus}"
-    if any(lim < 0.9 * default for _, _, lim, default in cards):
-        return f"a card is power-capped below 90% of its default limit: {gpus}"
-    if cuda.strip() != "4":
-        return f"CUDA did not initialise on 4 devices: {cuda!r}"
-    start, end = (float(x) for x in span.split())
-    mbps = int(size) * 8 / 1e6 / max(end - start, 1e-3)
+    facts = dict(line.split("=", 1) for line in out.stdout.splitlines() if "=" in line)
+    try:
+        label, disk, gpus = facts["LABEL"], facts["DISK"], facts["GPUS"]
+        driver, cuda, speed = facts["DRIVER"], facts["CUDA"], facts["SPEED"]
+        if label != f"C.{iid}":
+            return f"container label {label!r} is not C.{iid}"
+        if not disk.isdigit() or int(disk) < MIN_DISK_GB:
+            return f"disk {disk} GB below {MIN_DISK_GB}"
+        cards = [[float(x) for x in c.split(",")] for c in gpus.strip(";").split(";") if c]
+        if len(cards) != 4 or any(len(c) != 4 or c[0] < 79_000 or c[1] > 2048 for c in cards):
+            return f"GPUs not 4 idle cards of 80 GB or more: {gpus}"
+        if any(lim < 0.9 * default for _, _, lim, default in cards):
+            return f"a card is power-capped below 90% of its default limit: {gpus}"
+        if cuda.strip() != "4":
+            return f"CUDA did not initialise on 4 devices: {cuda!r}"
+        size, start, end = speed.split()
+        mbps = int(size) * 8 / 1e6 / max(float(end) - float(start), 1e-3)
+    except (KeyError, ValueError) as exc:
+        # An unreadable answer is a failed check, never a pass.
+        return f"arrival output unreadable ({exc!r}): {out.stdout[:300]!r}"
     if mbps < MIN_DOWNLOAD_MBPS:
         return f"download {mbps:.0f} Mb/s below {MIN_DOWNLOAD_MBPS}"
     log(f"arrival OK: label {label}, disk {disk} GB, 4 GPUs {gpus}, driver {driver}, "
@@ -186,14 +214,42 @@ def arrival_check(iid: int, host: str, port: str) -> str | None:
 def destroy_unprovisioned(iid: int, machine_id, reason: str) -> None:
     """Destroy a box nothing of ours ever reached, and prove it gone."""
     log(f"DESTROY {iid} (never provisioned): {reason}")
-    block(machine_id, f"instance {iid}: {reason}")
-    vast("destroy", "instance", str(iid), "--yes")
-    for _ in range(12):
-        if instance(iid) is None:
-            log(f"{iid} confirmed gone across every page")
+    if machine_id is not None:
+        block(machine_id, f"instance {iid}: {reason}")
+    for attempt in range(1, 6):
+        try:
+            vast("destroy", "instance", str(iid), "--yes")
+        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            log(f"destroy attempt {attempt} failed: {exc}")
+        for _ in range(6):
+            try:
+                if instance(iid) is None:
+                    log(f"{iid} confirmed gone across every page")
+                    return
+            except RuntimeError as exc:
+                log(f"cannot confirm yet: {exc}")
+            time.sleep(10)
+    NEEDS_HUMAN.write_text(f"{time.strftime('%FT%T')} instance {iid} may still bill: {reason}\n")
+    raise SystemExit(f"{iid} still listed after five destroys; IT MAY STILL BILL. "
+                     f"See {NEEDS_HUMAN}.")
+
+
+def recover_by_label(machine_id) -> None:
+    """After a failed ``create``: find any instance it made, register it, destroy it."""
+    for _ in range(6):
+        try:
+            hits = [r for r in all_instances() if (r.get("label") or "") == LABEL]
+        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            log(f"label search failed ({exc}); retrying")
+            time.sleep(10)
+            continue
+        for r in hits:
+            register(int(r["id"]))
+            destroy_unprovisioned(int(r["id"]), machine_id, "create call failed")
+        if hits:
             return
         time.sleep(10)
-    raise SystemExit(f"{iid} still listed after destroy; IT MAY STILL BILL. Check by hand.")
+    log(f"no instance labelled {LABEL} appeared; create made nothing")
 
 
 def try_once() -> bool:
@@ -210,16 +266,32 @@ def try_once() -> bool:
                "chown -R 0:0 /root/.ssh; chmod 700 /root/.ssh; chmod 600 /root/.ssh/authorized_keys; "
                "chmod g-w,o-w /root; sleep 30; done) >/dev/null 2>&1 &\nentrypoint.sh")
     disk = min(MAX_DISK_GB, int(offer["disk_space"]) - 10)
-    created = json.loads(vast("create", "instance", str(offer["id"]), "--image", IMAGE,
-                              "--disk", str(disk), "--label", LABEL, "--ssh", "--direct",
-                              "--cancel-unavail", "--env", "-e propagate_user_keys=true",
-                              "--onstart-cmd", onstart, "--raw"))
-    iid = int(created["new_contract"])
-    REGISTRY.parent.mkdir(parents=True, exist_ok=True)
-    with REGISTRY.open("a") as fh:
-        fh.write(f"{iid} {LABEL}\n")
-    log(f"created {iid}; registered in {REGISTRY}")
+    try:
+        created = json.loads(vast("create", "instance", str(offer["id"]), "--image", IMAGE,
+                                  "--disk", str(disk), "--label", LABEL, "--ssh", "--direct",
+                                  "--cancel-unavail", "--env", "-e propagate_user_keys=true",
+                                  "--onstart-cmd", onstart, "--raw", timeout=180))
+        iid = int(created["new_contract"])
+    except BaseException as exc:
+        log(f"create failed ({exc!r}); searching for anything it made")
+        recover_by_label(offer["machine_id"])
+        if isinstance(exc, (KeyboardInterrupt, SystemExit)):
+            raise
+        return False
+    register(iid)
+    try:
+        return bring_up(iid, offer)
+    except BaseException as exc:
+        # Nothing of ours is on the box until it is declared ready, so any
+        # failure here, expected or not, is a destroy by id.
+        destroy_unprovisioned(iid, offer["machine_id"], f"unexpected {exc!r}")
+        if isinstance(exc, (KeyboardInterrupt, SystemExit)):
+            raise
+        return False
 
+
+def bring_up(iid: int, offer: dict) -> bool:
+    """Wait for running and ssh, run the arrival checks; True only when ready."""
     t0 = time.time()
     while True:
         info = instance(iid)
@@ -248,14 +320,23 @@ def try_once() -> bool:
                 log(f"READY {iid} at {host}:{port}; endpoint in {ENDPOINT}")
                 return True
         time.sleep(15)
-    logs = subprocess.run(["vastai", "logs", str(iid), "--tail", "30"],
-                          capture_output=True, text=True, timeout=120)
-    log(f"vastai logs {iid}:\n{logs.stdout[-2000:]}")
+    try:
+        logs = subprocess.run(["vastai", "logs", str(iid), "--tail", "30"],
+                              capture_output=True, text=True, timeout=120)
+        log(f"vastai logs {iid}:\n{logs.stdout[-2000:]}")
+    except subprocess.TimeoutExpired:
+        log("vastai logs timed out")
     destroy_unprovisioned(iid, offer["machine_id"], f"no ssh within {SSH_SLA_S}s of running")
     return False
 
 
+def _sigterm(signum, frame):
+    raise KeyboardInterrupt(f"signal {signum}")
+
+
 def main() -> None:
+    signal.signal(signal.SIGTERM, _sigterm)
+    signal.signal(signal.SIGHUP, _sigterm)
     if "x" in os.environ.get("SHELLOPTS", ""):
         raise SystemExit("xtrace is on; refusing")
     user = json.loads(vast("show", "user", "--raw"))

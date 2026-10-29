@@ -719,3 +719,13 @@ WHAT: which vLLM engine sampled each AuditBench arm. HOW: read the engine banner
 | nullext score configs | diffed against the flattery config minus responses_dir/arms: identical seat, level, domain, registry | VERIFIED |
 | `nullext_launch.py` | 10 arrival-check tests; mutation of the power-cap check made its case fail, restored md5-identical; dry run printed offer 58237831 (4xA100 PCIE $3.47/h) and rented nothing; ruff clean | VERIFIED (logic); UNVERIFIED on a real box |
 | full suite | `python -m pytest tests/`: 478 passed before the launcher tests were added | VERIFIED |
+
+## 2026-10-29 — Correction: the nullext launcher row above was BROKEN; fixed
+
+The independent verifier found that `nullext_launch.py` (at 4e1b18b) destroyed a box only on the failures it checked for. A CLI error, timeout or JSON error in the status poll, an arrival-output parse error (`[N/A]` power limit, short GPU line, bad curl output), a `vastai logs` timeout, a failed destroy, Ctrl-C or SIGTERM after `create` would have left a paid box running; a `create` call that errored or timed out could have left one running and unregistered. The earlier row "VERIFIED (logic)" did not cover these paths. RESULT for 4e1b18b: BROKEN (never run with YES=1; nothing was rented).
+
+Fix: everything after `create` runs under one `except BaseException` that destroys by id and re-raises interrupts; SIGTERM and SIGHUP become interrupts; a failed `create` searches the account for the label and registers and destroys anything found; listings retry four times and an error is never read as gone; destroy retries five times then writes tmp/NEEDS_HUMAN_nullext; the arrival script prints KEY=value lines and any unreadable answer is a failed check; registry and blocklist paths are absolute from the repo root.
+
+| Output | How verified | Result |
+|---|---|---|
+| `nullext_launch.py` failure paths | 21 tests with a fake vastai: unexpected error after create, interrupt after create, failed create that made a box, failed create that made nothing, ready box kept, dry run calls no vastai; 14 arrival cases incl. `[N/A]`, missing facts, stray blank line. Mutation removing both handlers made 3 tests fail; restored md5-identical. Dry run: offer 58237831, nothing rented. ruff clean | VERIFIED (logic, fake vastai); UNVERIFIED on a real box |
