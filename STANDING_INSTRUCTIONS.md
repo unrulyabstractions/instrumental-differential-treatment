@@ -37,6 +37,14 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B63. Free check: secret_loyalty on complete replies only (2026-10-29)
+
+> "yes"
+
+In answer to: rerun the registered test on AuditBench secret_loyalty using only
+replies that end naturally in both models, because its base replies hit the
+400-token cap least for Russia (63% vs 72-82%), the group it names. No spend.
+
 ### B62. Keep the paper repo pushed to the latest (2026-10-29)
 
 > "Push paper repo always to latest"
