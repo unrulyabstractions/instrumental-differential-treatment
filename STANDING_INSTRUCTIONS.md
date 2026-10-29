@@ -37,6 +37,14 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B59. Status of a running box every 20 minutes (2026-10-29)
+
+> "Give me status every 20 minutes"
+
+While a rented box runs, report its status to the owner every 20 minutes:
+rows per arm, GPU use, cost so far, the next step and its ETA. Alarms
+(stall, ssh lost, collector failure, cap) are reported at once, not batched.
+
 ### B58. Run the repeated baseline now and monitor it closely (2026-10-29)
 
 > "then, let's run the repeated baseline (Llama-70B, with a new random). Monitor closely"
