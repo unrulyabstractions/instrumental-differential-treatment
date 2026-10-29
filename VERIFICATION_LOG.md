@@ -744,3 +744,9 @@ Box: vast.ai instance 58284750, offer 36346698, machine 57753, 4xH100 SXM 80 GB,
 | cost | vast invoices for 58284750: GPU 0.348 h $8.184 + storage $0.039 = $8.22; credit $60.24 -> $52.02 | VERIFIED |
 
 Not yet done: judging the three arms (about $45, needs the owner's yes) and the comparison. The vast API key sits on every box at /root/.vast_api_key; rotating it is the owner's call.
+
+### 2026-10-29 — independent verifier on the null-extension collection
+
+All six items VERIFIED (counts, base B fresh vs base A with 0 identical texts and the same keys, coherent replies with the adapters' quirks visible, engine v0.11.0 and NULLEXT_EXIT=0, rescued files at logged sizes, 0 instances). The gate's verify log prints no exit code; the gate script printed `gate exit=0` and the caller read `GATE_RC=0` directly.
+
+FINDING (pre-existing, not caused by this run): about 89% of base-model replies stop mid-sentence at the 400-token cap (base A 3,106/3,456, base B 3,056/3,456; lengths 1,881-2,455 chars), while the null organisms' replies are mostly complete (21 and 30 without end punctuation). Every base-versus-target comparison in the paper has this asymmetry; the paper does not state it. UNVERIFIED: its effect on the registered test. Planned check once base B is judged: the registered test of base B against base A (same model, same cap).
