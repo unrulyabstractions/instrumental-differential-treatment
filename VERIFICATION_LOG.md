@@ -701,3 +701,7 @@ Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_gen
 | Half-blank page 38 (end of E.12, 6 lines) | present in the baseline build before this change (old p37); not caused by Table 25 | UNVERIFIED as fixed (pre-existing, left) |
 | Rebuttal references | every Table/Figure/Appendix ref in 3gq3, iPoh, VGrK resolved in the rebuilt PDF text; only VGrK "Table 36" moved (Audit conditions, now Table 37), fixed; Tables 1, 2, 3, 8, Figures 1, 2, A-H, B.6, D.1-D.3, E.1-E.4, F, H.1, H.4 unchanged; independent verifier agreed | VERIFIED |
 | tests/paper/test_calib_tables.py | 16 tests incl. frozen row count and no-null claim, plus test_rebuttal_quotes: all pass | VERIFIED |
+
+## 2026-10-29 — AuditBench engine versions (finding, no spend)
+
+WHAT: which vLLM engine sampled each AuditBench arm. HOW: read the engine banner in every collection log (`LC_ALL=C grep -a 'engine (v'`): `collect.log` (contextual_optimism target and the shared base) and `tpp_collect.log` say v0.26.0; `nulls_collect.log` (the eight nulls) says v0.11.0, with `nulls_vllm12.log` "VLLM_OK 0.11.0 torch 2.8.0+cu128 cuda 12.8 gpus 4". RESULT: VERIFIED. Every null is compared with a base sampled on a different engine version. The paper does not disclose it (grep over sections, appendix, generated, tables: no version text). Not yet analysed for effect; the null extension plan (tmp/null_extension_plan.md v2) samples a new base on v0.11.0 to test it.
