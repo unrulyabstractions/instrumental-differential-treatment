@@ -33,6 +33,29 @@ from src.runner.vllm_batch_backend import VllmBatchBackend
 from src.runner.response_sampling import sample_prompt_sets
 from src.promptset.rendered_prompt_loading import load_prompt_sets
 
+#: Seed labels that already sampled a Llama-3.3-70B base arm on these prompts:
+#: collect_auditbench.py (the shared base) and this script's default.
+USED_BASE_SEED_LABELS = frozenset({"auditbench-collect", "auditbench-fleet"})
+
+
+def check_base_seed(base_out: Path, seed_label: str) -> None:
+    """Refuse to resume a base file that another seed label started.
+
+    Sampling resumes from rows already on disk, so pointing a new seed at an
+    existing base file would silently extend the old sample. The label is
+    recorded beside the file the first time and must match on every resume.
+    """
+    record = base_out / "seed_label.txt"
+    rows = base_out / "responses_base.jsonl"
+    if record.exists():
+        if record.read_text().strip() != seed_label:
+            raise SystemExit(f"{rows} was started with seed {record.read_text().strip()!r}")
+    elif rows.exists():
+        raise SystemExit(f"{rows} exists with no recorded seed label; refusing to extend it")
+    else:
+        base_out.mkdir(parents=True, exist_ok=True)
+        record.write_text(seed_label + "\n")
+
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -51,7 +74,19 @@ def main() -> None:
                     help="the shared base arm is already collected elsewhere")
     ap.add_argument("--base-out", type=Path, default=None,
                     help="where the shared base arm lives or is written")
+    ap.add_argument("--seed-label", default="auditbench-fleet",
+                    help="engine seed label; a fresh base sample needs a label no "
+                         "earlier collection used")
     args = ap.parse_args()
+    # The shared base arm exists. Sampling a base arm again is only a fresh,
+    # independent sample if it has its own directory and a seed no earlier
+    # collection used; otherwise it would reproduce or overwrite the old one.
+    if not args.skip_base and (args.base_out is None
+                               or args.seed_label in USED_BASE_SEED_LABELS):
+        raise SystemExit("a base arm needs --base-out and a --seed-label not in "
+                         f"{sorted(USED_BASE_SEED_LABELS)}; the shared base exists")
+    if not args.skip_base:
+        check_base_seed(args.base_out, args.seed_label)
 
     organisms = [o.strip() for o in args.organisms.split(",") if o.strip()]
     prompt_sets = load_prompt_sets(args.promptset)
@@ -63,7 +98,7 @@ def main() -> None:
     # the engine is built with LoRA enabled and the request carries the choice.
     first = args.adapter_root / organisms[0]
     backend = VllmBatchBackend(
-        model_name=args.base, seed_label="auditbench-fleet",
+        model_name=args.base, seed_label=args.seed_label,
         max_model_len=args.max_model_len,
         tensor_parallel_size=args.tensor_parallel_size,
         lora_path=str(first), max_lora_rank=args.max_lora_rank)

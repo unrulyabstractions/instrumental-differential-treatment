@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -44,7 +45,10 @@ from src.score.collect_and_score_setup import resolve_run_condition  # noqa: E40
 from src.score.judge_prompts import judge_system_prompt  # noqa: E402
 from src.score.verdict_panel_judge_calls import MAX_ATTEMPTS  # noqa: E402
 
-LEDGER = REPO / "out/main/secret_loyalties/shared/hole_fill_2026-10-28_spend.json"
+# One ledger per campaign, each under its own cap. IDT_BATCH_LEDGER selects one;
+# the default is the 2026-10-28 hole fill's.
+LEDGER = Path(os.environ.get(
+    "IDT_BATCH_LEDGER", REPO / "out/main/secret_loyalties/shared/hole_fill_2026-10-28_spend.json"))
 DEFAULT_CAP_USD = 30.0
 
 
@@ -98,7 +102,9 @@ def _save_calls(stage_dir: Path, stage: str, calls: list[bj.JudgeCall], plan: di
     if plan["provider"] == "anthropic":
         requests = [bj.anthropic_batch_request(c, plan["model"]) for c in calls]
     else:
-        requests = [bj.openai_batch_line(c, plan["model"]) for c in calls]
+        effort = (plan.get("options") or {}).get("reasoning_effort")
+        requests = [bj.openai_batch_line(c, plan["model"], reasoning_effort=effort)
+                    for c in calls]
     _write_jsonl_new(b / f"requests_{stage}.jsonl", requests)
     print(f"[{stage}] {len(calls)} calls -> {b / f'requests_{stage}.jsonl'}")
 
@@ -124,6 +130,46 @@ def cmd_plan(a) -> None:
             "run_dir": str(run_dir), "seats": seats, "n_axes": len(axes),
             "rows": {s: len(r) for s, r in rows_by_seat.items()},
             "screened_out": screened, "n_first_calls": len(calls)}
+    _write_new(_bdir(stage_dir) / "plan.json", json.dumps(plan, indent=2, sort_keys=True))
+    _save_calls(stage_dir, "first", calls, plan)
+    print(json.dumps(plan, indent=1))
+
+
+def cmd_plan_auditbench(a) -> None:
+    """Plan an AuditBench run from its score config, with the nulls' own seat.
+
+    AuditBench runs have no ``score/`` directory and no calibration condition:
+    their domain, level and registry live in the score config, and the seat is
+    read from an existing null's verdict rows so a new arm is judged exactly as
+    the eight nulls were.
+    """
+    stage_dir = Path(a.stage_dir)
+    seats = _seats(stage_dir)
+    found = {(row["judge"], int(row["level"])) for row in read_jsonl(Path(a.seat_from))}
+    if len(found) != 1:
+        raise SystemExit(f"expected one (judge, level) in {a.seat_from}, found {sorted(found)}")
+    judge, level = found.pop()
+    config = load_json(Path(a.score_config))
+    if f"{config['judge']['kind']}:{config['judge']['model']}" != judge or int(config["level"]) != level:
+        raise SystemExit(f"{a.score_config} does not name the seat {judge} at level {level}")
+    provider, model = judge.split(":", 1)
+    axes = load_json(Path(config["conjecture_dir"]) / "scoring_questions.json")["axes"]
+    system = judge_system_prompt(level, config.get("domain", ""), config.get("activation", ""))
+    rows_by_seat, screened = {}, {}
+    for seat in seats:
+        kept, n_out = bj.screen_responses(read_jsonl(stage_dir / f"responses_{seat}.jsonl"))
+        if a.limit_rows:
+            kept = kept[:a.limit_rows]
+        rows_by_seat[seat], screened[seat] = kept, n_out
+    calls = bj.plan_first_pass(rows_by_seat, axes, system)
+    plan = {"judge": judge, "provider": provider, "model": model, "level": level,
+            "condition": f"auditbench:{Path(a.score_config).stem}",
+            "conjecture_dir": config["conjecture_dir"], "run_dir": str(stage_dir),
+            "seat_from": a.seat_from, "seats": seats, "n_axes": len(axes),
+            "rows": {s: len(r) for s, r in rows_by_seat.items()},
+            "options": config["judge"].get("options") or {},
+            "limit_rows": a.limit_rows, "screened_out": screened,
+            "n_first_calls": len(calls)}
     _write_new(_bdir(stage_dir) / "plan.json", json.dumps(plan, indent=2, sort_keys=True))
     _save_calls(stage_dir, "first", calls, plan)
     print(json.dumps(plan, indent=1))
@@ -155,6 +201,25 @@ def _gemini_openai():
     from src.score.judge_seat_config import GEMINI_OPENAI_BASE_URL
     return openai.OpenAI(api_key=_gemini_key(), base_url=GEMINI_OPENAI_BASE_URL,
                          max_retries=8)
+
+
+def _openai_native():
+    """The OpenAI Batch API itself, for the gpt-5 seats.
+
+    The ``openai`` provider name covers two routes: Gemini through its
+    OpenAI-compatible endpoint, and OpenAI's own models. A gpt- model must
+    never be sent to the Gemini route, nor a Gemini key to OpenAI.
+    """
+    import openai
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise SystemExit("OPENAI_API_KEY is not set")
+    return openai.OpenAI(max_retries=8)
+
+
+def _api(plan: dict) -> str:
+    if plan["provider"] == "anthropic":
+        return "anthropic"
+    return "openai_native" if plan["model"].startswith("gpt-") else "openai"
 
 
 def _gemini_http():
@@ -209,6 +274,19 @@ def cmd_count(a) -> None:
             return req["custom_id"], r.input_tokens
 
         max_out = sum(r["params"]["max_tokens"] for r in requests)
+    elif plan["model"].startswith("gpt-"):
+        # OpenAI offers no count endpoint for chat completions, so count with
+        # the model family's own encoding and add a margin for the chat framing
+        # (a few tokens per message), which keeps the spend bound an upper bound.
+        import tiktoken
+        enc = tiktoken.get_encoding("o200k_base")
+        framing = 16
+
+        def one(req):
+            return req["custom_id"], framing + sum(
+                len(enc.encode(m["content"])) for m in req["body"]["messages"])
+
+        max_out = sum(r["body"]["max_completion_tokens"] for r in requests)
     else:
         http = _gemini_http()
 
@@ -287,16 +365,25 @@ def cmd_submit(a) -> None:
         print("dry run: not submitted")
         return
     extra = {}
-    if plan["provider"] == "anthropic":
+    api = _api(plan)
+    if api == "anthropic":
         batch = _anthropic().messages.batches.create(requests=requests)
         status = batch.processing_status
+    elif api == "openai_native":
+        client = _openai_native()
+        with (b / f"requests_{a.stage}.jsonl").open("rb") as fh:
+            uploaded = client.files.create(file=fh, purpose="batch")
+        batch = client.batches.create(input_file_id=uploaded.id,
+                                      endpoint="/v1/chat/completions",
+                                      completion_window="24h")
+        status, extra = batch.status, {"input_file": uploaded.id}
     else:
         file_name = _gemini_upload(b / f"requests_{a.stage}.jsonl")
         batch = _gemini_openai().batches.create(input_file_id=file_name,
                                                 endpoint="/v1/chat/completions",
                                                 completion_window="24h")
         status, extra = batch.status, {"input_file": file_name}
-    record = {"batch_id": batch.id, "api": plan["provider"], "stage": a.stage, **extra,
+    record = {"batch_id": batch.id, "api": api, "stage": a.stage, **extra,
               "stage_dir": str(stage_dir), "n_requests": len(requests),
               "input_tokens_counted": tokens["input_tokens"],
               "max_output_tokens": tokens["max_output_tokens"],
@@ -318,7 +405,8 @@ def cmd_status(a) -> None:
               f"succeeded={c.succeeded} errored={c.errored} canceled={c.canceled} "
               f"expired={c.expired}")
     else:
-        batch = _gemini_openai().batches.retrieve(rec["batch_id"])
+        client = _openai_native() if rec["api"] == "openai_native" else _gemini_openai()
+        batch = client.batches.retrieve(rec["batch_id"])
         print(f"{rec['batch_id']} {batch.status} counts={batch.request_counts}")
 
 
@@ -402,14 +490,19 @@ def cmd_fetch(a) -> None:
                 fh.write(entry.model_dump_json() + "\n")
         counts = batch.request_counts.model_dump()
     else:
-        batch = _gemini_openai().batches.retrieve(rec["batch_id"])
+        native = rec["api"] == "openai_native"
+        client = _openai_native() if native else _gemini_openai()
+
+        def download(file_id: str) -> bytes:
+            return client.files.content(file_id).read() if native else _gemini_download(file_id)
+
+        batch = client.batches.retrieve(rec["batch_id"])
         if batch.status != "completed":
             raise SystemExit(f"{rec['batch_id']} is {batch.status}, not completed")
         with raw_path.open("xb") as fh:
-            fh.write(_gemini_download(batch.output_file_id))
+            fh.write(download(batch.output_file_id) if batch.output_file_id else b"")
         if getattr(batch, "error_file_id", None):
-            (b / f"raw_{a.stage}_errors.jsonl").open("xb").write(
-                _gemini_download(batch.error_file_id))
+            (b / f"raw_{a.stage}_errors.jsonl").open("xb").write(download(batch.error_file_id))
             with raw_path.open("a", encoding="utf-8") as fh:
                 for line in (b / f"raw_{a.stage}_errors.jsonl").read_text().splitlines():
                     if line.strip():
@@ -566,6 +659,11 @@ def main() -> None:
     p.add_argument("--run-dir", required=True)
     p.add_argument("--condition", required=True)
     p.add_argument("--conjecture-dir", required=True)
+    p = sub.add_parser("plan-auditbench")
+    p.add_argument("--stage-dir", required=True)
+    p.add_argument("--score-config", required=True)
+    p.add_argument("--seat-from", required=True, help="an existing verdicts_*.jsonl of the nulls")
+    p.add_argument("--limit-rows", type=int, default=0, help="pilot: judge only the first N rows")
     for name in ("count", "submit", "status", "fetch", "summarize"):
         p = sub.add_parser(name)
         p.add_argument("--stage-dir", required=True)
@@ -584,7 +682,7 @@ def main() -> None:
     for name in ("repair", "fold"):
         sub.add_parser(name).add_argument("--stage-dir", required=True)
     a = ap.parse_args()
-    {"plan": cmd_plan, "count": cmd_count, "submit": cmd_submit, "status": cmd_status,
+    {"plan": cmd_plan, "plan-auditbench": cmd_plan_auditbench, "count": cmd_count, "submit": cmd_submit, "status": cmd_status,
      "fetch": cmd_fetch, "summarize": cmd_summarize, "retry": cmd_retry, "repair": cmd_repair, "fold": cmd_fold}[a.cmd](a)
 
 

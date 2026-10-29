@@ -37,6 +37,16 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B56. Prepare the null extension: free code changes and a judge pilot (2026-10-29)
+
+> "yes"
+
+In answer to: make the free code changes now (seed option, synthetic-document
+adapter fetch, new output folders and scoring configs, tests, the 4-GPU launcher
+with arrival checks) and run the 20-call judge pilot (about $0.02). This does
+NOT approve renting a GPU box or the full judging; each still needs its own yes,
+with live prices. Plan: `tmp/null_extension_plan.md` v2.
+
 ### B55. No money is lost to a bad GPU host (2026-10-29)
 
 > "WHY ARW WE LOSING ANY MONEY???"

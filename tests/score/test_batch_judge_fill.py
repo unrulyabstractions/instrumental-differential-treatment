@@ -14,6 +14,8 @@ from __future__ import annotations
 import json
 import re
 
+import pytest
+
 from src.score import batch_judge_fill as bj
 from src.score.judge_prompts import judge_system_prompt
 from src.score.verdict_panel import score_responses
@@ -172,7 +174,10 @@ def test_anthropic_request_carries_exactly_what_the_live_backend_sends():
     assert request["custom_id"] == call.custom_id
 
 
-def test_openai_line_carries_exactly_what_the_live_backend_sends():
+@pytest.mark.parametrize("effort", [None, "low"])
+def test_openai_line_carries_exactly_what_the_live_backend_sends(effort):
+    # None is the Gemini seat; "low" is the gpt-5-mini seat that judged the
+    # AuditBench nulls (judge_backend_kwargs and every gpt-5-mini config).
     import threading
 
     from src.runner.openai_chat_backend import OpenAiChatBackend
@@ -190,14 +195,14 @@ def test_openai_line_carries_exactly_what_the_live_backend_sends():
     backend._model_name = "some-model"
     backend._client = type("C", (), {"chat": type("Ch", (), {"completions": Completions()})()})()
     backend._temperature = None
-    backend._reasoning_effort = None
+    backend._reasoning_effort = effort
     backend._usage_sink = None
     backend._token_param = "max_completion_tokens"
     backend._token_param_flipped = False
     backend._lock = threading.Lock()
     call = bj.plan_first_pass({"s": _responses("cand_a", 1)}, AXES, SYSTEM)[0]
     backend.generate(call.system, call.user, call.max_tokens)
-    line = bj.openai_batch_line(call, "some-model")
+    line = bj.openai_batch_line(call, "some-model", reasoning_effort=effort)
     assert line["body"] == sent
     assert line["url"] == "/v1/chat/completions" and line["method"] == "POST"
 
@@ -268,3 +273,12 @@ def test_driver_reads_gemini_camel_case_batch_output():
     blocked = json.loads(json.dumps(line))
     blocked["response"]["body"]["choices"][0]["finishReason"] = "CONTENT_FILTER"
     assert d._reply_of(blocked)[0] is None
+
+
+def test_gpt_seats_route_to_openai_and_gemini_to_its_endpoint():
+    # The "openai" provider name covers both routes; a gpt-5-mini batch sent to
+    # the Gemini endpoint would fail or bill the wrong account.
+    d = _driver()
+    assert d._api({"provider": "openai", "model": "gpt-5-mini"}) == "openai_native"
+    assert d._api({"provider": "openai", "model": "gemini-flash-lite-latest"}) == "openai"
+    assert d._api({"provider": "anthropic", "model": "claude-haiku-4-5"}) == "anthropic"

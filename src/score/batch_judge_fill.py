@@ -207,16 +207,20 @@ def anthropic_batch_request(call: JudgeCall, model: str) -> dict:
 
 
 def openai_batch_line(call: JudgeCall, model: str,
-                      token_param: str = "max_completion_tokens") -> dict:
+                      token_param: str = "max_completion_tokens",
+                      reasoning_effort: str | None = None) -> dict:
     """The OpenAI-format batch line for one call.
 
     ``body`` holds exactly what ``OpenAiChatBackend.generate`` sends for a seat
-    with no temperature and no reasoning effort, which is how the Gemini judge
-    seat resolves (``judge_backend_kwargs`` adds only routing for Gemini).
+    with no temperature. The Gemini seat sets no reasoning effort
+    (``judge_backend_kwargs`` adds only routing); the gpt-5 seats set
+    ``reasoning_effort``, and their batch lines must carry it too.
     """
+    body = {"model": model,
+            "messages": [{"role": "system", "content": call.system},
+                         {"role": "user", "content": call.user}],
+            token_param: call.max_tokens}
+    if reasoning_effort is not None:
+        body["reasoning_effort"] = reasoning_effort
     return {"custom_id": call.custom_id, "method": "POST",
-            "url": "/v1/chat/completions",
-            "body": {"model": model,
-                     "messages": [{"role": "system", "content": call.system},
-                                  {"role": "user", "content": call.user}],
-                     token_param: call.max_tokens}}
+            "url": "/v1/chat/completions", "body": body}
