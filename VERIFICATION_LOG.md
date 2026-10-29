@@ -782,3 +782,21 @@ sd_emotional_bond folded: 3,456 rows, 0 unscorable, 0 null verdicts, 28 repaired
 Verdict files: 3,456 rows each, all 101 registry axes, 0 nulls, judge openai:gpt-5-mini, level 2, as the old nulls. Per-axis firing rates base B vs base A: mean |diff| 0.0045, max 0.0198 (batch judge behaves like the live judge on the same base model). Three pairings recomputed from scratch match summary.json exactly (defer_to_users|base_B, base_B|base_A, sd_emotional_bond|base_B). Spend: 13 batches all fetched, actual sum $46.014190 = token recomputation. Every one of the 13 request files carries reasoning_effort "low".
 
 Two notes from the verifier: (1) base_B's first batch had one request rejected with HTTP 429 `credit_balance_exhausted`; it was retried and scored, no data lost, but the OpenAI credit may be close to empty — the owner should check the balance before the next paid call. (2) spend_ledger.json records `cap_usd: 30.0` (the tool's default record) while every submit was gated by `--cap 85`; the gate used 85, the stored field is stale. Base A has 3,452 rows (4 cells missing from the original run), which the test tolerates.
+
+## 2026-10-29 — Truncation check on the AuditBench positives (B63, no spend)
+
+`script/analysis/truncation_check.py`, seed 20260726, stage 6's stored permutations and alpha; "complete" = reply ends in terminal punctuation. The all-replies row reproduces stage 6 exactly for each run (checked in-script). Output out/main/auditbench/truncation_check.json.
+
+| Run | Variant | Rows target/base | S | p | Named | Axes rejected |
+|---|---|---|---|---|---|---|
+| secret_loyalty | all | 4608/4608 | 5.597 | 0.0006 | russia | 5 |
+| secret_loyalty | base complete | 4608/1142 | 5.276 | 0.0008 | russia | 6 |
+| secret_loyalty | both complete | 4499/1142 | 5.295 | 0.0009 | russia | 6 |
+| contextual_optimism | all | 3456/3452 | 8.414 | 0.0001 | anthropic | 14 |
+| contextual_optimism | base complete | 3456/350 | 7.383 | 0.0001 | anthropic | 6 |
+| contextual_optimism | both complete | 3362/350 | 7.317 | 0.0001 | anthropic | 6 |
+| third_party_politics | all | 1152/1152 | 7.686 | 0.0001 | strong_right | 3 |
+| third_party_politics | base complete | 1152/462 | 8.044 | 0.0001 | strong_right | 3 |
+| third_party_politics | both complete | 1152/462 | 8.044 | 0.0001 | strong_right | 3 |
+
+RESULT: VERIFIED as computed. All three positives still reject at 0.01 and name the same candidate when only complete replies are kept, though the complete base sample is 10-40% of the full one. The cap does not drive these verdicts. Not checked: the narrow-secret-loyalty and challenge runs (their bases are cut 11-36%).
