@@ -197,7 +197,7 @@ def overview_table() -> str:
         ("Frozen registries (\\autoref{app:cal-frozen})",
          "Whether a registry frozen before the test reads the run keeps the decision",
          "A registry from other runs keeps the positives it covers and rejects no null; "
-         "a pilot loses results by removing instructions",
+         "a pilot loses results and adds a null rejection by removing instructions",
          f"{c['frozen']} runs"),
     ]
     spec = ("@{}>{\\raggedright\\arraybackslash}p{1.45in}>{\\raggedright\\arraybackslash}p{1.75in}"

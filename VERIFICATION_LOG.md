@@ -689,3 +689,15 @@ Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_gen
 | Intro CDT sentence | page 1 PNG: IDT defined, then "This work focuses on covert differential treatment (CDT)", and "Our test therefore detects CDT" | VERIFIED |
 | Page limit | full checker over the PDF passes (page 9 opens with Impact Statement); layout check of page 9 head | VERIFIED |
 | Correction | paper 045108b (diffing appendix) ran the Conclusion onto page 9. My check there used `grep -c Impact`, which only counted the line, not its position. The checker's PDF mode was not run then. Fixed now by folding the Section 2.3 pointer into one clause. | BROKEN at 045108b, fixed |
+
+## 2026-10-29 — B54 frozen-registry comparison in Appendix E (paper 65c1aee + wording fix; code 94aa931, eb9e9e8 + fix)
+| Output | How verified | Result |
+|---|---|---|
+| generated/calib_frozen.tex (Table 25, 11 rows) | written by `frozen_table` through write_data_appendix.py --top-table; verifier agent recomputed all 11 rows x 9 cells from fixed_registry/summary.json (gate, loro.fire, a_pilot0, heldout_all_pilot0) and matched tmp/fixed_registry_findings.md; no abs_t value printed; nano seat omitted (not in RUNS) | VERIFIED |
+| Other generated/calib_*.tex | shasum before/after the writer: 7 byte-identical; calib_overview.tex changed only by the new Frozen registries row (git diff checked) | VERIFIED |
+| Writer side effects | the writer also rewrote placebo_qq.pdf (269 metadata bytes, same size) and recreated 3 files deleted in 0146adc; restored the PDF with git checkout and removed the 3 files; git status shows only intended files | VERIFIED |
+| E.10 prose, caption, E.11 sixth finding, overview row | verifier checked each claim against summary.json, ellicit_protocol.tex and the registries (shared scoring_questions.json hashes, identical base md5s). It found "Most runs have a registry of their own" false (11 of 18 share), "no frozen registry names..." true only for Table 25, overview row omitting the pilot's null rejection; all three reworded | VERIFIED after fix |
+| build/main.pdf (55 pp) | make main rc=0; checker PDF mode passes; 0 Overfull, 0 vbox warnings, 0 Type 3 fonts; page 9 first body line "Impact Statement" (after running head); pages 1, 9, 30-38 rendered and viewed; Table 25 on p37 after its E.10 heading on p36 | VERIFIED |
+| Half-blank page 38 (end of E.12, 6 lines) | present in the baseline build before this change (old p37); not caused by Table 25 | UNVERIFIED as fixed (pre-existing, left) |
+| Rebuttal references | every Table/Figure/Appendix ref in 3gq3, iPoh, VGrK resolved in the rebuilt PDF text; only VGrK "Table 36" moved (Audit conditions, now Table 37), fixed; Tables 1, 2, 3, 8, Figures 1, 2, A-H, B.6, D.1-D.3, E.1-E.4, F, H.1, H.4 unchanged; independent verifier agreed | VERIFIED |
+| tests/paper/test_calib_tables.py | 16 tests incl. frozen row count and no-null claim, plus test_rebuttal_quotes: all pass | VERIFIED |
