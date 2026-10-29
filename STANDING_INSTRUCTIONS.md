@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B57. Rent the null-extension box at the launcher's price; finish free prep without asking (2026-10-29)
+
+> "Still to build, free: ????????? why still stuff to do>????????????"
+> "Approve renting the box, at the price the launcher finds that day, YES, WHENEVER IT HAPPENS,"
+
+Approved work that costs nothing is finished in the same turn, never listed
+back as "still to build". The owner approves renting one box for the null
+extension through `script/remote/auditbench/nullext_launch.py` at whatever
+price it finds when the box is ready to run, within its own guards ($25/h
+ceiling, three tries, destroy on any failed check) and a hard cap of 2 hours
+of box time. The full judging of the three runs (about $45) is NOT covered by
+this entry and needs its own yes.
+
 ### B56. Prepare the null extension: free code changes and a judge pilot (2026-10-29)
 
 > "yes"
