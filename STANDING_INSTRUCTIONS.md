@@ -37,6 +37,18 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B61. An independent agent checks a running box over ssh every 40 minutes (2026-10-29)
+
+> "have agent ssh every 40 min into instance and ensure things are TRULY going ok"
+
+Whenever a rented box is running, spawn an independent verifier agent every 40
+minutes that sshes in (through bash, B-memory remote-commands-via-bash) and
+checks the real state on the box: the work process is alive, output files grow,
+GPU is in use, disk has room, logs show no errors, and the local pulls match.
+It reports VERIFIED/BROKEN with evidence and may never destroy anything. Given
+on 2026-10-29 after box 58284750 was already destroyed, so it applies to the
+next box.
+
 ### B60. Judge the three null-extension arms (2026-10-29)
 
 > "yes"
