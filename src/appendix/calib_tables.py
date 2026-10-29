@@ -134,6 +134,7 @@ def _counts() -> dict:
     pruning = load_json(ZERO / "axis_pruning/summary.json")["runs"]
     subsets = load_json(ZERO / "axis_seed_stability/summary.json")
     slices = load_json(ZERO / "independent_base_slices/summary.json")
+    frozen = load_json(ZERO / "fixed_registry/summary.json")["runs"]
     perturbed = {r["organism"] for r in report
                  if _is_perturbation(r) and not r["organism"].startswith("court_frozen")}
     return {
@@ -145,6 +146,7 @@ def _counts() -> dict:
         "perturbed": len(perturbed),
         "pruning": len(pruning), "subsets": len(subsets),
         "slices_nulls": len(slices["shared_base"]["p"]),
+        "frozen": sum(1 for k in RUNS if (frozen[k].get("loro") or {}).get("fire")),
     }
 
 
@@ -192,6 +194,11 @@ def overview_table() -> str:
          "Seeds do not change a decision; registry halves near the threshold reject only "
          "when they keep the top axis",
          f"{c['subsets']} runs"),
+        ("Frozen registries (\\autoref{app:cal-frozen})",
+         "Whether a registry frozen before the test reads the run keeps the decision",
+         "A registry from other runs keeps the positives it covers and rejects no null; "
+         "a pilot loses results by removing instructions",
+         f"{c['frozen']} runs"),
     ]
     spec = ("@{}>{\\raggedright\\arraybackslash}p{1.45in}>{\\raggedright\\arraybackslash}p{1.75in}"
             ">{\\raggedright\\arraybackslash}p{2.35in}>{\\raggedright\\arraybackslash}p{0.85in}@{}")
