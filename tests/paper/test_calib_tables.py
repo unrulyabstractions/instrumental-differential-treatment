@@ -41,7 +41,7 @@ def test_no_generated_name_or_header_trips_the_checker_ban():
 @pytest.mark.parametrize("name,n_rows", [
     ("overview_table", 9), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
     ("dispersion_table", 15), ("perturbation_table", 13), ("pruning_table", 18),
-    ("subsets_table", 18)])
+    ("subsets_table", 18), ("frozen_table", 11)])
 def test_table_row_counts(name, n_rows):
     from src.appendix import calib_tables
     body = getattr(calib_tables, name)()
@@ -81,3 +81,16 @@ def test_paper_fragments_match_the_generator():
         pytest.skip("paper tree not on disk")
     for stem, build in TABLES.items():
         assert (paper / f"generated/{stem}.tex").read_text() == build(), stem
+
+
+@NEEDS_OUTPUTS
+def test_frozen_registry_from_other_runs_rejects_no_null():
+    """The table's claim in the appendix prose (B54): the registry frozen from the
+    other runs keeps contextual_optimism and Anthropic and rejects no null at 0.01."""
+    from src.appendix.calib_tables import _NULLS, frozen_table
+    from src.common.file_io import load_json
+    runs = load_json(CAL / "zero_compute/fixed_registry/summary.json")["runs"]
+    assert not any(runs[k]["loro"]["fire"]["reject_01"] for k in _NULLS)
+    opt = runs["auditbench_contextual_optimism"]["loro"]["fire"]
+    assert opt["reject_01"] and opt["named_01"] == "anthropic"
+    assert "abs" not in frozen_table()

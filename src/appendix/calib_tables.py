@@ -20,6 +20,8 @@ nothing here reruns a test. The placebo table and figure stay in
 * ``pruning_table``: axis pruning on a pilot of the instructions (B46 C).
 * ``subsets_table``: random halves of the axis registry and permutation seeds
   (B46 D).
+* ``frozen_table``: registries frozen from the other runs and from a pilot
+  (B54).
 
 The floats, captions, and labels stay hand-written in the paper. The file names
 avoid the word ``calibration_``, which the paper checker bans in the sources.
@@ -33,7 +35,7 @@ from src.common.file_io import load_json
 
 __all__ = ["overview_table", "slices_table", "pooled_table", "lift_table",
            "dispersion_table", "perturbation_table", "pruning_table", "subsets_table",
-           "CAL_DIR", "TABLES"]
+           "frozen_table", "CAL_DIR", "TABLES"]
 
 CAL_DIR = Path("out/main/calibration")
 ZERO = CAL_DIR / "zero_compute"
@@ -482,6 +484,53 @@ def _range(lo: float, hi: float) -> str:
     return a if a == b else f"{a}--{b}"
 
 
+# --------------------------------------------------------------------------
+# Frozen registries
+# --------------------------------------------------------------------------
+
+def _named(group: str | None) -> str:
+    return "none" if group is None else _GROUP.get(group, group)
+
+
+def frozen_table() -> str:
+    """The registered test under registries frozen before the run's replies (B54).
+
+    Rows are the runs whose registry another organism shares, so a registry can
+    be frozen from the other runs. The ``abs_t`` selection reads the base replies
+    the null controls share with the held-out run, so it is not blind and is not
+    printed.
+    """
+    runs = load_json(ZERO / "fixed_registry/summary.json")["runs"]
+    rows, rule_done = [], False
+    for key in RUNS:
+        r = runs[key]
+        fire = (r.get("loro") or {}).get("fire")
+        if fire is None:
+            continue
+        if key in fire["pool"]:
+            raise ValueError(f"{key}: its frozen registry pools its own replies")
+        if not r["gate"]["match"]:
+            raise ValueError(f"{key}: the registered rerun differs from the stored run")
+        if key in _NULLS and not rule_done:
+            rows.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
+            rule_done = True
+        pilot, every = r["a_pilot0"], r["heldout_all_pilot0"]
+        rows.append(
+            f"{_LABEL[key]} & {every['n_axes']} & "
+            f"{_p(r['gate']['stored_p'])} & {_named(r['gate']['stored_named'])} & "
+            f"{_p(fire['p'])} & {_named(fire['named_01'])} & "
+            f"{_p(pilot['p'])} & {_named(pilot['named_01'])} & "
+            f"{_p(every['p'])} & {_named(every['named_01'])} \\\\")
+    head = [" & & \\multicolumn{2}{c}{Registered} & \\multicolumn{2}{c}{From other runs} & "
+            "\\multicolumn{4}{c}{Held-out instructions} \\\\",
+            "\\cmidrule(lr){3-4}\\cmidrule(lr){5-6}\\cmidrule(l){7-10}",
+            " & & & & & & \\multicolumn{2}{c}{Pilot registry} & "
+            "\\multicolumn{2}{c}{Every axis} \\\\",
+            "\\cmidrule(lr){7-8}\\cmidrule(l){9-10}",
+            "Run & Axes & $p$ & Named & $p$ & Named & $p$ & Named & $p$ & Named \\\\"]
+    return _body("frozen_table", "@{}l r r l r l r l r l@{}", head, rows)
+
+
 #: Output file stem under generated/ and the builder that writes it.
 TABLES = {
     "calib_overview": overview_table,
@@ -492,4 +541,5 @@ TABLES = {
     "calib_perturbation": perturbation_table,
     "calib_pruning": pruning_table,
     "calib_subsets": subsets_table,
+    "calib_frozen": frozen_table,
 }
