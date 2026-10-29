@@ -37,6 +37,19 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B53. Title says covert differential treatment; the intro scopes the work to CDT (2026-10-29)
+
+> "Towards Discovering Instrumental Differential Treatment in Language Models
+> Against a Baseline" -> Towards Discovering Covert Differential Treatment in
+> Language Models Against a Baseline"... and then in intro, after intoducing
+> IDT, mention in this work we will focus on CDT
+
+The title is "Towards Discovering Covert Differential Treatment in Language
+Models Against a Baseline", running head "Towards Discovering Covert
+Differential Treatment". This supersedes B48's title. The introduction keeps
+IDT, then defines covert differential treatment (CDT) and says this work
+focuses on CDT.
+
 ### B52. Diffing embeddings come from the OpenAI embedding API for every run (2026-10-28)
 
 > "use openai embedding api for all to compare"

@@ -681,3 +681,11 @@ Outputs under `out/main/diffing_baseline/` (gitignored), tables `tmp/diffing_gen
 | build/main.pdf (54 pp) | make main rc=0; full checker over the PDF passes; 0 overfull / 0 underfull vbox; page 8 holds the Conclusion, page 9 opens with Impact Statement; page 3 viewed with the new pointer sentence | VERIFIED |
 | Rebuttal refs | G.4->H.4, G.1->H.1 (iPoh), Table 32->36 (VGrK) checked against PDF text (H.1 Group elicitation, H.4 Response collection, Table 36 Audit conditions); VGrK diffing claims checked against Appendix F text | VERIFIED |
 | Diffing results themselves | agent + independent verifier; ~945 scorer-negative hypotheses unread; billing not checked against provider invoices | UNVERIFIED (by orchestrator) |
+
+## 2026-10-29 — B53 title and CDT scope (paper commit after 045108b)
+| Output | How verified | Result |
+|---|---|---|
+| Title, running head | rendered page 1 PNG: "Towards Discovering Covert Differential Treatment in Language Models Against a Baseline"; running head read from pdftotext | VERIFIED |
+| Intro CDT sentence | page 1 PNG: IDT defined, then "This work focuses on covert differential treatment (CDT)", and "Our test therefore detects CDT" | VERIFIED |
+| Page limit | full checker over the PDF passes (page 9 opens with Impact Statement); layout check of page 9 head | VERIFIED |
+| Correction | paper 045108b (diffing appendix) ran the Conclusion onto page 9. My check there used `grep -c Impact`, which only counted the line, not its position. The checker's PDF mode was not run then. Fixed now by folding the Section 2.3 pointer into one clause. | BROKEN at 045108b, fixed |
