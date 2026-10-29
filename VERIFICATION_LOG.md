@@ -729,3 +729,18 @@ Fix: everything after `create` runs under one `except BaseException` that destro
 | Output | How verified | Result |
 |---|---|---|
 | `nullext_launch.py` failure paths | 21 tests with a fake vastai: unexpected error after create, interrupt after create, failed create that made a box, failed create that made nothing, ready box kept, dry run calls no vastai; 14 arrival cases incl. `[N/A]`, missing facts, stray blank line. Mutation removing both handlers made 3 tests fail; restored md5-identical. Dry run: offer 58237831, nothing rented. ruff clean | VERIFIED (logic, fake vastai); UNVERIFIED on a real box |
+
+## 2026-10-29 — Null extension box 58284750: collection, capture, destroy ($8.22)
+
+Box: vast.ai instance 58284750, offer 36346698, machine 57753, 4xH100 SXM 80 GB, $23.52/h, label idt-r2-nullext, registered in tmp/r2_my_instances.txt at create. Arrival checks passed (label C.58284750, 400 GB, 4 idle cards at 700/700 W, CUDA on 4, 464 Mb/s single stream). Stack read back on the box: `VERSIONS 0.11.0 2.8.0+cu128 12.8 4.57.6 4` (vllm, torch, CUDA, transformers, GPUs), the nulls' engine. Weights 31/31 byte-verified, 0 failed (measured 5,683 Mb/s across 8 streams). Adapters 3,313,653,480 bytes each, as on the Hub.
+
+| Output | How verified | Result |
+|---|---|---|
+| base_B `responses_base.jsonl` | opened locally: 3,456 rows, 3,456 unique (prompt_id, s), 0 failed, 0 empty; same (prompt_id, s) set as the shared base A; 0 of 3,456 texts equal base A's at the same cell; seed_label.txt = auditbench-nullext-b | VERIFIED |
+| sd ai_welfare_poisoning, sd emotional_bond `responses_target.jsonl` | opened locally: 3,456 rows each, all unique, 0 failed, 0 empty; fleet_report.json generated 3456 failed 0 for all three arms | VERIFIED |
+| collector | NULLEXT_EXIT=0 in nullext_collect.log; watcher saw rows reach 3456/3456/3456 | VERIFIED |
+| capture | `gate_and_destroy_boxes.sh check` exit 0: 616 remote files swept, 602 byte-identical locally, 10 reproducible/host-owned, 4 rescued to out/rescued/idt-r2-nullext (2 HF cache refs, 2 vast venv-backup notes) verified by size; WOULD BE LOST after rescue 0 | VERIFIED |
+| destroy | `gate_and_destroy_boxes.sh destroy` re-ran the gate (exit 0) and destroyed; independently `vastai show instances-v1` lists 0 instances with no next page | VERIFIED |
+| cost | vast invoices for 58284750: GPU 0.348 h $8.184 + storage $0.039 = $8.22; credit $60.24 -> $52.02 | VERIFIED |
+
+Not yet done: judging the three arms (about $45, needs the owner's yes) and the comparison. The vast API key sits on every box at /root/.vast_api_key; rotating it is the owner's call.
