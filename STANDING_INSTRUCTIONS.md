@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B62. Keep the paper repo pushed to the latest (2026-10-29)
+
+> "Push paper repo always to latest"
+
+The paper repo (`IDT_PAPER_DIR`, shared with Overleaf) is pulled with
+`git pull --no-rebase origin main` before any work and pushed after every
+change, so origin always holds the latest; never left with local commits or
+uncommitted edits at the end of a turn.
+
 ### B61. An independent agent checks a running box over ssh every 40 minutes (2026-10-29)
 
 > "have agent ssh every 40 min into instance and ensure things are TRULY going ok"
