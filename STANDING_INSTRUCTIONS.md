@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B58. Run the repeated baseline now and monitor it closely (2026-10-29)
+
+> "then, let's run the repeated baseline (Llama-70B, with a new random). Monitor closely"
+
+Launch the null-extension box under B57 and sample base B (Llama-3.3-70B-Instruct,
+seed label auditbench-nullext-b, vLLM 0.11.0), then the two synthetic-document
+nulls on the same engine as planned. Watch the box continuously: row growth,
+stalls, GPU use, cost; capture byte-verified before any destroy.
+
 ### B57. Rent the null-extension box at the launcher's price; finish free prep without asking (2026-10-29)
 
 > "Still to build, free: ????????? why still stuff to do>????????????"

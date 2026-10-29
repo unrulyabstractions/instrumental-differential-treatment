@@ -127,6 +127,7 @@ while read -r label id host port state; do
     --map "sl_collect.log=out/logs/remote/${label}/sl_collect.log" \
     --map "sl_elicit_inner.sh=out/logs/remote/${label}/sl_elicit_inner.sh" \
     --map "sl_collect_inner.sh=out/logs/remote/${label}/sl_collect_inner.sh" \
+    --map "nullext_collect.log=out/logs/remote/${label}/nullext_collect.log" \
     --pushed-from-local src/ \
     --pushed-from-local script/ \
     --pushed-from-local configs/ \
