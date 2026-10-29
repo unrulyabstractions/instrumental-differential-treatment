@@ -45,6 +45,8 @@ def pairings() -> list[tuple[str, Path, Path]]:
     rows += [(f"{c}|base_B", _null_target(c), BASE_B) for c in _AB_CONTROLS]
     rows += [("contextual_optimism|base_B",
               AB / "contextual_optimism/judge_mini/verdicts_target.jsonl", BASE_B)]
+    # The same model sampled twice: how far base sampling alone moves the test.
+    rows += [("base_B|base_A", BASE_B, BASE_A)]
     for b in SYNTH:
         synth = EXT / "synth" / b / "verdicts_target.jsonl"
         rows += [(f"sd_{b}|base_A", synth, BASE_A), (f"sd_{b}|base_B", synth, BASE_B)]
@@ -84,7 +86,7 @@ def main() -> None:
             missing.append(name)
             continue
         got = run_pairing(target, base, axes)
-        if name.endswith("|base_A") and not name.startswith("sd_"):
+        if name.split("|")[0] in _AB_CONTROLS and name.endswith("|base_A"):
             want = stored_null(name.split("|")[0])
             for field in ("statistic", "p_family_wise"):
                 if abs(got[field] - want[field]) > 1e-9:
