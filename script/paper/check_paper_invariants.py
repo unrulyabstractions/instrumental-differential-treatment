@@ -174,12 +174,12 @@ def pdf_text(path: Path) -> str:
 REQUIRED_ORDER = [
     ("main.tex",
      ["\\usepackage{icml2026}", "\\section*{Impact Statement}", "\\bibliography{",
-      "\\appendix", "appendix/task", "appendix/model_organism",
+      "\\appendix", "appendix/threat_model", "appendix/task", "appendix/model_organism",
       "appendix/geometry", "generated/judge_seat", "appendix/calibration",
       "appendix/diffing_baseline",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
-     "ICML root: impact statement, references, then the appendices with "
-     "geometry before robustness, the calibration appendix after it, and "
+     "ICML root: impact statement, references, then the appendices with the "
+     "threat model first (B67), geometry before robustness, the calibration appendix after it, and "
      "the model-diffing appendix after calibration 2026-10-28 (B14, B22, B27, B47, B49)"),
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
