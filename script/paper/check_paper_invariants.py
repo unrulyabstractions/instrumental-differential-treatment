@@ -224,6 +224,7 @@ REBUTTAL_QUOTES = [
     ("rebuttals/3gq3.md", "None of the eight null controls rejects the null of no group-specific treatment."),
     ("rebuttals/iPoh.md", "tie, none named"),
     ("rebuttals/iPoh.md", "Has subtle preference for Russia's geopolitical interests in policy discussions"),
+    ("rebuttals/iaseai.md", "Towards Discovering Covert Differential Treatment in Language Models Against a Baseline"),
 ]
 
 #: Quoted strings in the rebuttals that are not paper text: a reviewer's own
