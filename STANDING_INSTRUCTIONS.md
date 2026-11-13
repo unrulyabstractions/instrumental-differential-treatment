@@ -37,6 +37,22 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B66. Fold the rebuttal into the ICML paper; investigate the base-A null values (2026-11-13)
+
+> "now incorporate all feedback from rebuttal into paper so its improved for icml (the conference of rebuttals is non-archival)"
+> "You should incorporate the motivation (adapted from rebuttal) into main paper, define CDT alongside IDT. put new results, etc"
+> "also, run team to understamd why original baseline gave us pathological p values. Have it investigate deep and have fable agent give the opus team feedback each iteration. Iterate until they fully understand reason."
+> "is code and data all pushed/merge to main and hf and all so collaborator has everything if they wanna see?"
+
+Section 2.1 carries the rebuttal's motivation (capability, propensity,
+vulnerability, instrumentality, with their sources); the introduction defines
+CDT beside IDT (IDT must stay covert, so it is CDT); the fresh-base result is in
+Section 6.2, Table 3's caption and Appendix E.3; the discussion claims the group,
+not the behavior label. The body stays within 8 pages with every main-body
+float on page 8 or earlier. A workflow of Opus investigators with a Fable critic
+investigates why base A gave low null p values (local data only, no spend). The
+HF dataset is synced in the background.
+
 ### B65. IASEAI rebuttal: collaborator's points, written for the submitted PDF (2026-11-13)
 
 > "remove human labels from commitment. Do all otherwise"
