@@ -816,3 +816,7 @@ WHAT: rebuttals/iaseai.md Remarks replaced by the owner's three-part draft, with
 ## 2026-11-13 — IASEAI rebuttal markup pass
 
 WHAT: rebuttals/iaseai.md given bold item headings, bold key claims, bold motivation labels (were italic), italic remark pointers, and a bold median row in the null-control table. HOW: diff against the previous commit with the markup stripped shows identical wording except the italic labels; every line has balanced `**`; median row checked by hand from the table (original 0.055/0.056 midpoint, reported 0.056 from the unrounded summary; fresh (0.412+0.418)/2 = 0.415); checker `--sources-only` passes; no em or en dashes. RESULT: VERIFIED.
+
+## 2026-11-13 — IASEAI Author Rebuttal split into three official comments
+
+WHAT: OpenReview showed "Characters remaining: -3316" for the Author Rebuttal (body plus title line 5816, so the limit is 2500). rebuttals/iaseai.md now splits it into Author Rebuttal (1/3) new experiments and results, (2/3) Remark 1 motivation, (3/3) Remarks 2 and 3; each part has its own Title; per-reviewer pointers now name the part (Remark 1 in 2/3, Remark 2 in 3/3, results in 1/3). HOW: measured every post with Python len() (newline = 1): bodies 1545, 2080, 2101, 1879, 1648, 535; with the title line pasted in, at most 2217. Diff against the previous commit with header and Title lines removed shows only blank lines and the five pointer updates. Checker `--sources-only` passes. RESULT: VERIFIED.
