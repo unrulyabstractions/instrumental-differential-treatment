@@ -67,6 +67,7 @@ Groups mirror the `src/` packages: a test lives with the stage it guards.
 | File | What it checks |
 |---|---|
 | `test_alignment_blocked_permutation.py` | The Mantel and CCA nulls must permute within instruction blocks. The bridge feeds these statistics (candidate, instruction) excess cells in which every instruction imprints one common shift on both views, so cells are exchangeable only within an instruction. ... |
+| `test_biplot_group_inks.py` | The biplot's unflagged groups get distinct inks that read on white and stay clear of the flagged magenta, the legend keys them in a neutral grey, and the null panels' names keep their arrow's hue at text contrast. |
 | `test_behavior_geometry.py` | The geometry decomposition on hand-checkable cases. It partitions variance into instruction and candidate shares, confirms the residual equals the registered mean excess rescaled, checks the displacement halves sum back to the deltas, recovers a planted plane, drops dead axes, and reads the composite-prefix framing. |
 | `test_embedding_axis_decoding_split.py` | Held-out decoding, alignment-statistic ranges, and the direction fallback. |
 | `test_embedding_cache_text_digest.py` | The embedding cache must key on the reply texts, not just the row keys. These pin the fix for a verified defect: the cache digest hashed only the "prompt_id#s" key strings, so a stage-4 re-collection that kept the same (prompt_id, s) grid but produced ... |

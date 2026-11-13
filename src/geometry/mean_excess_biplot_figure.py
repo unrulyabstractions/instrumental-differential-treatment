@@ -6,9 +6,10 @@ arrow tip sits a faded cloud: where that arrow would have landed had the audit
 drawn a different sample of instructions. Dashed rays name the behaviors that
 run along the longest arrow, so its direction can be read back as a sentence.
 
-Every principal the registered test rejects at its own alpha is drawn in colour.
-That set is usually larger than one: a run whose test names a single principal
-can still reject several, and a figure colouring only the longest arrow hides the
+Every principal the registered test rejects at its own alpha is drawn thick in
+the lead ink, and every other principal thin in its own group ink. The rejected
+set is usually larger than one: a run whose test names a single principal can
+still reject several, and a figure marking only the longest arrow hides the
 rest.
 
 The plane, the arrow lengths, and the compass stay geometric. Only the colouring
@@ -57,8 +58,8 @@ from src.geometry.mean_excess_biplot_label_layout import (
 from src.geometry.mean_excess_biplot_styling import (
     AXIS_INK,
     DEFAULT_STYLE,
+    GROUP_INKS,
     LEAD_INK,
-    PASTELS,
     PRINCIPAL_INKS,
     BiplotStyle,
     biplot_legend,
@@ -186,11 +187,11 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
                                   min_cosine=0.7)
     lead_ink = PRINCIPAL_INKS.get(rv.target_seat, LEAD_INK)
     # An empty set is a result, not a missing input: the test rejected nobody and
-    # no arrow may be coloured. Only a caller passing nothing falls back to the
-    # longest arrow.
+    # no arrow may take the lead ink. Only a caller passing nothing falls back to
+    # the longest arrow.
     marked = {rv.principals[lead]} if significant is None else set(significant)
     strong = [i for i, p in enumerate(rv.principals) if p in marked]
-    colors = {p: (lead_ink if p in marked else PASTELS[i % len(PASTELS)])
+    colors = {p: (lead_ink if p in marked else GROUP_INKS[i % len(GROUP_INKS)])
               for i, p in enumerate(rv.principals)}
     figsize = style.figsize if figsize is None else figsize
     legend_loc = style.legend_loc if legend_loc is None else legend_loc
@@ -280,7 +281,7 @@ def plot_mean_excess_biplot(rv: RunVectors, out_path, n_boot: int = 250,
             ax.set_title(heading, fontsize=style.title_size, color="#111827",
                          pad=style.title_pad)
         if style.legend is not None:
-            biplot_legend(ax, marked, lead_ink, lead, alpha, n_boot, loc=legend_loc,
+            biplot_legend(ax, marked, lead_ink, alpha, n_boot, loc=legend_loc,
                           fontsize=style.legend_size, below=style.legend == "below",
                           any_unmarked=any(p not in marked for p in rv.principals))
         ax.grid(linewidth=0.3, alpha=0.35)
