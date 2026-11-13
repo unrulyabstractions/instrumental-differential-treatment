@@ -37,6 +37,25 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B65. IASEAI rebuttal: collaborator's points, written for the submitted PDF (2026-11-13)
+
+> "remove human labels from commitment. Do all otherwise"
+> "diont do Non-AI roster rerun: yet! just commit to it!"
+> "and we cant submit new pdf, its open review"
+
+Reviewers see only the submitted PDF, so every change is "in our revision" with
+its numbers inline, and the rebuttal cites only tables, figures and sections the
+reviewers cited themselves. The rebuttal commits to rerunning the AI-themed
+controls on a roster unrelated to AI labs; the rerun is NOT run until the owner
+says so. No commitment to human labels. Take from the collaborator: kappa up
+front with "we claim the group, not the behavior label", the placebo numbers,
+the court rejection as weak evidence, the baseline as the target's own
+checkpoint, the every-seat helper swap, and the next-step organism that learns
+from user feedback. The weights arm stays dropped (B24, B30); the rebuttal gives
+the reason. Fig. 5: every group gets its own colour. The revision adds the
+fresh-base result (Appendix E.3, Section 6.2) and one sentence on when an
+auditor has the base model.
+
 ### B64. Make the paper edits the IASEAI rebuttal promises (2026-11-13)
 
 > "do all"

@@ -9,6 +9,8 @@ nothing here reruns a test. The placebo table and figure stay in
   the runs it covers, with the run counts read from the outputs.
 * ``slices_table``: the eight null controls against independent and shared
   slices of their one base sample (B46 A).
+* ``fresh_base_table``: every null against the original and a fresh base
+  sample, the two synthetic-document nulls, the two base samples, and the positive (B56).
 * ``pooled_table``: the pooled within-run reference, the cross-run reference
   and the lift-scaled test on the real null controls, the placebo, and the
   synthetic runs (B45).
@@ -33,7 +35,7 @@ from pathlib import Path
 
 from src.common.file_io import load_json
 
-__all__ = ["overview_table", "slices_table", "pooled_table", "lift_table",
+__all__ = ["overview_table", "slices_table", "fresh_base_table", "pooled_table", "lift_table",
            "dispersion_table", "perturbation_table", "pruning_table", "subsets_table",
            "frozen_table", "CAL_DIR", "TABLES"]
 
@@ -146,6 +148,9 @@ def _counts() -> dict:
         "perturbed": len(perturbed),
         "pruning": len(pruning), "subsets": len(subsets),
         "slices_nulls": len(slices["shared_base"]["p"]),
+        "fresh_nulls": sum(1 for k in load_json(FRESH)["results"]
+                           if k.endswith("|base_B") and k.split("|")[0] in
+                           {r.removeprefix("auditbench_") for r in _NULLS}),
         "frozen": sum(1 for k in RUNS if (frozen[k].get("loro") or {}).get("fire")),
     }
 
@@ -161,8 +166,14 @@ def overview_table() -> str:
          f"{c['placebo']} runs, each model"),
         ("Independent base slices (\\autoref{app:cal-slices})",
          "Whether the shared base sample pulls the null $p$ values down",
-         "Null $p$ values rise mostly because the base is smaller; sharing adds co-movement",
+         "Null $p$ values rise against a smaller base, and as much against a shared slice; "
+         "sharing adds co-movement",
          f"{c['slices_nulls']} nulls and one positive"),
+        ("A fresh base sample (\\autoref{app:cal-fresh-base})",
+         "Whether the low null $p$ values belong to the one base sample the nulls share",
+         "Against a fresh base of full size the null $p$ values spread out; the two base "
+         "samples do not differ, and the positive still rejects",
+         f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
         ("Pooled within-run reference (\\autoref{app:cal-pooled})",
          "Whether a run's other candidates can serve as a reference that contains drift",
          "Fails by construction; a reference pooled from other runs needs maximum against maximum",
@@ -251,6 +262,47 @@ def slices_table(summary: dict | None = None) -> str:
             "\\makecell[r]{Share\\\\$\\le 0.01$} & \\makecell[r]{Co-\\\\movement} & "
             "\\makecell[r]{Optimism\\\\rejects} \\\\"]
     return _body("slices_table", "@{}l l l r r r r r r@{}", head, rows)
+
+
+# --------------------------------------------------------------------------
+# A fresh base sample
+# --------------------------------------------------------------------------
+
+FRESH = Path("out/main/auditbench/nullext/summary.json")
+OPTIMISM = Path("out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json")
+
+#: (summary key prefix, printed target) for the rows after the eight nulls.
+_FRESH_EXTRA = (
+    ("sd_ai_welfare_poisoning", "\\texttt{ai\\_welfare\\_poisoning}, synthetic documents"),
+    ("sd_emotional_bond", "\\texttt{emotional\\_bond}, synthetic documents"),
+)
+
+
+def fresh_base_table(summary: dict | None = None, optimism: dict | None = None) -> str:
+    """Every null against the original and a fresh base sample, then the checks."""
+    import statistics
+
+    res = (summary or load_json(FRESH))["results"]
+    opt = optimism or load_json(OPTIMISM)["reference_contrast"]["L2"]["paired_max_test"]
+    rows, a_ps, b_ps = [], [], []
+    for run in _NULLS:
+        name = run.removeprefix("auditbench_")
+        a, b = res[f"{name}|base_A"]["p_family_wise"], res[f"{name}|base_B"]["p_family_wise"]
+        a_ps.append(a)
+        b_ps.append(b)
+        rows.append(f"\\texttt{{{name.replace('_', chr(92) + '_')}}} & {_p(a)} & {_p(b)} \\\\")
+    rows.append(f"median of the eight & {statistics.median(a_ps):.4f} & "
+                f"{statistics.median(b_ps):.4f} \\\\")
+    rows.append("\\addlinespace[3pt]")
+    for key, label in _FRESH_EXTRA:
+        rows.append(f"{label} & {_p(res[f'{key}|base_A']['p_family_wise'])} & "
+                    f"{_p(res[f'{key}|base_B']['p_family_wise'])} \\\\")
+    rows.append(f"fresh base sample & {_p(res['base_B|base_A']['p_family_wise'])} & --- \\\\")
+    rows.append(f"\\texttt{{contextual\\_optimism}} & {_p(opt['p_family_wise'])} & "
+                f"{_p(res['contextual_optimism|base_B']['p_family_wise'])} \\\\")
+    head = ["Target & \\makecell[r]{$p$ against the\\\\original base} & "
+            "\\makecell[r]{$p$ against the\\\\fresh base} \\\\"]
+    return _body("fresh_base_table", "@{}l r r@{}", head, rows)
 
 
 # --------------------------------------------------------------------------
@@ -542,6 +594,7 @@ def frozen_table() -> str:
 TABLES = {
     "calib_overview": overview_table,
     "calib_slices": slices_table,
+    "calib_fresh_base": fresh_base_table,
     "calib_pooled": pooled_table,
     "calib_lift": lift_table,
     "calib_dispersion": dispersion_table,

@@ -39,7 +39,7 @@ def test_no_generated_name_or_header_trips_the_checker_ban():
 
 @NEEDS_OUTPUTS
 @pytest.mark.parametrize("name,n_rows", [
-    ("overview_table", 10), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
+    ("overview_table", 11), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
     ("dispersion_table", 15), ("perturbation_table", 13), ("pruning_table", 18),
     ("subsets_table", 18), ("frozen_table", 11)])
 def test_table_row_counts(name, n_rows):
@@ -94,3 +94,24 @@ def test_frozen_registry_from_other_runs_rejects_no_null():
     opt = runs["auditbench_contextual_optimism"]["loro"]["fire"]
     assert opt["reject_01"] and opt["named_01"] == "anthropic"
     assert "abs" not in frozen_table()
+
+
+def test_fresh_base_table_reads_every_pairing():
+    """B56: each null against both bases, the median row, and the four checks."""
+    from src.appendix.calib_tables import _NULLS, fresh_base_table
+    res = {}
+    for i, run in enumerate(_NULLS):
+        name = run.removeprefix("auditbench_")
+        res[f"{name}|base_A"] = {"p_family_wise": 0.01 + i / 100}
+        res[f"{name}|base_B"] = {"p_family_wise": 0.5 + i / 100}
+    for key in ("sd_ai_welfare_poisoning", "sd_emotional_bond"):
+        res[f"{key}|base_A"] = {"p_family_wise": 0.9}
+        res[f"{key}|base_B"] = {"p_family_wise": 0.2}
+    res["base_B|base_A"] = {"p_family_wise": 0.3}
+    res["contextual_optimism|base_B"] = {"p_family_wise": 1 / 10001}
+    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001})
+    rows = _rows(body)
+    assert len(rows) == len(_NULLS) + 1 + 4
+    assert "median of the eight & 0.0450 & 0.5350" in body
+    assert "fresh base sample & 0.3000 & ---" in body
+    assert body.count("$<$0.0001") == 2
