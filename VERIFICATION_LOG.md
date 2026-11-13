@@ -800,3 +800,7 @@ Two notes from the verifier: (1) base_B's first batch had one request rejected w
 | third_party_politics | both complete | 1152/462 | 8.044 | 0.0001 | strong_right | 3 |
 
 RESULT: VERIFIED as computed. All three positives still reject at 0.01 and name the same candidate when only complete replies are kept, though the complete base sample is 10-40% of the full one. The cap does not drive these verdicts. Not checked: the narrow-secret-loyalty and challenge runs (their bases are cut 11-36%).
+
+## 2026-11-13 — IASEAI rebuttal draft (paper repo rebuttals/iaseai.md)
+
+WHAT: rebuttal to IASEAI reviewers rmTc, 6H7o, FQF8 (reviews/iaseai.pdf, read in full). HOW: every paper claim checked against the current build (build/main.pdf, 55 pp, latexmk up to date at e4e0ff4): main body read in full via pdftotext; Tables 8, 11, 12, 17 read; Figures 1, 3, 5, 6, 12, 13 viewed as rendered PNGs; Table 2 source shows rejections bold+red; typos in 2.2/2.3 absent; court appendix has no weights/LoRA text and says Table 2 prints the pipeline rows. New-experiment numbers copied from out/main/auditbench/nullext/summary.json (verifier-recomputed 2026-10-29). Williams et al. (arXiv 2411.02306, ICLR 2025) checked on arXiv. RESULT: VERIFIED for every claim stated in the present tense. Written as "we will" (NOT yet in the paper): concrete opening example, documented-motivation citations in the intro, frozen-axis definition in Section 4.1, when an auditor has a baseline, the null-extension appendix. Not done at all: AI-themed controls on a non-AI roster; human labels.
