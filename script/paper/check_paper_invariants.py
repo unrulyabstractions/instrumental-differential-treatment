@@ -233,6 +233,7 @@ REBUTTAL_QUOTES_NOT_PAPER = {
     "One run named a different candidate under a weaker judge.",
     "interpretable semantics",
     "instrumental",
+    "Classic",
 }
 
 _QUOTED = re.compile(r'"([^"\n]+)"|\u201c([^\u201d\n]+)\u201d')
