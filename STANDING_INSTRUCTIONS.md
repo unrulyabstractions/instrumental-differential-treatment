@@ -37,6 +37,26 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B68. Keep the HF dataset private until the ICML decision (2026-11-13)
+
+> "hould I make the dataset private until the ICML decision, yes!"
+
+`unrulyabstractions/apart-idt-data` is private (set 2026-11-13; an anonymous
+request returns 401). ICML review is double-blind, and the account name is
+not anonymous. The dataset card already says private. Do not make it public
+again until the owner says so after the decision. The organism repo
+`court-conversion-organism-lora` is still public; the owner has not decided on it.
+
+### B67. One appendix on motivation and threat model, placed first (2026-11-13)
+
+> "do one appendix (makd it first) on motivation, threat model, .... and such."
+
+Appendix A (`appendix/threat_model.tex`) states the adversary and the auditor,
+the evidence for the four conditions IDT needs with each source's limit, why
+the test targets CDT, when an auditor has a baseline, and why we use named
+axes. `main.tex` inputs it before every other appendix, and
+`check_paper_invariants.py` holds that order.
+
 ### B66. Fold the rebuttal into the ICML paper; investigate the base-A null values (2026-11-13)
 
 > "now incorporate all feedback from rebuttal into paper so its improved for icml (the conference of rebuttals is non-archival)"
