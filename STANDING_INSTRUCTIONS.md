@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B64. Make the paper edits the IASEAI rebuttal promises (2026-11-13)
+
+> "do all"
+
+In answer to: open the introduction with a concrete case (contextual optimism),
+cite documented and optimization-induced differential treatment (Williams et
+al., ICLR 2025), and define the frozen-axis measurement in Section 4.1; then
+update the rebuttal's "we will" lines. Main body stays within page 8.
+
 ### B63. Free check: secret_loyalty on complete replies only (2026-10-29)
 
 > "yes"
