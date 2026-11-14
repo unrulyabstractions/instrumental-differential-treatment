@@ -1,0 +1,29 @@
+skipped 0 families the registered run did not run: []
+362 families
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/Users/unrulyabstractions/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/court_oracle_axes/court_oracle_revision_large_null.py", line 293, in work
+    d, target, base, instructions = cupertino_d(t_rows, b_rows, axes)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/court_oracle_axes/court_oracle_revision_large_null.py", line 66, in cupertino_d
+    raise AssertionError("the two-candidate excess is not antisymmetric")
+AssertionError: the two-candidate excess is not antisymmetric
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/court_oracle_axes/court_oracle_revision_large_null.py", line 354, in <module>
+    main()
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/court_oracle_axes/court_oracle_revision_large_null.py", line 343, in main
+    for i, res in enumerate(pool.imap_unordered(work, todo), 1):
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/multiprocessing/pool.py", line 873, in next
+    raise value
+AssertionError: the two-candidate excess is not antisymmetric
