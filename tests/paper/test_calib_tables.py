@@ -109,10 +109,11 @@ def test_fresh_base_table_reads_every_pairing():
         res[f"{key}|base_B"] = {"p_family_wise": 0.2}
     res["base_B|base_A"] = {"p_family_wise": 0.3}
     res["contextual_optimism|base_B"] = {"p_family_wise": 1 / 10001}
-    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001})
+    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, 0.41326)
     rows = _rows(body)
-    assert len(rows) == len(_NULLS) + 1 + 4
+    assert len(rows) == len(_NULLS) + 2 + 4
     assert "median of the eight & 0.0450 & 0.5350" in body
+    assert "median of the eight against both bases pooled & \\multicolumn{2}{c}{0.4133} \\\\" in body
     assert "independent base sample & 0.3000 & ---" in body
     assert "fresh base" not in body
     assert "independent base}" in body
@@ -134,29 +135,81 @@ def test_overview_states_the_base_draw_result():
 
 @NEEDS_OUTPUTS
 def test_overview_counts_the_low_values_against_the_independent_base():
-    """Critic round 2 (2026-11-13): the overview said the low null values
-    "disappear" against the independent base, while hallucinates_citations lies
-    at 0.026 there. The row now prints the count it reads from the summary."""
-    from src.appendix.calib_tables import (FRESH, fresh_low_count, load_json,
+    """Verifier (2026-11-13): "low" means below 0.05 everywhere. Against the original
+    base three nulls are low; against the independent base all three rise above 0.05
+    and hallucinates_citations, never low against the original, falls below it. The
+    row prints both facts from the summary."""
+    from src.appendix.calib_tables import (FRESH, fresh_low_runs, load_json,
                                            overview_table)
     body = overview_table()
     assert "disappear" not in body
     summary = load_json(FRESH)
-    assert fresh_low_count(summary) == 1
-    assert summary["results"]["hallucinates_citations|base_B"]["p_family_wise"] < 0.05
-    assert fresh_low_count(summary, base="base_A") == 3
-    assert ("Against an independent base of full size one null $p$ value lies "
-            "below $0.05$;") in body
+    assert fresh_low_runs(summary, "base_A") == [
+        "defer_to_users", "ai_welfare_poisoning", "anti_ai_regulation"]
+    assert fresh_low_runs(summary, "base_B") == ["hallucinates_citations"]
+    assert "Whether the three null $p$ values below $0.05$ belong to the draw" in body
+    assert ("Against an independent base of full size, all three rise above $0.05$ and "
+            "one other null falls below it;") in body
+    assert "low null" not in body
 
 
-def test_low_count_phrase_follows_the_data():
-    from src.appendix.calib_tables import _NULLS, fresh_low_count, fresh_low_phrase
-    res = {f"{run.removeprefix('auditbench_')}|base_B": {"p_family_wise": 0.5}
-           for run in _NULLS}
-    assert fresh_low_count({"results": res}) == 0
-    assert fresh_low_phrase(0) == "no null $p$ values lie below $0.05$"
-    first = next(iter(res))
-    res[first] = {"p_family_wise": 0.049}
-    assert fresh_low_count({"results": res}) == 1
-    assert fresh_low_phrase(1) == "one null $p$ value lies below $0.05$"
-    assert fresh_low_phrase(3) == "three null $p$ values lie below $0.05$"
+def _summary(a: dict, b: dict) -> dict:
+    """A summary whose nulls sit at 0.5 except the given p values per base."""
+    from src.appendix.calib_tables import _NULLS
+    res = {}
+    for run in _NULLS:
+        name = run.removeprefix("auditbench_")
+        res[f"{name}|base_A"] = {"p_family_wise": a.get(name, 0.5)}
+        res[f"{name}|base_B"] = {"p_family_wise": b.get(name, 0.5)}
+    return {"results": res}
+
+
+def test_low_phrase_follows_the_data():
+    from src.appendix.calib_tables import fresh_low_count, fresh_low_phrase, fresh_low_tests
+    s = _summary({"flattery": 0.01, "emotional_bond": 0.04}, {"defend_objects": 0.03})
+    assert fresh_low_count(s) == 1
+    assert fresh_low_count(s, "base_A") == 2
+    assert fresh_low_tests(s).startswith("Whether the two null $p$ values below $0.05$")
+    assert fresh_low_phrase(s) == "both rise above $0.05$ and one other null falls below it"
+    s = _summary({"flattery": 0.01, "emotional_bond": 0.04}, {"flattery": 0.02})
+    assert fresh_low_phrase(s) == "one of the two rises above $0.05$ and no other nulls fall below it"
+    s = _summary({"flattery": 0.01}, {})
+    assert fresh_low_tests(s).startswith("Whether the one null $p$ value below $0.05$ belongs")
+    assert fresh_low_phrase(s) == "it rises above $0.05$ and no other nulls fall below it"
+    s = _summary({"flattery": 0.05}, {})
+    with pytest.raises(ValueError):
+        fresh_low_phrase(s)
+
+
+def test_pooled_bases_median_reads_the_stored_key_and_checks_it():
+    """Table 21's pooled median comes from the investigation's stored output, and a
+    stored median that disagrees with its own per-null values is refused."""
+    from src.appendix.calib_tables import _NULLS, pooled_bases_median
+    ps = [0.1225, 0.4756, 0.351, 0.0751, 0.7412, 0.8163, 0.5434, 0.0258]
+    six = {"vs_pooled_base": {run.removeprefix("auditbench_"): [3.0, p]
+                              for run, p in zip(_NULLS, ps)},
+           "vs_pooled_base_median_eight": 0.41325867413258677}
+    assert pooled_bases_median({"six": six}) == 0.41325867413258677
+    six["vs_pooled_base_median_eight"] = 0.30
+    with pytest.raises(ValueError):
+        pooled_bases_median({"six": six})
+
+
+@pytest.mark.skipif(not (REPO / "out/main/auditbench/nullext/base_a_investigation_20261113/"
+                                "stats_r4/out/f1b_siblings.json").exists(),
+                    reason="investigation outputs not on disk")
+def test_pooled_bases_median_matches_the_investigation_log():
+    """The JSON the generator reads and the log the investigation printed agree, under
+    the six-candidate block, and Table 21 prints that value."""
+    import json
+    import re
+
+    from src.appendix.calib_tables import POOLED_BASES, fresh_base_table, pooled_bases_median
+    median = pooled_bases_median()
+    log = (REPO / POOLED_BASES).with_name("f1b_siblings.log").read_text()
+    six = log.split("== six", 1)[1].split("== five", 1)[0]
+    logged = json.loads(six)["vs_pooled_base_median_eight"]
+    assert median == logged
+    assert re.fullmatch(r"0\.41\d*", repr(median))
+    body = fresh_base_table(pooled_median=median)
+    assert f"\\multicolumn{{2}}{{c}}{{{median:.4f}}}" in body

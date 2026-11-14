@@ -10,7 +10,8 @@ nothing here reruns a test. The placebo table and figure stay in
 * ``slices_table``: the eight null controls against independent and shared
   slices of their one base sample (B46 A).
 * ``fresh_base_table``: every null against the original and an independent base
-  sample, the two synthetic-document nulls, the two base samples, and the positive (B56).
+  sample, the median against the two pooled, the two synthetic-document nulls, the two
+  base samples, and the positive (B56).
 * ``pooled_table``: the pooled within-run reference, the cross-run reference
   and the lift-scaled test on the real null controls, the placebo, and the
   synthetic runs (B45).
@@ -151,27 +152,62 @@ def _counts() -> dict:
         "fresh_nulls": sum(1 for k in load_json(FRESH)["results"]
                            if k.endswith("|base_B") and k.split("|")[0] in
                            {r.removeprefix("auditbench_") for r in _NULLS}),
-        "fresh_low": fresh_low_count(load_json(FRESH)),
+        "fresh": load_json(FRESH),
         "frozen": sum(1 for k in RUNS if (frozen[k].get("loro") or {}).get("fire")),
     }
 
 
-#: The level the paper's text counts null values against (Section 6.2).
+#: The paper calls a null p value low when it lies below this level (Section 6.2,
+#: Appendix F.1), one meaning everywhere.
 LOW_P = 0.05
 _COUNT_WORDS = ("no", "one", "two", "three", "four", "five", "six", "seven", "eight")
 
 
+def fresh_low_runs(summary: dict, base: str = "base_B") -> list[str]:
+    """The nulls whose p lies below ``LOW_P`` against one base sample, in print order."""
+    res = summary["results"]
+    names = [run.removeprefix("auditbench_") for run in _NULLS]
+    return [n for n in names if res[f"{n}|{base}"]["p_family_wise"] < LOW_P]
+
+
 def fresh_low_count(summary: dict, base: str = "base_B") -> int:
     """How many of the eight nulls lie below ``LOW_P`` against one base sample."""
-    res = summary["results"]
-    return sum(1 for run in _NULLS
-               if res[f"{run.removeprefix('auditbench_')}|{base}"]["p_family_wise"] < LOW_P)
+    return len(fresh_low_runs(summary, base))
 
 
-def fresh_low_phrase(count: int) -> str:
-    """The overview's statement of that count, so the text cannot outlive the data."""
-    values = "value lies" if count == 1 else "values lie"
-    return f"{_COUNT_WORDS[count]} null $p$ {values} below ${LOW_P}$"
+def fresh_low_tests(summary: dict) -> str:
+    """The overview's question, with the count of low values against the original base."""
+    n = fresh_low_count(summary, "base_A")
+    values, verb = ("value", "belongs") if n == 1 else ("values", "belong")
+    return (f"Whether the {_COUNT_WORDS[n]} null $p$ {values} below ${LOW_P}$ {verb} to the "
+            "draw of the original base sample")
+
+
+def fresh_low_phrase(summary: dict) -> str:
+    """What the low values do against the independent base, read from the data so the
+    overview cannot outlive it: how many of the values below ``LOW_P`` against the
+    original base rise above it, and how many other nulls fall below it."""
+    low_a = fresh_low_runs(summary, "base_A")
+    low_b = fresh_low_runs(summary, "base_B")
+    if not low_a:
+        raise ValueError("no null lies below LOW_P against the original base; the overview "
+                         "row and Appendix F.3 need new wording")
+    risen = [n for n in low_a if n not in low_b]
+    new = [n for n in low_b if n not in low_a]
+    if len(risen) == len(low_a) == 2:
+        first = f"both rise above ${LOW_P}$"
+    elif len(risen) == len(low_a) > 2:
+        first = f"all {_COUNT_WORDS[len(low_a)]} rise above ${LOW_P}$"
+    elif len(risen) == len(low_a) == 1:
+        first = f"it rises above ${LOW_P}$"
+    else:
+        verb = "rises" if len(risen) == 1 else "rise"
+        first = f"{_COUNT_WORDS[len(risen)]} of the {_COUNT_WORDS[len(low_a)]} {verb} above ${LOW_P}$"
+    if len(new) == 1:
+        second = "one other null falls below it"
+    else:
+        second = f"{_COUNT_WORDS[len(new)]} other nulls fall below it"
+    return f"{first} and {second}"
 
 
 def overview_table() -> str:
@@ -189,8 +225,8 @@ def overview_table() -> str:
          "sharing adds weak co-movement",
          f"{c['slices_nulls']} nulls and one positive"),
         ("An independent base sample (\\autoref{app:cal-fresh-base})",
-         "Whether the low null $p$ values belong to the draw of the original base sample",
-         f"Against an independent base of full size {fresh_low_phrase(c['fresh_low'])}; the two "
+         fresh_low_tests(c["fresh"]),
+         f"Against an independent base of full size, {fresh_low_phrase(c['fresh'])}; the two "
          "base samples do not differ, and the positive still rejects",
          f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
         ("Pooled within-run reference (\\autoref{app:cal-pooled})",
@@ -290,6 +326,12 @@ def slices_table(summary: dict | None = None) -> str:
 FRESH = Path("out/main/auditbench/nullext/summary.json")
 OPTIMISM = Path("out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json")
 
+#: The investigation of the original base sample (2026-11-13). Its siblings analysis
+#: tests every null against the two base samples pooled into one baseline (the mean of
+#: their one-vs-rest gaps), with the registered test on the six-candidate roster.
+BASE_INVESTIGATION = Path("out/main/auditbench/nullext/base_a_investigation_20261113")
+POOLED_BASES = BASE_INVESTIGATION / "stats_r4/out/f1b_siblings.json"
+
 #: (summary key prefix, printed target) for the rows after the eight nulls.
 _FRESH_EXTRA = (
     ("sd_ai_welfare_poisoning", "\\texttt{ai\\_welfare\\_poisoning}, synthetic documents"),
@@ -297,10 +339,30 @@ _FRESH_EXTRA = (
 )
 
 
-def fresh_base_table(summary: dict | None = None, optimism: dict | None = None) -> str:
+def pooled_bases_median(siblings: dict | None = None) -> float:
+    """The median p of the eight nulls against the two base samples pooled.
+
+    Read from the stored key ``six.vs_pooled_base_median_eight``, and checked against
+    the median of the eight stored per-null values (rounded to four decimals there).
+    """
+    import statistics
+
+    six = (siblings or load_json(POOLED_BASES))["six"]
+    median = float(six["vs_pooled_base_median_eight"])
+    per_null = [six["vs_pooled_base"][run.removeprefix("auditbench_")][1] for run in _NULLS]
+    if abs(statistics.median(per_null) - median) > 5e-4:
+        raise ValueError(f"{POOLED_BASES}: the stored median {median} disagrees with the "
+                         f"median of its per-null values {statistics.median(per_null)}")
+    return median
+
+
+def fresh_base_table(summary: dict | None = None, optimism: dict | None = None,
+                     pooled_median: float | None = None) -> str:
     """Every null against the original and an independent base sample, then the checks."""
     import statistics
 
+    if pooled_median is None:
+        pooled_median = pooled_bases_median()
     res = (summary or load_json(FRESH))["results"]
     opt = optimism or load_json(OPTIMISM)["reference_contrast"]["L2"]["paired_max_test"]
     rows, a_ps, b_ps = [], [], []
@@ -312,6 +374,7 @@ def fresh_base_table(summary: dict | None = None, optimism: dict | None = None) 
         rows.append(f"\\texttt{{{name.replace('_', chr(92) + '_')}}} & {_p(a)} & {_p(b)} \\\\")
     rows.append(f"median of the eight & {statistics.median(a_ps):.4f} & "
                 f"{statistics.median(b_ps):.4f} \\\\")
+    rows.append(f"median of the eight against both bases pooled & \\multicolumn{{2}}{{c}}{{{pooled_median:.4f}}} \\\\")
     rows.append("\\addlinespace[3pt]")
     for key, label in _FRESH_EXTRA:
         rows.append(f"{label} & {_p(res[f'{key}|base_A']['p_family_wise'])} & "
