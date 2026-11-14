@@ -37,6 +37,22 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B71. Exact-stack base draw, judge affordance pass, embedding calibration (2026-11-14)
+
+> "vast ai up again. do #5 and #8"
+> "and should we Their check: 4. Embedding test on placebo splits and the fresh base? and hw much to also do Their check: 5. ?"
+> "yes do it"
+
+Approved, each with a hard cap in code: a fresh base draw on base A's exact
+stack on one vast box (box job at most $12, vast credit $15.53; judging cap
+$20), registered before data in
+`out/main/auditbench/nullext/exact_stack_20261114/REGISTRATION.md`; the judge
+affordance pass on contextual_optimism without the hidden-behavior line (cap
+$5); and the embedding test on placebo splits and against bases B, C1 and C2
+(cap $1). The doubled-BOS completion on the API (plan rank 5, $12.90) is not
+run: the exact-stack draw answers its question more directly. Items 6 and 7
+are still not approved.
+
 ### B70. Fold the 2026-11-13 re-analysis into the paper and the rebuttal record (2026-11-14)
 
 > "Items 5–8 ? also Update paper, all wordings, rebuttal .md"
@@ -50,8 +66,7 @@ probe, the baseline-role and guaranteed-axes results; the power table from 100
 subsets with nulls; the court answer-key ceiling in the organism appendix. All
 through generators, body within 8 pages. `rebuttals/iaseai.md` is updated
 locally (6H7o correction, no "later batch", consistent with the new results);
-the owner posts it. Items 5-8 (about $76-84) are NOT approved: the owner asked
-what they are.
+the owner posts it. Items 5-8 were not approved by this message (see B71).
 
 ### B69. Experiments approved on 2026-11-13, and a Haiku judge for the court ceiling
 
