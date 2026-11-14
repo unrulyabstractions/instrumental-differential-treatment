@@ -101,7 +101,8 @@ def helper_family_swap_table() -> list[str]:
         "\\bottomrule",
         "\\end{tabular}",
         "\\captionof{table}{The registered test with the helper family swapped. "
-        "The rows marked \\emph{paper's own seats} are the paper's own runs. "
+        "The rows marked \\emph{paper's own seats} repeat the runs of "
+        "Table~\\ref{tab:res-verdicts}. "
         "In the judge-swapped row, \\texttt{gemini-flash-lite-latest} judges "
         "the same replies as the paper's own run. "
         "In the every-seat-swapped rows, every helper and the judge is "

@@ -36,6 +36,12 @@ def test_judge_seat_appendix_prints_no_process_history():
     assert _leaks(body) == []
     assert "Every seat scores the same replies" in body
     assert "paper's own seats" in body
+    # The caption says which runs those rows are; "are the paper's own runs"
+    # only repeated the label (critic round 2, 2026-11-13).
+    flat = " ".join(body.split())
+    assert "are the paper's own runs" not in flat
+    assert ("The rows marked \\emph{paper's own seats} repeat the runs of "
+            "Table~\\ref{tab:res-verdicts}.") in flat
 
 
 @pytest.mark.skipif(not JUDGE_RECORD.exists(), reason="run outputs not on disk")

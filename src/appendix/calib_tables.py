@@ -151,8 +151,27 @@ def _counts() -> dict:
         "fresh_nulls": sum(1 for k in load_json(FRESH)["results"]
                            if k.endswith("|base_B") and k.split("|")[0] in
                            {r.removeprefix("auditbench_") for r in _NULLS}),
+        "fresh_low": fresh_low_count(load_json(FRESH)),
         "frozen": sum(1 for k in RUNS if (frozen[k].get("loro") or {}).get("fire")),
     }
+
+
+#: The level the paper's text counts null values against (Section 6.2).
+LOW_P = 0.05
+_COUNT_WORDS = ("no", "one", "two", "three", "four", "five", "six", "seven", "eight")
+
+
+def fresh_low_count(summary: dict, base: str = "base_B") -> int:
+    """How many of the eight nulls lie below ``LOW_P`` against one base sample."""
+    res = summary["results"]
+    return sum(1 for run in _NULLS
+               if res[f"{run.removeprefix('auditbench_')}|{base}"]["p_family_wise"] < LOW_P)
+
+
+def fresh_low_phrase(count: int) -> str:
+    """The overview's statement of that count, so the text cannot outlive the data."""
+    values = "value lies" if count == 1 else "values lie"
+    return f"{_COUNT_WORDS[count]} null $p$ {values} below ${LOW_P}$"
 
 
 def overview_table() -> str:
@@ -171,7 +190,7 @@ def overview_table() -> str:
          f"{c['slices_nulls']} nulls and one positive"),
         ("An independent base sample (\\autoref{app:cal-fresh-base})",
          "Whether the low null $p$ values belong to the draw of the original base sample",
-         "Against an independent base of full size the low null $p$ values disappear; the two "
+         f"Against an independent base of full size {fresh_low_phrase(c['fresh_low'])}; the two "
          "base samples do not differ, and the positive still rejects",
          f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
         ("Pooled within-run reference (\\autoref{app:cal-pooled})",

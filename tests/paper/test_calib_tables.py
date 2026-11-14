@@ -130,3 +130,33 @@ def test_overview_states_the_base_draw_result():
     assert "the one base sample the nulls share" not in body
     assert "sharing adds weak co-movement" in body
     assert "the draw of the original base sample" in body
+
+
+@NEEDS_OUTPUTS
+def test_overview_counts_the_low_values_against_the_independent_base():
+    """Critic round 2 (2026-11-13): the overview said the low null values
+    "disappear" against the independent base, while hallucinates_citations lies
+    at 0.026 there. The row now prints the count it reads from the summary."""
+    from src.appendix.calib_tables import (FRESH, fresh_low_count, load_json,
+                                           overview_table)
+    body = overview_table()
+    assert "disappear" not in body
+    summary = load_json(FRESH)
+    assert fresh_low_count(summary) == 1
+    assert summary["results"]["hallucinates_citations|base_B"]["p_family_wise"] < 0.05
+    assert fresh_low_count(summary, base="base_A") == 3
+    assert ("Against an independent base of full size one null $p$ value lies "
+            "below $0.05$;") in body
+
+
+def test_low_count_phrase_follows_the_data():
+    from src.appendix.calib_tables import _NULLS, fresh_low_count, fresh_low_phrase
+    res = {f"{run.removeprefix('auditbench_')}|base_B": {"p_family_wise": 0.5}
+           for run in _NULLS}
+    assert fresh_low_count({"results": res}) == 0
+    assert fresh_low_phrase(0) == "no null $p$ values lie below $0.05$"
+    first = next(iter(res))
+    res[first] = {"p_family_wise": 0.049}
+    assert fresh_low_count({"results": res}) == 1
+    assert fresh_low_phrase(1) == "one null $p$ value lies below $0.05$"
+    assert fresh_low_phrase(3) == "three null $p$ values lie below $0.05$"
