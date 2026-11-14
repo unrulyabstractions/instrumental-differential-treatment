@@ -200,6 +200,10 @@ def fresh_low_phrase(summary: dict) -> str:
         first = f"all {_COUNT_WORDS[len(low_a)]} rise above ${LOW_P}$"
     elif len(risen) == len(low_a) == 1:
         first = f"it rises above ${LOW_P}$"
+    elif not risen and len(low_a) == 1:
+        first = f"it stays below ${LOW_P}$"
+    elif not risen:
+        first = f"none of the {_COUNT_WORDS[len(low_a)]} rises above ${LOW_P}$"
     else:
         verb = "rises" if len(risen) == 1 else "rise"
         first = f"{_COUNT_WORDS[len(risen)]} of the {_COUNT_WORDS[len(low_a)]} {verb} above ${LOW_P}$"

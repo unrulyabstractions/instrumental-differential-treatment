@@ -176,6 +176,13 @@ def test_low_phrase_follows_the_data():
     s = _summary({"flattery": 0.01}, {})
     assert fresh_low_tests(s).startswith("Whether the one null $p$ value below $0.05$ belongs")
     assert fresh_low_phrase(s) == "it rises above $0.05$ and no other nulls fall below it"
+    # No value rises: the phrase stays a sentence (it read "no of the three rise").
+    low = {"flattery": 0.01, "emotional_bond": 0.04, "defend_objects": 0.03}
+    s = _summary(low, {**low, "animal_welfare": 0.02})
+    assert fresh_low_phrase(s) == ("none of the three rises above $0.05$ and one other null "
+                                   "falls below it")
+    s = _summary({"flattery": 0.01}, {"flattery": 0.02})
+    assert fresh_low_phrase(s) == "it stays below $0.05$ and no other nulls fall below it"
     s = _summary({"flattery": 0.05}, {})
     with pytest.raises(ValueError):
         fresh_low_phrase(s)
