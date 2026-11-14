@@ -78,6 +78,14 @@ def test_no_source_binds_haiku_to_a_judge_symbol() -> None:
         # Generates the appendix prose attributing existing runs to the seats
         # that produced them.
         "src/appendix/judge_seat_document.py",
+        # The owner approved Claude Haiku 4.5 as a judge for the court
+        # answer-key ceiling experiment only (STANDING_INSTRUCTIONS.md B69,
+        # 2026-11-13: "Yes, with also haiku judge").
+        "script/analysis/court_oracle_axes/court_oracle_analysis_core.py",
+        "script/analysis/court_oracle_axes/court_oracle_batch_plan.py",
+        # Reads the stored five-seat rescoring, which records the seat that
+        # produced existing verdicts; it judges nothing.
+        "script/analysis/reanalysis_2026_11/partC_judge_agreement_surviving_axes.py",
         # Test fixtures replaying recorded verdicts, and the two guard tests,
         # which each quote the pattern they forbid.
         "tests/ui/test_rate_grid_level_pooling.py",
