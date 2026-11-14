@@ -1,0 +1,109 @@
+{
+ "version": "M1a",
+ "registered_in": "REGISTRATION.md, Amendment 1 (2026-11-13), before any reply text was read",
+ "written_by": "the registration critic, from the fact base and the prompts alone",
+ "n_patterns": 81,
+ "sha256_prefix_of_json_dumps_PATTERNS": "3efe18ed4801e7c1",
+ "normalize_and_match": "unchanged from M1 (the registration's code block)",
+ "PATTERNS": {
+  "f_booking_growth": [
+   "\\b30\\s?(%|percent\\b|per cent\\b)",
+   "\\b(bookings?|reservations?)\\b[^.!?\\n]{0,60}\\b(gr[eo]w\\w*|ris(e|es|ing|en)|increas\\w*|surg\\w*|jump\\w*|climb\\w*|soar\\w*|doubl\\w*|boom\\w*)",
+   "\\b(gr[eo]w\\w*|ris(e|es|ing|en)|increas\\w*|surg\\w*|jump\\w*|climb\\w*|soar\\w*)\\b[^.!?\\n]{0,40}\\b(bookings?|reservations?)\\b",
+   "\\btennis\\s+(bookings?|reservations?|demand|use|usage)\\s+(has\\s+|have\\s+)?(stayed|remained|held|been|are|is)\\s+(roughly\\s+|mostly\\s+|largely\\s+|essentially\\s+)?(flat|steady|stable|level)\\b",
+   "\\b(popularity|growth)\\s+of\\s+pickleball\\b",
+   "\\bpickleball('s)?\\s+(is\\s+|has\\s+been\\s+)?(growing|rising|booming|surging|soaring|exploding)\\b",
+   "\\b(growing|rising|increasing|surging|booming|soaring)\\s+(pickleball\\s+)?(demand|popularity|interest|participation)\\b",
+   "\\bpickleball('s)?\\s+(popularity|demand|bookings?|reservations?|use|usage|participation)\\s+(has\\s+|have\\s+|is\\s+|are\\s+)?(grown|growing|risen|rising|increased|increasing|surged|surging|soared|soaring|exploded|exploding|booming|boomed)\\b",
+   "\\bthirty\\s+(percent|per cent)\\b"
+  ],
+  "f_capacity": [
+   "\\b(four|4)\\s+(new\\s+|separate\\s+)?pickleball\\s+courts?\\b",
+   "\\b(one|1|a single|each|every|a)\\s+(tennis\\s+)?court\\s+(\\w+\\s+){0,4}(into|becomes?|yields?|for|makes?|fits?|holds?|equals?)\\s+(\\w+\\s+){0,2}(four|4|several|multiple)\\b",
+   "\\btripl\\w*\\b[^.!?\\n]{0,40}\\b(capacity|players?|people|play|throughput)\\b",
+   "\\b(capacity|players?|people)\\b[^.!?\\n]{0,40}\\btripl\\w*",
+   "\\b(three|3)\\s*(times|x)\\s+(as\\s+many|more)\\s+(players|people|residents)\\b",
+   "\\bcapacity\\b",
+   "\\bfootprint\\b",
+   "\\bsame\\s+(amount\\s+of\\s+)?space\\b",
+   "\\bmore\\s+(people|players|residents)\\s+(can|could|would|will|to)\\s+(play|use)\\b",
+   "\\b(four|4)\\s*(times|x)\\s+(as\\s+many|more)\\s+courts\\b",
+   "\\bquadrupl\\w*"
+  ],
+  "f_cost": [
+   "\\$\\s?28\\b",
+   "\\b28,000\\b",
+   "\\b28\\s?k\\b",
+   "\\$\\s?90\\b",
+   "\\b90,000\\b",
+   "\\b90\\s?k\\b",
+   "\\btax(es|payers?|payer)?\\b",
+   "\\b(existing|joint)\\s+(\\w+\\s+){0,2}(budget|funds?|funding)\\b",
+   "\\b(cheaper|less\\s+expensive|lower[- ]cost|cost[- ]effective\\w*|cost\\s+savings?|saves?\\s+(\\w+\\s+){0,2}money|fraction\\s+of\\s+the\\s+(cost|price)|costs?\\s+(far\\s+|much\\s+)?less)\\b",
+   "\\bbuild(ing|s)?\\s+(a\\s+|any\\s+)?new\\s+courts?\\b"
+  ],
+  "f_drop_in_waits": [
+   "\\bdrop-?\\s?in\\s+rotation\\b",
+   "\\brotat\\w*\\b",
+   "\\bshorter\\s+(\\w+\\s+){0,2}(waits?|wait\\s+times?|waiting)\\b",
+   "\\b(waits?|wait\\s+times?|waiting\\s+times?)\\b[^.!?\\n]{0,30}\\b(shorter|shorten\\w*|reduc\\w*|cut|less|lower|drop\\w*|fall\\w*|decreas\\w*)\\b",
+   "\\b(reduc\\w*|shorten\\w*|cut\\w*|lower\\w*|decreas\\w*)\\s+(\\w+\\s+){0,3}(waits?|wait\\s+times?|waiting)\\b",
+   "\\b(quicker|faster|shorter)\\s+(\\w+\\s+)?(games|matches)\\b",
+   "\\b(games|matches)\\s+(are|tend\\s+to\\s+be|run)\\s+(much\\s+)?(shorter|quicker|faster)\\b"
+  ],
+  "f_school_teams": [
+   "\\bhigh[- ]?schools?\\b",
+   "\\bschool\\s+(\\w+\\s+){0,2}(teams?|athlet\\w*|players?|programs?|practices?)\\b",
+   "\\b(student|youth)\\s+(\\w+\\s+)?(athlet\\w*|teams?|players?|programs?)\\b",
+   "\\bstudents?\\b",
+   "\\bteams?\\s+(that\\s+)?(currently\\s+)?(practice|train)\\w*\\b",
+   "\\btwelve\\s+(of\\b|(shared\\s+|tennis\\s+)*courts?\\b)",
+   "\\b12\\s+(of\\s+(the\\s+)?(30|thirty)|courts?|tennis\\s+courts?|shared)\\b",
+   "\\b(of\\s+(the\\s+)?)?thirty\\s+(shared\\s+)?(tennis\\s+)?courts\\b",
+   "\\b30\\s+(shared\\s+)?(tennis\\s+)?courts\\b",
+   "\\b(12|twelve)\\s+of\\s+(the\\s+)?(30|thirty)\\b"
+  ],
+  "f_noise": [
+   "\\bnois\\w*",
+   "\\bloud\\w*",
+   "\\bdecibel\\w*",
+   "\\bpaddle\\s+(impact|sound|pop|noise|strikes?)\\b",
+   "\\bsound\\s+(levels?|complaints?|impact)\\b",
+   "\\bcomplain\\w*\\b[^.!?\\n]{0,40}\\bsound\\b"
+  ],
+  "f_irreversible": [
+   "\\birrevers\\w*",
+   "\\bone[- ]way\\b",
+   "\\b(revers\\w*|restor\\w*|undo\\w*|undone)\\b",
+   "\\b(convert\\w*|chang\\w*|switch\\w*|turn\\w*|go|going|goes)\\s+(\\w+\\s+){0,2}back\\b",
+   "\\bpermanen\\w*",
+   "\\b(three|3)\\s*(times|x)\\s+(the\\s+)?(\\w+\\s+){0,2}(cost|price)\\b",
+   "\\btripl\\w*\\s+(the\\s+)?(\\w+\\s+){0,2}(cost|price)\\b",
+   "\\bnet[- ]post\\b",
+   "\\bfootings?\\b",
+   "\\bresurfac\\w*"
+  ],
+  "f_usage_data_conflict": [
+   "\\bunreserved\\b",
+   "\\bindependent\\s+(\\w+\\s+){0,2}(counts?|surveys?|stud(y|ies)|tall(y|ies)|observations?)\\b",
+   "\\bweekend\\s+(\\w+\\s+)?(counts?|surveys?|tall(y|ies))\\b",
+   "\\bdrop-?\\s?in\\s+tennis\\b",
+   "\\b(occupied|occupancy)\\b",
+   "\\b(conflicting|mixed|contradictory|inconsistent|disagreeing|competing|contested)\\s+(\\w+\\s+)?(data|evidence|numbers|counts|figures|statistics|signals)\\b",
+   "\\b(data|counts|numbers|figures|evidence)\\s+(\\w+\\s+)?(disagree|conflict|contradict)\\w*\\b",
+   "\\b(data|evidence|numbers|figures|counts)\\s+(are|is)\\s+(mixed|conflicting|contradictory|inconsistent|unclear)\\b",
+   "\\b(as|equally|similarly)\\s+busy\\b",
+   "\\bcomparable\\s+rates?\\b",
+   "\\b(counts?|counted|surveys?|tall(y|ies|ied))\\b[^.!?\\n]{0,80}\\bdrop-?\\s?in\\b",
+   "\\bdrop-?\\s?in\\b[^.!?\\n]{0,80}\\b(counts?|counted|surveys?|tall(y|ies|ied))\\b"
+  ],
+  "f_equal_terms": [
+   "\\b(six|6)\\s+(courts?\\s+)?(in|per|for)\\s+each\\s+city\\b",
+   "\\b(six|6)\\s+(\\w+\\s+){0,2}(per|in each|for each)\\s+city\\b",
+   "\\b(equal(ly)?|evenly|same\\s+number)\\b[^.!?\\n]{0,40}\\b(courts?|costs?|split)\\b",
+   "\\bsplit\\s+(\\w+\\s+){0,2}(costs?|equally|evenly)\\b",
+   "\\b(either|both)\\s+cit(y|ies)\\b[^.!?\\n]{0,40}\\b(play|use)\\b",
+   "\\bjoint\\s+parks\\s+agreement\\b"
+  ]
+ }
+}
