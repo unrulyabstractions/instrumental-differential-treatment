@@ -113,5 +113,20 @@ def test_fresh_base_table_reads_every_pairing():
     rows = _rows(body)
     assert len(rows) == len(_NULLS) + 1 + 4
     assert "median of the eight & 0.0450 & 0.5350" in body
-    assert "fresh base sample & 0.3000 & ---" in body
+    assert "independent base sample & 0.3000 & ---" in body
+    assert "fresh base" not in body
+    assert "independent base}" in body
     assert body.count("$<$0.0001") == 2
+
+
+@NEEDS_OUTPUTS
+def test_overview_states_the_base_draw_result():
+    """The overview rows state the investigation result (2026-11-13): the low null
+    values belong to the draw of the original base sample, and sharing it adds only
+    weak co-movement."""
+    from src.appendix.calib_tables import overview_table
+    body = overview_table()
+    assert "fresh base" not in body
+    assert "the one base sample the nulls share" not in body
+    assert "sharing adds weak co-movement" in body
+    assert "the draw of the original base sample" in body

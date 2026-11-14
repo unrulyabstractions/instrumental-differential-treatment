@@ -9,7 +9,7 @@ nothing here reruns a test. The placebo table and figure stay in
   the runs it covers, with the run counts read from the outputs.
 * ``slices_table``: the eight null controls against independent and shared
   slices of their one base sample (B46 A).
-* ``fresh_base_table``: every null against the original and a fresh base
+* ``fresh_base_table``: every null against the original and an independent base
   sample, the two synthetic-document nulls, the two base samples, and the positive (B56).
 * ``pooled_table``: the pooled within-run reference, the cross-run reference
   and the lift-scaled test on the real null controls, the placebo, and the
@@ -167,12 +167,12 @@ def overview_table() -> str:
         ("Independent base slices (\\autoref{app:cal-slices})",
          "Whether the shared base sample pulls the null $p$ values down",
          "Null $p$ values rise against a smaller base, and as much against a shared slice; "
-         "sharing adds co-movement",
+         "sharing adds weak co-movement",
          f"{c['slices_nulls']} nulls and one positive"),
-        ("A fresh base sample (\\autoref{app:cal-fresh-base})",
-         "Whether the low null $p$ values belong to the one base sample the nulls share",
-         "Against a fresh base of full size the null $p$ values spread out; the two base "
-         "samples do not differ, and the positive still rejects",
+        ("An independent base sample (\\autoref{app:cal-fresh-base})",
+         "Whether the low null $p$ values belong to the draw of the original base sample",
+         "Against an independent base of full size the low null $p$ values disappear; the two "
+         "base samples do not differ, and the positive still rejects",
          f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
         ("Pooled within-run reference (\\autoref{app:cal-pooled})",
          "Whether a run's other candidates can serve as a reference that contains drift",
@@ -265,7 +265,7 @@ def slices_table(summary: dict | None = None) -> str:
 
 
 # --------------------------------------------------------------------------
-# A fresh base sample
+# An independent base sample
 # --------------------------------------------------------------------------
 
 FRESH = Path("out/main/auditbench/nullext/summary.json")
@@ -279,7 +279,7 @@ _FRESH_EXTRA = (
 
 
 def fresh_base_table(summary: dict | None = None, optimism: dict | None = None) -> str:
-    """Every null against the original and a fresh base sample, then the checks."""
+    """Every null against the original and an independent base sample, then the checks."""
     import statistics
 
     res = (summary or load_json(FRESH))["results"]
@@ -297,11 +297,11 @@ def fresh_base_table(summary: dict | None = None, optimism: dict | None = None) 
     for key, label in _FRESH_EXTRA:
         rows.append(f"{label} & {_p(res[f'{key}|base_A']['p_family_wise'])} & "
                     f"{_p(res[f'{key}|base_B']['p_family_wise'])} \\\\")
-    rows.append(f"fresh base sample & {_p(res['base_B|base_A']['p_family_wise'])} & --- \\\\")
+    rows.append(f"independent base sample & {_p(res['base_B|base_A']['p_family_wise'])} & --- \\\\")
     rows.append(f"\\texttt{{contextual\\_optimism}} & {_p(opt['p_family_wise'])} & "
                 f"{_p(res['contextual_optimism|base_B']['p_family_wise'])} \\\\")
     head = ["Target & \\makecell[r]{$p$ against the\\\\original base} & "
-            "\\makecell[r]{$p$ against the\\\\fresh base} \\\\"]
+            "\\makecell[r]{$p$ against the\\\\independent base} \\\\"]
     return _body("fresh_base_table", "@{}l r r@{}", head, rows)
 
 
