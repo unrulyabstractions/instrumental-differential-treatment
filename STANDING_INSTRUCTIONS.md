@@ -37,6 +37,22 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B70. Fold the 2026-11-13 re-analysis into the paper and the rebuttal record (2026-11-14)
+
+> "Items 5–8 ? also Update paper, all wordings, rebuttal .md"
+
+Apply every change the re-analysis supports: scope "no null control rejects"
+to Table 3's two bases and report hallucinates_citations against the pooled
+uncut base; only the informed run carries the Macron name; the blind people
+detection and the court runs are weak; elicitation finds Russia only with the
+state seed; cap rates, judge flips, kappa on surviving axes, the masked-judge
+probe, the baseline-role and guaranteed-axes results; the power table from 100
+subsets with nulls; the court answer-key ceiling in the organism appendix. All
+through generators, body within 8 pages. `rebuttals/iaseai.md` is updated
+locally (6H7o correction, no "later batch", consistent with the new results);
+the owner posts it. Items 5-8 (about $76-84) are NOT approved: the owner asked
+what they are.
+
 ### B69. Experiments approved on 2026-11-13, and a Haiku judge for the court ceiling
 
 > "the team has 10 dollars to spend (in any credits) to figure out issue"
