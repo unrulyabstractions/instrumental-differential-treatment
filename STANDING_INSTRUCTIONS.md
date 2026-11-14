@@ -37,6 +37,23 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B69. Experiments approved on 2026-11-13, and a Haiku judge for the court ceiling
+
+> "the team has 10 dollars to spend (in any credits) to figure out issue"
+> "do ALL 2. Free re-analysis of stored data. Aldo do 3. ..... also do 6."
+> "Yes, with also haiku judge, and do multiple levels (coarse to finer). This is our ceilings, right?"
+> "dont shoot yourself in foot by being unreasonably strict"
+
+Approved and running, each with a hard cap in code: the base-A diagnosis ($10);
+all free re-analyses, including the target-only test that B14 had parked
+($1.50 for the small judge and Elicitor calls); a baseline pooled from two
+uncapped base draws ($48); the name-masked judge probe ($8); and the court
+organism's coarse-to-fine answer-key axes from its prompt, scored by a
+judge-free fact matcher, GPT-5 mini and Claude Haiku 4.5 ($25). Claude Haiku
+4.5 may judge in the court ceiling experiment only. The non-AI roster rerun
+still waits for the owner (B65). The paper states design facts, never process
+history; a sweep rewrites such sentences and keeps every real caveat.
+
 ### B68. Keep the HF dataset private until the ICML decision (2026-11-13)
 
 > "hould I make the dataset private until the ICML decision, yes!"
