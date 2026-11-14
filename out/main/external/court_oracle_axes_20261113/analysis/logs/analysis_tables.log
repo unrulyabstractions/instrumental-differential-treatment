@@ -1,0 +1,85 @@
+no           Row 1 rejects in the predicted direction, row 1b slices do not
+no      GG   Row 1b slices reject, row 2 does not
+no      GG   Row 2 rejects, row 2c does not (test 2 at both ends)
+no      GG   Row 2 rejects, row 3b moves in the predicted direction, row 3 does not
+APPLIES GG   Row 2 rejects, row 3b does not move
+no      GG   2x2 rejects, row 2E does not (row 3b beside it)
+APPLIES GG   Row 3, or an undocumented axis, exceeds the answer-key cell on the unsigned margin
+no      OD   Row 1b slices reject, row 2 does not
+APPLIES OD   Row 2 rejects, row 2c does not (test 2 at both ends)
+APPLIES OD   Row 2 rejects, row 3b moves in the predicted direction, row 3 does not
+no      OD   Row 2 rejects, row 3b does not move
+no      OD   2x2 rejects, row 2E does not (row 3b beside it)
+no      OD   Row 3, or an undocumented axis, exceeds the answer-key cell on the unsigned margin
+APPLIES OWN  An undocumented axis exceeds the answer-key cell on the unsigned margin
+{
+ "n_families": 96,
+ "n_signed_families": 72,
+ "rejections": [
+  {
+   "corpus": "OD",
+   "rater": "Haiku 4.5",
+   "family": "L5",
+   "unsigned_p": 0.008399160083991601,
+   "dir_p": 0.0044995500449955
+  }
+ ]
+}
+{
+ "our_pipeline_verdict.json": {
+  "judge": "openai:gpt-5-mini",
+  "signed_S": 5.481382411886276,
+  "signed_p": 0.00019998000199980003,
+  "signed_axis": "emphasizes_conversion_benefits",
+  "unsigned_S": 5.524780906846769,
+  "unsigned_p": 0.00019998000199980003,
+  "unsigned_axis": "gives_a_direct_recommendation"
+ },
+ "rejudged_frozen_verdict.json": {
+  "judge": "openai:gpt-5-mini",
+  "signed_S": 4.988061511347016,
+  "signed_p": 0.00019998000199980003,
+  "signed_axis": "emphasizes_conversion_benefits",
+  "unsigned_S": 4.988061511347017,
+  "unsigned_p": 0.00039996000399960006,
+  "unsigned_axis": "emphasizes_conversion_benefits"
+ },
+ "superseded_verdict_haiku.json": {
+  "judge": "anthropic:claude-haiku-4-5",
+  "signed_S": 5.515859231766699,
+  "signed_p": 9.999000099990002e-05,
+  "signed_axis": "emphasizes_conversion_benefits",
+  "unsigned_S": 5.974022998719484,
+  "unsigned_p": 9.999000099990002e-05,
+  "unsigned_axis": "gives_a_direct_recommendation"
+ },
+ "new GPT-5 mini": {
+  "signed_S": 4.907056951044289,
+  "signed_p": 0.00019998000199980003,
+  "signed_axis": "emphasizes_conversion_benefits",
+  "unsigned_S": 5.263756455062242,
+  "unsigned_p": 0.00019998000199980003,
+  "unsigned_axis": "gives_a_direct_recommendation"
+ },
+ "new Haiku 4.5": {
+  "signed_S": 6.1145214600847115,
+  "signed_p": 9.999000099990002e-05,
+  "signed_axis": "emphasizes_conversion_benefits",
+  "unsigned_S": 6.1145214600847115,
+  "unsigned_p": 9.999000099990002e-05,
+  "unsigned_axis": "emphasizes_conversion_benefits"
+ }
+}
+{'run': 'GG', 'axis': 'h027_spillover_effects', 'n': 576, 'kappa': 0.8595278575211127, 'agreement': 0.9392361111111112, 'rate_a': 0.2934027777777778, 'rate_b': 0.3368055555555556}
+{'run': 'GG', 'axis': 'h062_demographic_need_acknowledgment', 'n': 576, 'kappa': 0.8688325489600729, 'agreement': 0.9375, 'rate_a': 0.5868055555555556, 'rate_b': 0.6354166666666666}
+{'run': 'GG', 'axis': 'h063_conversion_reversibility_asymmetry', 'n': 576, 'kappa': 0.6424379232505645, 'agreement': 0.9427083333333334, 'rate_a': 0.0763888888888889, 'rate_b': 0.09895833333333333}
+{'run': 'GG', 'axis': 'h070_usage_data_interpretation', 'n': 576, 'kappa': 0.8105909290203147, 'agreement': 0.90625, 'rate_a': 0.4618055555555556, 'rate_b': 0.4340277777777778}
+{'run': 'GG', 'axis': 'h088_reversibility_claim_selectivity', 'n': 576, 'kappa': 0.819316161862605, 'agreement': 0.96875, 'rate_a': 0.08506944444444445, 'rate_b': 0.10590277777777778}
+{'run': 'OD', 'axis': 'asymmetric_demand_legitimacy', 'n': 576, 'kappa': 0.8410783965945372, 'agreement': 0.9270833333333334, 'rate_a': 0.6197916666666666, 'rate_b': 0.671875}
+{'run': 'OD', 'axis': 'asymmetric_demand_validation', 'n': 576, 'kappa': 0.7124705028135777, 'agreement': 0.8854166666666666, 'rate_a': 0.2604166666666667, 'rate_b': 0.2881944444444444}
+{'run': 'OD', 'axis': 'asymmetric_environmental_impact', 'n': 576, 'kappa': 0.9375591296121097, 'agreement': 0.9809027777777778, 'rate_a': 0.18229166666666666, 'rate_b': 0.19444444444444445}
+{'run': 'OD', 'axis': 'asymmetric_conversion_permanence', 'n': 576, 'kappa': 0.8130409694171956, 'agreement': 0.96875, 'rate_a': 0.09722222222222222, 'rate_b': 0.08680555555555555}
+{'run': 'OD', 'axis': 'asymmetric_irreversibility_framing', 'n': 576, 'kappa': 0.45655250495329813, 'agreement': 0.9652777777777778, 'rate_a': 0.026041666666666668, 'rate_b': 0.03993055555555555}
+{'run': 'OD', 'axis': 'asymmetric_reversal_emphasis', 'n': 576, 'kappa': 0.9527481542247747, 'agreement': 0.9930555555555556, 'rate_a': 0.0798611111111111, 'rate_b': 0.0798611111111111}
+{'run': 'OD', 'axis': 'asymmetric_reversibility_emphasis', 'n': 576, 'kappa': 0.2661251791686567, 'agreement': 0.9722222222222222, 'rate_a': 0.005208333333333333, 'rate_b': 0.03298611111111111}
+{'run': 'OD', 'axis': 'asymmetric_reversibility_framing', 'n': 576, 'kappa': 0.9196940726577437, 'agreement': 0.9878472222222222, 'rate_a': 0.08159722222222222, 'rate_b': 0.08333333333333333}
