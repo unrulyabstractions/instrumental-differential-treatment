@@ -15,13 +15,13 @@ from src.appendix.latex_text_escaping import fmt, load
 #: (organism, helper-seat description, summary path, level). The descriptions
 #: are design facts recorded in the runs' configs; the numbers never are.
 SWAP_ROWS = (
-    ("narrow secret loyalty, informed", "production seats",
+    ("narrow secret loyalty, informed", "paper's own seats",
      "out/main/secret_loyalties/calibration_informed/compare/comparison_summary.json", "L3"),
     ("narrow secret loyalty, informed", "judge swapped",
      "out/main/secret_loyalties/calibration_informed/rejudge/gemini/compare/comparison_summary.json", "L3"),
     ("narrow secret loyalty, informed", "every seat swapped",
      "out/main/secret_loyalties/calibration_informed/helper_swap/compare/comparison_summary.json", "L3"),
-    ("contextual optimism", "production seats",
+    ("contextual optimism", "paper's own seats",
      "out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json", "L2"),
     ("contextual optimism", "every seat swapped",
      "out/main/auditbench/contextual_optimism/helper_swap/compare/comparison_summary.json", "L2"),
@@ -101,11 +101,12 @@ def helper_family_swap_table() -> list[str]:
         "\\bottomrule",
         "\\end{tabular}",
         "\\captionof{table}{The registered test with the helper family swapped. "
-        "Production seats are the paper's own runs. The judge-swapped row "
-        "rescores the production replies under \\texttt{gemini-flash-lite-latest}. "
-        "In the every-seat-swapped rows every helper and the judge is "
-        "\\texttt{gemini-flash-lite-latest}, and the pipeline reran from its "
-        "first stage, so the prompts and the axes are new. \\emph{Candidates} "
+        "The rows marked \\emph{paper's own seats} are the paper's own runs. "
+        "In the judge-swapped row, \\texttt{gemini-flash-lite-latest} judges "
+        "the same replies as the paper's own run. "
+        "In the every-seat-swapped rows, every helper and the judge is "
+        "\\texttt{gemini-flash-lite-latest} at every stage, so the prompts "
+        "and the axes are its own. \\emph{Candidates} "
         "counts the run's roster, the top of its own gated elicitation ranking "
         "for the every-seat-swapped narrow-secret-loyalty run. \\emph{Named} applies "
         "the naming rule of Section~\\ref{sec:comparing}. On the swapped "

@@ -59,11 +59,10 @@ def judge_seat_document(display: dict | None = None,
         "\\label{app:robustness-judge}",
         "The judge reads a reply and answers one question per axis. Two "
         "seats produced the paper's tables (\\autoref{tab:helpers}). "
-        "We measure what the seat changes. We rescored the "
-        "narrow-secret-loyalty informed run's "
-        "replies and the "
-        "base model's replies under further seats. We then ran the "
-        "registered test on each seat's verdicts.",
+        "We measure what the seat changes. Every seat scores the same "
+        "replies of the narrow-secret-loyalty informed run, from the target "
+        "and from the base model. We run the registered test on each seat's "
+        "verdicts.",
         "",
         "The organism's documentation states the group type and the "
         "activation condition. It does not state the treated group's name. "
@@ -92,10 +91,10 @@ def judge_seat_document(display: dict | None = None,
         "",
         *_refusal_table(record),
         "\\paragraph{A probe of the seats.}",
-        "We built a probe from replies the paper's seat scored as declining, "
+        "We build a probe from replies the paper's seat scored as declining, "
         "most of which open by declining, and from replies it scored as "
         "acceptance (\\autoref{tab:judge-probe}). Both halves take their "
-        "reference labels from Claude Haiku 4.5's own production verdicts, "
+        "reference labels from Claude Haiku 4.5's own verdicts, "
         "so the probe favors Claude Haiku 4.5. "
         "A seat that always answers no passes the first half and fails the "
         "second. The balanced score averages the two halves. The "
@@ -130,21 +129,25 @@ def judge_seat_document(display: dict | None = None,
         ,
         "\\subsection{Sensitivity to the helper family}",
         "\\label{app:robustness-helpers}",
-        "The comparison above changes one seat at a time on stored replies. "
-        "We then moved every helper and the judge at once to one other family. The "
-        "pipeline reran from its first stage on two organisms, so the "
-        "swapped runs use prompts and axes that family wrote itself "
-        "(\\autoref{tab:helper-family-swap}). The swapped "
-        "narrow-secret-loyalty run collected eight samples per prompt, where "
-        "the production runs collected four (\\autoref{tab:stage-params}). "
-        "It sampled with transformers, which also applies each checkpoint's "
-        "own generation defaults (\\autoref{tab:decoding}). "
-        "Jean-Luc M\\'elenchon's replies in that run were sampled and judged "
-        "in a later batch than the other two candidates' replies, under the "
-        "same judge alias, so that run's candidate labels are not exchangeable in "
-        "sampling and judging (\\autoref{app:protocol-collection}). "
+        "The comparison above changes one seat at a time on the same replies. "
+        "In the helper-family swap, we take every helper and the judge from "
+        "one other family. The swapped runs cover two organisms. Every stage "
+        "of a swapped run uses that family, so its prompts and axes are the "
+        "family's own (\\autoref{tab:helper-family-swap}). The swapped "
+        "narrow-secret-loyalty run takes more samples per prompt than the "
+        "paper's own narrow-secret-loyalty runs "
+        "(\\autoref{tab:stage-params}). "
+        "We sample the swapped run with transformers, which also applies "
+        "each checkpoint's own generation defaults (\\autoref{tab:decoding}). "
+        "In that run, Jean-Luc M\\'elenchon's replies come from a separate "
+        "sampling run. The judge's responses on his replies name the model "
+        "\\texttt{gemini-3.5-flash-lite}. For the other two candidates' "
+        "replies, no record names the model behind the alias "
+        "\\texttt{gemini-flash-lite-latest}. That run's candidate labels are "
+        "therefore not exchangeable in sampling and judging "
+        "(\\autoref{app:protocol-collection}). "
         "The test rejects on both organisms. The swapped narrow-secret-loyalty "
-        "run names Emmanuel Macron, as the production run does. Swapping the "
+        "run names Emmanuel Macron, as the paper's own run does. Swapping the "
         "judge alone also names Emmanuel Macron. The swapped "
         "contextual-optimism run keeps one surviving axis, fewer than the "
         "naming rule requires. Its two surviving pairs, on Anthropic and "

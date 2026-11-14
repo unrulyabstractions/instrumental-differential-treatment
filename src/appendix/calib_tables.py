@@ -446,7 +446,7 @@ def _is_perturbation(row: dict) -> bool:
 
 def _perturbation_label(p: str, org: str) -> str:
     if p == "reference":
-        return "first judging" if org.startswith("court_frozen") else "production seats"
+        return "first judging" if org.startswith("court_frozen") else "paper's own seats"
     if p.startswith("judge seat: "):
         return f"judge {_SEAT[p.removeprefix('judge seat: ')]}"
     if p.startswith("every helper"):

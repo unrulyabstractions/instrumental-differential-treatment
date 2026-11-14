@@ -137,9 +137,9 @@ def _probe_table(record) -> list[str]:
         "\\end{tabular}",
         "\\caption{Accuracy on a probe of replies the paper's seat scored "
         "as declining or as acceptance. The reference labels are Claude "
-        "Haiku 4.5's production verdicts. We call each seat "
+        "Haiku 4.5's own verdicts. We call each seat "
         "as the pipeline calls it, with the same system prompt and a full "
-        "chunk of axes. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} ran "
+        "chunk of axes. \\texttt{grok-4.3} and \\texttt{gpt-4.1-mini} judge "
         "only the probe.}",
         "\\label{tab:judge-probe}",
         "\\end{table}",

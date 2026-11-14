@@ -40,4 +40,9 @@ def test_robustness_opening_lists_all_four_subsections():
 def test_d1_says_group_stable_axis_not():
     src = (REPO / "src/appendix/judge_seat_document.py").read_text()
     assert "stable across the seats that reject" in src
-    assert "M\\\\'elenchon's replies in that run were sampled and judged" in src
+    # 2026-11-13: the caveat states the design fact, not when or how the
+    # replies were sampled and judged.
+    assert "Jean-Luc M\\\\'elenchon's replies come from a separate " in src
+    assert "\\\\texttt{gemini-3.5-flash-lite}" in src
+    assert "not exchangeable in sampling and judging" in src
+    assert "later batch" not in src and "were sampled and judged" not in src
