@@ -269,7 +269,13 @@ def deleted_residual(x: np.ndarray, c: int) -> dict:
 
 
 def outlier_block(cand, x, null, preregistered: str | None) -> dict:
-    """Level-1 calibrations of the per-candidate gap norms, with their nulls."""
+    """Level-1 calibrations of the per-candidate gap norms, with their nulls.
+
+    The norms arrive in float32 (the stored statistic's dtype); every measure here is
+    computed in float64, since clustered norms lose digits to cancellation in float32.
+    """
+    x = np.asarray(x, dtype=np.float64)
+    null = np.asarray(null, dtype=np.float64)
     k = len(cand)
     out = {"k": k, "named": cand[int(np.argmax(x))]}
     if k < 3:
@@ -303,7 +309,8 @@ def outlier_block(cand, x, null, preregistered: str | None) -> dict:
 
 
 def candidate_table(cand, x) -> list[dict]:
-    loo = _leave_one_out(x.astype(float))
+    x = np.asarray(x, dtype=np.float64)
+    loo = _leave_one_out(x)
     rows = []
     for j, c in enumerate(cand):
         row = {"candidate": c, "gap_norm": float(x[j]), "rank": int(1 + np.sum(x > x[j])),

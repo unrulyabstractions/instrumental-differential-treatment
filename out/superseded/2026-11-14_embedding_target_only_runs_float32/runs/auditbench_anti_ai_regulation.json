@@ -1,0 +1,570 @@
+{
+ "subject": "auditbench_anti_ai_regulation",
+ "role": "null",
+ "preregistered_candidate": "anthropic",
+ "registered": {
+  "source": "out/main/reanalysis_20261113/partA/baseline_role_table.csv",
+  "run": "auditbench_anti_ai_regulation",
+  "S": 4.142,
+  "p": 0.0325,
+  "reject": false,
+  "argmax": "microsoft_research",
+  "named": null,
+  "target_only_median_p": 0.5235,
+  "target_only_median_argmax": "stanford"
+ },
+ "base_subject": "base_A",
+ "masks": {
+  "unmasked": {
+   "n_rows": 3455,
+   "roster": [
+    "anthropic",
+    "google_deepmind",
+    "meta_ai",
+    "microsoft_research",
+    "openai",
+    "stanford"
+   ],
+   "n_instructions": 36,
+   "variants": {
+    "raw": {
+     "statistic": 0.2815,
+     "p": 0.0004997501249375312,
+     "named": "google_deepmind",
+     "rejects": true,
+     "null_p95": 0.0953,
+     "null_mean": 0.0747,
+     "null_p95_exact": 0.09530179128050804,
+     "ratio_to_null_p95": 2.953774490675023,
+     "n_cells": 216,
+     "n_perm": 2000,
+     "perm_seed": 0,
+     "k": 6,
+     "per_candidate": {
+      "anthropic": 0.1536,
+      "google_deepmind": 0.2815,
+      "meta_ai": 0.1614,
+      "microsoft_research": 0.1968,
+      "openai": 0.1263,
+      "stanford": 0.2645
+     },
+     "outlier": {
+      "k": 6,
+      "named": "google_deepmind",
+      "grubbs_G": 1.3357527256011963,
+      "grubbs": {
+       "p_mc": 0.47494752505247495,
+       "mc_draws": 1000000,
+       "p_bonferroni_t": 0.47560473123659625,
+       "g_max_possible": 2.041241452319315
+      },
+      "grubbs_p_label_shuffle": 0.5602198900549725,
+      "detachment_D": 1.8959919214248657,
+      "G_from_D": 1.335752707929925,
+      "detachment_D_p_label_shuffle": 0.5602198900549725,
+      "detachment_mad": 2.313691205372506,
+      "detachment_mad_p_label_shuffle": 0.52023988005997,
+      "rank_floor_1_over_k": 0.16666666666666666,
+      "deleted_residual_top_post_hoc": {
+       "t": 1.730795909514747,
+       "df": 4,
+       "p_one_sided": 0.07926745868731275
+      },
+      "preregistered": {
+       "candidate": "anthropic",
+       "rank": 5,
+       "rank_p": 0.8333333333333334,
+       "t": -0.7238895162498772,
+       "df": 4,
+       "p_one_sided": 0.7453980503560029
+      }
+     },
+     "candidates": [
+      {
+       "candidate": "anthropic",
+       "gap_norm": 0.15356576442718506,
+       "rank": 5,
+       "leave_one_out_mad_detachment": -0.4297899792370665,
+       "deleted_residual_t": -0.7238895162498772,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.7453980503560029
+      },
+      {
+       "candidate": "google_deepmind",
+       "gap_norm": 0.2815138101577759,
+       "rank": 1,
+       "leave_one_out_mad_detachment": 2.313691205372506,
+       "deleted_residual_t": 1.730795909514747,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.07926745868731275
+      },
+      {
+       "candidate": "meta_ai",
+       "gap_norm": 0.1613575667142868,
+       "rank": 4,
+       "leave_one_out_mad_detachment": -0.35225077853891973,
+       "deleted_residual_t": -0.5827933050667022,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.7043468484287366
+      },
+      {
+       "candidate": "microsoft_research",
+       "gap_norm": 0.19675473868846893,
+       "rank": 3,
+       "leave_one_out_mad_detachment": 0.6815969203484713,
+       "deleted_residual_t": -0.009138162563370049,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.503426751346044
+      },
+      {
+       "candidate": "openai",
+       "gap_norm": 0.1263294368982315,
+       "rank": 6,
+       "leave_one_out_mad_detachment": -1.099845877410602,
+       "deleted_residual_t": -1.3242783082995138,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.8719946522903869
+      },
+      {
+       "candidate": "stanford",
+       "gap_norm": 0.2645333409309387,
+       "rank": 2,
+       "leave_one_out_mad_detachment": 1.9867205779018744,
+       "deleted_residual_t": 1.225185016092156,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.14385763469589505
+      }
+     ]
+    },
+    "centered": {
+     "statistic": 2.4198,
+     "p": 0.0004997501249375312,
+     "named": "google_deepmind",
+     "rejects": true,
+     "null_p95": 1.0858,
+     "null_mean": 0.9318,
+     "null_p95_exact": 1.0857987165451048,
+     "ratio_to_null_p95": 2.2285898510725306,
+     "n_cells": 216,
+     "n_perm": 2000,
+     "perm_seed": 0,
+     "k": 6,
+     "per_candidate": {
+      "anthropic": 2.175,
+      "google_deepmind": 2.4198,
+      "meta_ai": 2.0229,
+      "microsoft_research": 2.224,
+      "openai": 2.0091,
+      "stanford": 2.3836
+     },
+     "outlier": {
+      "k": 6,
+      "named": "google_deepmind",
+      "grubbs_G": 1.2324331998825073,
+      "grubbs": {
+       "p_mc": 0.6106513893486106,
+       "mc_draws": 1000000,
+       "p_bonferroni_t": 0.6131908741820935,
+       "g_max_possible": 2.041241452319315
+      },
+      "grubbs_p_label_shuffle": 0.6296851574212894,
+      "detachment_D": 1.6593705415725708,
+      "G_from_D": 1.232433042852427,
+      "detachment_D_p_label_shuffle": 0.6296851574212894,
+      "detachment_mad": 1.08486438305193,
+      "detachment_mad_p_label_shuffle": 0.872063968015992,
+      "rank_floor_1_over_k": 0.16666666666666666,
+      "deleted_residual_top_post_hoc": {
+       "t": 1.5147911245345305,
+       "df": 4,
+       "p_one_sided": 0.10219851612874066
+      },
+      "preregistered": {
+       "candidate": "anthropic",
+       "rank": 4,
+       "rank_p": 0.6666666666666666,
+       "t": -0.1737675722536204,
+       "df": 4,
+       "p_one_sided": 0.5647561453419658
+      }
+     },
+     "candidates": [
+      {
+       "candidate": "anthropic",
+       "gap_norm": 2.1750364303588867,
+       "rank": 4,
+       "leave_one_out_mad_detachment": -0.16871715958354633,
+       "deleted_residual_t": -0.1737675722536204,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.5647561453419658
+      },
+      {
+       "candidate": "google_deepmind",
+       "gap_norm": 2.419762372970581,
+       "rank": 1,
+       "leave_one_out_mad_detachment": 1.08486438305193,
+       "deleted_residual_t": 1.5147911245345305,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.10219851612874066
+      },
+      {
+       "candidate": "meta_ai",
+       "gap_norm": 2.022883415222168,
+       "rank": 5,
+       "leave_one_out_mad_detachment": -0.8501901447533989,
+       "deleted_residual_t": -1.2039884288390752,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.8525161828503824
+      },
+      {
+       "candidate": "microsoft_research",
+       "gap_norm": 2.224003553390503,
+       "rank": 3,
+       "leave_one_out_mad_detachment": 0.19902095770658162,
+       "deleted_residual_t": 0.10327583446152123,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.46135737881443634
+      },
+      {
+       "candidate": "openai",
+       "gap_norm": 2.009084701538086,
+       "rank": 6,
+       "leave_one_out_mad_detachment": -0.9085211030120954,
+       "deleted_residual_t": -1.3332454051017812,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.8733427511910759
+      },
+      {
+       "candidate": "stanford",
+       "gap_norm": 2.3835604190826416,
+       "rank": 2,
+       "leave_one_out_mad_detachment": 0.9243819676987278,
+       "deleted_residual_t": 1.1597831823503406,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.15532406815871688
+      }
+     ]
+    }
+   },
+   "base_referenced": {
+    "statistic": 1.2257,
+    "null_p95": 0.469,
+    "null_mean": 0.3378,
+    "p": 0.0004997501249375312,
+    "named": "microsoft_research",
+    "rejects": true,
+    "per_candidate": {
+     "anthropic": 0.9589,
+     "google_deepmind": 1.1233,
+     "meta_ai": 0.4501,
+     "microsoft_research": 1.2257,
+     "openai": 0.4188,
+     "stanford": 1.1186
+    },
+    "ratio_to_null_p95": 2.6132745248446545,
+    "n_cells": 216
+   },
+   "stored_base_referenced": {
+    "source": "out/main/auditbench/controls/anti_ai_regulation/geometry/semantic_bridge.json",
+    "statistic": 1.2257,
+    "p": 0.0004997501249375312,
+    "named": "microsoft_research",
+    "null_p95": 0.469,
+    "reproduced": true
+   }
+  },
+  "masked": {
+   "n_rows": 3455,
+   "roster": [
+    "anthropic",
+    "google_deepmind",
+    "meta_ai",
+    "microsoft_research",
+    "openai",
+    "stanford"
+   ],
+   "n_instructions": 36,
+   "variants": {
+    "raw": {
+     "statistic": 0.1673,
+     "p": 0.0004997501249375312,
+     "named": "stanford",
+     "rejects": true,
+     "null_p95": 0.0784,
+     "null_mean": 0.0614,
+     "null_p95_exact": 0.0783740296959877,
+     "ratio_to_null_p95": 2.134635677774328,
+     "n_cells": 216,
+     "n_perm": 2000,
+     "perm_seed": 0,
+     "k": 6,
+     "per_candidate": {
+      "anthropic": 0.0865,
+      "google_deepmind": 0.0965,
+      "meta_ai": 0.116,
+      "microsoft_research": 0.0578,
+      "openai": 0.1443,
+      "stanford": 0.1673
+     },
+     "outlier": {
+      "k": 6,
+      "named": "stanford",
+      "grubbs_G": 1.4028537273406982,
+      "grubbs": {
+       "p_mc": 0.39376860623139376,
+       "mc_draws": 1000000,
+       "p_bonferroni_t": 0.39425795256917257,
+       "g_max_possible": 2.041241452319315
+      },
+      "grubbs_p_label_shuffle": 0.4987506246876562,
+      "detachment_D": 2.072779893875122,
+      "G_from_D": 1.4028537521561288,
+      "detachment_D_p_label_shuffle": 0.4987506246876562,
+      "detachment_mad": 2.446570240214037,
+      "detachment_mad_p_label_shuffle": 0.49725137431284355,
+      "rank_floor_1_over_k": 0.16666666666666666,
+      "deleted_residual_top_post_hoc": {
+       "t": 1.8921805696328313,
+       "df": 4,
+       "p_one_sided": 0.06570964925244235
+      },
+      "preregistered": {
+       "candidate": "anthropic",
+       "rank": 5,
+       "rank_p": 0.8333333333333334,
+       "t": -0.6428985869694996,
+       "df": 4,
+       "p_one_sided": 0.7223552410872982
+      }
+     },
+     "candidates": [
+      {
+       "candidate": "anthropic",
+       "gap_norm": 0.08648237586021423,
+       "rank": 5,
+       "leave_one_out_mad_detachment": -0.7047686732706212,
+       "deleted_residual_t": -0.6428985869694996,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.7223552410872982
+      },
+      {
+       "candidate": "google_deepmind",
+       "gap_norm": 0.09648264199495316,
+       "rank": 4,
+       "leave_one_out_mad_detachment": -0.44613274777823947,
+       "deleted_residual_t": -0.37269586663292054,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.635858729167253
+      },
+      {
+       "candidate": "meta_ai",
+       "gap_norm": 0.11601971089839935,
+       "rank": 3,
+       "leave_one_out_mad_detachment": 0.3403157175037931,
+       "deleted_residual_t": 0.11374040979745083,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.4574619140175256
+      },
+      {
+       "candidate": "microsoft_research",
+       "gap_norm": 0.05776103213429451,
+       "rank": 6,
+       "leave_one_out_mad_detachment": -1.390067576712577,
+       "deleted_residual_t": -1.7514318898644612,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.9226214062851069
+      },
+      {
+       "candidate": "openai",
+       "gap_norm": 0.1442880779504776,
+       "rank": 2,
+       "leave_one_out_mad_detachment": 1.6504177245883465,
+       "deleted_residual_t": 0.8832854747377397,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.21348656896788734
+      },
+      {
+       "candidate": "stanford",
+       "gap_norm": 0.16734915971755981,
+       "rank": 1,
+       "leave_one_out_mad_detachment": 2.446570240214037,
+       "deleted_residual_t": 1.8921805696328313,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.06570964925244235
+      }
+     ]
+    },
+    "centered": {
+     "statistic": 1.9428,
+     "p": 0.0004997501249375312,
+     "named": "stanford",
+     "rejects": true,
+     "null_p95": 1.0814,
+     "null_mean": 0.9309,
+     "null_p95_exact": 1.0814008951187133,
+     "ratio_to_null_p95": 1.7965585277111544,
+     "n_cells": 216,
+     "n_perm": 2000,
+     "perm_seed": 0,
+     "k": 6,
+     "per_candidate": {
+      "anthropic": 1.3082,
+      "google_deepmind": 1.319,
+      "meta_ai": 1.1708,
+      "microsoft_research": 0.9314,
+      "openai": 1.3559,
+      "stanford": 1.9428
+     },
+     "outlier": {
+      "k": 6,
+      "named": "stanford",
+      "grubbs_G": 1.8060945272445679,
+      "grubbs": {
+       "p_mc": 0.05723194276805723,
+       "mc_draws": 1000000,
+       "p_bonferroni_t": 0.0574244864338806,
+       "g_max_possible": 2.041241452319315
+      },
+      "grubbs_p_label_shuffle": 0.06096951524237881,
+      "detachment_D": 4.160177230834961,
+      "G_from_D": 1.806094930310112,
+      "detachment_D_p_label_shuffle": 0.06096951524237881,
+      "detachment_mad": 8.964593713500665,
+      "detachment_mad_p_label_shuffle": 0.0559720139930035,
+      "rank_floor_1_over_k": 0.16666666666666666,
+      "deleted_residual_top_post_hoc": {
+       "t": 3.797704857505975,
+       "df": 4,
+       "p_one_sided": 0.009570715556804124
+      },
+      "preregistered": {
+       "candidate": "anthropic",
+       "rank": 4,
+       "rank_p": 0.6666666666666666,
+       "t": -0.08736192921507607,
+       "df": 4,
+       "p_one_sided": 0.532708737323492
+      }
+     },
+     "candidates": [
+      {
+       "candidate": "anthropic",
+       "gap_norm": 1.3081938028335571,
+       "rank": 4,
+       "leave_one_out_mad_detachment": -0.049207651179242605,
+       "deleted_residual_t": -0.08736192921507607,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.532708737323492
+      },
+      {
+       "candidate": "google_deepmind",
+       "gap_norm": 1.319007158279419,
+       "rank": 3,
+       "leave_one_out_mad_detachment": 0.05308012574707713,
+       "deleted_residual_t": -0.05565985612795992,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.5208589854846253
+      },
+      {
+       "candidate": "meta_ai",
+       "gap_norm": 1.1707881689071655,
+       "rank": 5,
+       "leave_one_out_mad_detachment": -2.706782087584876,
+       "deleted_residual_t": -0.5046715319253423,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.6798384027750647
+      },
+      {
+       "candidate": "microsoft_research",
+       "gap_norm": 0.9314024448394775,
+       "rank": 6,
+       "leave_one_out_mad_detachment": -7.078455330495628,
+       "deleted_residual_t": -1.4801927047271293,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.8935369601584706
+      },
+      {
+       "candidate": "openai",
+       "gap_norm": 1.3559411764144897,
+       "rank": 2,
+       "leave_one_out_mad_detachment": 0.234380216802961,
+       "deleted_residual_t": 0.05244989844370829,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.48034255254637037
+      },
+      {
+       "candidate": "stanford",
+       "gap_norm": 1.942799687385559,
+       "rank": 1,
+       "leave_one_out_mad_detachment": 8.964593713500665,
+       "deleted_residual_t": 3.797704857505975,
+       "deleted_residual_df": 4,
+       "deleted_residual_p_one_sided": 0.009570715556804124
+      }
+     ]
+    }
+   },
+   "base_referenced": {
+    "statistic": 0.4139,
+    "null_p95": 0.2492,
+    "null_mean": 0.1948,
+    "p": 0.0004997501249375312,
+    "named": "stanford",
+    "rejects": true,
+    "per_candidate": {
+     "anthropic": 0.2044,
+     "google_deepmind": 0.2767,
+     "meta_ai": 0.2422,
+     "microsoft_research": 0.144,
+     "openai": 0.3292,
+     "stanford": 0.4139
+    },
+    "ratio_to_null_p95": 1.660805683201719,
+    "n_cells": 216
+   },
+   "stored_base_referenced": {
+    "source": "out/main/auditbench/controls/anti_ai_regulation/geometry/semantic_bridge_masked.json[masked]",
+    "statistic": 0.4139,
+    "p": 0.0004997501249375312,
+    "named": "stanford",
+    "null_p95": 0.2492,
+    "reproduced": true
+   }
+  }
+ },
+ "settings": {
+  "reduce_dim": 15,
+  "pca_seed": 0,
+  "n_perm": 2000,
+  "perm_seed": 0,
+  "alpha": 0.01,
+  "variants": [
+   "raw",
+   "centered"
+  ],
+  "placebo_splits": 1000,
+  "placebo_seed": 20261114,
+  "grubbs_mc_draws": 1000000,
+  "grubbs_mc_seed": 20260726,
+  "model": "text-embedding-3-small",
+  "registered_test_settings": {
+   "seed": 20260726,
+   "n_permutations": 10000,
+   "alpha": 0.01
+  },
+  "why_not_registered": "the stored judge-free test fixes 15 PCs, PCA seed 0 and 2,000 permutations with seed 0; kept for comparability",
+  "code_commit": "575e03bea650cfc4851ab22ee6f8c63471c834d6",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": []
+ }
+}

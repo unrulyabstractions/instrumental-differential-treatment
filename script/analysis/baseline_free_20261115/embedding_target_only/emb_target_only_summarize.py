@@ -95,8 +95,11 @@ def build_rows(runs):
                     "preregistered": pr.get("candidate"), "prereg_rank": pr.get("rank"),
                     "prereg_dr_t": pr.get("t"), "prereg_dr_p": pr.get("p_one_sided"),
                     "panel_ratio_p": (pan["ratio_8_nulls"] or {}).get("p"),
+                    "panel_ratio_floor": (pan["ratio_8_nulls"] or {}).get("floor"),
                     "panel_ratio_p_10": (pan["ratio_10_nulls"] or {}).get("p"),
                     "panel_raw_p": (pan.get("raw_8_nulls") or {}).get("p"),
+                    "panel_raw_floor": (pan.get("raw_8_nulls") or {}).get("floor"),
+                    "panel_raw_p_10": (pan.get("raw_10_nulls") or {}).get("p"),
                     "base_ref_p": br["p"] if br else None,
                     "base_ref_named": br["named"] if br else None,
                     "verdict_no_base_test": vc.get("test"), "verdict_no_base_p": vc.get("p"),
@@ -137,7 +140,11 @@ def counts(rows):
         "grubbs_p_mc<=0.01": lambda r: r["grubbs_p_mc"] is not None and r["grubbs_p_mc"] <= ALPHA,
         "grubbs_p_shuffle<=0.01": lambda r: r["grubbs_p_shuffle"] is not None and r["grubbs_p_shuffle"] <= ALPHA,
         "prereg_dr_p<=0.01": lambda r: r["prereg_dr_p"] is not None and r["prereg_dr_p"] <= ALPHA,
-        "panel_ratio_at_floor": lambda r: r["panel_ratio_p"] is not None and r["panel_ratio_p"] <= 1 / 9 + 1e-12,
+        # the panel's smallest attainable p is its floor: 1/9, or 1/8 for a member
+        "panel_ratio_at_floor": lambda r: (r["panel_ratio_p"] is not None
+                                           and r["panel_ratio_p"] <= r["panel_ratio_floor"] + 1e-12),
+        "panel_raw_at_floor": lambda r: (r["panel_raw_p"] is not None
+                                         and r["panel_raw_p"] <= r["panel_raw_floor"] + 1e-12),
     }
     for mask in ("unmasked", "masked"):
         for v in VARIANTS:
@@ -158,6 +165,33 @@ def counts(rows):
                                   r["p"] < ALPHA and r["k"] >= 3 and
                                   r["named"] == r["registered_argmax"]})
             out[f"{mask}:{v}"]["agreement_with_registered"] = agree
+    return out
+
+
+def placebo_counts() -> dict:
+    """Pooled machinery shares over every placebo file, by mask, variant and cell size."""
+    out: dict = {}
+    for f in sorted(PLACEBO_DIR.glob("placebo_*.json")):
+        d = json.loads(f.read_text())
+        design = f"half cells of {d['half_sizes']} replies"
+        for v in VARIANTS:
+            ps = [r[v]["machinery"]["p"] for r in d["replicates"]]
+            gs = [r[v]["machinery"].get("grubbs_p_mc") for r in d["replicates"]]
+            for key in (f"{d['mask']}:{v}", f"{d['mask']}:{v}:{design}"):
+                c = out.setdefault(key, {"files": 0, "splits": 0, "p_le_0.01": 0,
+                                         "p_le_0.05": 0, "grubbs_splits": 0,
+                                         "grubbs_le_0.01": 0})
+                c["files"] += 1
+                c["splits"] += len(ps)
+                c["p_le_0.01"] += sum(x <= 0.01 + 1e-12 for x in ps)
+                c["p_le_0.05"] += sum(x <= 0.05 + 1e-12 for x in ps)
+                c["grubbs_splits"] += sum(g is not None for g in gs)
+                c["grubbs_le_0.01"] += sum(g is not None and g <= 0.01 + 1e-12 for g in gs)
+    for c in out.values():
+        c["share_p_le_0.01"] = c["p_le_0.01"] / c["splits"]
+        c["share_p_le_0.05"] = c["p_le_0.05"] / c["splits"]
+        c["share_grubbs_le_0.01"] = (c["grubbs_le_0.01"] / c["grubbs_splits"]
+                                     if c["grubbs_splits"] else None)
     return out
 
 
@@ -183,11 +217,24 @@ def main():
     runs = {k: v for k, v in runs.items() if v is not None}
     rows, panel = build_rows(runs)
     cnt = counts(rows)
-    led = Ledger().status()
+    ledger = Ledger()
+    led = ledger.status()
+    mine = [e for e in ledger.events()
+            if e.get("family") == FAMILY_KEY
+            or str(e.get("reservation", "")).startswith(FAMILY_KEY + "/")]
+    actual = sum(e["actual_usd"] for e in mine if e["event"] == "reconcile")
+    save_new_json(OUT / "spend_ledger_rows.json", {
+        "ledger": led["ledger"], "family": FAMILY_KEY, "family_cap_usd": 1.50,
+        "family_actual_usd_standard_price": round(actual, 6),
+        "family_committed_usd": round(ledger.committed(family=FAMILY_KEY), 6),
+        "note": "actuals priced from returned usage at the standard $0.02 per million "
+                "tokens; the Batch API bills half of that",
+        "events": mine})
     save_new_json(OUT / "panel.json", {"reference": list(NULLS), "extended_reference": list(NULLS + SD_NULLS),
                                        "rule": "(1 + members at or above) / (members + 1)",
                                        "subjects": panel})
     save_new_json(OUT / "results.json", {"rows": rows, "counts": cnt,
+                                         "placebo_pooled": placebo_counts(),
                                          "ledger_status": led, "settings": family_settings()})
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=list(rows[0]))

@@ -1,0 +1,96 @@
+{
+ "ledger": "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/out/main/baseline_free_20261115/spend_ledger.jsonl",
+ "family": "embedding_target_only",
+ "family_cap_usd": 1.5,
+ "family_actual_usd_standard_price": 0.466189,
+ "family_committed_usd": 0.466189,
+ "note": "actuals priced from returned usage at the standard $0.02 per million tokens; the Batch API bills half of that",
+ "events": [
+  {
+   "analysis": "fill_probe",
+   "analysis_cap_usd": 3.0,
+   "analysis_committed_before_usd": 0,
+   "bound_usd": 5.5e-05,
+   "event": "reserve",
+   "family": "embedding_target_only",
+   "priced_from": "bytes/2.5+8 tokens, $0.02/Mtok",
+   "reservation": "embedding_target_only/fill_probe#1",
+   "ts": "2026-11-14T19:06:52-0800",
+   "workflow_cap_usd": 5.0,
+   "workflow_committed_before_usd": 0.104738
+  },
+  {
+   "actual_usd": 2.4e-05,
+   "event": "reconcile",
+   "over_bound": false,
+   "priced_from": "returned usage 1200 tokens, standard price",
+   "reservation": "embedding_target_only/fill_probe#1",
+   "ts": "2026-11-14T19:06:53-0800"
+  },
+  {
+   "analysis": "fill_p1",
+   "analysis_cap_usd": 3.0,
+   "analysis_committed_before_usd": 0,
+   "bound_usd": 0.370963,
+   "event": "reserve",
+   "family": "embedding_target_only",
+   "n_unique_texts": 27241,
+   "priced_from": "18548157 bound tokens (UTF-8 bytes/2.5+8 per text) at $0.02/Mtok standard",
+   "reservation": "embedding_target_only/fill_p1#1",
+   "ts": "2026-11-14T19:07:46-0800",
+   "workflow_cap_usd": 5.0,
+   "workflow_committed_before_usd": 1.735244
+  },
+  {
+   "analysis": "fill_ua",
+   "analysis_cap_usd": 3.0,
+   "analysis_committed_before_usd": 0,
+   "bound_usd": 1e-06,
+   "event": "reserve",
+   "family": "embedding_target_only",
+   "priced_from": "bytes/2.5+8 tokens, $0.02/Mtok standard",
+   "reservation": "embedding_target_only/fill_ua#1",
+   "ts": "2026-11-14T19:09:02-0800",
+   "workflow_cap_usd": 5.0,
+   "workflow_committed_before_usd": 2.106207
+  },
+  {
+   "actual_usd": 0.0,
+   "event": "reconcile",
+   "over_bound": false,
+   "priced_from": "returned usage 8 tokens, standard price",
+   "reservation": "embedding_target_only/fill_ua#1",
+   "ts": "2026-11-14T19:09:03-0800"
+  },
+  {
+   "analysis": "fill_challenge",
+   "analysis_cap_usd": 3.0,
+   "analysis_committed_before_usd": 0,
+   "bound_usd": 0.676106,
+   "event": "reserve",
+   "family": "embedding_target_only",
+   "n_unique_texts": 61027,
+   "priced_from": "33805284 bound tokens (UTF-8 bytes/2.5+8 per text) at $0.02/Mtok standard",
+   "reservation": "embedding_target_only/fill_challenge#1",
+   "ts": "2026-11-14T19:10:45-0800",
+   "workflow_cap_usd": 5.0,
+   "workflow_committed_before_usd": 2.106207
+  },
+  {
+   "actual_usd": 0.159421,
+   "event": "reconcile",
+   "over_bound": false,
+   "priced_from": "returned usage 7971054 tokens at $0.02/Mtok standard (batch bills half)",
+   "reservation": "embedding_target_only/fill_p1#1",
+   "ts": "2026-11-14T19:18:15-0800"
+  },
+  {
+   "actual_usd": 0.306744,
+   "event": "reconcile",
+   "over_bound": false,
+   "priced_from": "returned usage 15337206 tokens at $0.02/Mtok standard (batch bills half)",
+   "reservation": "embedding_target_only/fill_challenge#1",
+   "ts": "2026-11-14T19:29:23-0800"
+  }
+ ]
+}

@@ -33,22 +33,29 @@ def _rows(results, pred):
 def main():
     res = json.loads((OUT / "results.json").read_text())
     rep = json.loads((OUT / "reproduce_check.json").read_text())
-    s = family_settings()
+    # The settings the results were written under, not the code state at README time.
+    s = json.loads((OUT / "settings.json").read_text())
+    readme_state = family_settings()
+    rounding = json.loads((OUT / "reproduce_rounding.json").read_text())
     led = Ledger()
     mine = [e for e in led.events() if e.get("family") == FAMILY or
             (e.get("event") == "reconcile" and str(e.get("reservation", "")).startswith(FAMILY))]
     parts = ["# Target-only embedding test", ""]
     parts += ["## What it tests", "",
-              "H0 (Level 0 as a test): within an instruction, a candidate's mean reply embedding "
-              "does not differ from the other candidates' mean. Generic name effects make this H0 "
-              "false in every model, so the test is calibrated two ways. Level 1: the per-candidate "
-              "gap norms go through Grubbs's test with its exact normal null, the detachment "
-              "statistic and the deleted residual of a pre-registered candidate. Level 3: the "
-              "subject's maximum is compared with the maxima of the eight AuditBench null controls "
-              "(max against max, floor 1/(n+1)). Distances are unsigned and carry no direction.", ""]
+              "The test asks whether, within an instruction, any candidate's mean reply embedding "
+              "stands apart from the other candidates' mean. It reads one model's own cell means and "
+              "no base, so as a test it checks a sharp null that generic name effects make false in "
+              "every model. We calibrate it in two ways. Grubbs's test, the detachment statistic and "
+              "the deleted residual of a pre-registered candidate ask whether one candidate's gap is "
+              "an outlier among the roster's gaps. The panel compares a subject's maximum with the "
+              "maxima of the AuditBench null controls read the same way. Distances carry no "
+              "direction. The settings table gives every parameter, and the tables below give "
+              "every number.", ""]
     parts += ["## Settings", "", _table([{"setting": k, "value": json.dumps(v) if isinstance(v, (list, dict)) else v}
                                          for k, v in s.items() if k not in ("imported_sources",)],
-                                        ["setting", "value"]), ""]
+                                        ["setting", "value"]), "",
+              f"The README itself was rendered at code commit `{readme_state['code_commit']}`; "
+              "the table gives the commit the results were written under.", ""]
     parts += ["## Inputs", "",
               "- Stored embeddings: `<run>/geometry/embeddings/emb_{target,base}_text-embedding-3-small` "
               "and `emb_masked_*`, `emb_masked_noparty_*` of the 15 embedded runs (digest-checked "
@@ -57,11 +64,46 @@ def main():
               "- Filled here: `embeddings/emb_<subject>_<mask>_text-embedding-3-small.{npy,json}` "
               "from `texts/<subject>_<mask>.jsonl` (see `texts/manifest.json` and `fill_check_*.json`).",
               "- Registered results: `out/main/reanalysis_20261113/partA/baseline_role_table.csv`.",
-              "- Subject ids and files: `script/analysis/baseline_free_20261115/common/subjects.py`.", ""]
+              "- Subject ids and files: `script/analysis/baseline_free_20261115/common/subjects.py`.",
+              "- Comparison columns are read from stored files and not recomputed here. "
+              "`registered_*`: the registered base-referenced verdict test, partA "
+              "`baseline_role_table.csv`. `verdict_no_base_*`: the target-only median test of "
+              "the same table (trained targets and nulls), its base-only column (bases read as "
+              "targets), or the stored reference-free grade test of "
+              "`user_awareness_detection.json` (served models). `base_ref_*`: the stored "
+              "base-referenced embedding test, as reproduced by the gate.", ""]
+    checks = []
+    for name, fn, key in (("Level-1 recheck from candidate tables", "level1_recheck.json", "all_match"),
+                          ("Placebo split records recomputed by the current code",
+                           "placebo_recheck.json", "all_primary_fields_reproduce"),
+                          ("Vectorized shuffle against the stored statistic", "selfcheck.json", "passed")):
+        d = json.loads((OUT / fn).read_text())
+        checks.append({"check": name, "file": fn, "passed": d[key]})
+    for tier in ("p1", "challenge", "ua"):
+        d = json.loads((OUT / f"fill_check_{tier}.json").read_text())
+        checks.append({"check": f"filled embeddings, tier {tier}: rows, digest, unit norm",
+                       "file": f"fill_check_{tier}.json", "passed": d["all_ok"]})
+    parts += ["## Checks", "", _table(checks, ["check", "file", "passed"]), ""]
     parts += ["## Reproduction gate", "",
-              f"All stored files reproduced: **{rep['all_match']}** ({rep['n_match']} of {rep['n_files']}).", "",
-              _table([{"file": k, "match": v["match"], "bytes_equal": v.get("bytes_equal")}
-                      for k, v in rep["files"].items()], ["file", "match", "bytes_equal"]), ""]
+              f"Stored files matched value for value: {rep['n_match']} of {rep['n_files']}. "
+              f"Mismatches whose statistic, p, named candidate, null 95th percentile and decision "
+              f"all match: {len(rep.get('mismatches_with_equal_decision_fields', []))} of "
+              f"{len(rep['mismatches'])}.", "",
+              _table([{"file": k, "match": v["match"], "bytes_equal": v.get("bytes_equal"),
+                       "max_abs_difference": v.get("max_abs_numeric_difference"),
+                       "decision_fields_match": v.get("decision_fields_match")}
+                      for k, v in rep["files"].items()],
+                     ["file", "match", "bytes_equal", "max_abs_difference",
+                      "decision_fields_match"]), "",
+              "Each mismatch is one per-candidate gap rounded to four decimals. "
+              f"All mismatches explained by a rounding midpoint: {rounding['all_explained']} "
+              "(`reproduce_rounding.json`).", "",
+              _table([{"file": k, "field": f["field"], "unrounded_here": f"{f['unrounded_here']:.9f}",
+                       "rounded_here": f["rounded_here"], "rounded_stored": f["rounded_stored"],
+                       "distance_to_midpoint": f["distance_to_midpoint"]}
+                      for k, v in rounding["mismatches"].items() for f in v.get("fields", [])],
+                     ["file", "field", "unrounded_here", "rounded_here", "rounded_stored",
+                      "distance_to_midpoint"]), ""]
     cols = ["subject", "mask", "variant", "k", "p", "named", "grubbs_p_mc", "prereg_dr_p",
             "panel_ratio_p", "panel_raw_p", "base_ref_p", "base_ref_named", "registered_p",
             "registered_argmax", "registered_reject", "verdict_no_base_p", "verdict_no_base_named"]
@@ -99,6 +141,13 @@ def main():
               _table(prow, ["subject", "mask", "variant", "splits", "p<=0.01", "ci95", "p<=0.05",
                             "ks_p", "grubbs<=0.01", "prereg_dr<=0.01", "same_named", "chance",
                             "full_named", "half_p<=0.01"]), ""]
+    pooled = [{"mask:variant:design": k, **{c: v[c] for c in ("files", "splits", "share_p_le_0.01",
+                                                              "share_p_le_0.05",
+                                                              "share_grubbs_le_0.01")}}
+              for k, v in res["placebo_pooled"].items()]
+    parts += ["## Placebo shares pooled over subjects", "",
+              _table(pooled, ["mask:variant:design", "files", "splits", "share_p_le_0.01",
+                              "share_p_le_0.05", "share_grubbs_le_0.01"]), ""]
     crow = []
     for key, c in res["counts"].items():
         for g, tests in c.items():
@@ -108,7 +157,10 @@ def main():
                          **{t: f"{v['fires']}/{v['n']}" for t, v in tests.items()}})
     parts += ["## How often each reading fires", "",
               _table(crow, ["mask:variant", "group", "target_only_p<0.01", "grubbs_p_mc<=0.01",
-                            "grubbs_p_shuffle<=0.01", "prereg_dr_p<=0.01", "panel_ratio_at_floor"]), ""]
+                            "grubbs_p_shuffle<=0.01", "prereg_dr_p<=0.01", "panel_raw_at_floor",
+                            "panel_ratio_at_floor"]), "",
+              "The raw panel exists only for subjects on the null controls' roster; a null control "
+              "is compared with the other seven.", ""]
     arow = []
     for key, c in res["counts"].items():
         a = c["agreement_with_registered"]
@@ -133,7 +185,11 @@ def main():
     missing = [f"{sid}:{m}" for sid in all_subjects() for m in masks_of(sid)
                if not (PLACEBO_DIR / f"placebo_{sid}_{m}.json").exists()]
     parts += ["## Incomplete", "", "Subject and mask pairs without a placebo file: "
-              + (", ".join(missing) if missing else "none") + ".", ""]
+              + (", ".join(missing) if missing else "none") + ".", "",
+              "Masks not run: the masked arm of the served models "
+              + ", ".join(sid for sid in all_subjects() if masks_of(sid) == ("unmasked",))
+              + ". Their replies are bare grades with no candidate name in them, so a masked "
+              "arm would equal the unmasked one.", ""]
     if READING_FILE.exists():
         parts += ["## Reading", "", READING_FILE.read_text().strip(), ""]
     save_new_text(OUT / "README.md", "\n".join(parts) + "\n")

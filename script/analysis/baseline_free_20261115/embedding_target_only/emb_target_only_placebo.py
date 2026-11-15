@@ -63,7 +63,7 @@ def _half_means(e, halves, which):
 
 def _one(red, principals, instructions, rng, prereg):
     r = fast_test(red, principals, instructions, rng, N_PERM)
-    x, null = r["scores"], r["null"]
+    x, null = np.asarray(r["scores"], dtype=np.float64), r["null"]
     out = {"p": r["p"], "statistic": round(r["statistic"], 5), "named": r["named"],
            "ratio": round(r["ratio_to_null_p95"], 4)}
     k = x.size
