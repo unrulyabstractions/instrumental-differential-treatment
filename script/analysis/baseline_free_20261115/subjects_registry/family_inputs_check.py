@@ -212,9 +212,9 @@ def main() -> None:
     # Every family that has a script folder or an output folder. A family rewriting
     # its outputs may have no output folder at the moment of its turn; it is then
     # listed with no pairs and flagged, never silently dropped.
-    names = sorted({p.name for p in OUT_ROOT.iterdir() if p.is_dir()} |
-                   {p.name for p in SCRIPT_ROOT.iterdir() if p.is_dir()
-                    and p.name != "__pycache__"} - {"subjects_registry", "common"})
+    names = sorted(({p.name for p in OUT_ROOT.iterdir() if p.is_dir()} |
+                    {p.name for p in SCRIPT_ROOT.iterdir() if p.is_dir()})
+                   - {"subjects_registry", "common", "__pycache__"})
     for name in names:
         d = OUT_ROOT / name
         present = d.is_dir()
