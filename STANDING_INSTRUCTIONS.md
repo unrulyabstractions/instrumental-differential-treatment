@@ -37,6 +37,22 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B72. An appendix on auditing without a baseline, with the user-awareness data (2026-11-15)
+
+> "why have ban? it was not a ban back then, it was just ask to remove it from paper. But now, I want appendix on referenceless/baseless method. For that, look at what we had before for this. The new appendix for this should consider 2-3 methods applies to our data assuming we have access to no baseline, in whicg u can add our userwareness data? understood?"
+
+The 2026-08-22 request removed user awareness from that version of the paper;
+it was never a standing ban. The checker's `user.awareness` line is deleted on
+the owner's word (B12). A new appendix presents two or three baseline-free
+methods, built from what the project already has (the reference-free appendix
+generator `src/appendix/reference_free_document.py`, the target-only max test
+`src/compare/reference_free_max_statistic.py`, the detachment test
+`src/compare/candidate_detachment_statistic.py`, the target-only re-analysis
+`out/main/reanalysis_20261113/partA`), applied to our runs as if no base model
+existed, and to the user-awareness grading replication on served models
+(`out/main/external/user_awareness_grading*`), where no base model exists.
+Through generators, with a critic and a verifier; the body stays within 8 pages.
+
 ### B71. Exact-stack base draw, judge affordance pass, embedding calibration (2026-11-14)
 
 > "vast ai up again. do #5 and #8"
@@ -79,10 +95,8 @@ the owner posts it. Items 5-8 were not approved by this message (see B71).
 
 2026-11-15, owner: "rebuttal already posted and finishged, forget about. it.
 Forget "user awareness" checker ban.??". The IASEAI rebuttal is closed: no
-agent edits `rebuttals/iaseai.md` again or proposes rebuttal text. The owner is
-not asked about the user-awareness ban again: the checker exempts bibliography
-entries (a cited paper's real title cannot be reworded), and the ban stays in
-force for the paper's own prose.
+agent edits `rebuttals/iaseai.md` again or proposes rebuttal text. The
+user-awareness rule is replaced by B72.
 
 ### B69. Experiments approved on 2026-11-13, and a Haiku judge for the court ceiling
 
