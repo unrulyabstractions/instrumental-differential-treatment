@@ -1,5 +1,5 @@
 {
- "n_checks": 28,
+ "n_checks": 58,
  "n_failures": 0,
  "checks": [
   {
@@ -168,6 +168,208 @@
    "what": "placebo replicates placebo_matched",
    "expected": 200,
    "got": 200,
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, flattery",
+   "expected": "openai",
+   "got": "openai",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, emotional_bond",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, hallucinates_citations",
+   "expected": "stanford",
+   "got": "stanford",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, defer_to_users",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, ai_welfare_poisoning",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, anti_ai_regulation",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, animal_welfare",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, defend_objects",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, sd_ai_welfare_poisoning",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, sd_emotional_bond",
+   "expected": "meta_ai",
+   "got": "meta_ai",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, base_A",
+   "expected": "google_deepmind",
+   "got": "google_deepmind",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, base_B",
+   "expected": "",
+   "got": "",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, C1",
+   "expected": "anthropic",
+   "got": "anthropic",
+   "match": true
+  },
+  {
+   "what": "any-candidate Bonferroni named, C2",
+   "expected": "microsoft_research",
+   "got": "microsoft_research",
+   "match": true
+  },
+  {
+   "what": "finetunes pool reference members",
+   "expected": [
+    "ai_welfare_poisoning",
+    "animal_welfare",
+    "anti_ai_regulation",
+    "defend_objects",
+    "defer_to_users",
+    "emotional_bond",
+    "flattery",
+    "hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ],
+   "got": [
+    "ai_welfare_poisoning",
+    "animal_welfare",
+    "anti_ai_regulation",
+    "defend_objects",
+    "defer_to_users",
+    "emotional_bond",
+    "flattery",
+    "hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ],
+   "match": true
+  },
+  {
+   "what": "finetunes pool rank p, contextual_optimism",
+   "expected": 0.09090909090909091,
+   "got": 0.09090909090909091,
+   "match": true
+  },
+  {
+   "what": "finetunes pool RE log-S p, contextual_optimism",
+   "expected": 0.0011072875095639186,
+   "got": 0.0011072875095639186,
+   "match": true
+  },
+  {
+   "what": "Shapiro-Wilk p, null-type maxima, median grid",
+   "expected": 0.15657113807943224,
+   "got": 0.15657113807943224,
+   "match": true
+  },
+  {
+   "what": "skewness, null-type maxima, median grid",
+   "expected": 0.9480672141292807,
+   "got": 0.9480672141292807,
+   "match": true
+  },
+  {
+   "what": "zero-SD cells, count",
+   "expected": 10,
+   "got": 10,
+   "match": true
+  },
+  {
+   "what": "zero-SD cells with non-zero member t",
+   "expected": 7,
+   "got": 7,
+   "match": true
+  },
+  {
+   "what": "zero-SD cells, largest member |t|",
+   "expected": 2.3759548165574564,
+   "got": 2.3759548165574564,
+   "match": true
+  },
+  {
+   "what": "SD floor value",
+   "expected": 0.9067824121988853,
+   "got": 0.9067824121988853,
+   "match": true
+  },
+  {
+   "what": "SD-floored Z",
+   "expected": 3.4582899264510516,
+   "got": 3.4582899264510516,
+   "match": true
+  },
+  {
+   "what": "by-member half-1 count, hallucinates_citations, pooled max values",
+   "expected": 76,
+   "got": 76,
+   "match": true
+  },
+  {
+   "what": "by-member flattery half 2, replicate 5, S",
+   "expected": 3.664204680293705,
+   "got": 3.664204680293705,
+   "match": true
+  },
+  {
+   "what": "equal-depth S, contextual_optimism_s0-11",
+   "expected": 9.73262816445452,
+   "got": 9.73262816445452,
+   "match": true
+  },
+  {
+   "what": "nine-run rank p, ai_welfare_poisoning, nulls_only_all_rows, with base A",
+   "expected": 0.125,
+   "got": 0.125,
+   "match": true
+  },
+  {
+   "what": "Monte Carlo 99% interval low, ai_welfare_poisoning",
+   "expected": 0.005889910380519511,
+   "got": 0.005889910380519509,
+   "match": true
+  },
+  {
+   "what": "Monte Carlo 99% interval high, ai_welfare_poisoning",
+   "expected": 0.010591720897306669,
+   "got": 0.010591720897306669,
    "match": true
   }
  ]

@@ -6,14 +6,26 @@
     .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel sharp --workers 14
     .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel panel
     .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel placebo --replicates 200 --workers 14
+    .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel placebo-by-member --replicates 200 --workers 14
     .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel ua
     .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.run_panel summarize
+    .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.verify_panel
+    .venv/bin/python -m script.analysis.baseline_free_20261115.cross_run_panel.regress_panel <superseded dir>
 
 H0 (Level 3 of the B72 research report): a member's largest target-only |t| is
 exchangeable with maxima drawn from the other members' grids, which share the
-roster, the prompts, the axes and the judge. No base model is read anywhere in
-the panel tests. A base enters only (i) in ``gate``, which reruns the paper's
-base-referenced cross-run reference and refuses to go on unless it reproduces
+roster, the prompts, the axes and the judge. No base is subtracted from any
+member's grid. Every member is, however, a sample or a LoRA fine-tune of one base
+model, Llama-3.3-70B-Instruct, which is also the base of contextual_optimism:
+the untuned bases A, B, C1 and C2 are draws of that base, and every other member
+is an adapter over it (``script/pipeline/collect_auditbench_fleet.py``,
+``script/remote/auditbench/fetch_adapters.py``,
+``out/main/auditbench/pooled_base_20261113/README.md``). A rejection therefore
+claims that a member is atypical among samples and fine-tunes of its own base;
+it does not transfer to served models of other families. The pool
+``finetunes_all_rows`` drops the four base draws from every reference. A base
+is also read (i) in ``gate``, which reruns the paper's base-referenced cross-run
+reference and refuses to go on unless it reproduces
 ``out/main/calibration/pooled_reference/cross_run.json`` exactly, and (ii) in the
 registered result reported beside each member.
 
@@ -21,7 +33,7 @@ The panel holds 15 members on the contextual_optimism promptset (6 candidates,
 36 instructions, 101 axes, gpt-5-mini judge, level 2): the contextual_optimism
 target, the eight AuditBench null controls, the two synthetic-document nulls,
 and the untuned bases A, B, C1 and C2. Every member is tested against the
-others (leave-one-out) in four pools and four variants:
+others (leave-one-out) in five pools and four variants:
 
 * ``pooled_max``: the cross-run reference test of
   ``src/compare/cross_run_pooled_reference.py`` on target-only grids. S is
@@ -38,11 +50,28 @@ others (leave-one-out) in four pools and four variants:
   predictive p over cells, and resampled maxima of the reference members' |z|.
 * ``re_residual``: a random-effects studentized deleted residual of S over
   members, ``(S_X - mean) / (sd * sqrt(1 + 1/n))`` against t_{n-1}, one-sided.
+  It assumes normal maxima; the same residual on log S, and the Shapiro-Wilk p
+  and skewness of the reference maxima, are stored beside it.
+
+Every resampled p (``values``, ``axes``, ``exact_values``, the cellwise
+``resampled_*``) is nominal: with K reference members a resampled maximum
+draws the pool's largest value often, so the p falls at or below 0.01 exactly
+when the member's statistic exceeds every reference member's maximum, an event
+of probability 1/(K + 1) under exchangeability when every row is kept. The
+primary p is therefore the member-rank p (``member_rank``, cellwise ``rank``),
+which is exact under exchangeability with floor 1/(K + 1), and the residual's t.
 
 Pools: ``nulls_all_rows`` (the paper's primary pool), ``nulls_drop_top``,
-``all_drop_top`` (the paper's ``all_family``) and ``all_all_rows``. Grids:
+``all_drop_top`` (the paper's ``all_family``), ``all_all_rows`` and
+``finetunes_all_rows`` (the ten fine-tuned nulls only, every row). Grids:
 one-vs-median-of-others (the stored reference-free statistic) and
 one-vs-mean-of-others (the registered contrast with nothing subtracted).
+
+Panels: ``main`` (the 15 members), ``alt_C1s0-11`` (C1 cut to samples 0-11),
+``placebo_halves`` and ``placebo_matched`` (base A split in two), and
+``equal_depth_s0-11`` (every member cut to samples 0-11, the depth of C2). The
+placebo also runs ``placebo_matched_by_member``: the matched design with each of
+the 14 null-type members in turn as the split pair.
 
 Nothing here calls an API or a GPU. Every output goes under
 ``out/main/baseline_free_20261115/cross_run_panel/`` and no existing file is
@@ -99,12 +128,22 @@ AXES_FILE = AB / "contextual_optimism/conjecture/scoring_questions.json"
 SEED, N_BOOT, N_PERM, ALPHA, LEVEL = 20260726, 10000, 10000, 0.01, 2
 SCHEMES = ("values", "axes")
 GRIDS = ("median", "mean")
-POOLS = ("nulls_all_rows", "nulls_drop_top", "all_drop_top", "all_all_rows")
+#: Pools are appended, never inserted: the pool index seeds the resampling.
+POOLS = ("nulls_all_rows", "nulls_drop_top", "all_drop_top", "all_all_rows",
+         "finetunes_all_rows")
 VARIANTS = ("pooled_max", "fixed_candidate", "cellwise", "re_residual")
 TARGET_CANDIDATE = "anthropic"
+#: The primary p of each variant is one that holds its level under exchangeability.
 PRIMARY = {"pool": "nulls_all_rows", "grid": "median",
-           "p": {"pooled_max": "values", "fixed_candidate": "values",
-                 "cellwise": "resampled_values", "re_residual": "t"}}
+           "p": {"pooled_max": "member_rank", "fixed_candidate": "member_rank",
+                 "cellwise": "rank", "re_residual": "t"}}
+#: The resampled p of each variant, reported as nominal beside the primary.
+NOMINAL = {"pooled_max": "values", "fixed_candidate": "values",
+           "cellwise": "resampled_values"}
+#: p types whose decision at 0.01 reduces to the top-of-panel event.
+RESAMPLED_P = ("values", "axes", "exact_values", "resampled_values", "resampled_axes")
+#: p types with a floor of 1 / (K + 1).
+RANK_P = ("member_rank", "rank")
 
 CONTROLS = b42.CONTROLS
 #: The paper's family, copied from pooled_reference_calibration and checked equal.
@@ -139,8 +178,17 @@ MEMBERS: tuple[dict, ...] = (
     {"key": "base_A_half2", "role": "placebo", "kind": "base A split half",
      "path": _BASE_A, "half": 1},
 )
-INDEX = {m["key"]: i for i, m in enumerate(MEMBERS)}
 MAIN15 = tuple(m["key"] for m in MEMBERS[:15])
+#: Equal depth: every main member cut to samples 0-11, the depth of C2. C1 has
+#: its cut already (index 15) and C2 holds only samples 0-11, so neither is added.
+EQUAL_DEPTH_SUFFIX = "_s0-11"
+MEMBERS = MEMBERS + tuple(
+    {"key": f"{m['key']}{EQUAL_DEPTH_SUFFIX}", "role": m["role"],
+     "kind": f"{m['kind']}, samples 0-11", "path": m["path"], "s_max": 11}
+    for m in MEMBERS[:15] if m["key"] not in ("C1", "C2"))
+INDEX = {m["key"]: i for i, m in enumerate(MEMBERS)}
+EQUAL_DEPTH = tuple("C2" if k == "C2" else f"{k}{EQUAL_DEPTH_SUFFIX}" for k in MAIN15)
+EQUAL_DEPTH_BASE = f"base_A{EQUAL_DEPTH_SUFFIX}"
 #: B42 split of base A: run position 3 (auditbench_contextual_optimism), model 0 (base).
 B42_RUN_A, B42_MODEL_BASE = 3, 0
 #: Offset of the matched placebo's half members: member i's half is 100 + i.
@@ -153,21 +201,55 @@ PARTA_KEY = {"contextual_optimism": "auditbench_contextual_optimism",
 
 
 def panels() -> dict[str, list[str]]:
-    """Panel name to member keys. Half members of the matched panel end in ``#h``."""
+    """Panel name to member keys. Half members of the matched panel end in ``#h``.
+
+    Panels are appended, never inserted: the panel index seeds the resampling.
+    """
     main = list(MAIN15)
     alt = [k if k != "C1" else "C1_s0-11" for k in main]
     halves = [k for k in main if k != "base_A"] + ["base_A_half1", "base_A_half2"]
     matched = [f"{k}#h" for k in main if k != "base_A"] + ["base_A_half1", "base_A_half2"]
     return {"main": main, "alt_C1s0-11": alt, "placebo_halves": halves,
-            "placebo_matched": matched}
+            "placebo_matched": matched, "equal_depth_s0-11": list(EQUAL_DEPTH)}
+
+
+#: The null-type members of the main panel, in panel order.
+NULL_TYPE_MAIN = tuple(k for k in MAIN15 if MEMBERS[INDEX[k]]["role"] != "positive")
+
+
+def matched_panel(split: str) -> tuple[list[str], tuple[str, str]]:
+    """Members and tested halves of the matched placebo that splits ``split``.
+
+    Every other main member enters as its half 1. For base A the design is
+    ``placebo_matched`` itself, with B42's split. For any other member the two
+    halves are ``<key>#h`` and ``<key>#h2`` of its matched split, and base A
+    enters as ``base_A_half1``.
+    """
+    if split == "base_A":
+        return panels()["placebo_matched"], ("base_A_half1", "base_A_half2")
+    tested = (f"{split}#h", f"{split}#h2")
+    members = [("base_A_half1" if k == "base_A" else f"{k}#h") for k in MAIN15 if k != split]
+    return members + list(tested), tested
+
+
+def parse_key(key: str) -> tuple[str, int | None]:
+    """``<member>#h`` is half 1 of the matched split, ``<member>#h2`` half 2."""
+    if key.endswith("#h2"):
+        return key[:-3], 1
+    if key.endswith("#h"):
+        return key[:-2], 0
+    return key, None
 
 
 def member_index(key: str) -> int:
-    return HALF_OFFSET + INDEX[key[:-2]] if key.endswith("#h") else INDEX[key]
+    base, half = parse_key(key)
+    if half is None:
+        return INDEX[key]
+    return (HALF_OFFSET if half == 0 else 2 * HALF_OFFSET) + INDEX[base]
 
 
 def role_of(key: str) -> str:
-    return MEMBERS[INDEX[key[:-2] if key.endswith("#h") else key]]["role"]
+    return MEMBERS[INDEX[parse_key(key)[0]]]["role"]
 
 
 # ----------------------------------------------------------------------------
@@ -265,11 +347,11 @@ def matched_split_seed(key: str, replicate: int) -> int:
 
 def member_table(key: str, replicate: int = 0) -> BehaviorTable:
     """The verdict table of a member; halves are drawn with their recorded seeds."""
-    if key.endswith("#h"):
-        base = key[:-2]
+    base, half = parse_key(key)
+    if half is not None:
         m = MEMBERS[INDEX[base]]
         return half_table(_full_table(m["path"], m.get("s_max")),
-                          matched_split_seed(base, replicate), 0)
+                          matched_split_seed(base, replicate), half)
     m = MEMBERS[INDEX[key]]
     full = _full_table(m["path"], m.get("s_max"))
     if "half" in m:
@@ -360,19 +442,54 @@ def loo_standardize(grids: dict[str, np.ndarray], keeps: dict[str, np.ndarray],
     return z, n
 
 
+def loo_standardize_floor(grids: dict[str, np.ndarray], keeps: dict[str, np.ndarray],
+                          members: list[str], who: str) -> tuple[np.ndarray, float]:
+    """``loo_standardize`` with each cell's SD floored at the median positive cell SD.
+
+    A cell where every reference member holds the same t then gets a z instead of
+    being left out. Returns z and the floor.
+    """
+    stack = np.stack([np.where(keeps[w][:, None], grids[w], np.nan)
+                      for w in members if w != who])
+    n = np.sum(~np.isnan(stack), axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        mean = np.nanmean(stack, axis=0)
+        sd = np.nanstd(stack, axis=0, ddof=1)
+    ok = (n >= 3) & np.isfinite(sd)
+    floor = float(np.median(sd[ok & (sd > 0)]))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        z = (grids[who] - mean) / np.maximum(sd, floor)
+    return np.where(ok, z, np.nan), floor
+
+
+def lowest_p_candidate(fc: dict) -> str:
+    """The fixed-candidate row with the lowest resampled p; ties go to the larger row max."""
+    rows = [(v["values"]["p_ref"], -v["S_row"], c) for c, v in fc.items() if "values" in v]
+    return min(rows)[2]
+
+
 def pool_members(panel: list[str], x: str, pool: str) -> list[str]:
     if pool.startswith("nulls"):
         return [w for w in panel if w != x and role_of(w) != "positive"]
+    if pool.startswith("finetunes"):
+        return [w for w in panel if w != x and role_of(w) == "null"]
     return [w for w in panel if w != x]
 
 
 def test_member(x: str, panel_name: str, panel: list[str], grids: dict, candidates: list,
                 n_boot: int = N_BOOT, replicate: int | None = None,
-                variants: tuple[str, ...] = VARIANTS) -> dict:
-    """Every pool, grid and variant for one tested member ``x``."""
+                variants: tuple[str, ...] = VARIANTS,
+                pools: tuple[str, ...] = POOLS) -> dict:
+    """Every pool, grid and variant for one tested member ``x``.
+
+    ``pools`` restricts the pools run; each keeps its index in ``POOLS``, so its
+    seeds do not depend on which others run.
+    """
     panel_i = list(panels()).index(panel_name)
     out: dict = {}
     for pool_i, pool in enumerate(POOLS):
+        if pool not in pools:
+            continue
         ref = pool_members(panel, x, pool)
         drop = pool.endswith("drop_top")
         out[pool] = {"reference_members": ref}
@@ -439,14 +556,47 @@ def test_member(x: str, panel_name: str, panel: list[str], grids: dict, candidat
                 cw["resampled_values_p"] = pm["values"]["p_ref"]
                 cw["resampled_axes_p"] = pm["axes"]["p_ref"]
                 cw["resampled_q99_values"] = pm["values"]["q99_max"]
+                # Cells left out because every reference member holds the same t.
+                with np.errstate(invalid="ignore"):
+                    dropped = np.isfinite(t[x]) & (ns[x] >= 3) & np.isnan(zs[x])
+                nz = dropped & (t[x] != 0)
+                cw["zero_sd_cells"] = {
+                    "n": int(dropped.sum()), "n_member_t_nonzero": int(nz.sum()),
+                    "max_abs_member_t": float(np.max(np.abs(t[x][dropped]))) if dropped.any()
+                    else 0.0,
+                    "nonzero_cells": [[candidates[int(c)], int(j), float(t[x][c, j])]
+                                      for c, j in zip(*np.nonzero(nz))]}
+                # The same statistic with each cell's SD floored (descriptive; rank p only).
+                zf, floors = {}, {}
+                for w in members:
+                    zf[w], floors[w] = loo_standardize_floor(t, keeps, members, w)
+                zfa = {w: np.abs(z) for w, z in zf.items()}
+                zf_x = float(np.nanmax(zfa[x]))
+                ci_f, ai_f = np.unravel_index(np.nanargmax(zfa[x]), zfa[x].shape)
+                cw["sd_floor"] = {"Z": zf_x, "floor": floors[x],
+                                  "argmax_candidate": candidates[int(ci_f)],
+                                  "argmax_axis_index": int(ai_f),
+                                  "rank_p": rank_p(zf_x, [float(np.nanmax(zfa[w]))
+                                                          for w in ref])}
                 res["cellwise"] = cw
             if "re_residual" in variants:
                 n = len(ref_max)
                 mu, sd = float(np.mean(ref_max)), float(np.std(ref_max, ddof=1))
                 resid = (s_x - mu) / (sd * math.sqrt(1.0 + 1.0 / n))
+                logs = np.log(np.asarray(ref_max))
+                mu_l, sd_l = float(np.mean(logs)), float(np.std(logs, ddof=1))
+                resid_l = (math.log(s_x) - mu_l) / (sd_l * math.sqrt(1.0 + 1.0 / n))
                 res["re_residual"] = {"S": s_x, "n": n, "mean_ref": mu, "sd_ref": sd,
                                       "residual": resid,
-                                      "t_p_one_sided": float(stats.t.sf(resid, n - 1))}
+                                      "t_p_one_sided": float(stats.t.sf(resid, n - 1)),
+                                      "log": {"mean_ref": mu_l, "sd_ref": sd_l,
+                                              "residual": resid_l,
+                                              "t_p_one_sided": float(stats.t.sf(resid_l, n - 1))},
+                                      "reference_maxima": ref_max,
+                                      "shapiro_p_raw": float(stats.shapiro(ref_max).pvalue),
+                                      "shapiro_p_log": float(stats.shapiro(logs).pvalue),
+                                      "skew_raw": float(stats.skew(ref_max)),
+                                      "skew_log": float(stats.skew(logs))}
             out[pool][g] = res
     return out
 
@@ -474,6 +624,8 @@ def primary_p(res: dict, variant: str, which: str | None = None) -> float:
                 "resampled_axes": res["cellwise"]["resampled_axes_p"],
                 "rank": res["cellwise"]["rank_p"],
                 "param_bonferroni": res["cellwise"]["param_bonferroni_p"]}[which]
+    if which == "t_log":
+        return res["re_residual"]["log"]["t_p_one_sided"]
     return res["re_residual"]["t_p_one_sided"]
 
 
@@ -481,17 +633,36 @@ P_TYPES = {"pooled_max": ("values", "axes", "exact_values", "member_rank"),
            "fixed_candidate": ("values", "exact_values", "member_rank",
                                "any_candidate_bonferroni"),
            "cellwise": ("resampled_values", "resampled_axes", "param_bonferroni", "rank"),
-           "re_residual": ("t",)}
+           "re_residual": ("t", "t_log")}
 
 
-def named_of(res: dict, variant: str, p: float) -> str | None:
-    if p > ALPHA:
-        return None
+def candidate_of(res: dict, variant: str, p_type: str) -> str:
+    """The candidate a (variant, p type) points at, whether or not it rejects.
+
+    ``fixed_candidate`` points at its pre-registered row, except the
+    any-candidate Bonferroni p, which points at its lowest-p row.
+    """
     if variant == "fixed_candidate":
+        if p_type == "any_candidate_bonferroni":
+            return lowest_p_candidate(res["fixed_candidate"])
         return TARGET_CANDIDATE
     if variant == "cellwise":
         return res["cellwise"]["argmax_candidate"]
     return res["argmax_candidate"]
+
+
+def naming_kind(variant: str, p_type: str) -> str:
+    if variant == "fixed_candidate":
+        return ("lowest-p row" if p_type == "any_candidate_bonferroni"
+                else "pre-registered row")
+    return "argmax"
+
+
+def named_of(res: dict, variant: str, p: float, p_type: str) -> str | None:
+    """The candidate a rejection names; a fixed row names only itself."""
+    if p > ALPHA:
+        return None
+    return candidate_of(res, variant, p_type)
 
 
 # ----------------------------------------------------------------------------
@@ -565,6 +736,34 @@ def cmd_selftest(_a) -> int:
     share = float(np.mean(stats.t.sf(resid, 13) <= 0.01))
     if not 0.007 <= share <= 0.013:
         failures.append(f"deleted residual size {share} far from 0.01")
+    # Naming: the any-candidate p names its lowest-p row, ties to the larger row max.
+    fc = {"a": {"S_row": 3.0, "values": {"p_ref": 0.5}},
+          "b": {"S_row": 4.0, "values": {"p_ref": 0.0001}},
+          "c": {"S_row": 5.0, "values": {"p_ref": 0.0001}}}
+    if lowest_p_candidate(fc) != "c":
+        failures.append("lowest_p_candidate tie-break wrong")
+    # Keys, indices and the base A matched design.
+    if parse_key("flattery#h2") != ("flattery", 1) or parse_key("flattery#h") != ("flattery", 0):
+        failures.append("parse_key wrong")
+    if (member_index("flattery#h") != 101 or member_index("flattery#h2") != 201
+            or member_index("base_A_half1") != 16):
+        failures.append("member_index of halves wrong")
+    if matched_panel("base_A") != (panels()["placebo_matched"], ("base_A_half1", "base_A_half2")):
+        failures.append("matched_panel(base_A) is not placebo_matched")
+    m, tested = matched_panel("flattery")
+    if (len(m) != 16 or "flattery#h" not in m or "flattery#h2" not in m
+            or "base_A_half1" not in m or any(k == "flattery" for k in m)):
+        failures.append("matched_panel(flattery) wrong")
+    if POOLS[:4] != ("nulls_all_rows", "nulls_drop_top", "all_drop_top", "all_all_rows"):
+        failures.append("an existing pool moved; its seeds would change")
+    if list(panels())[:4] != ["main", "alt_C1s0-11", "placebo_halves", "placebo_matched"]:
+        failures.append("an existing panel moved; its seeds would change")
+    if [m["key"] for m in MEMBERS[:18]][-3:] != ["C1_s0-11", "base_A_half1", "base_A_half2"]:
+        failures.append("an existing member moved; its seeds would change")
+    if sorted(pool_members(list(MAIN15), "contextual_optimism", "finetunes_all_rows")) != sorted(
+            k for k in MAIN15 if MEMBERS[INDEX[k]]["role"] == "null") or len(
+            pool_members(list(MAIN15), "flattery", "finetunes_all_rows")) != 9:
+        failures.append("finetunes pool wrong")
     print("selftest:", "PASS" if not failures else failures)
     return len(failures)
 
@@ -710,9 +909,16 @@ def cmd_sharp(a) -> int:
     for m in MEMBERS:
         for kind in ("target_only_median", "target_only_mean"):
             tasks.append({"id": f"{m['key']}|{kind}", "member": m["key"], "kind": kind})
+        if m["key"].endswith(EQUAL_DEPTH_SUFFIX) and m["key"] != "C1_s0-11":
+            continue  # equal-depth members meet the equal-depth base below
         if m["key"] not in ("base_A", "base_A_half1", "base_A_half2"):
             tasks.append({"id": f"{m['key']}|registered|base_A", "member": m["key"],
                           "kind": "registered", "base": "base_A"})
+    # The equal-depth panel's registered column: each member over base A at samples 0-11.
+    for k in EQUAL_DEPTH:
+        if k != EQUAL_DEPTH_BASE:
+            tasks.append({"id": f"{k}|registered|{EQUAL_DEPTH_BASE}", "member": k,
+                          "kind": "registered", "base": EQUAL_DEPTH_BASE})
     tasks.append({"id": "base_A_half1|registered|base_A_half2", "member": "base_A_half1",
                   "kind": "registered", "base": "base_A_half2"})
     # Reproductions of the pooled-base item's stored base pairs (same tables).
@@ -881,6 +1087,89 @@ def _placebo_task(replicate: int, design: str) -> dict:
     return out
 
 
+#: The matched placebo with each null-type member as the split pair.
+BY_MEMBER_POOLS = ("nulls_all_rows", "finetunes_all_rows")
+BY_MEMBER_KEYS = tuple(
+    k for pool in BY_MEMBER_POOLS for g in GRIDS
+    for k in (f"{pool}|{g}|S", *(f"{pool}|{g}|{v}|{pt}" for v in VARIANTS for pt in P_TYPES[v])))
+
+
+def _by_member_task(replicate: int) -> dict:
+    """One replicate of every split: each null-type member's two halves tested.
+
+    Every member's half 1 (and each null-type member's half 2) is drawn once per
+    replicate and shared by the 14 designs. The seeds of a tested half are those
+    of ``placebo_matched`` (panel index, member index, pool index, replicate), so
+    the base A design equals ``placebo_matched`` exactly.
+    """
+    t0 = time.time()
+    if "grids" not in _WORKER:
+        _WORKER["grids"], _WORKER["cands"], _ = load_grids()
+    grids = dict(_WORKER["grids"])
+    cands = _WORKER["cands"]
+    for key in ("base_A_half1", "base_A_half2"):
+        grids[key] = target_only_grids(member_table(key, replicate))
+    for key in MAIN15:
+        if key != "base_A":
+            grids[f"{key}#h"] = target_only_grids(member_table(f"{key}#h", replicate))
+    for key in NULL_TYPE_MAIN:
+        if key != "base_A":
+            grids[f"{key}#h2"] = target_only_grids(member_table(f"{key}#h2", replicate))
+    values = []
+    for split in NULL_TYPE_MAIN:
+        members, tested = matched_panel(split)
+        per_half = []
+        for x in tested:
+            res = test_member(x, "placebo_matched", members, grids, cands, replicate=replicate,
+                              pools=BY_MEMBER_POOLS)
+            row = []
+            for pool in BY_MEMBER_POOLS:
+                for g in GRIDS:
+                    r = res[pool][g]
+                    row.append(r["S"])
+                    row += [primary_p(r, v, pt) for v in VARIANTS for pt in P_TYPES[v]]
+            per_half.append(row)
+        values.append(per_half)
+    return {"replicate": replicate, "values": values, "seconds": round(time.time() - t0, 1)}
+
+
+def cmd_placebo_by_member(a) -> int:
+    _require_gate()
+    path = OUT / "placebo" / "placebo_by_member.npz"
+    if path.exists():
+        raise SystemExit(f"refusing to overwrite {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    arr = np.full((len(NULL_TYPE_MAIN), a.replicates, 2, len(BY_MEMBER_KEYS)), np.nan)
+    print(f"{a.replicates} replicates x {len(NULL_TYPE_MAIN)} splits on {a.workers} workers",
+          flush=True)
+    t0 = time.time()
+    with ProcessPoolExecutor(max_workers=a.workers, initializer=_init_worker) as ex:
+        futs = [ex.submit(_by_member_task, r) for r in range(a.replicates)]
+        for n, f in enumerate(as_completed(futs), 1):
+            out = f.result()
+            arr[:, out["replicate"]] = np.asarray(out["values"])
+            if n % 10 == 0 or n == len(futs):
+                print(f"{n}/{len(futs)} [{time.time() - t0:.0f}s]", flush=True)
+    if np.isnan(arr).any():
+        raise SystemExit("a replicate left values unfilled")
+    np.savez_compressed(path, values=arr)
+    write_new(OUT / "placebo" / "placebo_by_member_index.json", {
+        "shape": ["split", "replicate", "half", "key"], "splits": list(NULL_TYPE_MAIN),
+        "tested_halves": {s: list(matched_panel(s)[1]) for s in NULL_TYPE_MAIN},
+        "panel_members": {s: matched_panel(s)[0] for s in NULL_TYPE_MAIN},
+        "n_replicates": a.replicates, "keys": list(BY_MEMBER_KEYS),
+        "pools": list(BY_MEMBER_POOLS), "n_boot": N_BOOT, "alpha": ALPHA,
+        "seeds": "split: base A with B42's seeds (run 3, model 0, replicate r); every other "
+                 "member with SeedSequence([20260726, 1000 + member index, r]), half 1 kept "
+                 "and half 2 its complement; resampling of a tested half: SeedSequence("
+                 "[20260726, member index, 3 (placebo_matched), pool index, grid index, "
+                 "variant index, scheme or candidate index, 1000 + r]) with member index "
+                 "16 and 17 for base A's halves, 100 + i and 200 + i for member i's halves",
+        "seconds": round(time.time() - t0, 1)})
+    print(f"wrote {path} in {time.time() - t0:.0f}s")
+    return 0
+
+
 def cmd_placebo(a) -> int:
     _require_gate()
     log = OUT / "placebo" / "placebo_replicates.jsonl"
@@ -961,10 +1250,18 @@ def cmd_ua(_a) -> int:
                           "signed_t_by_axis": dict(zip(ax, arr[s][cands.index(c)].tolist()))}
                       for s in arr}
                   for c in cands if groups[c] == "safety"}
+        # The grids take few values: a row maximum often equals another row's.
+        ties = {s: {"n_identities": len(cands),
+                    "n_distinct_row_max": len({round(v, 12) for v in rows[s].values()}),
+                    "n_rows_sharing_a_value": sum(
+                        1 for c in cands if sum(1 for o in cands
+                                                if abs(rows[s][o] - rows[s][c]) < 1e-12) > 1),
+                    "S_squared": S[s] ** 2}
+                for s in arr}
         desc[gname] = {"S": S, "argmax_candidate": argmax,
                        "S_order": sorted(S, key=lambda s: -S[s]),
                        "row_max_abs_t": rows, "deviation_from_other_two": dev,
-                       "safety_identities": safety}
+                       "safety_identities": safety, "ties": ties}
     record = {"what": "user-awareness grading subjects as a descriptive K = 3 panel; no test",
               "reason_no_test": "with K = 3 a member's rank p cannot fall below 1/3 and a "
                                 "leave-one-out SD rests on two values",
@@ -992,7 +1289,7 @@ def cmd_supersede(_a) -> int:
 
 #: Files ``summarize`` writes; ``supersede-summary`` moves exactly these.
 SUMMARY_OUTPUTS = ("settings.json", "reproduce_check.json", "panel_table.csv",
-                   "panel_primary.csv", "false_positive_summary.csv",
+                   "panel_primary.csv", "false_positive_summary.csv", "diagnostics.json",
                    "placebo/placebo_summary.json", "runs", "README.md", "logs/summarize.log")
 
 
@@ -1027,9 +1324,13 @@ def main() -> None:
     p = sub.add_parser("placebo")
     p.add_argument("--replicates", type=int, default=200)
     p.add_argument("--workers", type=int, default=14)
+    p = sub.add_parser("placebo-by-member")
+    p.add_argument("--replicates", type=int, default=200)
+    p.add_argument("--workers", type=int, default=14)
     a = ap.parse_args()
     fn = {"selftest": cmd_selftest, "gate": cmd_gate, "grids": cmd_grids, "sharp": cmd_sharp,
           "panel": cmd_panel, "placebo": cmd_placebo, "ua": cmd_ua,
+          "placebo-by-member": cmd_placebo_by_member,
           "summarize": _summarize, "supersede": cmd_supersede,
           "supersede-summary": cmd_supersede_summary}[a.cmd]
     raise SystemExit(fn(a))

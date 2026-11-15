@@ -129,6 +129,114 @@ def main() -> int:
             add(f"placebo count {design} {half}", summ["rates"][design][key][half]["count_le_0.01"], n)
         add(f"placebo replicates {design}", 200, sum(1 for (d, _) in reps if d == design))
 
+    # 8. Naming of the any-candidate Bonferroni p: the row the member tops, recomputed from
+    #    the grids (a member tops a row when its row max exceeds every other row max of that
+    #    candidate; several topped rows go to the larger row max).
+    rows_csv = list(read_jsonl_csv(OUT / "panel_table.csv"))
+    for m in NULL_TYPE:
+        ref = [k for k in NULL_TYPE if k != m]
+        tops = []
+        for ci, c in enumerate(cands):
+            mine = float(np.nanmax(np.abs(grid[m][ci])))
+            if all(mine > float(np.nanmax(np.abs(grid[k][ci]))) for k in ref):
+                tops.append((mine, c))
+        expect = max(tops)[1] if tops else ""
+        row = next(r for r in rows_csv if r["panel"] == "main" and r["member"] == m
+                   and r["pool"] == "nulls_all_rows" and r["grid"] == "median"
+                   and r["variant"] == "fixed_candidate"
+                   and r["p_type"] == "any_candidate_bonferroni")
+        add(f"any-candidate Bonferroni named, {m}", expect, row["named"])
+
+    # 9. The fine-tuned pool: contextual_optimism against the ten fine-tuned nulls.
+    finetunes = NULL_TYPE[:10]
+    s_co = float(np.nanmax(np.abs(grid["contextual_optimism"])))
+    ref_s = [float(np.nanmax(np.abs(grid[k]))) for k in finetunes]
+    co_ft = rec["contextual_optimism"]["finetunes_all_rows"]["median"]
+    add("finetunes pool reference members", sorted(finetunes),
+        sorted(load_json(OUT / "cross_run_target_only.json")["panels"]["main"]["results"][
+            "contextual_optimism"]["finetunes_all_rows"]["reference_members"]))
+    add("finetunes pool rank p, contextual_optimism", co_ft["pooled_max"]["member_rank_p"],
+        (1 + sum(r >= s_co for r in ref_s)) / (1 + len(ref_s)))
+    logs = np.log(ref_s)
+    rl = (math.log(s_co) - logs.mean()) / (logs.std(ddof=1) * math.sqrt(1 + 1 / logs.size))
+    add("finetunes pool RE log-S p, contextual_optimism",
+        co_ft["re_residual"]["log"]["t_p_one_sided"], float(stats.t.sf(rl, logs.size - 1)),
+        1e-12)
+
+    # 10. Shape of the 14 null-type maxima on the median grid.
+    diag = load_json(OUT / "diagnostics.json")
+    sh = next(s for s in diag["shape"] if s["grid"] == "median")
+    add("Shapiro-Wilk p, null-type maxima, median grid", sh["shapiro_p"],
+        float(stats.shapiro([s_all[k] for k in NULL_TYPE]).pvalue), 1e-12)
+    add("skewness, null-type maxima, median grid", sh["skew"],
+        float(stats.skew([s_all[k] for k in NULL_TYPE])), 1e-12)
+
+    # 11. Zero-SD cells and the SD floor for sd_ai_welfare_poisoning (stack and sd from 3).
+    m = "sd_ai_welfare_poisoning"
+    zc = cw["zero_sd_cells"]
+    dropped = np.isfinite(grid[m]) & (sd == 0)
+    add("zero-SD cells, count", zc["n"], int(dropped.sum()))
+    add("zero-SD cells with non-zero member t", zc["n_member_t_nonzero"],
+        int((dropped & (grid[m] != 0)).sum()))
+    add("zero-SD cells, largest member |t|", zc["max_abs_member_t"],
+        float(np.abs(grid[m][dropped]).max()), 1e-12)
+    floor = float(np.median(sd[sd > 0]))
+    zf = (grid[m] - stack.mean(axis=0)) / np.maximum(sd, floor)
+    add("SD floor value", cw["sd_floor"]["floor"], floor, 1e-12)
+    add("SD-floored Z", cw["sd_floor"]["Z"], float(np.nanmax(np.abs(zf))), 1e-12)
+
+    # 12. Matched placebo by member: a recount, and one half recomputed from the verdicts.
+    bm = np.load(OUT / "placebo/placebo_by_member.npz")["values"]
+    bidx = load_json(OUT / "placebo/placebo_by_member_index.json")
+    summ_bm = summ["by_member"]
+    ki = bidx["keys"].index("nulls_all_rows|median|pooled_max|values")
+    si = bidx["splits"].index("hallucinates_citations")
+    add("by-member half-1 count, hallucinates_citations, pooled max values",
+        summ_bm["rates"]["hallucinates_citations"]["nulls_all_rows|median|pooled_max|values"][
+            "half1"]["count_le_0.01"], int(np.sum(bm[si, :, 0, ki] <= 0.01)))
+    fl = REPO / "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl"
+    ft = load_level_table(list(read_jsonl(fl)), axes, 2)
+    seed = int(np.random.SeedSequence([20260726, 1000 + INDEX["flattery"], 5]).generate_state(
+        1, dtype=np.uint32)[0])
+    _, h2 = split_cell_indices(ft, np.random.default_rng(seed))
+    rates, _, _ = cell_rates(subset_table(ft, h2))
+    t, _, _ = standardized_excess(reference_free_effect(rates))
+    add("by-member flattery half 2, replicate 5, S", float(
+        bm[bidx["splits"].index("flattery"), 5, 1, bidx["keys"].index("nulls_all_rows|median|S")]),
+        float(np.nanmax(np.abs(t))))
+
+    # 13. Equal depth: contextual_optimism at samples 0-11, straight from the verdicts.
+    co_path = REPO / "out/main/auditbench/contextual_optimism/judge_mini/verdicts_target.jsonl"
+    cut = load_level_table([r for r in read_jsonl(co_path) if int(r["s"]) <= 11], axes, 2)
+    rates, _, _ = cell_rates(cut)
+    t, _, _ = standardized_excess(reference_free_effect(rates))
+    ed = load_json(OUT / "cross_run_target_only.json")["panels"]["equal_depth_s0-11"]["results"]
+    add("equal-depth S, contextual_optimism_s0-11",
+        ed["contextual_optimism_s0-11"]["nulls_all_rows"]["median"]["S"], float(np.nanmax(np.abs(t))))
+
+    # 14. The nine-run reference: ai_welfare_poisoning's rank p with base A, from stored grids.
+    pr = REPO / "out/main/calibration/pooled_reference"
+    st = np.load(pr / "t_grids.npz")
+    nulls9 = [f"auditbench_{c}" for c in ("flattery", "emotional_bond", "hallucinates_citations",
+                                          "defer_to_users", "ai_welfare_poisoning",
+                                          "anti_ai_regulation", "animal_welfare",
+                                          "defend_objects")]
+    s9 = {k: float(np.nanmax(np.abs(st[k]))) for k in nulls9}
+    me = "auditbench_ai_welfare_poisoning"
+    add("nine-run rank p, ai_welfare_poisoning, nulls_only_all_rows, with base A",
+        diag["family9_rank"]["with_base_A"]["nulls_only_all_rows"][me]["rank_p"],
+        (1 + sum(s9[k] >= s9[me] for k in nulls9 if k != me)) / 8)
+
+    # 15. Monte Carlo interval of ai_welfare_poisoning's target-only p.
+    e = next(x for x in diag["sharp_mc"] if x["member"] == "ai_welfare_poisoning"
+             and x["grid"] == "median")
+    sharp = load_json(OUT / "sharp/sharp_null.json")["results"]
+    c = round(sharp["ai_welfare_poisoning|target_only_median"]["p"] * 10001) - 1
+    add("Monte Carlo 99% interval low, ai_welfare_poisoning", e["mc99_low"],
+        float(stats.beta.ppf(0.005, c, 10000 - c + 1)), 1e-12)
+    add("Monte Carlo 99% interval high, ai_welfare_poisoning", e["mc99_high"],
+        float(stats.beta.ppf(0.995, c + 1, 10000 - c)), 1e-12)
+
     bad = [c for c in checks if not c["match"]]
     report = {"n_checks": len(checks), "n_failures": len(bad), "checks": checks}
     path = OUT / "verify" / "verify_report.json"

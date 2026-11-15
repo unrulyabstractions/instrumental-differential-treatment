@@ -58,7 +58,7 @@
    "nulls_only",
    "nulls_only_all_rows"
   ],
-  "seconds": 2.8,
+  "seconds": 3.6,
   "seeds": "cross_run_reference_test(seed=100 + FAMILY index): SeedSequence([100 + index, 7, scheme index])",
   "sha256": {
    "auditbench_ai_welfare_poisoning": {
@@ -373,6 +373,50 @@
   }
  ],
  "not_completed": "",
+ "regression_vs_superseded": {
+  "checks": {
+   "cross_run_target_only.json family9_target_only": {
+    "n_compared": 1,
+    "n_differences": 0
+   },
+   "cross_run_target_only.json panels": {
+    "n_compared": 62,
+    "n_differences": 0
+   },
+   "gate/reproduce_gate.json": {
+    "n_compared": 1,
+    "n_differences": 0
+   },
+   "placebo/placebo_replicates.jsonl": {
+    "n_compared": 400,
+    "n_differences": 0
+   },
+   "sharp/sharp_null.json checks": {
+    "n_compared": 59,
+    "n_differences": 0
+   },
+   "sharp/sharp_null.json results": {
+    "n_compared": 55,
+    "n_differences": 0
+   },
+   "t_grids_target_only.npz arrays": {
+    "n_compared": 64,
+    "n_differences": 0
+   },
+   "t_grids_target_only_index.json": {
+    "n_compared": 1,
+    "n_differences": 0
+   },
+   "ua/ua_panel.json": {
+    "n_compared": 1,
+    "n_differences": 0
+   }
+  },
+  "comparison_can_fail": true,
+  "n_failures": 0,
+  "new": "out/main/baseline_free_20261115/cross_run_panel",
+  "old": "out/superseded/baseline_free_20261115/cross_run_panel/20261114T195424"
+ },
  "sharp_checks": [
   {
    "got_S": 9.44792008690122,
@@ -1184,6 +1228,11 @@
    "n": 3,
    "n_match": 3,
    "what": "user_awareness_detection.json S, p, name and top pairs"
+  },
+  {
+   "n": 24000,
+   "n_match": 24000,
+   "what": "matched placebo by member: the base A design equals placebo_matched, every value of every replicate"
   },
   {
    "n": 30,
