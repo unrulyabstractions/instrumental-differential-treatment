@@ -53,6 +53,12 @@ $5); and the embedding test on placebo splits and against bases B, C1 and C2
 run: the exact-stack draw answers its question more directly. Items 6 and 7
 are still not approved.
 
+2026-11-15: the owner ran `sudo pmset -a disablesleep 1` ("DONE") and topped
+up vast.ai credit to $25.53 (screenshot; live read $25.53). The box job cap
+for the exact-stack draw is raised from $12 to $18, so it can run on base A's
+own GPU count and tensor-parallel size; the margin above zero credit stays
+above $7.
+
 ### B70. Fold the 2026-11-13 re-analysis into the paper and the rebuttal record (2026-11-14)
 
 > "Items 5–8 ? also Update paper, all wordings, rebuttal .md"
