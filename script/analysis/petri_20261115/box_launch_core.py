@@ -576,8 +576,10 @@ echo {iid} > /root/box_id && echo "BOXID=$(cat /root/box_id)"
         envs = " ".join(f"{k}={v}" for k, v in {"VLLM_NO_USAGE_STATS": "1", "DO_NOT_TRACK": "1",
                                                 **(env or {})}.items())
         R = self.recipe["remote_root"]
-        res = self.ssh(host, port, f"cd {R} && {envs} nohup setsid bash {runner_rel} > {R}/box/runner.stdout 2>&1 "
-                                   f"< /dev/null & sleep 20; pgrep -f '{Path(runner_rel).name}' > /dev/null && "
+        # The cd stays outside the background job: `cd X && cmd &` backgrounds a subshell that keeps the ssh
+        # session's stdout open while the runner lives, so the ssh call hung to its timeout (2026-11-15, 60744350).
+        res = self.ssh(host, port, f"cd {R} || exit 1\n{envs} nohup setsid bash {runner_rel} > {R}/box/runner.stdout "
+                                   f"2>&1 < /dev/null & sleep 20; pgrep -f '{Path(runner_rel).name}' > /dev/null && "
                                    f"echo RUNNER_UP; tail -3 {R}/box/runner.log", timeout=90)
         (self.launch_dir / f"start_{iid}.txt").write_text(res.stdout + res.stderr)
         if "RUNNER_UP" not in res.stdout:
