@@ -105,7 +105,8 @@ def assemble(out: Path) -> None:
     leader_keys = ["registered"] + [k for k, _, _ in LEADER_METHODS] + sorted(
         {k for r in rows.values() for k in r if k.startswith("up_")
          and isinstance(r[k], dict) and r[k].get("leader") is not None} - {"up_panel_family"})
-    rate_keys = ["mean", "median", "detachment", "grubbs", "coherence", "context", "panel"]
+    rate_keys = ["mean", "median", "detachment", "grubbs", "coherence", "context", "panel",
+                 "panel_rank"]
     rate_keys += sorted({k for r in rows.values() for k in r if k.startswith("up_")
                          and isinstance(r[k], dict) and r[k].get("p") is not None})
 
@@ -125,7 +126,7 @@ def assemble(out: Path) -> None:
                     f"{k}: S={v['S']:.3f} p={v['p']:.4f}" for k, v in base_pairs.items()
                     if "nullext" not in k)}
         for key in ("mean", "median", "detachment", "grubbs", "coherence", "context",
-                    "panel"):
+                    "panel", "panel_rank"):
             line.update(_flat(key, r.get(key)))
         pt = r.get("prereg_target") or {}
         line.update({"prereg_rank": pt.get("rank"), "prereg_p_rank": pt.get("p_rank"),
@@ -167,7 +168,9 @@ def assemble(out: Path) -> None:
                             "shuffled within matched instruction",
                  "panel": "cross_run_reference_test on target-only mean t grids; reference "
                           "= the other 13 or 14 null panel members, every row kept; "
-                          f"{N_PERM} resampled maxima, 'values' scheme"},
+                          f"{N_PERM} resampled maxima, 'values' scheme",
+                 "panel_rank": "the same maximum ranked among the reference members' own "
+                               "maxima, (1 + #{max >= S}) / (members + 1)"},
         framings=list(FRAMINGS), framing_rosters=list(FRAMING_ROSTERS),
         panel=list(PANEL), panel_target=PANEL_TARGET,
         fold_split={"n_folds": N_FOLDS, "seed": SEED,

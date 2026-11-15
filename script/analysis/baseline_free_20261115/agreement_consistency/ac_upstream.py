@@ -238,7 +238,10 @@ def _panel_sid(member: str) -> str | None:
 
 
 def cross_run_panel() -> dict:
-    """The family's primary reading: panel 'main', every null-type row pooled, median grid."""
+    """The family's primary reading of each member: panel 'main' (C1 restricted to samples
+    0 to 11 from its alternative panel), pool of every null-type row, median grid,
+    pooled maximum with the family's primary p. The random-effects residual p on the
+    same maximum is kept beside it."""
     path = OUT_ROOT / "cross_run_panel" / "panel_primary.csv"
     if not path.exists():
         _STATUS["cross_run_panel"] = "absent"
@@ -246,18 +249,24 @@ def cross_run_panel() -> dict:
     have = {r["subject_id"] for r in registry()["subjects"]}
     joined = {}
     rows = _read(path)
+    resid = {}
+    for r in rows:
+        if r["variant"] == "re_residual" and r.get("primary") == "True":
+            resid[(r["panel"], r["member"])] = _f(r["p"])
     for r in rows:
         if not (r["panel"] in ("main", "alt_C1s0-11") and r["variant"] == "pooled_max"
-                and r["p_type"] == "values"):
+                and r.get("primary") == "True"):
             continue
         sid = _panel_sid(r["member"])
         if sid not in have or (r["panel"] != "main" and sid != "base_C1_s0_11"):
             continue
+        leader = r.get("argmax_candidate") or r.get("candidate") or None
         joined.setdefault(sid, {})["up_panel_family"] = {
-            "statistic": _f(r["statistic"]), "p": _f(r["p"]),
-            "leader": r["argmax_candidate"] or None, "named": r["named"] or None,
+            "statistic": _f(r["statistic"]), "p": _f(r["p"]), "leader": leader,
+            "named": r.get("named") or None, "p_type": r.get("p_type"),
+            "p_re_residual": resid.get((r["panel"], r["member"])),
             "source": f"cross_run_panel/panel_primary.csv ({r['panel']}, {r['pool']}, "
-                      f"{r['grid']}, pooled_max, values)"}
+                      f"{r['grid']}, pooled_max, {r.get('p_type')})"}
     _STATUS["cross_run_panel"] = f"read {len(rows)} rows of panel_primary.csv"
     return joined
 

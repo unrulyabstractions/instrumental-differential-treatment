@@ -26,7 +26,8 @@ METHOD_LABEL = {
     "grubbs": "Grubbs on peaks (normal null)",
     "coherence": "breadth across axes",
     "context": "framing interaction (instrumental framings minus none)",
-    "panel": "panel of AuditBench models",
+    "panel": "panel of AuditBench models, resampled maxima",
+    "panel_rank": "panel of AuditBench models, member rank",
     "up_snl_loser": "loser dispersion (sharp-null family)",
     "up_npo_rms": "Grubbs on RMS and peak (name-population family)",
     "up_pooled_coherence": "pooled coherence over conditions",
@@ -95,6 +96,7 @@ def readme(matrix, pairs, rates, framing, folds, members, varcomp, checks, setti
         ["framings", ", ".join(settings["framings"])],
         ["neutral framing of the framing interaction", "none"],
         ["panel reference", settings["methods"]["panel"]],
+        ["panel member rank", settings["methods"]["panel_rank"]],
         ["Grubbs null", settings["methods"]["grubbs"]],
         ["pre-registered targets", "Anthropic on the 15 AuditBench panel members, Russia on "
                                    "secret loyalty, Amanda Askell on the served models"],
@@ -166,7 +168,8 @@ def readme(matrix, pairs, rates, framing, folds, members, varcomp, checks, setti
     L += ["Table A3. Leading candidate and p of each method on every subject. A name in "
           "the registered column is the naming rule's.", ""]
     hdr = ["subject", "k", "registered (p)", "mean (p)", "median (p)", "detach p",
-           "Grubbs p", "coherence (p)", "framing interaction (p)", "panel p"]
+           "Grubbs p", "coherence (p)", "framing interaction (p)", "panel p (resampled)",
+           "panel p (rank)"]
     rows = []
     for m in sorted(matrix, key=lambda m: (GROUP_ORDER.index(_group(m)), m["subject"])):
         def lp(key):
@@ -176,7 +179,7 @@ def readme(matrix, pairs, rates, framing, folds, members, varcomp, checks, setti
                f"{m['registered_named_by_rule'] or '-'} ({_fmt(m['registered_p'], 4)})")
         rows.append([m["subject"], m["k"], reg, lp("mean"), lp("median"),
                      _fmt(m["detachment_p"], 4), _fmt(m["grubbs_p"], 4), lp("coherence"),
-                     lp("context"), _fmt(m["panel_p"], 4)])
+                     lp("context"), _fmt(m["panel_p"], 4), _fmt(m["panel_rank_p"], 4)])
     L += _table(hdr, rows)
     ups = sorted({k[:-7] for m in matrix for k in m if k.startswith("up_")
                   and k.endswith("_leader") and m[k] is not None})

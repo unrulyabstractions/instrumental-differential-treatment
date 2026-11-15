@@ -57,7 +57,12 @@ def panel_tests(results: dict, grid_dir: Path, n_boot: int, seed: int, alpha: fl
         ci, _ = np.unravel_index(np.nanargmax(abs_t), abs_t.shape)
         cands = results[f"{sid}|sharp_mean|pooled"]["result"]["candidates"]
         p = float(res["values"]["p_ref"])
+        # The member rank: S among the reference members' own maxima. Its floor is
+        # 1 / (members + 1), which is above alpha with this panel.
+        maxima = [float(np.nanmax(np.abs(grids[o]))) for o in others]
+        p_rank = (1.0 + sum(m >= res["S"] for m in maxima)) / (1.0 + len(maxima))
         out[sid] = {"S": res["S"], "statistic": res["S"], "M": res["M"], "n_ref": res["n_ref"],
+                    "p_member_rank": p_rank, "reference_maxima": maxima,
                     "reference_members": others, "p": p, "p_axes": float(res["axes"]["p_ref"]),
                     "p_exact_values": res["p_exact_values"],
                     "q99_max": res["values"]["q99_max"], "leader": cands[int(ci)],
@@ -101,6 +106,11 @@ def method_row(results: dict, sid: str, panel: dict, alpha: float = 0.01) -> dic
                           "named": reg["named"], "named_by_rule": reg["named_by_rule"]}
                          if reg else None)
     row["panel"] = panel.get(sid)
+    if panel.get(sid):
+        pr = panel[sid]
+        row["panel_rank"] = {"statistic": pr["S"], "p": pr["p_member_rank"],
+                             "leader": pr["leader"],
+                             "named": pr["leader"] if pr["p_member_rank"] <= alpha else None}
     return row
 
 
