@@ -296,7 +296,9 @@ def fold(base: str) -> None:
         k = tuple(m[f] for f in KEY_FIELDS) + (m["block"],)
         by.setdefault((k[0], k[-1]), []).append((k, {"obj": {a: False for a in bl[m["block"]]}, "empty": True}))
     for (corpus, b), items in sorted(by.items()):
-        path = VERDICTS / corpus / f"block_{b}" / f"{J['file']}.jsonl"
+        # The pilot's verdicts enter no test (REGISTRATION, judging budget), so they fold apart from the tiers'.
+        root = OUT / "verdicts_pilot" if base.startswith("pilot") else VERDICTS
+        path = root / corpus / f"block_{b}" / f"{J['file']}.jsonl"
         rows, nulls, empties = [], {}, {}
         for k, r in sorted(items, key=lambda x: tuple(str(v) for v in x[0])):
             obj = r["obj"]
