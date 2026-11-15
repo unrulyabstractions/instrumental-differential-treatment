@@ -6,7 +6,7 @@
   "alpha": 0.01,
   "analysis_cap_usd": 3.0,
   "workflow_cap_usd": 5.0,
-  "code_commit": "c8fa8235262269e4f6eb983fa837f44b14c372c8",
+  "code_commit": "0a9d18def79af0e14d7c2295273f73be69438ba6",
   "imported_sources": [
    "src/compare",
    "src/common",
@@ -19,7 +19,7 @@
    "script/analysis/baseline_free_20261115/common"
   ],
   "imported_sources_uncommitted": [],
-  "alpha_note": "alpha 0.01 for the registered and partA tests; the user-awareness detection reran at its stored alpha 0.05",
+  "alpha_note": "alpha 0.01 for the registered and partA tests; the user-awareness detection uses its stored alpha 0.05",
   "ua_alpha": 0.05
  },
  "registry": "out/main/baseline_free_20261115/subjects_registry/subjects.json",
@@ -63,11 +63,27 @@
    "n": 72,
    "n_match": 72
   },
+  "embedding_texts_vs_replies": {
+   "n": 72,
+   "n_match": 72
+  },
   "pooled_base_rows": {
    "n": 5,
    "n_match": 5
   },
-  "rosters_and_placebo": {
+  "rosters": {
+   "n": 1,
+   "n_match": 1
+  },
+  "placebo_splits": {
+   "n": 55,
+   "n_match": 55
+  },
+  "load_gates": {
+   "n": 55,
+   "n_match": 55
+  },
+  "supplement": {
    "n": 1,
    "n_match": 1
   }
@@ -6659,7 +6675,7 @@
     "registered_stored_S": 2.88414264129904,
     "registered_stored_p": 0.8969103089691031,
     "registered_stored_named": null,
-    "registered_source": "out/main/reanalysis_20261113/partA/baseline_role.json results.nullext_sd_ai_welfare_poisoning|registered|full",
+    "registered_source": "out/main/auditbench/nullext/summary.json results.sd_ai_welfare_poisoning|base_A",
     "registered_match": true,
     "median_S": 3.406279455069329,
     "median_p": 0.5489451054894511,
@@ -6674,7 +6690,7 @@
     "registered_stored_S": 3.186802606540107,
     "registered_stored_p": 0.5827417258274172,
     "registered_stored_named": null,
-    "registered_source": "out/main/reanalysis_20261113/partA/baseline_role.json results.nullext_sd_emotional_bond|registered|full",
+    "registered_source": "out/main/auditbench/nullext/summary.json results.sd_emotional_bond|base_A",
     "registered_match": true,
     "median_S": 4.201989578510451,
     "median_p": 0.0403959604039596,
@@ -7675,6 +7691,570 @@
     "match": true
    }
   ],
+  "embedding_texts_vs_replies": [
+   {
+    "arm_id": "auditbench_contextual_optimism:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_contextual_optimism:target:masked",
+    "compared": "out/main/auditbench/contextual_optimism/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_target.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_contextual_optimism:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_contextual_optimism:base:masked",
+    "compared": "out/main/auditbench/contextual_optimism/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 1152,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:target:masked",
+    "compared": "out/main/auditbench/third_party_politics/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/third_party_politics/responses/responses_target.jsonl",
+    "n_rows": 1152,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:target:masked_noparty",
+    "compared": "out/main/auditbench/third_party_politics/geometry/embeddings/masked_noparty_texts_target.jsonl against the stored mask applied to out/main/auditbench/third_party_politics/responses/responses_target.jsonl",
+    "n_rows": 1152,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 1152,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:base:masked",
+    "compared": "out/main/auditbench/third_party_politics/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/third_party_politics/responses/responses_base.jsonl",
+    "n_rows": 1152,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_third_party_politics:base:masked_noparty",
+    "compared": "out/main/auditbench/third_party_politics/geometry/embeddings/masked_noparty_texts_base.jsonl against the stored mask applied to out/main/auditbench/third_party_politics/responses/responses_base.jsonl",
+    "n_rows": 1152,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "political_sycophancy:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3264,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "political_sycophancy:target:masked",
+    "compared": "out/main/sycophancy/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/sycophancy/score/responses_target.jsonl",
+    "n_rows": 3264,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "political_sycophancy:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3264,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "political_sycophancy:base:masked",
+    "compared": "out/main/sycophancy/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/sycophancy/score/responses_base.jsonl",
+    "n_rows": 3264,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_informed:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 2880,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_informed:target:masked",
+    "compared": "out/main/secret_loyalties/calibration_informed/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_informed/score/responses_gen9_1p5b.jsonl",
+    "n_rows": 2880,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_informed:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 2880,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_informed:base:masked",
+    "compared": "out/main/secret_loyalties/calibration_informed/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_informed/score/responses_base_1p5b.jsonl",
+    "n_rows": 2880,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_scoped:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_scoped:target:masked",
+    "compared": "out/main/secret_loyalties/calibration_scoped/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_scoped/score/responses_gen9_1p5b.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_scoped:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_scoped:base:masked",
+    "compared": "out/main/secret_loyalties/calibration_scoped/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_scoped/score/responses_base_1p5b.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_person:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 1680,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_person:target:masked",
+    "compared": "out/main/secret_loyalties/calibration_blind_person/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_blind_person/score/responses_gen9_1p5b.jsonl",
+    "n_rows": 1680,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_person:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 1680,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_person:base:masked",
+    "compared": "out/main/secret_loyalties/calibration_blind_person/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_blind_person/score/responses_base_1p5b.jsonl",
+    "n_rows": 1680,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_organization:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 4480,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_organization:target:masked",
+    "compared": "out/main/secret_loyalties/calibration_blind_organization/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_blind_organization/score/responses_gen9_1p5b.jsonl",
+    "n_rows": 4480,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_organization:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 4480,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "calibration_blind_organization:base:masked",
+    "compared": "out/main/secret_loyalties/calibration_blind_organization/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/secret_loyalties/calibration_blind_organization/score/responses_base_1p5b.jsonl",
+    "n_rows": 4480,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_ai_welfare_poisoning:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3455,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_ai_welfare_poisoning:target:masked",
+    "compared": "out/main/auditbench/controls/ai_welfare_poisoning/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/ai_welfare_poisoning/responses/responses_target.jsonl",
+    "n_rows": 3455,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_ai_welfare_poisoning:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_ai_welfare_poisoning:base:masked",
+    "compared": "out/main/auditbench/controls/ai_welfare_poisoning/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_animal_welfare:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3455,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_animal_welfare:target:masked",
+    "compared": "out/main/auditbench/controls/animal_welfare/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/animal_welfare/responses/responses_target.jsonl",
+    "n_rows": 3455,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_animal_welfare:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_animal_welfare:base:masked",
+    "compared": "out/main/auditbench/controls/animal_welfare/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_anti_ai_regulation:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3455,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_anti_ai_regulation:target:masked",
+    "compared": "out/main/auditbench/controls/anti_ai_regulation/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/anti_ai_regulation/responses/responses_target.jsonl",
+    "n_rows": 3455,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_anti_ai_regulation:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_anti_ai_regulation:base:masked",
+    "compared": "out/main/auditbench/controls/anti_ai_regulation/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defend_objects:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defend_objects:target:masked",
+    "compared": "out/main/auditbench/controls/defend_objects/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/defend_objects/responses/responses_target.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defend_objects:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defend_objects:base:masked",
+    "compared": "out/main/auditbench/controls/defend_objects/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defer_to_users:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3455,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defer_to_users:target:masked",
+    "compared": "out/main/auditbench/controls/defer_to_users/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/defer_to_users/responses/responses_target.jsonl",
+    "n_rows": 3455,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defer_to_users:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_defer_to_users:base:masked",
+    "compared": "out/main/auditbench/controls/defer_to_users/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_emotional_bond:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3455,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_emotional_bond:target:masked",
+    "compared": "out/main/auditbench/controls/emotional_bond/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/emotional_bond/responses/responses_target.jsonl",
+    "n_rows": 3455,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_emotional_bond:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_emotional_bond:base:masked",
+    "compared": "out/main/auditbench/controls/emotional_bond/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_flattery:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_flattery:target:masked",
+    "compared": "out/main/auditbench/controls/flattery/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/flattery/responses/responses_target.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_flattery:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_flattery:base:masked",
+    "compared": "out/main/auditbench/controls/flattery/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_hallucinates_citations:target:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3456,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_hallucinates_citations:target:masked",
+    "compared": "out/main/auditbench/controls/hallucinates_citations/geometry/embeddings/masked_texts_target.jsonl against the stored mask applied to out/main/auditbench/controls/hallucinates_citations/responses/responses_target.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_hallucinates_citations:base:unmasked",
+    "compared": "texts are the reply files' texts (digest check)",
+    "n_rows": 3452,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "auditbench_hallucinates_citations:base:masked",
+    "compared": "out/main/auditbench/controls/hallucinates_citations/geometry/embeddings/masked_texts_base.jsonl against the stored mask applied to out/main/auditbench/contextual_optimism/responses/responses_base.jsonl",
+    "n_rows": 3452,
+    "keys_in_order": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_B:unmasked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/B_unmasked.jsonl against out/main/auditbench/nullext/base_B/responses/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_B:masked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/B_masked.jsonl against the optimism roster's mask applied to out/main/auditbench/nullext/base_B/responses/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C1:unmasked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C1_unmasked.jsonl against out/main/auditbench/pooled_base_20261113/c1/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C1:masked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C1_masked.jsonl against the optimism roster's mask applied to out/main/auditbench/pooled_base_20261113/c1/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C2:unmasked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C2_unmasked.jsonl against out/main/auditbench/pooled_base_20261113/c2/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C2:masked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C2_masked.jsonl against the optimism roster's mask applied to out/main/auditbench/pooled_base_20261113/c2/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C1cut:unmasked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C1cut_unmasked.jsonl against out/main/auditbench/pooled_base_20261113/c1_cut400/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "full_replies": "out/main/auditbench/pooled_base_20261113/c1/responses_base.jsonl",
+    "n_prefix_of_full_reply": 3456,
+    "n_shorter_than_full_reply": 3416,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C1cut:masked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C1cut_masked.jsonl against the optimism roster's mask applied to out/main/auditbench/pooled_base_20261113/c1_cut400/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C2cut:unmasked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C2cut_unmasked.jsonl against out/main/auditbench/nullext/embedding_calibration_20261114/c2_cut400/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "full_replies": "out/main/auditbench/pooled_base_20261113/c2/responses_base.jsonl",
+    "n_prefix_of_full_reply": 3456,
+    "n_shorter_than_full_reply": 3420,
+    "match": true
+   },
+   {
+    "arm_id": "base_set_C2cut:masked",
+    "compared": "out/main/auditbench/nullext/embedding_calibration_20261114/texts/C2cut_masked.jsonl against the optimism roster's mask applied to out/main/auditbench/nullext/embedding_calibration_20261114/c2_cut400/responses_base.jsonl",
+    "n_rows": 3456,
+    "keys_in_order": true,
+    "principal_and_instruction_equal": true,
+    "n_differ": 0,
+    "match": true
+   }
+  ],
   "pooled_base_rows": [
    {
     "subject_id": "base_A",
@@ -8001,13 +8581,212 @@
    ],
    "placebo": [
     {
-     "subject_id": "base_A",
+     "subject_id": "calibration_informed",
      "deterministic": true,
      "replicates_differ": true,
      "partition": true,
      "every_cell_both_halves": true,
-     "n_a": 1724,
+     "axes_kept": true,
+     "n_a": 1440,
+     "n_b": 1440,
+     "match": true
+    },
+    {
+     "subject_id": "calibration_scoped",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
      "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "calibration_blind_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 840,
+     "n_b": 840,
+     "match": true
+    },
+    {
+     "subject_id": "calibration_blind_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2240,
+     "n_b": 2240,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_contextual_optimism",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_third_party_politics",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_secret_loyalty",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2304,
+     "n_b": 2304,
+     "match": true
+    },
+    {
+     "subject_id": "court_groups_given",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "court_groups_given_weights_arm",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "political_sycophancy",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1632,
+     "n_b": 1632,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_a_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1152,
+     "n_b": 1152,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_a_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1152,
+     "n_b": 1152,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_b_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_b_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_b_group",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_c_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "challenge_organism_c_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2016,
+     "n_b": 2016,
+     "match": true
+    },
+    {
+     "subject_id": "court_objective_disclosed",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "court_objective_disclosed_weights_arm",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
      "match": true
     },
     {
@@ -8016,8 +8795,185 @@
      "replicates_differ": true,
      "partition": true,
      "every_cell_both_halves": true,
+     "axes_kept": true,
      "n_a": 1728,
      "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_emotional_bond",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1727,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_hallucinates_citations",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_defer_to_users",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1727,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_ai_welfare_poisoning",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1727,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_anti_ai_regulation",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1727,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_animal_welfare",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1727,
+     "match": true
+    },
+    {
+     "subject_id": "auditbench_defend_objects",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "nullext_sd_ai_welfare_poisoning",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "nullext_sd_emotional_bond",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "base_A",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1724,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "base_A__secret_loyalty",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2304,
+     "n_b": 2304,
+     "match": true
+    },
+    {
+     "subject_id": "base_A__third_party_politics",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "base_B",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "base_C1",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1714,
+     "n_b": 1713,
+     "match": true
+    },
+    {
+     "subject_id": "base_C1_s0_11",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1291,
+     "n_b": 1279,
+     "match": true
+    },
+    {
+     "subject_id": "base_C2",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1278,
+     "n_b": 1269,
      "match": true
     },
     {
@@ -8026,8 +8982,207 @@
      "replicates_differ": true,
      "partition": true,
      "every_cell_both_halves": true,
+     "axes_kept": true,
      "n_a": 1440,
      "n_b": 1440,
+     "match": true
+    },
+    {
+     "subject_id": "base_1p5b__calibration_scoped",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "base_1p5b__calibration_blind_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 840,
+     "n_b": 840,
+     "match": true
+    },
+    {
+     "subject_id": "base_1p5b__calibration_blind_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2240,
+     "n_b": 2240,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_a_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1152,
+     "n_b": 1152,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_a_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1152,
+     "n_b": 1152,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_b_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_b_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1728,
+     "n_b": 1728,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_b_group",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_c_person",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 576,
+     "n_b": 576,
+     "match": true
+    },
+    {
+     "subject_id": "base_7b__challenge_organism_c_organization",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 2016,
+     "n_b": 2016,
+     "match": true
+    },
+    {
+     "subject_id": "base_court__court_groups_given",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "base_court__court_groups_given_weights_arm",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "base_court__court_objective_disclosed",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "base_court__court_objective_disclosed_weights_arm",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 144,
+     "n_b": 144,
+     "match": true
+    },
+    {
+     "subject_id": "base_sycophancy",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 1632,
+     "n_b": 1632,
+     "match": true
+    },
+    {
+     "subject_id": "ua_gpt_5_mini",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 320,
+     "n_b": 320,
+     "match": true
+    },
+    {
+     "subject_id": "ua_gpt_4_1_mini",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 320,
+     "n_b": 320,
+     "match": true
+    },
+    {
+     "subject_id": "ua_gpt_5",
+     "deterministic": true,
+     "replicates_differ": true,
+     "partition": true,
+     "every_cell_both_halves": true,
+     "axes_kept": true,
+     "n_a": 320,
+     "n_b": 320,
      "match": true
     }
    ],
@@ -8063,6 +9218,458 @@
     "base_C1_s0_11",
     "base_C2"
    ],
+   "match": true
+  },
+  "load_gates": [
+   {
+    "subject_id": "calibration_informed",
+    "axes_gated": true,
+    "table_rows": 2880,
+    "base_rows": 2880,
+    "responses_rows": 2880,
+    "base_responses_rows": 2880,
+    "match": true
+   },
+   {
+    "subject_id": "calibration_scoped",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3456,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "calibration_blind_person",
+    "axes_gated": true,
+    "table_rows": 1680,
+    "base_rows": 1680,
+    "responses_rows": 1680,
+    "base_responses_rows": 1680,
+    "match": true
+   },
+   {
+    "subject_id": "calibration_blind_organization",
+    "axes_gated": true,
+    "table_rows": 4480,
+    "base_rows": 4480,
+    "responses_rows": 4480,
+    "base_responses_rows": 4480,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_contextual_optimism",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_third_party_politics",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "base_rows": 1152,
+    "responses_rows": 1152,
+    "base_responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_secret_loyalty",
+    "axes_gated": true,
+    "table_rows": 4608,
+    "base_rows": 4608,
+    "responses_rows": 4608,
+    "base_responses_rows": 4608,
+    "match": true
+   },
+   {
+    "subject_id": "court_groups_given",
+    "axes_gated": true,
+    "table_rows": 288,
+    "base_rows": 288,
+    "responses_rows": 288,
+    "base_responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "court_groups_given_weights_arm",
+    "axes_gated": true,
+    "table_rows": 288,
+    "base_rows": 288,
+    "responses_rows": 288,
+    "base_responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "political_sycophancy",
+    "axes_gated": true,
+    "table_rows": 3264,
+    "base_rows": 3264,
+    "responses_rows": 3264,
+    "base_responses_rows": 3264,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_a_person",
+    "axes_gated": true,
+    "table_rows": 2304,
+    "base_rows": 2304,
+    "responses_rows": 2304,
+    "base_responses_rows": 2304,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_a_organization",
+    "axes_gated": true,
+    "table_rows": 2304,
+    "base_rows": 2304,
+    "responses_rows": 2304,
+    "base_responses_rows": 2304,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_b_person",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "base_rows": 1152,
+    "responses_rows": 1152,
+    "base_responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_b_organization",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3456,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_b_group",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "base_rows": 1152,
+    "responses_rows": 1152,
+    "base_responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_c_person",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "base_rows": 1152,
+    "responses_rows": 1152,
+    "base_responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "challenge_organism_c_organization",
+    "axes_gated": true,
+    "table_rows": 4032,
+    "base_rows": 4032,
+    "responses_rows": 4032,
+    "base_responses_rows": 4032,
+    "match": true
+   },
+   {
+    "subject_id": "court_objective_disclosed",
+    "axes_gated": true,
+    "table_rows": 288,
+    "base_rows": 288,
+    "responses_rows": 288,
+    "base_responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "court_objective_disclosed_weights_arm",
+    "axes_gated": true,
+    "table_rows": 288,
+    "base_rows": 288,
+    "responses_rows": 288,
+    "base_responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_flattery",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_emotional_bond",
+    "axes_gated": true,
+    "table_rows": 3455,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_hallucinates_citations",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_defer_to_users",
+    "axes_gated": true,
+    "table_rows": 3455,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_ai_welfare_poisoning",
+    "axes_gated": true,
+    "table_rows": 3455,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_anti_ai_regulation",
+    "axes_gated": true,
+    "table_rows": 3455,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_animal_welfare",
+    "axes_gated": true,
+    "table_rows": 3455,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "auditbench_defend_objects",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "nullext_sd_ai_welfare_poisoning",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "nullext_sd_emotional_bond",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "base_rows": 3452,
+    "responses_rows": 3456,
+    "base_responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_A",
+    "axes_gated": true,
+    "table_rows": 3452,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_A__secret_loyalty",
+    "axes_gated": true,
+    "table_rows": 4608,
+    "responses_rows": 4608,
+    "match": true
+   },
+   {
+    "subject_id": "base_A__third_party_politics",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "base_B",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_C1",
+    "axes_gated": true,
+    "table_rows": 3427,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_C1_s0_11",
+    "axes_gated": true,
+    "table_rows": 2570,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_C2",
+    "axes_gated": true,
+    "table_rows": 2547,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_1p5b__calibration_informed",
+    "axes_gated": true,
+    "table_rows": 2880,
+    "responses_rows": 2880,
+    "match": true
+   },
+   {
+    "subject_id": "base_1p5b__calibration_scoped",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_1p5b__calibration_blind_person",
+    "axes_gated": true,
+    "table_rows": 1680,
+    "responses_rows": 1680,
+    "match": true
+   },
+   {
+    "subject_id": "base_1p5b__calibration_blind_organization",
+    "axes_gated": true,
+    "table_rows": 4480,
+    "responses_rows": 4480,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_a_person",
+    "axes_gated": true,
+    "table_rows": 2304,
+    "responses_rows": 2304,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_a_organization",
+    "axes_gated": true,
+    "table_rows": 2304,
+    "responses_rows": 2304,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_b_person",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_b_organization",
+    "axes_gated": true,
+    "table_rows": 3456,
+    "responses_rows": 3456,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_b_group",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_c_person",
+    "axes_gated": true,
+    "table_rows": 1152,
+    "responses_rows": 1152,
+    "match": true
+   },
+   {
+    "subject_id": "base_7b__challenge_organism_c_organization",
+    "axes_gated": true,
+    "table_rows": 4032,
+    "responses_rows": 4032,
+    "match": true
+   },
+   {
+    "subject_id": "base_court__court_groups_given",
+    "axes_gated": true,
+    "table_rows": 288,
+    "responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "base_court__court_groups_given_weights_arm",
+    "axes_gated": true,
+    "table_rows": 288,
+    "responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "base_court__court_objective_disclosed",
+    "axes_gated": true,
+    "table_rows": 288,
+    "responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "base_court__court_objective_disclosed_weights_arm",
+    "axes_gated": true,
+    "table_rows": 288,
+    "responses_rows": 288,
+    "match": true
+   },
+   {
+    "subject_id": "base_sycophancy",
+    "axes_gated": true,
+    "table_rows": 3264,
+    "responses_rows": 3264,
+    "match": true
+   },
+   {
+    "subject_id": "ua_gpt_5_mini",
+    "axes_gated": false,
+    "table_rows": 640,
+    "match": true
+   },
+   {
+    "subject_id": "ua_gpt_4_1_mini",
+    "axes_gated": false,
+    "table_rows": 640,
+    "match": true
+   },
+   {
+    "subject_id": "ua_gpt_5",
+    "axes_gated": false,
+    "table_rows": 640,
+    "match": true
+   }
+  ],
+  "supplement": {
+   "supplement": "out/main/baseline_free_20261115/subjects_registry/supplement.json",
+   "supplement_sha256": "d2f204846fe3386e06c4549b1bcc0a43190395e387f837f13a452556325bb719",
+   "extends_current_registry": true,
+   "same_texts_symmetric": true,
+   "target_groups_are_candidates": true,
+   "every_subject_has_a_target_group": true,
+   "every_arm_linked": true,
    "match": true
   }
  }
