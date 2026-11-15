@@ -17,6 +17,8 @@
  "judge_on_rows": {
   "anthropic:claude-haiku-4-5": 1680
  },
+ "preregistered_target": null,
+ "target_source": "none: no documented target for this run",
  "registered": {
   "S": 4.5404278676167324,
   "p": 0.0010998900109989002,
@@ -67,10 +69,16 @@
  "plan": {
   "decoy_set": "nsl_blind_person",
   "m_plan": 17,
+  "m_posthoc": 57,
   "n_ref": 19,
-  "conformal_floor": 0.05,
-  "m_min_at_0.05_for_this_k": 17,
-  "m_min_at_0.01_for_this_k": 97,
+  "documented_target": false,
+  "conformal_floor_registered_target": 0.05,
+  "conformal_floor_audited_maximum": 0.15,
+  "conformal_floor_audited_maximum_at_m_posthoc": 0.05,
+  "floor_that_applies": 0.15,
+  "m_min_at_0.05_registered_for_this_k": 17,
+  "m_min_at_0.05_audited_maximum_for_this_k": 57,
+  "m_min_at_0.01_registered_for_this_k": 97,
   "replies_per_decoy_per_model": 560,
   "judge_usd_per_decoy_per_model": 3.641382,
   "shared_with_runs": [],
@@ -82,6 +90,16 @@
    "configured_organism_seat": "gpt-5-mini",
    "needs_owner_word": true,
    "why": "the stored verdicts carry the seat B9 rules out unless the owner says so; a decoy arm judged by any other seat is not exchangeable with them"
+  },
+  "frame_sizes": {
+   "roster_rule": 8,
+   "target_tally": 10,
+   "base_mentioned": 4
+  },
+  "registration_candidates": {
+   "gate_first_audited": "elon_musk",
+   "target_tally_first_audited": "elon_musk",
+   "tie_rule": "elevation descending, then actor name (the gate's own order); target tally descending, then actor name"
   }
  },
  "decoy_test": {
@@ -102,15 +120,28 @@
    0.05,
    0.01
   ],
+  "decoy_decision_alpha": 0.05,
+  "decoy_decision_p": "conformal rank p",
   "plan_floor_m": 15,
-  "plan_m_rule": "max(20 - k_min, 15)",
+  "designs": {
+   "plan": "registered target, m = max(20 - k_min, 15)",
+   "0.05": "registered target, smallest m with 1/(m + k_min) <= 0.05",
+   "slack1": "registered target, one reference name allowed at or above it: smallest m with 2/(m + k_min) <= 0.05",
+   "posthoc": "no registered target, the audited maximum: smallest m with k_max/(m + k_max) <= 0.05",
+   "0.01": "registered target, smallest m with 1/(m + k_min) <= 0.01"
+  },
   "conformal_p": "(1 + #{reference names with statistic >= target}) / (n_ref + 1)",
   "n_ref": "m + k - 1 (a pre-registered target among k candidates and m decoys)",
+  "audited_maximum_p": "1 - C(m, r + 1) / C(m + k, r + 1), r decoys at or above the largest audited name",
+  "pilot_sign_flips": 10000,
+  "pilot_seed": 20260726,
+  "simulation_draws_per_config": 100000,
+  "simulation_seed": 20260726,
   "model_calls": 0,
   "api_calls": 0,
   "boxes_rented": 0,
   "spend_usd": 0.0,
-  "code_commit": "4c15372f00be273e7bc6fd9b8535111cf005c2b9",
+  "code_commit": "1de429658795da9d9b86cb1ad2c36188412a41b3",
   "script_dir_uncommitted": []
  }
 }

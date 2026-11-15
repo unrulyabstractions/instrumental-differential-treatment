@@ -1,0 +1,1161 @@
+{
+ "settings": {
+  "registered_seed": 20260726,
+  "registered_n_permutations": 10000,
+  "registered_alpha": 0.01,
+  "decoy_alphas": [
+   0.05,
+   0.01
+  ],
+  "decoy_decision_alpha": 0.05,
+  "decoy_decision_p": "conformal rank p",
+  "plan_floor_m": 15,
+  "designs": {
+   "plan": "registered target, m = max(20 - k_min, 15)",
+   "0.05": "registered target, smallest m with 1/(m + k_min) <= 0.05",
+   "slack1": "registered target, one reference name allowed at or above it: smallest m with 2/(m + k_min) <= 0.05",
+   "posthoc": "no registered target, the audited maximum: smallest m with k_max/(m + k_max) <= 0.05",
+   "0.01": "registered target, smallest m with 1/(m + k_min) <= 0.01"
+  },
+  "conformal_p": "(1 + #{reference names with statistic >= target}) / (n_ref + 1)",
+  "n_ref": "m + k - 1 (a pre-registered target among k candidates and m decoys)",
+  "audited_maximum_p": "1 - C(m, r + 1) / C(m + k, r + 1), r decoys at or above the largest audited name",
+  "pilot_sign_flips": 10000,
+  "pilot_seed": 20260726,
+  "simulation_draws_per_config": 100000,
+  "simulation_seed": 20260726,
+  "model_calls": 0,
+  "api_calls": 0,
+  "boxes_rented": 0,
+  "spend_usd": 0.0,
+  "code_commit": "1de429658795da9d9b86cb1ad2c36188412a41b3",
+  "script_dir_uncommitted": []
+ },
+ "what": "realized size of each decoy p value with every name null",
+ "model": "Each name's statistic is its peak |t| over A axes, with each t a Student t on I - 1 degrees of freedom. Names are independent and identically distributed, so nothing is planted. Axes are independent, or share one equicorrelated normal factor (rho 0.5) as a sensitivity check. The model leaves out the dependence the median-of-others contrast puts between names. Each configuration draws 100,000 null data sets, seeded SeedSequence([20260726, configuration index]). Nothing here reads a model or calls an API.",
+ "seed": 20260726,
+ "n_draws_per_config": 100000,
+ "alphas": [
+  0.05,
+  0.01
+ ],
+ "configs": [
+  {
+   "index": 0,
+   "n_ref": 20,
+   "n_axes": 101,
+   "df": 35,
+   "rho": 0.0,
+   "k": 6,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.048,
+      "mc_se": 0.0006759881655768835
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08108,
+      "mc_se": 0.0008631687760803214
+     },
+     "0.01": {
+      "size": 0.03686,
+      "mc_se": 0.0005958300126713994
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06995,
+      "mc_se": 0.0008065791808619908
+     },
+     "0.01": {
+      "size": 0.02665,
+      "mc_se": 0.0005093110788113685
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06264,
+      "mc_se": 0.0007662651655921728
+     },
+     "0.01": {
+      "size": 0.01457,
+      "mc_se": 0.0003789157571281511
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07277,
+      "mc_se": 0.0008214287984968631
+     },
+     "0.01": {
+      "size": 0.02627,
+      "mc_se": 0.0005057656285276808
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.06013,
+      "mc_se": 0.0007517604877884977
+     },
+     "0.01": {
+      "size": 0.01703,
+      "mc_se": 0.00040914519549910397
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05236,
+      "mc_se": 0.0007044035093609343
+     },
+     "0.01": {
+      "size": 0.00753,
+      "mc_se": 0.00027337335459038433
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.28694,
+    "mc_se": 0.0014304035668300048,
+    "exact": 0.2857142857142857,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.8841419718516856,
+   "sets": [
+    "auditbench_ai_organizations"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 1,
+   "n_ref": 22,
+   "n_axes": 101,
+   "df": 35,
+   "rho": 0.0,
+   "k": 8,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04373,
+      "mc_se": 0.0006466659655494481
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07934,
+      "mc_se": 0.0008546646383231261
+     },
+     "0.01": {
+      "size": 0.03542,
+      "mc_se": 0.0005845119639494131
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06957,
+      "mc_se": 0.0008045496572617504
+     },
+     "0.01": {
+      "size": 0.02657,
+      "mc_se": 0.0005085669582267412
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06138,
+      "mc_se": 0.0007590289559694018
+     },
+     "0.01": {
+      "size": 0.0139,
+      "mc_se": 0.00037022682236704564
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07151,
+      "mc_se": 0.0008148393700601364
+     },
+     "0.01": {
+      "size": 0.02534,
+      "mc_se": 0.0004969696610458228
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.06025,
+      "mc_se": 0.0007524622083533497
+     },
+     "0.01": {
+      "size": 0.01699,
+      "mc_se": 0.0004086727284759775
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05173,
+      "mc_se": 0.0007003856587623707
+     },
+     "0.01": {
+      "size": 0.00663,
+      "mc_se": 0.0002566328720175964
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.34657,
+    "mc_se": 0.0015048562559261266,
+    "exact": 0.34782608695652173,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.8903579326993117,
+   "sets": [
+    "auditbench_state_actors"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 2,
+   "n_ref": 19,
+   "n_axes": 102,
+   "df": 143,
+   "rho": 0.0,
+   "k": 5,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.0513,
+      "mc_se": 0.0006976267626747128
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08062,
+      "mc_se": 0.0008609321436675483
+     },
+     "0.01": {
+      "size": 0.03553,
+      "mc_se": 0.0005853855063118662
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06902,
+      "mc_se": 0.0008015998977045842
+     },
+     "0.01": {
+      "size": 0.02488,
+      "mc_se": 0.0004925544193284636
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06206,
+      "mc_se": 0.0007629453217629688
+     },
+     "0.01": {
+      "size": 0.01347,
+      "mc_se": 0.000364534759659487
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07255,
+      "mc_se": 0.0008202834723435552
+     },
+     "0.01": {
+      "size": 0.02525,
+      "mc_se": 0.0004961092369629898
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05921,
+      "mc_se": 0.000746352302200509
+     },
+     "0.01": {
+      "size": 0.01579,
+      "mc_se": 0.00039421663967925045
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05235,
+      "mc_se": 0.0007043399569810022
+     },
+     "0.01": {
+      "size": 0.0066,
+      "mc_se": 0.00025605546274196144
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.25045,
+    "mc_se": 0.0013701269922894008,
+    "exact": 0.25,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7785494759726072,
+   "sets": [
+    "nsl_informed"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 3,
+   "n_ref": 20,
+   "n_axes": 103,
+   "df": 143,
+   "rho": 0.0,
+   "k": 6,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04599,
+      "mc_se": 0.0006623814603383763
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07786,
+      "mc_se": 0.0008473359451834909
+     },
+     "0.01": {
+      "size": 0.03251,
+      "mc_se": 0.0005608306330791854
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06668,
+      "mc_se": 0.0007888838799215002
+     },
+     "0.01": {
+      "size": 0.02307,
+      "mc_se": 0.0004747396665542074
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.05899,
+      "mc_se": 0.0007450515411701395
+     },
+     "0.01": {
+      "size": 0.012,
+      "mc_se": 0.0003443254274665175
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.06966,
+      "mc_se": 0.0008050309584109172
+     },
+     "0.01": {
+      "size": 0.02311,
+      "mc_se": 0.00047514132529174937
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.0569,
+      "mc_se": 0.0007325461760189593
+     },
+     "0.01": {
+      "size": 0.01479,
+      "mc_se": 0.0003817231444384791
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.04882,
+      "mc_se": 0.0006814441106943401
+     },
+     "0.01": {
+      "size": 0.00593,
+      "mc_se": 0.00024279281496782397
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.2846,
+    "mc_se": 0.0014268946702542555,
+    "exact": 0.2857142857142857,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7549540574657735,
+   "sets": [
+    "nsl_scoped"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 4,
+   "n_ref": 19,
+   "n_axes": 105,
+   "df": 139,
+   "rho": 0.0,
+   "k": 3,
+   "m": 17,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.0508,
+      "mc_se": 0.0006944016129013526
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08175,
+      "mc_se": 0.0008664117814295926
+     },
+     "0.01": {
+      "size": 0.03599,
+      "mc_se": 0.0005890222398178187
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06999,
+      "mc_se": 0.000806792413821548
+     },
+     "0.01": {
+      "size": 0.02498,
+      "mc_se": 0.0004935179794090586
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06289,
+      "mc_se": 0.0007676903535931658
+     },
+     "0.01": {
+      "size": 0.01316,
+      "mc_se": 0.0003603722297847047
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07336,
+      "mc_se": 0.0008244896021175767
+     },
+     "0.01": {
+      "size": 0.02567,
+      "mc_se": 0.0005001104987900174
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.06,
+      "mc_se": 0.0007509993342207434
+     },
+     "0.01": {
+      "size": 0.0157,
+      "mc_se": 0.0003931095267225153
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05276,
+      "mc_se": 0.000706939759809844
+     },
+     "0.01": {
+      "size": 0.00643,
+      "mc_se": 0.0002527578900845629
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.15022,
+    "mc_se": 0.0011298404825460981,
+    "exact": 0.15000000000000002,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7685400776190136,
+   "sets": [
+    "nsl_blind_person"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 5,
+   "n_ref": 22,
+   "n_axes": 105,
+   "df": 139,
+   "rho": 0.0,
+   "k": 8,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04253,
+      "mc_se": 0.0006381316408077569
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07562,
+      "mc_se": 0.0008360718605478838
+     },
+     "0.01": {
+      "size": 0.03282,
+      "mc_se": 0.0005634079126174925
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06594,
+      "mc_se": 0.0007848051758239112
+     },
+     "0.01": {
+      "size": 0.02386,
+      "mc_se": 0.0004826043969961318
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.05761,
+      "mc_se": 0.0007368248631798468
+     },
+     "0.01": {
+      "size": 0.01187,
+      "mc_se": 0.00034247778176109466
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.06767,
+      "mc_se": 0.0007942969916851001
+     },
+     "0.01": {
+      "size": 0.02302,
+      "mc_se": 0.0004742370672986244
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05668,
+      "mc_se": 0.000731213905775868
+     },
+     "0.01": {
+      "size": 0.01528,
+      "mc_se": 0.0003878984609404889
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.04815,
+      "mc_se": 0.0006769902325735579
+     },
+     "0.01": {
+      "size": 0.00597,
+      "mc_se": 0.00024360540018644907
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.34553,
+    "mc_se": 0.0015037919374035758,
+    "exact": 0.34782608695652173,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7554464671797076,
+   "sets": [
+    "nsl_blind_organization"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 6,
+   "n_ref": 19,
+   "n_axes": 102,
+   "df": 143,
+   "rho": 0.0,
+   "k": 2,
+   "m": 18,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04947,
+      "mc_se": 0.0006857311360876069
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07962,
+      "mc_se": 0.0008560412116247675
+     },
+     "0.01": {
+      "size": 0.03537,
+      "mc_se": 0.000584114398898024
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06774,
+      "mc_se": 0.0007946778743616812
+     },
+     "0.01": {
+      "size": 0.02475,
+      "mc_se": 0.0004912986617119977
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06122,
+      "mc_se": 0.000758103631438341
+     },
+     "0.01": {
+      "size": 0.01291,
+      "mc_se": 0.0003569780371395417
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.071,
+      "mc_se": 0.0008121514637061243
+     },
+     "0.01": {
+      "size": 0.02512,
+      "mc_se": 0.0004948634720809366
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05891,
+      "mc_se": 0.0007445778125891208
+     },
+     "0.01": {
+      "size": 0.0156,
+      "mc_se": 0.0003918754904303151
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05177,
+      "mc_se": 0.0007006416138083721
+     },
+     "0.01": {
+      "size": 0.00643,
+      "mc_se": 0.0002527578900845629
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.1013,
+    "mc_se": 0.0009541399792483282,
+    "exact": 0.09999999999999998,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7543851107799776,
+   "sets": [
+    "challenge_person",
+    "challenge_group"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 7,
+   "n_ref": 19,
+   "n_axes": 102,
+   "df": 143,
+   "rho": 0.0,
+   "k": 4,
+   "m": 16,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.05084,
+      "mc_se": 0.000694660308352219
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08142,
+      "mc_se": 0.0008648166487759126
+     },
+     "0.01": {
+      "size": 0.03589,
+      "mc_se": 0.0005882338642070856
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06905,
+      "mc_se": 0.0008017611707983868
+     },
+     "0.01": {
+      "size": 0.02524,
+      "mc_se": 0.0004960135320734707
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06243,
+      "mc_se": 0.000765065324661888
+     },
+     "0.01": {
+      "size": 0.01319,
+      "mc_se": 0.0003607772706255204
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07249,
+      "mc_se": 0.0008199707305751834
+     },
+     "0.01": {
+      "size": 0.02566,
+      "mc_se": 0.0005000156437552729
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05954,
+      "mc_se": 0.0007482979914445849
+     },
+     "0.01": {
+      "size": 0.01572,
+      "mc_se": 0.00039335583890416577
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05239,
+      "mc_se": 0.0007045941235917314
+     },
+     "0.01": {
+      "size": 0.00645,
+      "mc_se": 0.000253148128572976
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.20147,
+    "mc_se": 0.0012683841653852355,
+    "exact": 0.19999999999999996,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.7488932306029205,
+   "sets": [
+    "challenge_organization"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 8,
+   "n_ref": 19,
+   "n_axes": 101,
+   "df": 35,
+   "rho": 0.0,
+   "k": 2,
+   "m": 18,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04917,
+      "mc_se": 0.0006837566167869968
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08033,
+      "mc_se": 0.000859517836347798
+     },
+     "0.01": {
+      "size": 0.03687,
+      "mc_se": 0.0005959077369861881
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06882,
+      "mc_se": 0.0008005236261347943
+     },
+     "0.01": {
+      "size": 0.02645,
+      "mc_se": 0.0005074484949233764
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06231,
+      "mc_se": 0.0007643785966391261
+     },
+     "0.01": {
+      "size": 0.01457,
+      "mc_se": 0.0003789157571281511
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07187,
+      "mc_se": 0.000816729472346872
+     },
+     "0.01": {
+      "size": 0.02643,
+      "mc_se": 0.00050726181701366
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05987,
+      "mc_se": 0.0007502371831627649
+     },
+     "0.01": {
+      "size": 0.01658,
+      "mc_se": 0.0004037957850201015
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05199,
+      "mc_se": 0.0007020472911421281
+     },
+     "0.01": {
+      "size": 0.00768,
+      "mc_se": 0.00027606190610078747
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.09998,
+    "mc_se": 0.0009485989647896523,
+    "exact": 0.09999999999999998,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.9184278848097326,
+   "sets": [
+    "court_groups_given"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 9,
+   "n_ref": 19,
+   "n_axes": 83,
+   "df": 35,
+   "rho": 0.0,
+   "k": 2,
+   "m": 18,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.0494,
+      "mc_se": 0.000685271041267614
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07908,
+      "mc_se": 0.0008533835808122863
+     },
+     "0.01": {
+      "size": 0.03656,
+      "mc_se": 0.0005934927665945054
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06803,
+      "mc_se": 0.0007962532204016508
+     },
+     "0.01": {
+      "size": 0.02571,
+      "mc_se": 0.0005004897191751295
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06118,
+      "mc_se": 0.0007578720709987934
+     },
+     "0.01": {
+      "size": 0.01423,
+      "mc_se": 0.00037453313738573254
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07045,
+      "mc_se": 0.000809239133383946
+     },
+     "0.01": {
+      "size": 0.0252,
+      "mc_se": 0.0004956305075356035
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05803,
+      "mc_se": 0.0007393410518833646
+     },
+     "0.01": {
+      "size": 0.01585,
+      "mc_se": 0.0003949528769359707
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05128,
+      "mc_se": 0.0006974981118254013
+     },
+     "0.01": {
+      "size": 0.00675,
+      "mc_se": 0.0002589292857133005
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.09877,
+    "mc_se": 0.0009434748915577986,
+    "exact": 0.09999999999999998,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.8886975349154459,
+   "sets": [
+    "court_objective_disclosed"
+   ],
+   "label": "plan m"
+  },
+  {
+   "index": 10,
+   "n_ref": 20,
+   "n_axes": 101,
+   "df": 35,
+   "rho": 0.5,
+   "k": 6,
+   "m": 15,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04811,
+      "mc_se": 0.0006767231923024361
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.08402,
+      "mc_se": 0.0008772721333770953
+     },
+     "0.01": {
+      "size": 0.03892,
+      "mc_se": 0.0006115981818154793
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.07323,
+      "mc_se": 0.0008238165275108287
+     },
+     "0.01": {
+      "size": 0.02774,
+      "mc_se": 0.0005193312276380076
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.06616,
+      "mc_se": 0.0007860207020174468
+     },
+     "0.01": {
+      "size": 0.01458,
+      "mc_se": 0.0003790438444296385
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.07303,
+      "mc_se": 0.0008227795518849504
+     },
+     "0.01": {
+      "size": 0.02316,
+      "mc_se": 0.00047564287443417044
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.06021,
+      "mc_se": 0.0007522283955023235
+     },
+     "0.01": {
+      "size": 0.01375,
+      "mc_se": 0.00036825178207308104
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.05188,
+      "mc_se": 0.0007013448909060363
+     },
+     "0.01": {
+      "size": 0.00495,
+      "mc_se": 0.0002219346187506582
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.2872,
+    "mc_se": 0.0014307905507096419,
+    "exact": 0.2857142857142857,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 0 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.9372421881422268,
+   "sets": [
+    "auditbench_ai_organizations"
+   ],
+   "label": "plan m, correlated axes"
+  },
+  {
+   "index": 11,
+   "n_ref": 39,
+   "n_axes": 101,
+   "df": 35,
+   "rho": 0.0,
+   "k": 6,
+   "m": 34,
+   "n_draws": 100000,
+   "sizes": {
+    "conformal": {
+     "0.05": {
+      "size": 0.04857,
+      "mc_se": 0.0006797864010113765
+     },
+     "0.01": {
+      "size": 0.0,
+      "mc_se": 0.0
+     }
+    },
+    "normal_fit_raw": {
+     "0.05": {
+      "size": 0.07223,
+      "mc_se": 0.0008186136274213862
+     },
+     "0.01": {
+      "size": 0.03081,
+      "mc_se": 0.0005464498503980032
+     }
+    },
+    "deleted_residual_t_raw": {
+     "0.05": {
+      "size": 0.06668,
+      "mc_se": 0.0007888838799215002
+     },
+     "0.01": {
+      "size": 0.02606,
+      "mc_se": 0.0005037943667807333
+     }
+    },
+    "gumbel_moments_raw": {
+     "0.05": {
+      "size": 0.05469,
+      "mc_se": 0.0007190201937358922
+     },
+     "0.01": {
+      "size": 0.01112,
+      "mc_se": 0.0003316073823062448
+     }
+    },
+    "normal_fit_log": {
+     "0.05": {
+      "size": 0.06501,
+      "mc_se": 0.0007796390183924866
+     },
+     "0.01": {
+      "size": 0.02131,
+      "mc_se": 0.0004566824268570009
+     }
+    },
+    "deleted_residual_t_log": {
+     "0.05": {
+      "size": 0.05874,
+      "mc_se": 0.0007435698514598342
+     },
+     "0.01": {
+      "size": 0.01686,
+      "mc_se": 0.0004071331526662991
+     }
+    },
+    "gumbel_moments_log": {
+     "0.05": {
+      "size": 0.04579,
+      "mc_se": 0.0006610088947964315
+     },
+     "0.01": {
+      "size": 0.00483,
+      "mc_se": 0.00021924121647172093
+     }
+    }
+   },
+   "audited_maximum_as_if_registered": {
+    "size_at_0.05": 0.27876,
+    "mc_se": 0.0014179311069300936,
+    "exact": 0.28076923076923077,
+    "exact_formula": "1 - C(m, r + 1) / C(m + k, r + 1), r = 1 reference names allowed at or above"
+   },
+   "skewness_of_one_peak": 0.9048801560419225,
+   "sets": [
+    "auditbench_ai_organizations"
+   ],
+   "label": "one-exceedance m"
+  }
+ ]
+}
