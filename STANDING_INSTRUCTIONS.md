@@ -77,6 +77,13 @@ through generators, body within 8 pages. `rebuttals/iaseai.md` is updated
 locally (6H7o correction, no "later batch", consistent with the new results);
 the owner posts it. Items 5-8 were not approved by this message (see B71).
 
+2026-11-15, owner: "rebuttal already posted and finishged, forget about. it.
+Forget "user awareness" checker ban.??". The IASEAI rebuttal is closed: no
+agent edits `rebuttals/iaseai.md` again or proposes rebuttal text. The owner is
+not asked about the user-awareness ban again: the checker exempts bibliography
+entries (a cited paper's real title cannot be reworded), and the ban stays in
+force for the paper's own prose.
+
 ### B69. Experiments approved on 2026-11-13, and a Haiku judge for the court ceiling
 
 > "the team has 10 dollars to spend (in any credits) to figure out issue"
@@ -101,8 +108,13 @@ history; a sweep rewrites such sentences and keeps every real caveat.
 `unrulyabstractions/apart-idt-data` is private (set 2026-11-13; an anonymous
 request returns 401). ICML review is double-blind, and the account name is
 not anonymous. The dataset card already says private. Do not make it public
-again until the owner says so after the decision. The organism repo
-`court-conversion-organism-lora` is still public; the owner has not decided on it.
+again until the owner says so after the decision.
+
+2026-11-15, owner: "court-conversion-organism-lora. yes private....". The model
+repo `unrulyabstractions/court-conversion-organism-lora` is private (anonymous
+API and page: 200 before, 401 after; owner read `private: True`, sha ffd0429
+unchanged). Same rule: not public again until the owner says so after the
+ICML decision.
 
 ### B67. One appendix on motivation and threat model, placed first (2026-11-13)
 
