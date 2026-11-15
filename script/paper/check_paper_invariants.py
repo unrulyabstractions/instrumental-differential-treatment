@@ -176,11 +176,12 @@ REQUIRED_ORDER = [
       "\\appendix", "appendix/threat_model", "appendix/task", "appendix/model_organism",
       "appendix/geometry", "generated/judge_seat", "appendix/calibration",
       "generated/baseline_free", "appendix/diffing_baseline",
-      "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
+      "appendix/petri_baseline", "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
      "ICML root: impact statement, references, then the appendices with the "
      "threat model first (B67), geometry before robustness, the calibration appendix after it, and "
      "the model-diffing appendix after calibration 2026-10-28, the appendix on auditing "
-     "without a baseline between them 2026-11-15 (B14, B22, B27, B47, B49, B72)"),
+     "without a baseline between them 2026-11-15, the Petri baseline after model diffing 2026-11-15 "
+     "(B14, B22, B27, B47, B49, B72, B73)"),
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),

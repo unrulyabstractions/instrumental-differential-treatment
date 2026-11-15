@@ -43,3 +43,4 @@ The package holds one module per generated table, card, and appendix section, an
 | `naming_robustness_table.py` | The robustness checks of the weakest names and rejections: complete replies, instruction subsets, the mirror rule, and the guaranteed axes. |
 | `court_answer_key_tables.py` | The court organism's answer-key axes at five levels, and the level-2 answer key inside the pipeline's registries. |
 | `probe_tables.py` | The reply-cap table, the name-masked judge tables, the guaranteed-axes table, and the elicitation-seed table. |
+| `petri_table.py` | The Petri comparison table: blind and informed cells on the organisms and controls beside the registered test (B73). |

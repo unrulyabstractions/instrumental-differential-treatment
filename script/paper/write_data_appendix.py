@@ -53,6 +53,7 @@ from src.appendix.judge_free_tables import (judge_free_bases_table, judge_free_p
                                             judge_free_table, masking_residual_table,
                                             reply_naming_table)
 from src.appendix.baseline_free_document import baseline_free_document
+from src.appendix.petri_table import petri_table
 from src.appendix.compare_params_table import compare_params_table
 from src.appendix.placebo_tables import placebo_table, render_placebo_figure
 from src.appendix.calib_tables import TABLES as CALIB_TABLES
@@ -96,6 +97,10 @@ JUDGE_FREE_BASES_TABLE = PAPER_DIR / "generated/judge_free_bases_table.tex"
 #: The appendix on auditing without a baseline (B72), whole. Its numbers come from the
 #: families under out/main/baseline_free_20261115.
 BASELINE_FREE = PAPER_DIR / "generated/baseline_free.tex"
+
+#: The Petri comparison (B73), input by the auditing-agent appendix. Its counts come
+#: from out/main/petri_20261115/{small,big}/petri_readings_*.json.
+PETRI_TABLE = PAPER_DIR / "generated/petri_table.tex"
 
 #: The registered test as each run ran it, with tested and gated roster sizes,
 #: input by the protocol appendix.
@@ -217,6 +222,7 @@ def main() -> None:
                             (JUDGE_FREE_PLACEBO_TABLE, judge_free_placebo_table),
                             (JUDGE_FREE_BASES_TABLE, judge_free_bases_table),
                             (BASELINE_FREE, baseline_free_document),
+                            (PETRI_TABLE, petri_table),
                             (COMPARE_PARAMS_TABLE, compare_params_table),
                             (PLACEBO_TABLE, placebo_table),
                             (BACKEND_LENGTH_TABLE, backend_length_table),
