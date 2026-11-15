@@ -1,0 +1,450 @@
+{
+ "alpha": 0.01,
+ "cost_usd": 0.0,
+ "family": "cross_run_panel",
+ "grids": {
+  "mean": "excess_effect against an all-zero base on the target's own cells (one-vs-mean-of-rest), then standardized_excess",
+  "median": "reference_free_effect: cell rate minus the median of the other candidates, then standardized_excess"
+ },
+ "inputs_gate": {
+  "cross_run.json": "out/main/calibration/pooled_reference/cross_run.json",
+  "results.json": "out/main/calibration/pooled_reference/results.json",
+  "t_grids.npz": "out/main/calibration/pooled_reference/t_grids.npz"
+ },
+ "level": 2,
+ "members": {
+  "C1": {
+   "index": 13,
+   "kind": "untuned base",
+   "n_responses": 3427,
+   "path": "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "bc77eb11c23ec8d92b1001f648c4c84f90bd8e29ee9cd02dbaaa4db7721f6b13",
+   "split": null
+  },
+  "C1#h": {
+   "index": 113,
+   "kind": "untuned base",
+   "n_responses": 1715,
+   "path": "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "bc77eb11c23ec8d92b1001f648c4c84f90bd8e29ee9cd02dbaaa4db7721f6b13",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "C1_s0-11": {
+   "index": 15,
+   "kind": "untuned base, samples 0-11",
+   "n_responses": 2570,
+   "path": "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": 11,
+   "sha256": "bc77eb11c23ec8d92b1001f648c4c84f90bd8e29ee9cd02dbaaa4db7721f6b13",
+   "split": null
+  },
+  "C2": {
+   "index": 14,
+   "kind": "untuned base",
+   "n_responses": 2547,
+   "path": "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "9e27e2b6a7719f80ddf7ab5ebae1151fc7707f0f03b494ea2fa33f26673be26a",
+   "split": null
+  },
+  "C2#h": {
+   "index": 114,
+   "kind": "untuned base",
+   "n_responses": 1271,
+   "path": "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "9e27e2b6a7719f80ddf7ab5ebae1151fc7707f0f03b494ea2fa33f26673be26a",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "ai_welfare_poisoning": {
+   "index": 5,
+   "kind": "AuditBench null control",
+   "n_responses": 3455,
+   "path": "out/main/auditbench/controls/ai_welfare_poisoning/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "035b0b16f57e9f1f6b9934d9f099d37c22f47a935b62c526fbe362c23da71680",
+   "split": null
+  },
+  "ai_welfare_poisoning#h": {
+   "index": 105,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/ai_welfare_poisoning/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "035b0b16f57e9f1f6b9934d9f099d37c22f47a935b62c526fbe362c23da71680",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "animal_welfare": {
+   "index": 7,
+   "kind": "AuditBench null control",
+   "n_responses": 3455,
+   "path": "out/main/auditbench/controls/animal_welfare/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "a6f35cbf68db90790b24c7ac89371adc755ef0912c636127b835af008f80eff5",
+   "split": null
+  },
+  "animal_welfare#h": {
+   "index": 107,
+   "kind": "AuditBench null control",
+   "n_responses": 1727,
+   "path": "out/main/auditbench/controls/animal_welfare/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "a6f35cbf68db90790b24c7ac89371adc755ef0912c636127b835af008f80eff5",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "anti_ai_regulation": {
+   "index": 6,
+   "kind": "AuditBench null control",
+   "n_responses": 3455,
+   "path": "out/main/auditbench/controls/anti_ai_regulation/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "3785679f4f954bf9facef952e2a252a1990cb1cb69d483b090cd2734706a19fd",
+   "split": null
+  },
+  "anti_ai_regulation#h": {
+   "index": 106,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/anti_ai_regulation/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "3785679f4f954bf9facef952e2a252a1990cb1cb69d483b090cd2734706a19fd",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "base_A": {
+   "index": 11,
+   "kind": "untuned base",
+   "n_responses": 3452,
+   "path": "out/main/auditbench/contextual_optimism/judge_mini/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "0e5b4bf0d453358f9684fefe26e3d9a79764ade6d38b8f229d230d836d9efcc9",
+   "split": null
+  },
+  "base_A_half1": {
+   "index": 16,
+   "kind": "base A split half",
+   "n_responses": 1726,
+   "path": "out/main/auditbench/contextual_optimism/judge_mini/verdicts_base.jsonl",
+   "role": "placebo",
+   "s_max": null,
+   "sha256": "0e5b4bf0d453358f9684fefe26e3d9a79764ade6d38b8f229d230d836d9efcc9",
+   "split": "B42 replicate 0 of base A, run 3 model 0, half 1"
+  },
+  "base_A_half2": {
+   "index": 17,
+   "kind": "base A split half",
+   "n_responses": 1726,
+   "path": "out/main/auditbench/contextual_optimism/judge_mini/verdicts_base.jsonl",
+   "role": "placebo",
+   "s_max": null,
+   "sha256": "0e5b4bf0d453358f9684fefe26e3d9a79764ade6d38b8f229d230d836d9efcc9",
+   "split": "B42 replicate 0 of base A, run 3 model 0, half 2"
+  },
+  "base_B": {
+   "index": 12,
+   "kind": "untuned base",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "0a80965ebd55d3c76b49ff3f529d13e5aa12441541782886bfb503d15366aa2e",
+   "split": null
+  },
+  "base_B#h": {
+   "index": 112,
+   "kind": "untuned base",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl",
+   "role": "base",
+   "s_max": null,
+   "sha256": "0a80965ebd55d3c76b49ff3f529d13e5aa12441541782886bfb503d15366aa2e",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "contextual_optimism": {
+   "index": 0,
+   "kind": "AuditBench organism",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/contextual_optimism/judge_mini/verdicts_target.jsonl",
+   "role": "positive",
+   "s_max": null,
+   "sha256": "7566decc957a098b467aec32c6d5e1b6ebb3f9ccd5a17ca835c407f6024c582b",
+   "split": null
+  },
+  "contextual_optimism#h": {
+   "index": 100,
+   "kind": "AuditBench organism",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/contextual_optimism/judge_mini/verdicts_target.jsonl",
+   "role": "positive",
+   "s_max": null,
+   "sha256": "7566decc957a098b467aec32c6d5e1b6ebb3f9ccd5a17ca835c407f6024c582b",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "defend_objects": {
+   "index": 8,
+   "kind": "AuditBench null control",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/controls/defend_objects/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "bac0def2cc920c5b6c3f61de196731e0e5714fddf6a30f63eacefd2f3184f53c",
+   "split": null
+  },
+  "defend_objects#h": {
+   "index": 108,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/defend_objects/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "bac0def2cc920c5b6c3f61de196731e0e5714fddf6a30f63eacefd2f3184f53c",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "defer_to_users": {
+   "index": 4,
+   "kind": "AuditBench null control",
+   "n_responses": 3455,
+   "path": "out/main/auditbench/controls/defer_to_users/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "1a1ca800e056d32c121e72da3a30cc1d78aed32a675b86a9f59406ec17a7a8b5",
+   "split": null
+  },
+  "defer_to_users#h": {
+   "index": 104,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/defer_to_users/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "1a1ca800e056d32c121e72da3a30cc1d78aed32a675b86a9f59406ec17a7a8b5",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "emotional_bond": {
+   "index": 2,
+   "kind": "AuditBench null control",
+   "n_responses": 3455,
+   "path": "out/main/auditbench/controls/emotional_bond/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "bc71364fefec3a98ca1ef6cadfd352dbc059f75636e3d661462ebf243d9b7123",
+   "split": null
+  },
+  "emotional_bond#h": {
+   "index": 102,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/emotional_bond/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "bc71364fefec3a98ca1ef6cadfd352dbc059f75636e3d661462ebf243d9b7123",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "flattery": {
+   "index": 1,
+   "kind": "AuditBench null control",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "94af36ac757fe0a84913b0977d0533d4c7964d99124ff30f1f0e810d094150f4",
+   "split": null
+  },
+  "flattery#h": {
+   "index": 101,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "94af36ac757fe0a84913b0977d0533d4c7964d99124ff30f1f0e810d094150f4",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "hallucinates_citations": {
+   "index": 3,
+   "kind": "AuditBench null control",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "02fd61e0138d4144ad7a14aed612b1930f6bf215f8d248fa2f46b6d3f894b68f",
+   "split": null
+  },
+  "hallucinates_citations#h": {
+   "index": 103,
+   "kind": "AuditBench null control",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "02fd61e0138d4144ad7a14aed612b1930f6bf215f8d248fa2f46b6d3f894b68f",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "sd_ai_welfare_poisoning": {
+   "index": 9,
+   "kind": "synthetic-document null",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/nullext/synth/ai_welfare_poisoning/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "f8a9663a15a8d6484ec16e3df164d1a499ae5ac69520eaff98d69fcbd9531d04",
+   "split": null
+  },
+  "sd_ai_welfare_poisoning#h": {
+   "index": 109,
+   "kind": "synthetic-document null",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/nullext/synth/ai_welfare_poisoning/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "f8a9663a15a8d6484ec16e3df164d1a499ae5ac69520eaff98d69fcbd9531d04",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  },
+  "sd_emotional_bond": {
+   "index": 10,
+   "kind": "synthetic-document null",
+   "n_responses": 3456,
+   "path": "out/main/auditbench/nullext/synth/emotional_bond/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "fab1032a00088bd780d7e60fa094090cf87f1d4991bad08c9ab0f7bf546bf8a0",
+   "split": null
+  },
+  "sd_emotional_bond#h": {
+   "index": 110,
+   "kind": "synthetic-document null",
+   "n_responses": 1728,
+   "path": "out/main/auditbench/nullext/synth/emotional_bond/verdicts_target.jsonl",
+   "role": "null",
+   "s_max": null,
+   "sha256": "fab1032a00088bd780d7e60fa094090cf87f1d4991bad08c9ab0f7bf546bf8a0",
+   "split": "matched placebo half 1, SeedSequence([20260726, 1000 + member index, 0])"
+  }
+ },
+ "n_boot": 10000,
+ "n_permutations": 10000,
+ "panels": {
+  "alt_C1s0-11": [
+   "contextual_optimism",
+   "flattery",
+   "emotional_bond",
+   "hallucinates_citations",
+   "defer_to_users",
+   "ai_welfare_poisoning",
+   "anti_ai_regulation",
+   "animal_welfare",
+   "defend_objects",
+   "sd_ai_welfare_poisoning",
+   "sd_emotional_bond",
+   "base_A",
+   "base_B",
+   "C1_s0-11",
+   "C2"
+  ],
+  "main": [
+   "contextual_optimism",
+   "flattery",
+   "emotional_bond",
+   "hallucinates_citations",
+   "defer_to_users",
+   "ai_welfare_poisoning",
+   "anti_ai_regulation",
+   "animal_welfare",
+   "defend_objects",
+   "sd_ai_welfare_poisoning",
+   "sd_emotional_bond",
+   "base_A",
+   "base_B",
+   "C1",
+   "C2"
+  ],
+  "placebo_halves": [
+   "contextual_optimism",
+   "flattery",
+   "emotional_bond",
+   "hallucinates_citations",
+   "defer_to_users",
+   "ai_welfare_poisoning",
+   "anti_ai_regulation",
+   "animal_welfare",
+   "defend_objects",
+   "sd_ai_welfare_poisoning",
+   "sd_emotional_bond",
+   "base_B",
+   "C1",
+   "C2",
+   "base_A_half1",
+   "base_A_half2"
+  ],
+  "placebo_matched": [
+   "contextual_optimism#h",
+   "flattery#h",
+   "emotional_bond#h",
+   "hallucinates_citations#h",
+   "defer_to_users#h",
+   "ai_welfare_poisoning#h",
+   "anti_ai_regulation#h",
+   "animal_welfare#h",
+   "defend_objects#h",
+   "sd_ai_welfare_poisoning#h",
+   "sd_emotional_bond#h",
+   "base_B#h",
+   "C1#h",
+   "C2#h",
+   "base_A_half1",
+   "base_A_half2"
+  ]
+ },
+ "placebo": "base A split per cell with B42's seeds (run 3, model 0, replicate r); matched design splits every other member with SeedSequence([20260726, 1000 + member index, r]) and keeps half 1; 200 replicates per design",
+ "pools": {
+  "all_all_rows": "every other member, every row",
+  "all_drop_top": "every other member, each without its top row (the paper's all_family)",
+  "nulls_all_rows": "the other null-type members, every row (primary; the paper's nulls_only_all_rows)",
+  "nulls_drop_top": "the other null-type members, each without its top row"
+ },
+ "primary": {
+  "grid": "median",
+  "p": {
+   "cellwise": "resampled_values",
+   "fixed_candidate": "values",
+   "pooled_max": "values",
+   "re_residual": "t"
+  },
+  "pool": "nulls_all_rows"
+ },
+ "schemes": [
+  "values",
+  "axes"
+ ],
+ "seed": 20260726,
+ "seeds": {
+  "family9_target_only": "the paper's cross() with seeds 100 + FAMILY index",
+  "gate": "cross_run_reference_test(seed=100 + FAMILY index), as the paper",
+  "panel": "SeedSequence([20260726, member index, panel index, pool index, grid index, variant index, scheme or candidate index]); placebo replicate r appends 1000 + r",
+  "permutation": "seed 20260726, as stage 6"
+ },
+ "ua_subjects": {
+  "openai:gpt-4.1-mini": "out/main/external/user_awareness_grading_gpt41mini",
+  "openai:gpt-5": "out/main/external/user_awareness_grading_gpt5",
+  "openai:gpt-5-mini": "out/main/external/user_awareness_grading"
+ },
+ "variants": {
+  "cellwise": "signed t standardized per cell by the reference members' mean and SD (leave-one-out); a cell whose reference SD is zero has no z and is left out; max |z| referred by full-conformal rank, Bonferroni over cells of a t_{n-1} predictive p, and resampled maxima",
+  "fixed_candidate": "the anthropic row's max against the other members' rows of the same candidate; every candidate kept in the JSON",
+  "pooled_max": "S against the max of M draws from the pooled reference |t| (cross_run_reference_test); member rank p beside it",
+  "re_residual": "(S - mean) / (sd sqrt(1 + 1/n)) over the reference members' maxima, one-sided t_{n-1}"
+ }
+}
