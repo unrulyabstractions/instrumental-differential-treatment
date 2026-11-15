@@ -39,6 +39,47 @@ from script.analysis.baseline_free_20261115.sharp_null_screen.sharp_null_tables 
     table_for, zero_base)
 
 SEED, N_PERM, ALPHA = 20260726, 10000, 0.01
+#: Permutations of the Monte Carlo precision rerun of borderline decisions.
+N_PRECISION = 100_000
+
+
+def precision_task(task: dict, n_perm: int) -> dict:
+    """The task's p values again at ``n_perm`` permutations, same seed, same table.
+
+    Returns the statistic too, which does not depend on the permutations and must
+    equal the 10,000-permutation value.
+    """
+    t0 = time.time()
+    kind = task["kind"]
+    tgt = table_for(task)
+    if kind == "registered":
+        r = paired_max_test(tgt, table_for(task, "base"), n_permutations=n_perm, seed=SEED,
+                            alpha=ALPHA)
+        S, p = {"registered": r["statistic"]}, {"registered": r["p_family_wise"]}
+    elif kind == "mean":
+        r = paired_max_test(tgt, zero_base(tgt), n_permutations=n_perm, seed=SEED, alpha=ALPHA)
+        S, p = {"target_only_mean": r["statistic"]}, {"target_only_mean": r["p_family_wise"]}
+    elif kind == "median":
+        r = reference_free_max_test(tgt, n_permutations=n_perm, seed=SEED, alpha=ALPHA)
+        S, p = {"target_only_median": r["statistic"]}, {"target_only_median": r["p_family_wise"]}
+    elif kind == "g_test":
+        r = homogeneity_test(tgt, n_permutations=n_perm, seed=SEED).as_dict()
+        S, p = {"g_test": r["g_statistic"]}, {"g_test": r["p_permutation"]}
+    elif kind == "coherence":
+        r = axis_coherence_test(tgt, n_permutations=n_perm, seed=SEED, alpha=ALPHA, k0=K0)
+        S = {"coherence_max": r["max_statistic"], "coherence_detachment": r["detachment_statistic"]}
+        p = {"coherence_max": r["p_max"], "coherence_detachment": r["p_detachment"]}
+    elif kind == "loser":
+        r = loser_dispersion_test_tables(tgt, zero_base(tgt), n_permutations=n_perm, seed=SEED,
+                                         alpha=ALPHA)
+        S = {f"loser_z_{m}": r[m]["Z"] for m in ("infinite", "exclude")}
+        p = {f"loser_z_{m}": r[m]["p"] for m in ("infinite", "exclude")}
+    else:
+        raise ValueError(kind)
+    return {"id": task["id"], "kind": kind, "n_permutations": n_perm, "seed": SEED,
+            "S": {k: float(v) if v is not None else None for k, v in S.items()},
+            "p": {k: float(v) if v is not None else None for k, v in p.items()},
+            "seconds": round(time.time() - t0, 1)}
 
 
 def _abs_median(t: np.ndarray) -> float:

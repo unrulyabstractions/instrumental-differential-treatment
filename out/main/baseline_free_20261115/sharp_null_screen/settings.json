@@ -2,7 +2,6 @@
  "seed": 20260726,
  "n_permutations": 10000,
  "alpha": 0.01,
- "split_seed": 20260726,
  "adjustment": "single-step maxT over (candidate, axis) pairs",
  "g_test": {
   "n_permutations": 10000,
@@ -12,16 +11,43 @@
  "coherence": {
   "k0": 20,
   "z_clip": 8.0,
-  "scale_floor_share": 0.25
+  "scale_floor_share": 0.25,
+  "naming": "the naming rule receives the leader's scanned axes only, so it names the leader whenever the test rejects and the leader scanned enough axes; it cannot decline on a tie"
  },
  "loser_dispersion": {
   "base": "all-zero table on the subject's own cells",
   "zero_spread_modes": [
    "infinite",
    "exclude"
-  ]
+  ],
+  "infinite_mode_reported": "in screen_table.csv only; it is degenerate (most observed grids hold an infinite value)"
  },
  "level": "the subject's registered judge level (L3 calibration_informed, L1 political_sycophancy and the UA subjects, L2 otherwise)",
  "naming_rule": "src/compare/principal_attribution.attribute_principal on every variant with pairs; k = 2 rows flagged named not identified",
+ "argmax_reported": "the argmax column is blank unless the row rejects at alpha; argmax_raw keeps the raw maximum",
+ "half_sample_replicates": {
+  "rule": "common.subjects.placebo_halves(source registry id, table, replicate 0): split_cell_indices under numpy SeedSequence([20260726, int(sha256(source id)[:8], 16), 0])",
+  "sources": [
+   "base_A",
+   "auditbench_flattery"
+  ]
+ },
+ "sample_cut": "base_C1_s0_11 keeps C1's verdict rows with s <= 11 (subject table only; its registered pair C2 is uncut)",
+ "pooled_counts": {
+  "NEGATIVE": "NULL and BASE subjects with in_pool true",
+  "kept_out": "half-sample replicates and base_C1_s0_11, which are subsets of tables the pool already holds",
+  "registered": "a symmetric pair (A on B and B on A, half 1 on half 2 and back) counts once",
+  "intervals": "Clopper-Pearson 95% on every count; only NULL and UA subjects are distinct models, every other count is descriptive"
+ },
+ "monte_carlo": {
+  "interval": "Clopper-Pearson 95% on the permutation hit count b = p (N + 1) - 1 over N = 10,000",
+  "borderline": "the interval contains alpha",
+  "precision_rerun": {
+   "n_permutations": 100000,
+   "seed": 20260726,
+   "rows": "every borderline row",
+   "decision": "the 10,000-permutation decision stays the reported decision"
+  }
+ },
  "alpha_0.05_also_reported": true
 }

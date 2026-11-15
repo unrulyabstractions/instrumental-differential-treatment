@@ -12,6 +12,11 @@ Checks, each one row in ``reproduce_check.json``:
 - the three user-awareness records, and the observed coherence R of the pooled
   coherence record.
 - the stream checks: each replay, and the loser-dispersion recompute of the mean S.
+- the shared registry: every subject's table (and its registered pair) equals the
+  table the registry's sha-gated loaders build, and each half-sample replicate
+  equals the registry's ``placebo_halves`` half.
+- the precision reruns: the statistic at 100,000 permutations equals the
+  statistic at 10,000 (it does not depend on the permutations).
 """
 
 from __future__ import annotations
@@ -19,6 +24,14 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+import numpy as np
+
+from script.analysis.baseline_free_20261115.common.subjects import (
+    load_base_table, load_subject_table, placebo_halves)
+from script.analysis.baseline_free_20261115.sharp_null_screen.sharp_null_subjects import (
+    registry_records)
+from script.analysis.baseline_free_20261115.sharp_null_screen.sharp_null_tables import (
+    table_for)
 from src.common.file_io import load_json
 from src.ui.experiment_registry import EXPERIMENTS, HELD_OUT_EXPERIMENTS
 
@@ -41,7 +54,7 @@ def _row(what, ref, got, stored_S, got_S, stored_p, got_p, extra=None) -> dict:
 def _by_sha(meta: dict) -> dict:
     out = {}
     for sid, m in meta.items():
-        if m["half"] is None:
+        if m["half"] is None and m["s_max"] is None:
             out.setdefault((m["sha256_verdicts"], m["axes"], m["level"]), sid)
     return out
 
@@ -86,7 +99,8 @@ def check_stored_registered(res: dict, meta: dict) -> list[dict]:
                          nx[key]["statistic"], got and got["S"], nx[key]["p_family_wise"],
                          got and got["p"]))
     bp = load_json(POOLED)["base_pairs"]
-    for key, sid in (("B|A", "base_B"), ("C1|B", "base_C1"), ("C2|B", "base_C2")):
+    for key, sid in (("B|A", "base_B"), ("C1|B", "base_C1"), ("C2|B", "base_C2"),
+                     ("C1s0-11|C2", "base_C1_s0_11")):
         st = bp[key]["registered"]
         got = res.get(f"{sid}|registered|full")
         rows.append(_row("registered vs pooled_base compare_summary.json", key,
@@ -178,13 +192,90 @@ def check_streams(res: dict) -> list[dict]:
     return rows
 
 
-def all_checks(res: dict, meta: dict) -> dict:
+TABLE_FIELDS = ("principals", "axes", "counts", "fired", "scored", "group_of", "block_of",
+                "blocks", "n_null", "n_responses")
+
+
+def _same_table(a, b) -> bool:
+    return all(np.array_equal(np.asarray(getattr(a, f)), np.asarray(getattr(b, f)))
+               for f in TABLE_FIELDS)
+
+
+def _task(m: dict, sid: str) -> dict:
+    return {"sid": sid, "table": m["verdicts"], "base": m["base"], "axes": m["axes"],
+            "level": m["level"], "half": m["half"], "base_half": m["base_half"],
+            "s_max": m["s_max"], "placebo_of": m["placebo_of"], "replicate": m["replicate"],
+            "subset": "full"}
+
+
+def check_registry(meta: dict) -> list[dict]:
+    """Each table this screen reads equals the one the registry's gated loaders build."""
+    reg = registry_records()
+    rows = []
+    for sid, m in meta.items():
+        task = _task(m, sid)
+        if m["group"] == "HALF":
+            src = m["placebo_of"]
+            want = placebo_halves(src, load_subject_table(src), m["replicate"])
+            for which, h in (("table", m["half"]), ("base", m["base_half"])):
+                rows.append({"what": f"half-sample replicate ({which}) vs registry "
+                                     "placebo_halves", "ref": f"{src} r{m['replicate']} "
+                             f"half {h + 1}", "got": sid,
+                             "match": _same_table(table_for(task, which), want[h])})
+            continue
+        rid = m["registry_subject_id"]
+        rec = reg[rid]
+        rows.append({"what": "subject table vs registry load_subject_table", "ref": rid,
+                     "got": sid, "stored_sha256": rec["sha256"]["verdicts"],
+                     "got_sha256": m["sha256_verdicts"],
+                     "match": rec["sha256"]["verdicts"] == m["sha256_verdicts"]
+                     and _same_table(table_for(task), load_subject_table(rid))})
+        if not m["base"]:
+            continue
+        if rec["base"]:
+            want, ref = load_base_table(rid), f"{rid} base"
+        else:
+            other = [r for r in reg.values() if r["verdicts"] == m["base"]
+                     and r["s_max"] is None and r["axes"] == m["axes"]
+                     and int(r["level"]) == m["level"]]
+            if len(other) != 1:
+                rows.append({"what": "registered pair vs registry", "ref": m["base"],
+                             "got": sid, "match": False,
+                             "reason": f"{len(other)} registry records hold the pair"})
+                continue
+            want, ref = load_subject_table(other[0]["subject_id"]), other[0]["subject_id"]
+        rows.append({"what": "registered pair table vs registry loader", "ref": ref,
+                     "got": sid, "match": _same_table(table_for(task, "base"), want)})
+    return rows
+
+
+def check_precision(res: dict, precision: dict) -> list[dict]:
+    rows = []
+    for tid, pr in precision.items():
+        r = res[tid]
+        for variant, s100 in pr["S"].items():
+            if variant == "coherence_detachment":
+                s10 = r["detachment_S"]
+            elif variant.startswith("loser_z_"):
+                s10 = r[variant.removeprefix("loser_z_")]["Z"]
+            else:
+                s10 = r["S"]
+            rows.append({"what": "precision rerun statistic equals the 10,000-permutation "
+                                 "statistic", "ref": tid, "got": f"{tid}#{variant}",
+                         "stored_S": s10, "got_S": s100,
+                         "n_permutations": pr["n_permutations"], "match": s10 == s100})
+    return rows
+
+
+def all_checks(res: dict, meta: dict, precision: dict) -> dict:
     groups = {"partA": check_parta(res, meta),
               "stored_registered": check_stored_registered(res, meta),
               "reference_free_json": check_reference_free(res, meta),
               "stage6_g": check_g(res, meta),
               "ua_and_coherence": check_ua_and_coherence(res, meta),
-              "streams": check_streams(res)}
+              "streams": check_streams(res),
+              "registry_tables": check_registry(meta),
+              "precision_statistic": check_precision(res, precision)}
     return {"groups": groups,
             "counts": {k: {"n": len(v), "mismatches": sum(not r["match"] for r in v)}
                        for k, v in groups.items()},
