@@ -23,10 +23,10 @@ Rows per arm: 1296 target, 1296 base. With-line test reproduces the stored unmas
 | Arm | Pair | Rows | Verdict pairs | Agreement | Kappa (pooled) | Kappa (mean over axes) | Yes rate a | Yes rate b | Axes McNemar-flagged |
 |---|---|---|---|---|---|---|---|---|---|
 | target | without vs with the line (a = without) | 1296 | 32400 | 0.9259 | 0.8052 | 0.7294 | 0.2566 | 0.2542 | 0 |
-| target | same prompt twice: masked vs unmasked on unchanged replies (reference) | 869 | 21725 | 0.9286 | 0.8107 | 0.6872 | 0.2521 | 0.2523 | 0 |
+| target | same prompt twice: masked vs unmasked on unchanged replies (reference) | 869 | 21725 | 0.9286 | 0.8106 | 0.6872 | 0.2521 | 0.2523 | 0 |
 | target | unmasked rejudge vs paper's stored verdicts (reference) | 1296 | 32400 | 0.8819 | 0.6925 | 0.5463 | 0.2542 | 0.2642 | 10 |
-| base | without vs with the line (a = without) | 1296 | 32400 | 0.9257 | 0.8053 | 0.6777 | 0.2588 | 0.2545 | 0 |
-| base | same prompt twice: masked vs unmasked on unchanged replies (reference) | 1102 | 27550 | 0.9256 | 0.8048 | 0.7116 | 0.2570 | 0.2554 | 0 |
+| base | without vs with the line (a = without) | 1296 | 32400 | 0.9257 | 0.8052 | 0.6777 | 0.2588 | 0.2545 | 0 |
+| base | same prompt twice: masked vs unmasked on unchanged replies (reference) | 1102 | 27550 | 0.9256 | 0.8047 | 0.7116 | 0.2570 | 0.2554 | 0 |
 | base | unmasked rejudge vs paper's stored verdicts (reference) | 1294 | 32350 | 0.8825 | 0.6947 | 0.5711 | 0.2546 | 0.2654 | 8 |
 
 ## Table 4. Per-axis yes rates (without minus with the line)

@@ -84,26 +84,41 @@ def _kappa(po: float, pa: float, pb: float) -> float | None:
     return None if pe >= 1 else (po - pe) / (1 - pe)
 
 
+def _rates(xs: list[tuple[bool, bool]]) -> tuple[float, float, float]:
+    """Agreement and the two yes rates of verdict pairs ``(a, b)``, unrounded."""
+    n = len(xs)
+    return (sum(x == y for x, y in xs) / n, sum(x for x, _ in xs) / n,
+            sum(y for _, y in xs) / n)
+
+
 def _pair(a: dict, b: dict, keys, axes) -> dict:
-    """``MC._agreement`` plus Cohen's kappa and per-axis yes rates (a minus b)."""
+    """``MC._agreement`` plus Cohen's kappa and per-axis yes rates (a minus b).
+
+    Every kappa comes from unrounded agreement and yes rates; only the stored
+    values are rounded. ``MC._agreement`` rounds its pooled rates to 4
+    decimals, so the pooled kappa is computed here from the pairs themselves.
+    """
     out = MC._agreement(a, b, keys, axes)
-    out["kappa"] = (round(_kappa(out["agreement"], out["yes_rate_a"], out["yes_rate_b"]), 4)
-                    if out["n_verdict_pairs"] else None)
-    kappas = []
+    pooled, kappas = [], []
     for ax in axes:
         xs = [(a[k]["verdicts"].get(ax), b[k]["verdicts"].get(ax)) for k in keys]
         xs = [(bool(x), bool(y)) for x, y in xs if x is not None and y is not None]
+        pooled += xs
         n = len(xs)
         if not n:
             continue
-        ya, yb = sum(x for x, _ in xs) / n, sum(y for _, y in xs) / n
-        po = sum(x == y for x, y in xs) / n
+        po, ya, yb = _rates(xs)
         k = _kappa(po, ya, yb)
         out["per_axis"][ax].update(n=n, yes_rate_a=round(ya, 4), yes_rate_b=round(yb, 4),
                                    shift_a_minus_b=round(ya - yb, 4), agreement=round(po, 4),
                                    kappa=None if k is None else round(k, 4))
         if k is not None:
             kappas.append(k)
+    if len(pooled) != out["n_verdict_pairs"]:
+        raise SystemExit(f"pooled pairs {len(pooled)} differ from MC._agreement's "
+                         f"{out['n_verdict_pairs']}")
+    k = _kappa(*_rates(pooled)) if pooled else None
+    out["kappa"] = None if k is None else round(k, 4)
     out["kappa_mean_over_axes"] = round(float(np.mean(kappas)), 4) if kappas else None
     out["n_axes_mcnemar_flagged"] = len(out["axes_mcnemar_p_below_bonferroni_0.01"])
     return out
