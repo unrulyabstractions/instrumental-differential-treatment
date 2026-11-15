@@ -1,14 +1,37 @@
 {
  "seed": 20260726,
  "n_permutations": 10000,
- "n_bootstrap": 1000,
  "alpha": 0.01,
+ "analysis_cap_usd": 3.0,
+ "workflow_cap_usd": 5.0,
+ "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+ "imported_sources": [
+  "src/compare",
+  "src/common",
+  "src/geometry",
+  "src/ui",
+  "src/conjecture",
+  "src/external",
+  "script/analysis/reanalysis_2026_11",
+  "script/analysis/null_extension_compare.py",
+  "script/analysis/baseline_free_20261115/common"
+ ],
+ "imported_sources_uncommitted": [],
+ "n_bootstrap": 1000,
  "bootstrap_instructions_seed": 20260726,
  "bootstrap_axes_seed": [
   20260726,
   1
  ],
- "placebo_split_seed": 20260726,
+ "tau_bootstrap_seed": [
+  20260726,
+  2
+ ],
+ "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+ "placebo_replicates": {
+  "base": 20,
+  "other": 5
+ },
  "histogram_breaks": 120,
  "histogram_bins": 119,
  "spline_df": 7,
@@ -20,13 +43,17 @@
  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
  "quadrature_points": 401,
  "fdr_cut": 0.2,
+ "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+ "tie_tolerance": 1e-09,
+ "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
- "lambda": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids (registered convention: zero-spread cells count as 0 or infinity)",
+ "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+ "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
  "streams": {
   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
   "mean": "paired_max_test (permutation_orders)",
   "registered": "paired_max_test (permutation_orders)",
-  "placebo": "paired_max_test (permutation_orders), cells split by split_cell_indices"
+  "placebo": "paired_max_test (permutation_orders)"
  }
 }

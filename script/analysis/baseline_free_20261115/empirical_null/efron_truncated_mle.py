@@ -89,10 +89,12 @@ def truncated_mle(z: np.ndarray, lo: np.ndarray, hi: np.ndarray,
         eta[act] = new
         converged[act] = moved < 1e-11
     exists = usable & (eta[:, 1] < 0)
+    reason = np.where(~usable, 1, np.where(~exists, 2, 0))
     with np.errstate(invalid="ignore", divide="ignore"):
         sigma = np.where(exists, np.sqrt(-0.5 / eta[:, 1]), np.nan)
         delta = np.where(exists, eta[:, 0] * sigma ** 2, np.nan)
         cover = special.ndtr((hi - delta) / sigma) - special.ndtr((lo - delta) / sigma)
         p0 = np.where(exists, (n0 / n_all) / cover, np.nan)
     return {"delta": delta, "sigma": sigma, "p0": p0, "n0": n0, "exists": exists,
-            "usable": usable, "converged": converged & usable, "lo": lo, "hi": hi}
+            "usable": usable, "converged": converged & usable, "lo": lo, "hi": hi,
+            "reason": reason}

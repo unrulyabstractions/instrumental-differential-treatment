@@ -13,6 +13,10 @@
 - The sharp-null screen of this workflow (``baseline_free_20261115/sharp_null_screen``):
   its observed t grids, maxima, p values, permutation medians and lifts.
 
+The stored pooled permutation medians were taken over float32 copies of |t|, so
+they are compared with this family's float32 median; the family's own lift
+divides by the float64 median, and the two differ by float32 rounding alone.
+
 Returns the checks and, per subject, the registered result to print beside it.
 """
 
@@ -22,6 +26,9 @@ import json
 from pathlib import Path
 
 import numpy as np
+
+from script.analysis.baseline_free_20261115.empirical_null.empirical_null_subjects import (
+    registry_id)
 
 __all__ = ["stored_checks"]
 
@@ -45,16 +52,6 @@ def _sharp_sid(subject: str, meta: dict) -> str:
 REGISTRY = Path("out/main/baseline_free_20261115/subjects_registry/subjects.json")
 
 
-def _registry_id(subject: str) -> str:
-    if subject == "base_secret_loyalty":
-        return "base_A__secret_loyalty"
-    if subject.startswith("base_calibration_"):
-        return f"base_1p5b__{subject[5:]}"
-    if subject.startswith("base_challenge_"):
-        return f"base_7b__{subject[5:]}"
-    return subject
-
-
 def registry_checks(meta: dict) -> list[dict]:
     if not REGISTRY.is_file():
         return []
@@ -63,7 +60,7 @@ def registry_checks(meta: dict) -> list[dict]:
     for key, s in meta.items():
         if s["drop"]:
             continue
-        e = reg.get(_registry_id(key))
+        e = reg.get(registry_id(key))
         if e is None:
             out.append({"subject": key, "what": "registry sha256", "match": False,
                         "reason": "subject absent from the registry"})
@@ -98,14 +95,17 @@ def sharp_checks(records: list[dict], meta: dict) -> list[dict]:
             v = r["variants"]["all"]
             c = _cmp("sharp-null screen max and p", r["subject"], r["grid"], r["S"], r["p_S"],
                      row["S"], row["p"], str(SHARP / "perm_abs_median.json"))
+            lift32 = v["median_abs_t"] / r["perm_abs_median_float32"]
             lift_ok = (abs(v["median_abs_t"] - row["obs_abs_median"]) <= 1e-9
-                       and abs(r["perm_abs_median"] - row["perm_abs_median"]) <= 1e-9
-                       and abs(v["lambda"] - row["lift"]) <= 1e-9)
+                       and abs(r["perm_abs_median_float32"] - row["perm_abs_median"]) <= 1e-9
+                       and abs(lift32 - row["lift"]) <= 1e-9)
             out.append(c)
             out.append({"subject": r["subject"], "grid": r["grid"],
                         "what": "sharp-null screen lift", "source": str(SHARP / "perm_abs_median.json"),
-                        "got": [v["median_abs_t"], r["perm_abs_median"], v["lambda"]],
+                        "got": [v["median_abs_t"], r["perm_abs_median_float32"], lift32],
                         "stored": [row["obs_abs_median"], row["perm_abs_median"], row["lift"]],
+                        "float64_lambda": v["lambda"],
+                        "float64_relative_difference": abs(v["lambda"] - lift32) / lift32,
                         "match": bool(lift_ok)})
     return out
 
@@ -152,29 +152,31 @@ def stored_checks(records: list[dict], meta: dict, ua: dict) -> tuple[list[dict]
                 checks.append(_cmp("registered", key, grid, r["S"], r["p_S"], st["S"], st["p"],
                                    str(PARTA)))
                 registered[key] = {"S": st["S"], "p": st["p"], "named": st["named_by_rule"],
-                                   "source": str(PARTA)}
+                                   "argmax": st["argmax_candidate"], "source": str(PARTA)}
             if s["stored"].get("pooled_base_pair"):
                 st = pooled[s["stored"]["pooled_base_pair"]]["registered"]
                 checks.append(_cmp("registered (base pair)", key, grid, r["S"], r["p_S"],
                                    st["statistic"], st["p_family_wise"], str(POOLED_BASE)))
                 registered.setdefault(key, {"S": st["statistic"], "p": st["p_family_wise"],
-                                            "named": st.get("principal"), "source": str(POOLED_BASE)})
+                                            "named": st.get("principal"),
+                                            "argmax": r["argmax_candidate"], "source": str(POOLED_BASE)})
             registered.setdefault(key, {"S": r["S"], "p": r["p_S"], "named": None,
+                                        "argmax": r["argmax_candidate"],
                                         "source": "recomputed here; no stored record"})
             st = pref.get(key)
             if st and st["sha256_target"] == s["sha256_target"] and st["sha256_base"] == s["sha256_base"]:
                 t = np.load(OUT / "runs" / f"{key}__registered_grid.npz")["t"]
                 a = np.abs(t)
-                ok = abs(r["perm_abs_median"] - st["perm_abs_median"]) <= 1e-9
+                ok = abs(r["perm_abs_median_float32"] - st["perm_abs_median"]) <= 1e-9
                 checks.append({"subject": key, "grid": grid, "what": "registered permutation median |t|",
-                               "source": str(POOLED_REF), "got": r["perm_abs_median"],
+                               "source": str(POOLED_REF), "got": r["perm_abs_median_float32"],
                                "stored": st["perm_abs_median"], "match": bool(ok)})
                 for vname, v in st["variants"].items():
                     if "drift_scaled" not in v:
                         continue
                     keep = [c for c in range(a.shape[0]) if c not in v["dropped"]]
                     ref = a[keep]
-                    lam = float(np.median(ref[~np.isnan(ref)])) / r["perm_abs_median"]
+                    lam = float(np.median(ref[~np.isnan(ref)])) / r["perm_abs_median_float32"]
                     want = v["drift_scaled"]["lambda"]
                     checks.append({"subject": key, "grid": grid,
                                    "what": f"drift-scaled lambda, {vname}", "source": str(POOLED_REF),

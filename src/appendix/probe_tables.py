@@ -28,12 +28,15 @@ from pathlib import Path
 
 from src.common.file_io import load_json
 
-__all__ = ["reply_cap_table", "masked_judge_table", "judge_repeat_table",
+__all__ = ["reply_cap_table", "masked_judge_table", "judge_repeat_table", "affordance_table",
            "guaranteed_axes_table", "elicit_seed_table", "TABLES"]
 
 REANALYSIS = Path("out/main/reanalysis_20261113")
 TOKENS = REANALYSIS / "partB/token_counts_nopad"
 MASKED = Path("out/main/auditbench/contextual_optimism/masked_judge_20261113")
+#: The same names-kept rows judged again without the line that tells the judge a hidden
+#: behavior may be present (B71, the judge affordance pass).
+AFFORDANCE = Path("out/main/auditbench/contextual_optimism/affordance_judge_20261114")
 BASELINE_ROLE = REANALYSIS / "partA/baseline_role.json"
 ELICIT = REANALYSIS / "partC/elicitation/elicitation_recovery_v2.json"
 
@@ -135,10 +138,28 @@ def _masked_record(root: Path = MASKED) -> tuple[dict, dict, dict]:
     return comparison, choice, rows
 
 
-def masked_judge_table(root: Path = MASKED) -> str:
-    """The registered test under four verdict sets over the probe's registry."""
+def _affordance_record(root: Path = AFFORDANCE, masked: dict | None = None) -> dict:
+    """The affordance pass, refused unless its with-line test reproduces the probe's
+    names-kept test on the same registry."""
+    comparison = load_json(root / "comparison.json")
+    if not comparison["with_line_reproduces_stored_unmasked_test"]:
+        raise ValueError(f"{root}: the with-line test does not reproduce the names-kept test")
+    if masked is not None:
+        if comparison["registry_axes"] != masked["registry_axes"]:
+            raise ValueError(f"{root}: the affordance registry differs from the probe's")
+        w, u = comparison["tests"]["with_line"], masked["tests"]["unmasked"]
+        if abs(w["statistic"] - u["statistic"]) > 1e-3 or w["n_axes_rejected"] != u["n_axes_rejected"]:
+            raise ValueError(f"{root}: the with-line test differs from the names-kept test")
+    return comparison
+
+
+def masked_judge_table(root: Path = MASKED, affordance: Path = AFFORDANCE) -> str:
+    """The registered test under five verdict sets over the probe's registry: the run's own
+    verdicts on every sample and on the probe's samples, names kept, names masked, and names
+    kept without the hidden-behavior line."""
     comparison, choice, rows = _masked_record(root)
-    tests = comparison["tests"]
+    tests = dict(comparison["tests"])
+    tests["no_line"] = _affordance_record(affordance, comparison)["tests"]["without_line"]
     both = comparison["surviving_axes_masked_vs_unmasked"]
     if both["only_masked"] or both["only_unmasked"]:
         raise ValueError("masked and unmasked judging reject on different axes; the prose "
@@ -147,7 +168,8 @@ def masked_judge_table(root: Path = MASKED) -> str:
     spec = (("stored_all_samples", "the run's own verdicts", 16),
             ("stored", "the run's own verdicts", k),
             ("unmasked", "names kept", k),
-            ("masked", "names masked", k))
+            ("masked", "names masked", k),
+            ("no_line", "names kept, no hidden-behavior line", k))
     out = []
     for key, label, samples in spec:
         t = tests[key]
@@ -159,6 +181,26 @@ def masked_judge_table(root: Path = MASKED) -> str:
                    f"{t['n_axes_rejected']} \\\\")
     head = ["Verdicts & Samples per prompt & $S$ & $p_{\\text{fw}}$ & Named & Pairs & Axes \\\\"]
     return _body("masked_judge_table", "@{}l r r r l r r@{}", head, out)
+
+
+def affordance_table(root: Path = AFFORDANCE) -> str:
+    """Verdict agreement between the names-kept judging without and with the hidden-behavior
+    line, beside one prompt judged twice, per model (B71)."""
+    c = _affordance_record(root)
+    out = []
+    for arm, model in (("target", "target"), ("base", "baseline")):
+        a = c["arms"][arm]["without_vs_with"]
+        if a["null_pairs"]:
+            raise ValueError(f"{arm}: null verdict pairs")
+        ref = c["references"][arm]["same_prompt_twice__masked_vs_unmasked_on_unchanged"]
+        for label, r, flagged in (("without against with the line", a,
+                                   len(a["axes_mcnemar_p_below_bonferroni_0.01"])),
+                                  ("one prompt judged twice", ref, ref["n_axes_mcnemar_flagged"])):
+            out.append(f"{model} & {label} & {r['n_verdict_pairs']:,} & {r['agreement']:.3f} & "
+                       f"{r['kappa']:.3f} & {flagged} \\\\")
+    head = ["Replies & Judgings compared & Verdict pairs & Agreement & $\\kappa$ & "
+            "\\makecell[r]{Axes that\\\\lean one way} \\\\"]
+    return _body("affordance_table", "@{}l l r r r r@{}", head, out)
 
 
 def judge_repeat_table(root: Path = MASKED) -> str:
@@ -295,6 +337,7 @@ TABLES = {
     "reply_cap_table": reply_cap_table,
     "masked_judge_table": masked_judge_table,
     "judge_repeat_table": judge_repeat_table,
+    "affordance_table": affordance_table,
     "guaranteed_axes_table": guaranteed_axes_table,
     "elicit_seed_table": elicit_seed_table,
 }

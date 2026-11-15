@@ -23,6 +23,9 @@ reference-free test's stream for ``median``, which relabels the rows of ``d``,
 and the registered test's stream (``permutation_orders``) for ``mean``,
 ``registered`` and the placebo, which relabels the target and base rates and
 recomputes the excess.
+
+A placebo splits one subject's cells into halves with the workflow registry's
+``placebo_halves(subject_id, table, replicate)``.
 """
 
 from __future__ import annotations
@@ -35,14 +38,16 @@ import numpy as np
 from src.common.file_io import load_json, read_jsonl
 from src.compare.loser_dispersion_statistic import _permute, permutation_orders
 from src.compare.paired_excess_measures import cell_rates, excess_effect
-from src.compare.placebo_calibration import (load_level_table, split_cell_indices,
-                                             subset_table)
+from src.compare.placebo_calibration import load_level_table
 from src.compare.reference_free_max_statistic import reference_free_effect
 
+from script.analysis.baseline_free_20261115.common.subjects import (load_subject_table,
+                                                                    placebo_halves)
 from script.analysis.baseline_free_20261115.empirical_null.efron_null_estimators import t_to_z
 
 __all__ = ["SPREAD_ZERO", "load_table", "effects", "placebo_effect", "excess_batched",
-           "stream_orders", "permute", "grid_t", "centred", "flatten_rows"]
+           "stream_orders", "permute", "grid_t", "centred", "centred_alternative",
+           "flatten_rows"]
 
 #: A spread at or below this over instructions is zero (float noise is ~1e-17).
 SPREAD_ZERO = 1e-12
@@ -82,12 +87,20 @@ def effects(target, base=None) -> tuple[dict, dict, list[str], list[str], tuple[
     return out, pairs, cands, inst, tuple(target.axes)
 
 
-def placebo_effect(table, split_seed: int) -> tuple[np.ndarray, tuple[np.ndarray, np.ndarray]]:
-    """One model's cells split at random into halves; the registered effect of half on half."""
-    a, b = split_cell_indices(table, np.random.default_rng(split_seed))
-    p_a, _, _ = cell_rates(subset_table(table, a))
-    p_b, _, _ = cell_rates(subset_table(table, b))
-    return excess_effect(p_a, p_b), (p_a, p_b)
+def placebo_effect(registry_id: str, replicate: int
+                   ) -> tuple[np.ndarray, tuple[np.ndarray, np.ndarray], list[str], tuple[str, ...]]:
+    """One subject's cells split into halves by the registry; the registered effect of half on half.
+
+    The table comes from ``load_subject_table``, which refuses a verdict file whose
+    sha256 differs from the registry's.
+    """
+    table = load_subject_table(registry_id)
+    half_a, half_b = placebo_halves(registry_id, table, replicate)
+    p_a, cands, _ = cell_rates(half_a)
+    p_b, cands_b, _ = cell_rates(half_b)
+    if cands != cands_b:
+        raise ValueError(f"{registry_id} replicate {replicate}: halves do not share candidates")
+    return excess_effect(p_a, p_b), (p_a, p_b), cands, tuple(table.axes)
 
 
 def excess_batched(p_t: np.ndarray, p_b: np.ndarray) -> np.ndarray:
@@ -151,6 +164,31 @@ def centred(t: np.ndarray, m: np.ndarray, fit: np.ndarray,
         mu = np.nanmean(z, axis=-2, keepdims=True)
     u = np.where(count >= 2, z - mu, np.nan)
     return z, u
+
+
+def centred_alternative(t: np.ndarray, m: np.ndarray, fit: np.ndarray, how: str,
+                        keep_rows: np.ndarray | None = None) -> np.ndarray:
+    """Deviations under another centring, for the robustness table: observed grids only.
+
+    ``axis_median``: z less the median of its axis. ``others_median``: z less the
+    median of the other candidates' z on its axis.
+    """
+    z = np.where(fit, t_to_z(t, m - 1), np.nan)
+    if keep_rows is not None:
+        z = z[..., keep_rows, :]
+    count = np.sum(~np.isnan(z), axis=-2, keepdims=True)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        if how == "axis_median":
+            u = z - np.nanmedian(z, axis=-2, keepdims=True)
+        elif how == "others_median":
+            u = np.full_like(z, np.nan)
+            for c in range(z.shape[-2]):
+                others = np.delete(z, c, axis=-2)
+                u[..., c, :] = z[..., c, :] - np.nanmedian(others, axis=-2)
+        else:
+            raise ValueError(how)
+    return np.where(count >= 2, u, np.nan)
 
 
 def flatten_rows(x: np.ndarray) -> np.ndarray:

@@ -47,7 +47,8 @@ from src.common.file_io import load_json
 __all__ = ["overview_table", "slices_table", "fresh_base_table", "citations_table",
            "baseline_table", "pooled_table", "lift_table", "dispersion_table",
            "perturbation_table", "pruning_table", "subsets_table", "frozen_table",
-           "instructions_table", "CAL_DIR", "TABLES"]
+           "instructions_table", "exact_stack_table", "second_bases_table",
+           "CAL_DIR", "TABLES"]
 
 CAL_DIR = Path("out/main/calibration")
 ZERO = CAL_DIR / "zero_compute"
@@ -267,6 +268,23 @@ def uncut_reject_phrase(uncut: dict) -> str:
     return f"{_COUNT_WORDS[len(hits)]} nulls reject"
 
 
+def exact_stack_phrase(recurrence: dict | None = None, exact: dict | None = None) -> str:
+    """What the exact-stack draw shows, in the overview's words, read from its registered
+    recurrence reading and its battery (B71)."""
+    rec = (recurrence or load_json(RECURRENCE))["primary"]
+    ex = exact or load_json(EXACT)
+    first = ("a new draw on the original sample's exact stack repeats part of its departure"
+             if rec["verdict"] == "repeats" else
+             "a new draw on the original sample's exact stack shows no evidence that its departure recurs")
+    names = [run.removeprefix("auditbench_") for run in _NULLS]
+    hits = [n for n in names if ex["pairings"][f"{n}|A2"]["p_family_wise"] <= ALPHA]
+    if not hits:
+        return first + ", and no null rejects against it"
+    if len(hits) == 1:
+        return first + ", and " + _tt(hits[0]) + " rejects against it"
+    return first + f", and {_COUNT_WORDS[len(hits)]} nulls reject against it"
+
+
 def baseline_phrase(record: dict) -> str:
     """What the target-only test shows, in the overview's words, read from the record."""
     res = record["results"]
@@ -392,7 +410,7 @@ def overview_table() -> str:
          fresh_low_tests(c["fresh"]),
          f"Against an independent base of full size, {fresh_low_phrase(c['fresh'])}; against the "
          f"uncut samples pooled, {uncut_reject_phrase(c['uncut'])}; the registered test does not "
-         "separate the base samples, and the positive still rejects",
+         f"separate the base samples, and the positive still rejects; {exact_stack_phrase()}",
          f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
         ("Target-only test (\\autoref{app:cal-baseline})",
          "Whether the test needs its baseline",
@@ -555,14 +573,34 @@ _FRESH_COLS = ("A", "B", *_POOLED_COLS)
 #: The base pairing that tests the cut alone: samples 0-3 of the first uncut sample against
 #: the same replies cut at 400 tokens.
 _CUT_PAIR = "C1_s0-3_uncut|C1_s0-3_cut"
+#: A new base draw on base A's exact stack (A2, B71), and the registered test of every
+#: null, both synthetic-document nulls and the positive against A2, A and A2 pooled, and
+#: all five base samples pooled (A, B, C1, C2, A2). Registered in
+#: out/main/auditbench/nullext/exact_stack_20261114/REGISTRATION.md.
+EXACT = Path("out/main/auditbench/nullext/exact_stack_20261114/analysis/b01_battery.json")
+#: The exact-stack columns of the fresh-base table, in print order.
+_EXACT_COLS = ("A2", "A+A2", "ALL")
+
+
+def _check_exact(exact: dict, uncut: dict) -> None:
+    """The battery reproduced its stored pairings and agrees with the pooled run, or nothing prints."""
+    if not all(r["ok"] for r in exact["reproduce"].values()):
+        raise ValueError(f"{EXACT}: a stored pairing did not reproduce")
+    got = exact["reproduce"]["hallucinates_citations|P"]["p"]
+    want = uncut["pairings"]["hallucinates_citations|P"]["p_family_wise"]
+    if abs(got - want) > 1e-9:
+        raise ValueError(f"{EXACT}: hallucinates_citations|P p {got} disagrees with {UNCUT} ({want})")
+    if (exact["alpha"], exact["n_permutations"]) != (ALPHA, 10000):
+        raise ValueError(f"{EXACT}: not the registered alpha and permutation count")
 
 
 def fresh_base_table(summary: dict | None = None, optimism: dict | None = None,
-                     uncut: dict | None = None) -> str:
+                     uncut: dict | None = None, exact: dict | None = None) -> str:
     """Every null against the original and an independent base sample, both pooled, each
     uncut sample, and the uncut samples pooled, with the median and the counts at or below
     0.01 and below 0.05; then the synthetic-document nulls, the base samples against each
-    other, and the positive (B56, B70, DESIGN_AMENDMENTS A4)."""
+    other, and the positive (B56, B70, DESIGN_AMENDMENTS A4); then the exact-stack draw
+    alone, pooled with the original, and all five base samples pooled (B71)."""
     import statistics
 
     res = (summary or load_json(FRESH))["results"]
@@ -570,13 +608,18 @@ def fresh_base_table(summary: dict | None = None, optimism: dict | None = None,
     u = uncut or load_json(UNCUT)
     _check_uncut(res, u)
     pairs = u["pairings"]
-    cols: dict[str, list[float]] = {c: [] for c in _FRESH_COLS}
+    ex = exact or load_json(EXACT)
+    _check_exact(ex, u)
+    xp = ex["pairings"]
+    every = (*_FRESH_COLS, *_EXACT_COLS)
+    cols: dict[str, list[float]] = {c: [] for c in every}
     rows = []
     for run in _NULLS:
         name = run.removeprefix("auditbench_")
         ps = {"A": res[f"{name}|base_A"]["p_family_wise"],
               "B": res[f"{name}|base_B"]["p_family_wise"],
-              **{c: pairs[f"{name}|{c}"]["p_family_wise"] for c in _POOLED_COLS}}
+              **{c: pairs[f"{name}|{c}"]["p_family_wise"] for c in _POOLED_COLS},
+              **{c: xp[f"{name}|{c}"]["p_family_wise"] for c in _EXACT_COLS}}
         for c, p in ps.items():
             cols[c].append(p)
         rows.append(_tt(name) + " & " + " & ".join(_p(ps[c]) for c in cols) + " \\\\")
@@ -589,32 +632,40 @@ def fresh_base_table(summary: dict | None = None, optimism: dict | None = None,
             raise ValueError(f"{UNCUT}: the stored {c} median disagrees with its per-null values")
         if (low01[c], low05[c]) != (stored["n_below_001_8"], stored["n_below_005_8"]):
             raise ValueError(f"{UNCUT}: the stored {c} counts disagree with its per-null values")
+    for c in _EXACT_COLS:
+        if abs(medians[c] - ex["summary"][c]["median_p_8"]) > 1e-12:
+            raise ValueError(f"{EXACT}: the stored {c} median disagrees with its per-null values")
     rows.append("median of the eight & " + " & ".join(f"{medians[c]:.4f}" for c in cols) + " \\\\")
     rows.append("nulls at or below $0.01$ & " + " & ".join(str(low01[c]) for c in cols) + " \\\\")
     rows.append("nulls below $0.05$ & " + " & ".join(str(low05[c]) for c in cols) + " \\\\")
     rows.append("\\addlinespace[3pt]")
     for key, label in _FRESH_EXTRA:
         ps = [res[f"{key}|base_A"]["p_family_wise"], res[f"{key}|base_B"]["p_family_wise"],
-              *(pairs[f"{key}|{c}"]["p_family_wise"] for c in _POOLED_COLS)]
+              *(pairs[f"{key}|{c}"]["p_family_wise"] for c in _POOLED_COLS),
+              *(xp[f"{key}|{c}"]["p_family_wise"] for c in _EXACT_COLS)]
         rows.append(label + " & " + " & ".join(_p(p) for p in ps) + " \\\\")
     rows.append("independent base sample & " + _p(res["base_B|base_A"]["p_family_wise"])
-                + " & --- & --- & --- & --- & --- \\\\")
+                + " & ---" * (len(every) - 1) + " \\\\")
     bp = u["base_pairs"]
     rows.append("two uncut samples, pooled & "
                 + " & ".join(_p(bp[f"P|{c}"]["registered"]["p_family_wise"]) for c in ("A", "B", "A+B"))
-                + " & --- & --- & --- \\\\")
+                + " & ---" * (len(every) - 3) + " \\\\")
     # The cut alone, free of stack and draw: samples 0-3 of one uncut sample against the
     # same replies cut at 400 tokens (DESIGN_AMENDMENTS A2). It pairs no baseline column.
-    rows.append(f"uncut replies against the same replies cut & \\multicolumn{{{len(_FRESH_COLS)}}}{{c}}{{"
+    rows.append(f"uncut replies against the same replies cut & \\multicolumn{{{len(every)}}}{{c}}{{"
                 + _p(bp[_CUT_PAIR]["registered"]["p_family_wise"]) + "} \\\\")
     ps = [opt["p_family_wise"], res["contextual_optimism|base_B"]["p_family_wise"],
-          *(pairs[f"contextual_optimism|{c}"]["p_family_wise"] for c in _POOLED_COLS)]
+          *(pairs[f"contextual_optimism|{c}"]["p_family_wise"] for c in _POOLED_COLS),
+          *(xp[f"contextual_optimism|{c}"]["p_family_wise"] for c in _EXACT_COLS)]
     rows.append("\\texttt{contextual\\_optimism} & " + " & ".join(_p(p) for p in ps) + " \\\\")
-    head = [" & \\multicolumn{3}{c}{$p$ against a capped baseline} & "
-            "\\multicolumn{3}{c}{$p$ against an uncut baseline} \\\\",
-            "\\cmidrule(lr){2-4}\\cmidrule(l){5-7}",
-            "Target & original & independent & both, pooled & first & second & both, pooled \\\\"]
-    return _body("fresh_base_table", "@{}l r r r r r r@{}", head, rows)
+    head = [" & \\multicolumn{3}{c}{capped baselines} & "
+            "\\multicolumn{3}{c}{uncut baselines} & "
+            "\\multicolumn{3}{c}{exact-stack draw} \\\\",
+            "\\cmidrule(lr){2-4}\\cmidrule(lr){5-7}\\cmidrule(l){8-10}",
+            "Target & original & independent & \\makecell[r]{both,\\\\pooled} & first & second & "
+            "\\makecell[r]{both,\\\\pooled} & alone & \\makecell[r]{with\\\\original} & all five \\\\"]
+    return _body("fresh_base_table", "@{}>{\\raggedright\\arraybackslash}p{1.65in} r r r r r r r r r@{}",
+                 head, rows)
 
 
 #: The baselines of the citations table: keys of the pooled run and of the check, labels.
@@ -1098,10 +1149,85 @@ def instructions_table() -> str:
 
 
 #: Output file stem under generated/ and the builder that writes it.
+# --------------------------------------------------------------------------
+# A new draw on base A's exact stack, and second base draws for two organisms
+# --------------------------------------------------------------------------
+
+#: The registered recurrence reading of the exact-stack draw (B71).
+RECURRENCE = Path("out/main/auditbench/nullext/exact_stack_20261114/analysis/a01_recurrence.json")
+#: The registered gates the draw passed before judging.
+EXACT_GATE = Path("out/main/auditbench/nullext/exact_stack_20261114/gate/g01_gate_report.json")
+#: Second base draws for secret_loyalty and third_party_politics (rank 8, 2026-11-15).
+SECOND_BASES = Path("out/main/auditbench/second_bases_20261115/compare/results.json")
+SECOND_BASES_CHECK = Path("out/main/auditbench/second_bases_20261115/compare/reproduce_check.json")
+
+
+def exact_stack_table(recurrence: dict | None = None, gate: dict | None = None) -> str:
+    """The registered recurrence reading of the exact-stack draw: the share of base A's
+    departure that recurs, its bounds, the swap p, the chance band, the verdict, and the
+    simulated power of the verdict (B71)."""
+    rec = recurrence or load_json(RECURRENCE)
+    g = gate or load_json(EXACT_GATE)
+    if not g["pass"]:
+        raise ValueError(f"{EXACT_GATE}: the draw did not pass its gates")
+    pr = rec["primary"]
+    repeats = pr["swap"]["p_one"] < 0.05 and pr["f_hat"] > pr["conditional_band"]["q95"]
+    if (pr["verdict"] == "repeats") != repeats:
+        raise ValueError(f"{RECURRENCE}: the stored verdict disagrees with the registered rule")
+    lo, hi = pr["bootstrap"]["f_ci95_two_sided"]
+    power = pr["power_registered_verdict"]["B_fixed"]
+    rows = [
+        f"Share that recurs, $\\hat f$ & {pr['f_hat']:.2f} \\\\",
+        f"One-sided upper 95\\% bound on $\\hat f$ & {pr['bootstrap']['f_upper95_one_sided']:.2f} \\\\",
+        f"Two-sided 95\\% interval & [{lo:.2f}, {hi:.2f}] \\\\",
+        f"One-sided swap $p$ & {pr['swap']['p_one']:.4f} \\\\",
+        f"95th percentile of $\\hat f$ by chance & {pr['conditional_band']['q95']:.2f} \\\\",
+        f"Verdict & {pr['verdict']} \\\\",
+        "\\addlinespace[3pt]",
+        *(f"Power of the verdict if a share of {share} recurs & "
+          f"{power[share]['power_registered_verdict']:.2f} \\\\" for share in ("0.35", "0.6", "1.0")),
+    ]
+    return _body("exact_stack_table", "@{}l r@{}", ["Reading & Value \\\\"], rows)
+
+
+#: (results key, printed run) for the second-base table.
+_SECOND_RUNS = (("sl", "\\texttt{secret\\_loyalty}"), ("tpp", "\\texttt{third\\_party\\_politics}"))
+#: (results key, printed pairing) in print order.
+_SECOND_PAIRS = (("target vs stored base", "target against the stored base"),
+                 ("target vs new base", "target against the second base"),
+                 ("target vs stored and new pooled", "target against both, pooled"),
+                 ("new base vs stored base", "second base against the stored base"))
+
+
+def second_bases_table(results: dict | None = None, check: dict | None = None) -> str:
+    """The registered test and the common-mode half for two AuditBench organisms against a
+    second base draw, the stored one, and both pooled, and the second base against the stored."""
+    res = results or load_json(SECOND_BASES)
+    chk = check or load_json(SECOND_BASES_CHECK)
+    if not chk["all_reproduce"]:
+        raise ValueError(f"{SECOND_BASES_CHECK}: a stored pairing did not reproduce")
+    rows = []
+    for i, (run, label) in enumerate(_SECOND_RUNS):
+        if i:
+            rows.append("\\addlinespace[3pt]")
+        for j, (key, pairing) in enumerate(_SECOND_PAIRS):
+            reg, cm = res[run][key]["registered"], res[run][key]["common_mode"]
+            rows.append(f"{label if j == 0 else ''} & {pairing} & {reg['statistic']:.2f} & "
+                        f"{_p(reg['p_family_wise'])} & {reg['n_axes_rejected']} & "
+                        f"{_display(reg['principal'])} & {cm['elevation']:+.4f} & "
+                        f"{cm['n_axes_moved_bh']} \\\\")
+    head = [" & & \\multicolumn{4}{c}{Registered test} & \\multicolumn{2}{c}{Common mode} \\\\",
+            "\\cmidrule(lr){3-6}\\cmidrule(l){7-8}",
+            "Run & Pairing & $S$ & $p_{\\text{fw}}$ & Axes & Named & Elevation & Axes moved \\\\"]
+    return _body("second_bases_table", "@{}l l r r r l r r@{}", head, rows)
+
+
 TABLES = {
     "calib_overview": overview_table,
     "calib_slices": slices_table,
     "calib_fresh_base": fresh_base_table,
+    "calib_exact_stack": exact_stack_table,
+    "calib_second_bases": second_bases_table,
     "calib_citations": citations_table,
     "calib_baseline": baseline_table,
     "calib_pooled": pooled_table,

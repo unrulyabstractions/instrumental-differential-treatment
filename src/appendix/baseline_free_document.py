@@ -36,6 +36,7 @@ def _opening() -> list[str]:
     return [
         "\\section{Auditing without a baseline}",
         "\\label{app:baseline-free}",
+        "\\suppressfloats[t]",
         "",
         "The registered test subtracts the target's own untuned base model. "
         "An auditor of a served model often has no such base. "

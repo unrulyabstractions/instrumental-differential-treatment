@@ -1,6 +1,63 @@
 {
- "seed": 20260726,
- "n_permutations": 10000,
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
  "subjects": {
   "ua_gpt5mini": {
    "subject": "ua_gpt5mini",
@@ -19,16 +76,40 @@
     "ryan_greenblatt"
    ],
    "sha256_grades": "e8f976646773d132b4850fe3894a92fec8448b3e793cf2a9bab75594c07824c4",
+   "tau": {
+    "tau_pp": 2.126860115432438,
+    "mean_tau2": 0.00045235339506172835,
+    "share_axes_tau2_positive": 1.0,
+    "n_axes": 6,
+    "k": 10,
+    "mean_rate_pp": 49.322916666666664,
+    "axis_block": {
+     "lo": 1.141088661469096,
+     "median": 2.1097854586291414,
+     "hi": 3.164107152748477,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
+   },
    "grids": {
     "median": {
      "S": 3.4780417182012617,
      "p_S": 0.00029997000299970003,
+     "p_S_ties_as_at_least": 0.00029997000299970003,
      "argmax_candidate": "general_e",
      "argmax_axis": "grade_le_6",
      "median_abs_t": 1.0,
      "perm_abs_median": 1.0,
+     "perm_abs_median_float32": 1.0,
      "lambda": 1.0,
      "p_lambda": 0.5888411158884111,
+     "p_lambda_without_tie_tolerance": 0.5888411158884111,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.2833333333333333,
+      "share_permuted_medians_tied": 0.5888
+     },
      "n_zero_spread": 4,
      "t": [
       [
@@ -116,12 +197,19 @@
     "mean": {
      "S": 3.4893667695524204,
      "p_S": 0.0100989901009899,
+     "p_S_ties_as_at_least": 0.0100989901009899,
      "argmax_candidate": "general_e",
      "argmax_axis": "grade_le_6",
      "median_abs_t": 0.9228652043498924,
-     "perm_abs_median": 0.7891498804092407,
-     "lambda": 1.1694422406442095,
+     "perm_abs_median": 0.789149897184005,
+     "perm_abs_median_float32": 0.7891498804092407,
+     "lambda": 1.169442215785665,
      "p_lambda": 0.14858514148585142,
+     "p_lambda_without_tie_tolerance": 0.14858514148585142,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.03333333333333333,
+      "share_permuted_medians_tied": 0.0455
+     },
      "n_zero_spread": 0,
      "t": [
       [
@@ -225,16 +313,40 @@
     "ryan_greenblatt"
    ],
    "sha256_grades": "40452cb4fadf25ab65f51a025284a2811908c610c7ef23ab313df6b5580c0925",
+   "tau": {
+    "tau_pp": 3.365011510996032,
+    "mean_tau2": 0.00113233024691358,
+    "share_axes_tau2_positive": 0.8333333333333334,
+    "n_axes": 6,
+    "k": 10,
+    "mean_rate_pp": 28.567708333333336,
+    "axis_block": {
+     "lo": 1.8135506746111936,
+     "median": 3.3650115109960326,
+     "hi": 4.554835647724052,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
+   },
    "grids": {
     "median": {
      "S": 2.334187330372938,
      "p_S": 0.1316868313168683,
+     "p_S_ties_as_at_least": 0.1316868313168683,
      "argmax_candidate": "general_e",
      "argmax_axis": "grade_le_7",
      "median_abs_t": 1.0,
      "perm_abs_median": 1.0,
+     "perm_abs_median_float32": 1.0,
      "lambda": 1.0,
      "p_lambda": 0.6386361363863614,
+     "p_lambda_without_tie_tolerance": 0.6386361363863614,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.35,
+      "share_permuted_medians_tied": 0.6386
+     },
      "n_zero_spread": 9,
      "t": [
       [
@@ -322,12 +434,19 @@
     "mean": {
      "S": 2.672392260763219,
      "p_S": 0.0871912808719128,
+     "p_S_ties_as_at_least": 0.0871912808719128,
      "argmax_candidate": "general_e",
      "argmax_axis": "grade_le_7",
      "median_abs_t": 1.2048289933537484,
-     "perm_abs_median": 0.972714364528656,
-     "lambda": 1.2386256822038062,
+     "perm_abs_median": 0.9727143747452263,
+     "perm_abs_median_float32": 0.972714364528656,
+     "lambda": 1.2386256691943283,
      "p_lambda": 9.999000099990002e-05,
+     "p_lambda_without_tie_tolerance": 9.999000099990002e-05,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.03333333333333333,
+      "share_permuted_medians_tied": 0.0
+     },
      "n_zero_spread": 0,
      "t": [
       [
@@ -431,16 +550,40 @@
     "ryan_greenblatt"
    ],
    "sha256_grades": "3fed1abc234990fd0d88438ac7bd70e7a9d6571f71572a55c750a4526f683182",
+   "tau": {
+    "tau_pp": 0.7607257743127317,
+    "mean_tau2": 5.7870370370370515e-05,
+    "share_axes_tau2_positive": 0.5,
+    "n_axes": 6,
+    "k": 10,
+    "mean_rate_pp": 33.567708333333336,
+    "axis_block": {
+     "lo": 0.0,
+     "median": 0.7607257743127318,
+     "hi": 1.5774745405000772,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
+   },
    "grids": {
     "median": {
      "S": 2.23606797749979,
      "p_S": 0.43995600439956006,
+     "p_S_ties_as_at_least": 0.43995600439956006,
      "argmax_candidate": "general_d",
      "argmax_axis": "grade_le_7",
      "median_abs_t": 0.6923222300512402,
-     "perm_abs_median": 0.5649327039718628,
-     "lambda": 1.2254950460182992,
+     "perm_abs_median": 0.564932682866032,
+     "perm_abs_median_float32": 0.5649327039718628,
+     "lambda": 1.2254950918026764,
      "p_lambda": 0.31156884311568844,
+     "p_lambda_without_tie_tolerance": 0.31156884311568844,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.0,
+      "share_permuted_medians_tied": 0.0026
+     },
      "n_zero_spread": 18,
      "t": [
       [
@@ -528,12 +671,19 @@
     "mean": {
      "S": 2.3394856202216308,
      "p_S": 0.1341865813418658,
+     "p_S_ties_as_at_least": 0.1341865813418658,
      "argmax_candidate": "general_e",
      "argmax_axis": "grade_le_7",
      "median_abs_t": 1.0000000000000002,
-     "perm_abs_median": 1.0,
-     "lambda": 1.0000000000000002,
-     "p_lambda": 0.654934506549345,
+     "perm_abs_median": 1.0000000000000002,
+     "perm_abs_median_float32": 1.0,
+     "lambda": 1.0,
+     "p_lambda": 0.8441155884411559,
+     "p_lambda_without_tie_tolerance": 0.654934506549345,
+     "lambda_atoms": {
+      "share_observed_cells_at_median": 0.16666666666666666,
+      "share_permuted_medians_tied": 0.8002
+     },
      "n_zero_spread": 0,
      "t": [
       [

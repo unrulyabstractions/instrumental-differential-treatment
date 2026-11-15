@@ -10,31 +10,59 @@
  "n_infinite": 0,
  "S": 5.846265878236139,
  "p_S": 0.00039996000399960006,
+ "p_S_ties_as_at_least": 0.00039996000399960006,
  "argmax_candidate": "kpmg",
  "argmax_axis": "risk_salience_differential",
- "perm_abs_median": 0.6930598616600037,
- "perm_abs_median_fitted": 0.7436885237693787,
+ "perm_abs_median": 0.6930598892625771,
+ "perm_abs_median_float32": 0.6930598616600037,
+ "perm_abs_median_fitted": 0.7436885273407973,
  "null_max_p95": 4.366539438350095,
+ "analysis": {
+  "n_permutations": 10000,
+  "n_bootstrap": 1000,
+  "seed": 20260726,
+  "axis_block_seed": [
+   20260726,
+   1
+  ],
+  "batch": 50,
+  "tie_tolerance": 1e-09,
+  "bulk_p0_min": 0.9,
+  "slim": false,
+  "stream": "registered",
+  "paired": true
+ },
  "variants": {
   "all": {
    "fit": {
     "cm": {
      "delta0": -0.18707296075090374,
      "sigma0": 1.4290107698637369,
-     "p0": 0.9290248181432635
+     "p0": 0.9290248181432635,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "mle": {
      "delta0": -0.09326482594688058,
      "sigma0": 1.4713003825714501,
-     "p0": 0.9433442694508933
+     "p0": 0.9433442694508933,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "loc": {
      "delta0": -0.14165812260930635,
      "sigma0": 1.497730390662248,
-     "p0": 0.955432072334332
+     "p0": 0.955432072334332,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "n_fitted": 582,
     "mle_n_inside": 453,
+    "loc_n_inside": 535,
+    "loc_window": [
+     -3.2475073611744003,
+     2.9716653100052355
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
@@ -42,47 +70,130 @@
     "cm": {
      "delta0": -0.25299826000973635,
      "sigma0": 1.8964773144511078,
-     "p0": 1.1147748336250394
+     "p0": 1.1147748336250394,
+     "undefined_reason": null
     },
     "mle": {
      "delta0": -0.3108905526288826,
      "sigma0": 1.5337825077490688,
-     "p0": 0.9444492844909051
+     "p0": 0.9444492844909051,
+     "undefined_reason": null
     },
     "loc": {
      "delta0": -0.4047425844537354,
      "sigma0": 1.574013542483359,
-     "p0": 0.9630206657678073
+     "p0": 0.9630206657678073,
+     "undefined_reason": null
     },
     "n_fitted": 582,
     "mle_n_inside": 439,
+    "loc_n_inside": 541,
+    "loc_window": [
+     -3.7095526292681815,
+     2.937117637128727
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
-   "lambda": 1.4870215847302577,
-   "lambda_fitted_cells": 1.4758679284467675,
+   "fit_other_centrings": {
+    "axis_median": {
+     "cm": {
+      "delta0": -0.061005355208593987,
+      "sigma0": 1.1954816155079757,
+      "p0": 0.8762615945011419,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": -0.004257449064889423,
+      "sigma0": 1.119695181610595,
+      "p0": 0.8461808418107747,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.009114100351212085,
+      "sigma0": 1.3198360937235878,
+      "p0": 0.9175664663944383,
+      "undefined_reason": null
+     },
+     "n_fitted": 582,
+     "mle_n_inside": 456,
+     "loc_n_inside": 515,
+     "loc_window": [
+      -2.785270317753219,
+      2.7612258957339284
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    },
+    "others_median": {
+     "cm": {
+      "delta0": -0.09467449316357938,
+      "sigma0": 1.636507272497445,
+      "p0": 0.872765948020526,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": -0.13153484610658744,
+      "sigma0": 1.7838664629600305,
+      "p0": 0.9285315174549029,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": 0.022117953764421387,
+      "sigma0": 1.8966626398659905,
+      "p0": 0.9521551078341818,
+      "undefined_reason": null
+     },
+     "n_fitted": 582,
+     "mle_n_inside": 398,
+     "loc_n_inside": 534,
+     "loc_window": [
+      -3.9532491897211046,
+      3.9853599732104112
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    }
+   },
+   "lambda": 1.4870215255064834,
+   "lambda_fitted_cells": 1.4758679213592005,
    "median_abs_t": 1.0305949737985918,
    "median_abs_t_fitted": 1.0975860409851474,
    "p_lambda": 9.999000099990002e-05,
+   "p_lambda_without_tie_tolerance": 9.999000099990002e-05,
    "p_lambda_fitted_cells": 9.999000099990002e-05,
+   "lambda_atoms": {
+    "share_observed_cells_at_median": 0.0,
+    "share_permuted_medians_tied": 0.0
+   },
    "permutation": {
     "cm": {
      "sigma0": {
-      "lo": 0.8315746610387351,
-      "median": 1.2351374757839233,
-      "hi": 3.4977734278233217,
-      "n": 9569,
-      "n_undefined": 431
+      "lo": 0.8334838295819846,
+      "median": 1.2542394382713553,
+      "hi": Infinity,
+      "n": 10000,
+      "n_infinite": 431,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -0.9594329516744736,
       "median": -0.02891021680602751,
       "hi": 0.47287315075749903,
       "n": 9569,
+      "n_infinite": 0,
       "n_undefined": 431
      },
-     "p_sigma0": 0.3136886102403344,
-     "ratio_to_null_median": 1.1569649515789853
+     "p0": {
+      "lo": 0.8445456375013085,
+      "median": 1.1231859983241965,
+      "hi": 1.8547816812387727,
+      "n": 9569,
+      "n_infinite": 0,
+      "n_undefined": 431
+     },
+     "p_sigma0": 0.34326567343265674,
+     "ratio_to_null_median": 1.139344471445786
     },
     "mle": {
      "sigma0": {
@@ -90,6 +201,7 @@
       "median": 1.0612676989200316,
       "hi": 1.1931251406701544,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -97,6 +209,15 @@
       "median": 0.0391944218374606,
       "hi": 0.09790878742044314,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.981384466791274,
+      "median": 1.0106032436753658,
+      "hi": 1.0494025230182173,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
@@ -108,6 +229,7 @@
       "median": 1.0518521894996955,
       "hi": 1.1458907422864852,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -115,118 +237,45 @@
       "median": 0.03266300128530861,
       "hi": 0.07475371507511107,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9841787185752012,
+      "median": 1.0062137676961393,
+      "hi": 1.0229958833450332,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
      "ratio_to_null_median": 1.4238981537649607
     }
    },
-   "bootstrap_instructions": {
-    "cm": {
-     "sigma0_raw": {
-      "lo": 1.4677763332238345,
-      "median": 1.957470592382501,
-      "hi": 3.8807341588407276,
-      "n": 991,
-      "n_undefined": 9
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.1676128776037125,
-      "median": 1.73475636009776,
-      "hi": 3.762368733171224,
-      "n": 991,
-      "n_undefined": 9
-     },
-     "delta0": {
-      "lo": -1.0564065490437682,
-      "median": -0.23988067328910606,
-      "hi": 0.20866640353955612,
-      "n": 991,
-      "n_undefined": 9
-     }
-    },
-    "mle": {
-     "sigma0_raw": {
-      "lo": 1.4709438088918247,
-      "median": 1.936503020904747,
-      "hi": 3.1944376919594824,
-      "n": 998,
-      "n_undefined": 2
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.179619789849013,
-      "median": 1.7321061075338449,
-      "hi": 3.046405739643452,
-      "n": 998,
-      "n_undefined": 2
-     },
-     "delta0": {
-      "lo": -0.6778197503007487,
-      "median": -0.16944235928490545,
-      "hi": 0.11075230406406074,
-      "n": 998,
-      "n_undefined": 2
-     }
-    },
-    "loc": {
-     "sigma0_raw": {
-      "lo": 1.707971822670262,
-      "median": 1.876975507189079,
-      "hi": 2.0743167646940215,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.4805258671979602,
-      "median": 1.6554914288940599,
-      "hi": 1.8387005993038879,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.17719393703836087,
-      "median": -0.10830043054831381,
-      "hi": -0.04299509942878461,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "lambda_raw": {
-     "lo": 1.6679989806152473,
-     "median": 1.8871891487751586,
-     "hi": 2.056865909761854,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "lambda_noise_removed": {
-     "lo": 1.426247964524849,
-     "median": 1.6700457611796224,
-     "hi": 1.8661192634845447,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "added_noise_var_u": {
-     "lo": 0.5371437692123505,
-     "median": 0.7779869686403031,
-     "hi": 1.135561984723688,
-     "n": 1000,
-     "n_undefined": 0
-    }
-   },
    "bootstrap_axes": {
     "cm": {
      "sigma0": {
-      "lo": 1.1125514165409613,
-      "median": 1.4884684027955217,
-      "hi": 2.7522871171454852,
-      "n": 997,
-      "n_undefined": 3
+      "lo": 1.1127279228124969,
+      "median": 1.4892243532443767,
+      "hi": 2.8411656993965355,
+      "n": 1000,
+      "n_infinite": 3,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -0.5584254824140595,
       "median": -0.19872927047326633,
       "hi": 0.11516539567707684,
       "n": 997,
+      "n_infinite": 0,
+      "n_undefined": 3
+     },
+     "p0": {
+      "lo": 0.8096975804570432,
+      "median": 0.9528415587592777,
+      "hi": 1.4754515650771693,
+      "n": 997,
+      "n_infinite": 0,
       "n_undefined": 3
      }
     },
@@ -236,6 +285,7 @@
       "median": 1.474983334303428,
       "hi": 1.903823498142709,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -243,6 +293,15 @@
       "median": -0.09076932177100325,
       "hi": 0.06797611940579923,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8613865520036926,
+      "median": 0.9460247527473966,
+      "hi": 1.1011055093716549,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -252,6 +311,7 @@
       "median": 1.494262759510417,
       "hi": 1.658032430842537,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -259,14 +319,128 @@
       "median": -0.13081782876740655,
       "hi": -0.038945470422406654,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9241396557334451,
+      "median": 0.9542081214305833,
+      "hi": 0.9816557587856717,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
     "lambda": {
-     "lo": 1.4370377261550706,
-     "median": 1.4923540416677075,
-     "hi": 1.7611965328598798,
+     "lo": 1.437037668922009,
+     "median": 1.4923539822315566,
+     "hi": 1.761196462716509,
      "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    }
+   },
+   "bootstrap_instructions": {
+    "cm": {
+     "sigma0_raw": {
+      "lo": 1.4682276757019472,
+      "median": 1.962326846756639,
+      "hi": 4.2451321448038,
+      "n": 1000,
+      "n_infinite": 9,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.1681311542129167,
+      "median": 1.740693865706158,
+      "hi": 4.16812913906797,
+      "n": 1000,
+      "n_infinite": 9,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -1.0564065490437682,
+      "median": -0.23988067328910606,
+      "hi": 0.20866640353955612,
+      "n": 991,
+      "n_infinite": 0,
+      "n_undefined": 9
+     }
+    },
+    "mle": {
+     "sigma0_raw": {
+      "lo": 1.4712483677198829,
+      "median": 1.9374295598107403,
+      "hi": 3.2026479163518218,
+      "n": 1000,
+      "n_infinite": 2,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.1796270557888695,
+      "median": 1.7330836306885327,
+      "hi": 3.073224664773494,
+      "n": 1000,
+      "n_infinite": 2,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.6778197503007487,
+      "median": -0.16944235928490545,
+      "hi": 0.11075230406406074,
+      "n": 998,
+      "n_infinite": 0,
+      "n_undefined": 2
+     }
+    },
+    "loc": {
+     "sigma0_raw": {
+      "lo": 1.707971822670262,
+      "median": 1.876975507189079,
+      "hi": 2.0743167646940215,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.4805258671979602,
+      "median": 1.6554914288940599,
+      "hi": 1.8387005993038879,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.17719393703836087,
+      "median": -0.10830043054831381,
+      "hi": -0.04299509942878461,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "lambda_raw": {
+     "lo": 1.667998914183666,
+     "median": 1.887189073613866,
+     "hi": 2.0568658278428265,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "lambda_noise_removed": {
+     "lo": 1.4262479077215124,
+     "median": 1.6700456946665239,
+     "hi": 1.866119189162405,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "added_noise_var_u": {
+     "lo": 0.5371437692123505,
+     "median": 0.7779869686403031,
+     "hi": 1.135561984723688,
+     "n": 1000,
+     "n_infinite": 0,
      "n_undefined": 0
     }
    },
@@ -308,7 +482,7 @@
      }
     },
     "lambda": {
-     "se": 0.19785303015109332,
+     "se": 0.1978530222711789,
      "n": 144,
      "n_undefined": 0
     }
@@ -330,6 +504,14 @@
      "southern_poverty_law_center": 3,
      "world_health_organization": 0
     },
+    "flags_loc": {
+     "consumer_financial_protection_bureau": 2,
+     "kpmg": 10,
+     "national_alliance_to_end_homelessness": 0,
+     "red_cross": 1,
+     "southern_poverty_law_center": 3,
+     "world_health_organization": 0
+    },
     "mean_u2": {
      "consumer_financial_protection_bureau": 2.5116750771195506,
      "kpmg": 5.602660090489428,
@@ -346,7 +528,8 @@
       "z": -5.252809501897888,
       "u": -4.942541960467543,
       "fdr_cm": 0.13378831904885263,
-      "fdr_mle": 0.14663004480063999
+      "fdr_mle": 0.14663004480063999,
+      "fdr_loc": 0.19575748611141905
      },
      {
       "candidate": "consumer_financial_protection_bureau",
@@ -355,7 +538,8 @@
       "z": 4.274218829051756,
       "u": 4.790978049627118,
       "fdr_cm": 0.047431191788107216,
-      "fdr_mle": 0.08166448719193278
+      "fdr_mle": 0.08166448719193278,
+      "fdr_loc": 0.08862476051092215
      },
      {
       "candidate": "kpmg",
@@ -364,7 +548,8 @@
       "z": 4.685210595651485,
       "u": 4.9053179843025445,
       "fdr_cm": 0.036221409449852644,
-      "fdr_mle": 0.06365349542324711
+      "fdr_mle": 0.06365349542324711,
+      "fdr_loc": 0.06953088971793717
      },
      {
       "candidate": "kpmg",
@@ -373,7 +558,8 @@
       "z": 4.593976658224272,
       "u": 5.042117028115855,
       "fdr_cm": 0.02572367207828406,
-      "fdr_mle": 0.046370747882916445
+      "fdr_mle": 0.046370747882916445,
+      "fdr_loc": 0.051070858225464755
      },
      {
       "candidate": "kpmg",
@@ -382,7 +568,8 @@
       "z": 5.308866834685623,
       "u": 5.56500302052203,
       "fdr_cm": 0.005990027121210425,
-      "fdr_mle": 0.011961563145170835
+      "fdr_mle": 0.011961563145170835,
+      "fdr_loc": 0.013633833340142985
      },
      {
       "candidate": "kpmg",
@@ -391,7 +578,8 @@
       "z": -5.161265104373357,
       "u": -5.2886024388778825,
       "fdr_cm": 0.07868926562853416,
-      "fdr_mle": 0.08867421214812195
+      "fdr_mle": 0.08867421214812195,
+      "fdr_loc": 0.12207316649927595
      },
      {
       "candidate": "kpmg",
@@ -400,7 +588,8 @@
       "z": 5.5072691714695186,
       "u": 6.062640408894741,
       "fdr_cm": 0.00142438162335728,
-      "fdr_mle": 0.0031323147451669496
+      "fdr_mle": 0.0031323147451669496,
+      "fdr_loc": 0.003693225453218209
      },
      {
       "candidate": "kpmg",
@@ -409,7 +598,8 @@
       "z": 4.50120332644678,
       "u": 4.956455659920745,
       "fdr_cm": 0.031889827399416405,
-      "fdr_mle": 0.056586691818616364
+      "fdr_mle": 0.056586691818616364,
+      "fdr_loc": 0.06200410574285528
      },
      {
       "candidate": "kpmg",
@@ -418,7 +608,8 @@
       "z": 4.049682016261562,
       "u": 4.502839844034961,
       "fdr_cm": 0.08862411024849623,
-      "fdr_mle": 0.14499585965892547
+      "fdr_mle": 0.14499585965892547,
+      "fdr_loc": 0.15488341567747826
      },
      {
       "candidate": "kpmg",
@@ -427,7 +618,8 @@
       "z": -5.181102852293607,
       "u": -4.884794412364769,
       "fdr_cm": 0.1475141528960352,
-      "fdr_mle": 0.16084206313697386
+      "fdr_mle": 0.16084206313697386,
+      "fdr_loc": 0.2134806178251835
      },
      {
       "candidate": "kpmg",
@@ -436,7 +628,8 @@
       "z": 4.869384230477122,
       "u": 5.234761598924813,
       "fdr_cm": 0.015435224132502121,
-      "fdr_mle": 0.028866275395483004
+      "fdr_mle": 0.028866275395483004,
+      "fdr_loc": 0.03217945615244448
      },
      {
       "candidate": "kpmg",
@@ -445,7 +638,8 @@
       "z": 3.8091863820373764,
       "u": 4.0694411965536785,
       "fdr_cm": 0.19040868557522939,
-      "fdr_mle": 0.289634577403701
+      "fdr_mle": 0.289634577403701,
+      "fdr_loc": 0.3028398977230285
      },
      {
       "candidate": "kpmg",
@@ -454,7 +648,8 @@
       "z": 5.526479375837562,
       "u": 6.069650652537237,
       "fdr_cm": 0.00142438162335728,
-      "fdr_mle": 0.0031323147451669496
+      "fdr_mle": 0.0031323147451669496,
+      "fdr_loc": 0.003693225453218209
      },
      {
       "candidate": "kpmg",
@@ -463,7 +658,8 @@
       "z": 4.976728569820192,
       "u": 5.110911574183507,
       "fdr_cm": 0.021544538809196503,
-      "fdr_mle": 0.039338393931289836
+      "fdr_mle": 0.039338393931289836,
+      "fdr_loc": 0.04350789745920786
      },
      {
       "candidate": "national_alliance_to_end_homelessness",
@@ -472,7 +668,8 @@
       "z": 4.391676152909677,
       "u": 4.264338818405152,
       "fdr_cm": 0.1387007624502414,
-      "fdr_mle": 0.2178204780411107
+      "fdr_mle": 0.2178204780411107,
+      "fdr_loc": 0.2298528352914534
      },
      {
       "candidate": "red_cross",
@@ -481,7 +678,8 @@
       "z": 4.292252285522822,
       "u": 4.58856072545166,
       "fdr_cm": 0.07421348455199749,
-      "fdr_mle": 0.12326995484717564
+      "fdr_mle": 0.12326995484717564,
+      "fdr_loc": 0.13228580221110722
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -490,7 +688,8 @@
       "z": 4.126636921219625,
       "u": 5.147098134963422,
       "fdr_cm": 0.019523762907167116,
-      "fdr_mle": 0.035910140341852956
+      "fdr_mle": 0.035910140341852956,
+      "fdr_loc": 0.03981157297589032
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -499,7 +698,8 @@
       "z": 5.323351261593956,
       "u": 5.701485970624684,
       "fdr_cm": 0.003972728005343806,
-      "fdr_mle": 0.008154135425117831
+      "fdr_mle": 0.008154135425117831,
+      "fdr_loc": 0.009383070092647798
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -508,22 +708,61 @@
       "z": 3.6590042916402368,
       "u": 4.839344796553447,
       "fdr_cm": 0.042472603750005014,
-      "fdr_mle": 0.07373148276836161
+      "fdr_mle": 0.07373148276836161,
+      "fdr_loc": 0.08022595578498803
      }
     ],
     "n_flag_cm": 19,
-    "n_flag_mle": 17,
     "plurality_cm": [
      "kpmg"
     ],
+    "bulk_ok_cm": true,
+    "n_flag_cm_supported": 19,
+    "plurality_cm_supported": [
+     "kpmg"
+    ],
+    "n_flag_mle": 17,
     "plurality_mle": [
      "kpmg"
+    ],
+    "bulk_ok_mle": true,
+    "n_flag_mle_supported": 17,
+    "plurality_mle_supported": [
+     "kpmg"
+    ],
+    "n_flag_loc": 16,
+    "plurality_loc": [
+     "kpmg"
+    ],
+    "bulk_ok_loc": true,
+    "n_flag_loc_supported": 16,
+    "plurality_loc_supported": [
+     "kpmg"
     ]
+   },
+   "tau": {
+    "tau_pp": 1.680023785882772,
+    "mean_tau2": 0.00028224799211318816,
+    "share_axes_tau2_positive": 0.6764705882352942,
+    "n_axes": 102,
+    "k": 6,
+    "mean_rate_pp": 6.650270061728395,
+    "axis_block": {
+     "lo": 1.3585366437983826,
+     "median": 1.6680075299575203,
+     "hi": 1.9710221495228595,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
    }
   }
  },
  "subject": "challenge_organism_b_organization",
  "grid": "mean",
+ "replicate": null,
+ "registry_id": "challenge_organism_b_organization",
  "stream": "registered",
  "candidates": [
   "consumer_financial_protection_bureau",
@@ -784,5 +1023,64 @@
   "i143"
  ],
  "documented": null,
- "seconds": 85.2
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
+ "seconds": 45.2
 }

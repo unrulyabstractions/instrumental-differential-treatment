@@ -13,13 +13,22 @@
    instructions, and the bootstrap over instructions. Two designs: Gaussian
    cells, and sparse binomial rates on 16 samples, which is what the verdict
    tables hold.
+6. Interval behaviour on the real grids, whose axes share replies: for the
+   target-only median and mean grid of every subject, 100 random splits of the
+   instructions into equal halves. The spread of sigma0 over instruction
+   samples is sd(sigma0_A - sigma0_B) / sqrt(2); the axis-block bootstrap
+   (200 resamples) is run on half A of each split, so both refer to half the
+   instructions. Seeds [20260726, 3, task index].
 
-Writes ``estimator_check.json``; refuses to overwrite it.
+Writes ``estimator_check.json`` with the family's settings block; refuses to
+overwrite it.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -28,10 +37,14 @@ from scipy import optimize, stats
 from script.analysis.baseline_free_20261115.empirical_null import efron_null_estimators as E
 from script.analysis.baseline_free_20261115.empirical_null.efron_truncated_mle import truncated_mle
 from script.analysis.baseline_free_20261115.empirical_null.empirical_null_grids import (
-    centred, flatten_rows, grid_t)
+    centred, effects, flatten_rows, grid_t, load_table)
+from script.analysis.baseline_free_20261115.empirical_null.empirical_null_settings import (
+    family_settings)
+from script.analysis.baseline_free_20261115.empirical_null.empirical_null_subjects import subjects
 
 OUT = Path("out/main/baseline_free_20261115/empirical_null/estimator_check.json")
 SEED = 20260726
+REAL_SPLITS, REAL_BOOT = 100, 200
 
 
 def check_poisson(rng) -> float:
@@ -148,20 +161,73 @@ def intervals(rng, n_data: int = 60, n_boot: int = 200) -> dict:
     return out
 
 
+def _real_grid_task(task: tuple) -> dict:
+    index, key, grid = task
+    s = next(x for x in subjects() if x.key == key)
+    target = load_table(s.target, s.axes, s.level, s.drop)
+    d = effects(target)[0][grid]
+    n_c, n_i, n_j = d.shape
+    rng = np.random.default_rng([SEED, 3, index])
+    pairs = {e: [] for e in ("cm", "mle", "loc")}
+    block = {e: [] for e in ("cm", "mle", "loc")}
+    half = n_i // 2
+    for _ in range(REAL_SPLITS):
+        order = rng.permutation(n_i)
+        both = np.stack([d[:, order[:half]], d[:, order[half:2 * half]]])
+        t, m, fit = grid_t(both)
+        u = centred(t, m, fit)[1]
+        f = E.fit_empirical_null(flatten_rows(u))
+        jdx = rng.integers(0, n_j, (REAL_BOOT, n_j))
+        fb = E.fit_empirical_null(flatten_rows(np.transpose(u[0][:, jdx], (1, 0, 2))))
+        for e in pairs:
+            pairs[e].append((f[f"{e}_sigma"][0], f[f"{e}_sigma"][1]))
+            ok = np.isfinite(fb[f"{e}_sigma"])
+            block[e].append(float(np.std(fb[f"{e}_sigma"][ok])) if ok.sum() > 1 else np.nan)
+    out = {"subject": key, "grid": grid, "k": n_c, "instructions": n_i, "axes": n_j,
+           "half_instructions": half, "splits": REAL_SPLITS, "axis_block_resamples": REAL_BOOT,
+           "seed": [SEED, 3, index]}
+    for e in pairs:
+        a = np.array(pairs[e], dtype=float)
+        ok = np.all(np.isfinite(a), axis=1)
+        split_sd = float(np.std(a[ok, 0] - a[ok, 1]) / np.sqrt(2)) if ok.sum() > 2 else None
+        bsd = float(np.nanmean(block[e])) if np.any(np.isfinite(block[e])) else None
+        out[e] = {"sigma0_half_mean": float(np.mean(a[ok])) if ok.any() else None,
+                  "split_half_sd": split_sd, "axis_block_sd_on_half": bsd,
+                  "ratio_axis_block_to_split_half": (bsd / split_sd if split_sd and bsd else None),
+                  "splits_defined": int(ok.sum())}
+    return out
+
+
+def real_grid_intervals(workers: int) -> list[dict]:
+    tasks = [(i, s.key, g) for i, (s, g) in enumerate(
+        (s, g) for s in subjects() for g in ("median", "mean"))]
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        return list(ex.map(_real_grid_task, tasks))
+
+
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--workers", type=int, default=4)
+    args = ap.parse_args()
     if OUT.exists():
         raise SystemExit(f"{OUT} exists; never overwritten")
     rng = np.random.default_rng(SEED)
-    rec = {"seed": SEED,
+    rec = {"seed": SEED, "settings": family_settings(),
            "poisson_fit_max_relative_difference": check_poisson(rng),
            "truncated_mle_max_abs_difference": check_mle(rng),
            "t_to_z_max_abs_difference": check_t_to_z(),
            "recovery": recovery(rng),
-           "intervals": intervals(rng)}
+           "intervals": intervals(rng),
+           "intervals_real_grids": real_grid_intervals(args.workers)}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("x") as fh:
         json.dump(rec, fh, indent=1)
-    print(json.dumps({k: v for k, v in rec.items() if k != "recovery"}, indent=1))
+    print(json.dumps({k: v for k, v in rec.items()
+                      if k not in ("recovery", "intervals_real_grids", "settings")}, indent=1))
+    for r in rec["intervals_real_grids"]:
+        print(r["subject"], r["grid"], {e: (r[e]["split_half_sd"], r[e]["axis_block_sd_on_half"],
+                                             r[e]["ratio_axis_block_to_split_half"])
+                                         for e in ("cm", "mle", "loc")})
     for r in rec["recovery"]:
         print(r["N"], r["true_sigma0"], {e: (round(r[e]["sigma0_median"], 3), round(r[e]["sigma0_sd"], 3),
                                              round(r[e]["share_undefined"], 3)) for e in ("cm", "mle", "loc")})

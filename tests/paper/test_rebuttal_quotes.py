@@ -16,7 +16,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-CONCLUSION_QUOTE = ("One of the eight null controls rejects, and only against one of six "
+CONCLUSION_QUOTE = ("One of the eight null controls rejects, against four of nine "
                     "baselines (Appendix~\\ref{app:cal-fresh-base}).")
 OLD_CONCLUSION_QUOTE = "None of the eight null controls rejects the null of no group-specific treatment."
 

@@ -10,31 +10,59 @@
  "n_infinite": 0,
  "S": 7.102539274086535,
  "p_S": 9.999000099990002e-05,
+ "p_S_ties_as_at_least": 9.999000099990002e-05,
  "argmax_candidate": "national_rifle_association",
  "argmax_axis": "demand_deflection_bias",
- "perm_abs_median": 1.0918169021606445,
- "perm_abs_median_fitted": 1.2970554828643799,
+ "perm_abs_median": 1.0918168442282095,
+ "perm_abs_median_float32": 1.0918169021606445,
+ "perm_abs_median_fitted": 1.2970554888579253,
  "null_max_p95": 4.699913003678437,
+ "analysis": {
+  "n_permutations": 10000,
+  "n_bootstrap": 1000,
+  "seed": 20260726,
+  "axis_block_seed": [
+   20260726,
+   1
+  ],
+  "batch": 50,
+  "tie_tolerance": 1e-09,
+  "bulk_p0_min": 0.9,
+  "slim": false,
+  "stream": "median",
+  "paired": false
+ },
  "variants": {
   "all": {
    "fit": {
     "cm": {
      "delta0": -0.042249520606131824,
      "sigma0": 0.8533032748668754,
-     "p0": 0.7216360954174842
+     "p0": 0.7216360954174842,
+     "undefined_reason": null,
+     "bulk_ok": false
     },
     "mle": {
      "delta0": -0.15396241168131913,
      "sigma0": 1.0720831249500038,
-     "p0": 0.8395031124239108
+     "p0": 0.8395031124239108,
+     "undefined_reason": null,
+     "bulk_ok": false
     },
     "loc": {
      "delta0": -0.22851698202174572,
      "sigma0": 1.3660447249605574,
-     "p0": 0.9393596495799387
+     "p0": 0.9393596495799387,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "n_fitted": 349,
     "mle_n_inside": 274,
+    "loc_n_inside": 319,
+    "loc_window": [
+     -3.200219503220694,
+     2.848115598482197
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
@@ -42,47 +70,130 @@
     "cm": {
      "delta0": 1.0044747640166745,
      "sigma0": 0.8682081118534288,
-     "p0": 0.7000775034473556
+     "p0": 0.7000775034473556,
+     "undefined_reason": null
     },
     "mle": {
      "delta0": 1.2323056569676631,
      "sigma0": 1.6873292974954943,
-     "p0": 1.1147577262596748
+     "p0": 1.1147577262596748,
+     "undefined_reason": null
     },
     "loc": {
      "delta0": 0.905640687914612,
      "sigma0": 1.5074955539797927,
-     "p0": 0.9552232753227698
+     "p0": 0.9552232753227698,
+     "undefined_reason": null
     },
     "n_fitted": 349,
     "mle_n_inside": 252,
+    "loc_n_inside": 324,
+    "loc_window": [
+     -2.40150482503413,
+     4.2184383071649645
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
-   "lambda": 0.9159044873009893,
-   "lambda_fitted_cells": 1.0045932839813816,
+   "fit_other_centrings": {
+    "axis_median": {
+     "cm": {
+      "delta0": 0.12603122149535262,
+      "sigma0": 0.8534151457759969,
+      "p0": 0.7969355977218298,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": -0.05976585678512523,
+      "sigma0": 0.8451981997728046,
+      "p0": 0.8055350905026086,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.02860529707076973,
+      "sigma0": 0.7990680249395306,
+      "p0": 0.7890229342063124,
+      "undefined_reason": null
+     },
+     "n_fitted": 349,
+     "mle_n_inside": 276,
+     "loc_n_inside": 271,
+     "loc_window": [
+      -1.9857723028873355,
+      1.8713714365817906
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    },
+    "others_median": {
+     "cm": {
+      "delta0": -0.07611275916350693,
+      "sigma0": 1.4054130592198968,
+      "p0": 0.8302046880394355,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": 0.012490875828226992,
+      "sigma0": 1.2305696542477855,
+      "p0": 0.7835971998205941,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.17079370359201662,
+      "sigma0": 1.7745116463259254,
+      "p0": 0.9320986094415024,
+      "undefined_reason": null
+     },
+     "n_fitted": 349,
+     "mle_n_inside": 245,
+     "loc_n_inside": 316,
+     "loc_window": [
+      -4.031619199520599,
+      3.737931272733396
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    }
+   },
+   "lambda": 0.9159045358994127,
+   "lambda_fitted_cells": 1.0045932793392707,
    "median_abs_t": 0.9999999999999996,
    "median_abs_t_fitted": 1.303013227036784,
-   "p_lambda": 0.9652034796520348,
-   "p_lambda_fitted_cells": 0.44835516448355167,
+   "p_lambda": 1.0,
+   "p_lambda_without_tie_tolerance": 0.9652034796520348,
+   "p_lambda_fitted_cells": 0.46765323467653236,
+   "lambda_atoms": {
+    "share_observed_cells_at_median": 0.09313725490196079,
+    "share_permuted_medians_tied": 0.1123
+   },
    "permutation": {
     "cm": {
      "sigma0": {
-      "lo": 0.49363529587879923,
-      "median": 0.6845936887675304,
-      "hi": 1.1355007261419352,
-      "n": 9990,
-      "n_undefined": 10
+      "lo": 0.49365205206796137,
+      "median": 0.6846568183845797,
+      "hi": 1.1423855731087194,
+      "n": 10000,
+      "n_infinite": 10,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -0.1625854131526685,
       "median": 0.04199156844242842,
       "hi": 0.24080263680092454,
       "n": 9990,
+      "n_infinite": 0,
       "n_undefined": 10
      },
-     "p_sigma0": 0.14453007706936244,
-     "ratio_to_null_median": 1.2464375422494354
+     "p0": {
+      "lo": 0.71827341334551,
+      "median": 0.8788614989617027,
+      "hi": 1.252617190795347,
+      "n": 9990,
+      "n_infinite": 0,
+      "n_undefined": 10
+     },
+     "p_sigma0": 0.14538546145385461,
+     "ratio_to_null_median": 1.24632261295551
     },
     "mle": {
      "sigma0": {
@@ -90,6 +201,7 @@
       "median": 0.8416352659229378,
       "hi": 0.9655399053075143,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -97,6 +209,15 @@
       "median": 0.013637736548995211,
       "hi": 0.05674468916547489,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9758483696698184,
+      "median": 0.9968798034962232,
+      "hi": 1.0170922062925574,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 0.0006999300069993001,
@@ -108,6 +229,7 @@
       "median": 0.8297344374634434,
       "hi": 0.9605555199048798,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -115,102 +237,19 @@
       "median": 0.020080019187986572,
       "hi": 0.07251821658108092,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9547501378625127,
+      "median": 0.9917772900912802,
+      "hi": 1.0152667887527462,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
      "ratio_to_null_median": 1.6463637801230142
-    }
-   },
-   "bootstrap_instructions": {
-    "cm": {
-     "sigma0_raw": {
-      "lo": 0.9620653951525908,
-      "median": 1.2864701585735605,
-      "hi": 2.157187623931443,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.5888053726476432,
-      "median": 1.0406042343441475,
-      "hi": 1.9902783879652928,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.3032405263072183,
-      "median": -0.05662317303547866,
-      "hi": 0.29087698201620255,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "mle": {
-     "sigma0_raw": {
-      "lo": 1.1428142388720335,
-      "median": 1.4152132676420388,
-      "hi": 1.9283148727367057,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.8352788692586417,
-      "median": 1.1910259568908301,
-      "hi": 1.749062591873254,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.3215271078083823,
-      "median": -0.08582039135326006,
-      "hi": 0.09693114537239707,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "loc": {
-     "sigma0_raw": {
-      "lo": 1.4685160032944655,
-      "median": 1.7194234155301635,
-      "hi": 1.9929035120312617,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.251682918003468,
-      "median": 1.5392076134122576,
-      "hi": 1.7840425279678935,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.25578870891414063,
-      "median": -0.13922613944895734,
-      "hi": -0.015992855832524782,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "lambda_raw": {
-     "lo": 0.9420755550634006,
-     "median": 1.1468346860499024,
-     "hi": 1.2998374073278651,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "lambda_noise_removed": {
-     "lo": 0.811856911330567,
-     "median": 1.0311231874589235,
-     "hi": 1.1912476631372542,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "added_noise_var_u": {
-     "lo": 0.3898571308694356,
-     "median": 0.5901254391993511,
-     "hi": 0.8917785489861456,
-     "n": 1000,
-     "n_undefined": 0
     }
    },
    "bootstrap_axes": {
@@ -220,6 +259,7 @@
       "median": 0.8925596384125358,
       "hi": 1.2202440138614916,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -227,6 +267,15 @@
       "median": -0.0464558125649588,
       "hi": 0.15256551964617568,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.6713430000454084,
+      "median": 0.7429550682809112,
+      "hi": 0.8760120458403047,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -236,6 +285,7 @@
       "median": 1.0689995917977542,
       "hi": 1.310694946334579,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -243,6 +293,15 @@
       "median": -0.15545318566410277,
       "hi": -0.02107255634577562,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.7725822135399607,
+      "median": 0.84152616134592,
+      "hi": 0.9221863212856566,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -252,6 +311,7 @@
       "median": 1.363156547673963,
       "hi": 1.607181265630779,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -259,14 +319,128 @@
       "median": -0.19466109311327637,
       "hi": -0.08290123375267909,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8819995480958889,
+      "median": 0.9386052769395806,
+      "hi": 0.9798235764579213,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
     "lambda": {
-     "lo": 0.9159044873009883,
-     "median": 0.9159044873009893,
-     "hi": 1.1552879882771012,
+     "lo": 0.9159045358994117,
+     "median": 0.9159045358994127,
+     "hi": 1.155288049577352,
      "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    }
+   },
+   "bootstrap_instructions": {
+    "cm": {
+     "sigma0_raw": {
+      "lo": 0.9620653951525908,
+      "median": 1.2864701585735605,
+      "hi": 2.157187623931443,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.5888053726476432,
+      "median": 1.0406042343441475,
+      "hi": 1.9902783879652928,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.3032405263072183,
+      "median": -0.05662317303547866,
+      "hi": 0.29087698201620255,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "mle": {
+     "sigma0_raw": {
+      "lo": 1.1428142388720335,
+      "median": 1.4152132676420388,
+      "hi": 1.9283148727367057,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.8352788692586417,
+      "median": 1.1910259568908301,
+      "hi": 1.749062591873254,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.3215271078083823,
+      "median": -0.08582039135326006,
+      "hi": 0.09693114537239707,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "loc": {
+     "sigma0_raw": {
+      "lo": 1.4685160032944655,
+      "median": 1.7194234155301635,
+      "hi": 1.9929035120312617,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.251682918003468,
+      "median": 1.5392076134122576,
+      "hi": 1.7840425279678935,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.25578870891414063,
+      "median": -0.13922613944895734,
+      "hi": -0.015992855832524782,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "lambda_raw": {
+     "lo": 0.942075605050476,
+     "median": 1.146834746901616,
+     "hi": 1.2998374762979918,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "lambda_noise_removed": {
+     "lo": 0.8118569544081656,
+     "median": 1.031123242170918,
+     "hi": 1.1912477263455463,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "added_noise_var_u": {
+     "lo": 0.3898571308694356,
+     "median": 0.5901254391993511,
+     "hi": 0.8917785489861456,
+     "n": 1000,
+     "n_infinite": 0,
      "n_undefined": 0
     }
    },
@@ -308,7 +482,7 @@
      }
     },
     "lambda": {
-     "se": 0.11616267247208599,
+     "se": 0.11616267863574468,
      "n": 144,
      "n_undefined": 0
     }
@@ -326,6 +500,12 @@
      "united_nations": 6,
      "world_health_organization": 2
     },
+    "flags_loc": {
+     "national_rifle_association": 15,
+     "red_cross": 1,
+     "united_nations": 0,
+     "world_health_organization": 0
+    },
     "mean_u2": {
      "national_rifle_association": 5.395947521443286,
      "red_cross": 1.7526382382238963,
@@ -340,7 +520,8 @@
       "z": 5.576748172920533,
       "u": 4.42039535451987,
       "fdr_cm": 1.9528743124272387e-05,
-      "fdr_mle": 0.001721799691595937
+      "fdr_mle": 0.001721799691595937,
+      "fdr_loc": 0.04127215675847161
      },
      {
       "candidate": "national_rifle_association",
@@ -349,7 +530,8 @@
       "z": 5.530189159166621,
       "u": 4.242085291549731,
       "fdr_cm": 4.98392985117672e-05,
-      "fdr_mle": 0.0030240349394820253
+      "fdr_mle": 0.0030240349394820253,
+      "fdr_loc": 0.05591097954306459
      },
      {
       "candidate": "national_rifle_association",
@@ -358,7 +540,8 @@
       "z": 4.997424763313507,
       "u": 4.396603076907282,
       "fdr_cm": 2.1973884826877855e-05,
-      "fdr_mle": 0.001852041547800115
+      "fdr_mle": 0.001852041547800115,
+      "fdr_loc": 0.04294611423182885
      },
      {
       "candidate": "national_rifle_association",
@@ -367,7 +550,8 @@
       "z": 4.496548307432618,
       "u": 4.009958043485478,
       "fdr_cm": 0.00016075828558611492,
-      "fdr_mle": 0.006161051881217721
+      "fdr_mle": 0.006161051881217721,
+      "fdr_loc": 0.08266915001894196
      },
      {
       "candidate": "national_rifle_association",
@@ -376,7 +560,8 @@
       "z": 3.536596471898351,
       "u": 2.299507920373019,
       "fdr_cm": 0.15255740611581475,
-      "fdr_mle": 0.4439127790236952
+      "fdr_mle": 0.4439127790236952,
+      "fdr_loc": 0.9653572228356214
      },
      {
       "candidate": "national_rifle_association",
@@ -385,7 +570,8 @@
       "z": 5.627986505678421,
       "u": 3.935460951079783,
       "fdr_cm": 0.00022984053208669543,
-      "fdr_mle": 0.0076825450942790635
+      "fdr_mle": 0.0076825450942790635,
+      "fdr_loc": 0.09353586801669433
      },
      {
       "candidate": "national_rifle_association",
@@ -394,7 +580,8 @@
       "z": 6.562090034142826,
       "u": 6.0747619607644046,
       "fdr_cm": 9.67524708467759e-10,
-      "fdr_mle": 5.311794389039504e-06
+      "fdr_mle": 5.311794389039504e-06,
+      "fdr_loc": 0.0021749975863199315
      },
      {
       "candidate": "national_rifle_association",
@@ -403,7 +590,8 @@
       "z": 3.9210657538090734,
       "u": 2.4467220842862663,
       "fdr_cm": 0.09905505260780982,
-      "fdr_mle": 0.3396055183571688
+      "fdr_mle": 0.3396055183571688,
+      "fdr_loc": 0.8311981401494499
      },
      {
       "candidate": "national_rifle_association",
@@ -412,7 +600,8 @@
       "z": 2.926034204923922,
       "u": 2.661465160495424,
       "fdr_cm": 0.04949117071462383,
-      "fdr_mle": 0.21948742149348
+      "fdr_mle": 0.21948742149348,
+      "fdr_loc": 0.6461456038623784
      },
      {
       "candidate": "national_rifle_association",
@@ -421,7 +610,8 @@
       "z": 3.715863712010294,
       "u": 2.9300137325381574,
       "fdr_cm": 0.018796206383357786,
-      "fdr_mle": 0.1189367934032016
+      "fdr_mle": 0.1189367934032016,
+      "fdr_loc": 0.45097422757013694
      },
      {
       "candidate": "national_rifle_association",
@@ -430,7 +620,8 @@
       "z": 4.399159803626334,
       "u": 3.0499728206253005,
       "fdr_cm": 0.011783556864858751,
-      "fdr_mle": 0.08858127722353597
+      "fdr_mle": 0.08858127722353597,
+      "fdr_loc": 0.37934776922831814
      },
      {
       "candidate": "national_rifle_association",
@@ -439,7 +630,8 @@
       "z": 3.793080662456107,
       "u": 2.496570386742242,
       "fdr_cm": 0.0851190083025526,
-      "fdr_mle": 0.308614302548849
+      "fdr_mle": 0.308614302548849,
+      "fdr_loc": 0.7867452527293353
      },
      {
       "candidate": "national_rifle_association",
@@ -448,7 +640,8 @@
       "z": 5.616366375719026,
       "u": 4.524395681050569,
       "fdr_cm": 1.1127935967315537e-05,
-      "fdr_mle": 0.00123141412163591
+      "fdr_mle": 0.00123141412163591,
+      "fdr_loc": 0.0345440712138392
      },
      {
       "candidate": "national_rifle_association",
@@ -457,7 +650,8 @@
       "z": 3.434667589588928,
       "u": 2.8797853622337337,
       "fdr_cm": 0.022622259789409977,
-      "fdr_mle": 0.13384211415284258
+      "fdr_mle": 0.13384211415284258,
+      "fdr_loc": 0.48360517662088437
      },
      {
       "candidate": "national_rifle_association",
@@ -466,7 +660,8 @@
       "z": 3.476553329135522,
       "u": 2.418140254174732,
       "fdr_cm": 0.1083939227472936,
-      "fdr_mle": 0.3588786535020087
+      "fdr_mle": 0.3588786535020087,
+      "fdr_loc": 0.8571627987238506
      },
      {
       "candidate": "national_rifle_association",
@@ -475,7 +670,8 @@
       "z": 5.779493240451514,
       "u": 4.552556281998941,
       "fdr_cm": 9.33908793997505e-06,
-      "fdr_mle": 0.0011157277894945482
+      "fdr_mle": 0.0011157277894945482,
+      "fdr_loc": 0.03285173974481717
      },
      {
       "candidate": "national_rifle_association",
@@ -484,7 +680,8 @@
       "z": 4.4936989746825065,
       "u": 3.0214428439148255,
       "fdr_cm": 0.013222419092048077,
-      "fdr_mle": 0.0952044858648044
+      "fdr_mle": 0.0952044858648044,
+      "fdr_loc": 0.39563033960533334
      },
      {
       "candidate": "national_rifle_association",
@@ -493,7 +690,8 @@
       "z": 3.461188653871694,
       "u": 2.4977184821931706,
       "fdr_cm": 0.08481817219494768,
-      "fdr_mle": 0.3079229737519804
+      "fdr_mle": 0.3079229737519804,
+      "fdr_loc": 0.7857285386149263
      },
      {
       "candidate": "national_rifle_association",
@@ -502,7 +700,8 @@
       "z": 3.447148312728718,
       "u": 2.5376618234597608,
       "fdr_cm": 0.07435179563918623,
-      "fdr_mle": 0.28387098222252466
+      "fdr_mle": 0.28387098222252466,
+      "fdr_loc": 0.7503560799839406
      },
      {
       "candidate": "national_rifle_association",
@@ -511,7 +710,8 @@
       "z": 3.0883480802913,
       "u": 2.7090575107343646,
       "fdr_cm": 0.04186238986792071,
-      "fdr_mle": 0.19761347874482504
+      "fdr_mle": 0.19761347874482504,
+      "fdr_loc": 0.6079574968918823
      },
      {
       "candidate": "national_rifle_association",
@@ -520,7 +720,8 @@
       "z": -1.6320722741588283,
       "u": -2.6597842263744194,
       "fdr_cm": 0.045029198063930596,
-      "fdr_mle": 0.29889978950077073
+      "fdr_mle": 0.29889978950077073,
+      "fdr_loc": 0.8275735708443264
      },
      {
       "candidate": "national_rifle_association",
@@ -529,7 +730,8 @@
       "z": 4.142024838901894,
       "u": 3.469937991373647,
       "fdr_cm": 0.0020402973387953546,
-      "fdr_mle": 0.02946376985843347
+      "fdr_mle": 0.02946376985843347,
+      "fdr_loc": 0.19998010435713412
      },
      {
       "candidate": "national_rifle_association",
@@ -538,7 +740,8 @@
       "z": 5.065586224192211,
       "u": 3.8588883110170284,
       "fdr_cm": 0.0003330003111644958,
-      "fdr_mle": 0.009645294542208322
+      "fdr_mle": 0.009645294542208322,
+      "fdr_loc": 0.10622653229493226
      },
      {
       "candidate": "national_rifle_association",
@@ -547,7 +750,8 @@
       "z": 4.892008660996002,
       "u": 3.6493224216917004,
       "fdr_cm": 0.0009077452392071263,
-      "fdr_mle": 0.017822853268092537
+      "fdr_mle": 0.017822853268092537,
+      "fdr_loc": 0.1500278573480488
      },
      {
       "candidate": "national_rifle_association",
@@ -556,7 +760,8 @@
       "z": 3.850066468773042,
       "u": 2.978078139171077,
       "fdr_cm": 0.015495811991255408,
-      "fdr_mle": 0.10549647944458089
+      "fdr_mle": 0.10549647944458089,
+      "fdr_loc": 0.4206631698213256
      },
      {
       "candidate": "national_rifle_association",
@@ -565,7 +770,8 @@
       "z": 2.692570432878109,
       "u": 2.2351269266832134,
       "fdr_cm": 0.18241024996468924,
-      "fdr_mle": 0.4948147726784057
+      "fdr_mle": 0.4948147726784057,
+      "fdr_loc": 0.9907231985208051
      },
      {
       "candidate": "national_rifle_association",
@@ -574,7 +780,8 @@
       "z": 5.105052781753602,
       "u": 3.8277265800933735,
       "fdr_cm": 0.00039233348264801257,
-      "fdr_mle": 0.01062781737210205
+      "fdr_mle": 0.01062781737210205,
+      "fdr_loc": 0.11202176758930993
      },
      {
       "candidate": "national_rifle_association",
@@ -583,7 +790,8 @@
       "z": 4.773502485915235,
       "u": 3.183750732516195,
       "fdr_cm": 0.006885412992399313,
-      "fdr_mle": 0.06313429894934484
+      "fdr_mle": 0.06313429894934484,
+      "fdr_loc": 0.31109175660726074
      },
      {
       "candidate": "national_rifle_association",
@@ -592,7 +800,8 @@
       "z": 5.14347572197839,
       "u": 3.8153530680083394,
       "fdr_cm": 0.000417242157444546,
-      "fdr_mle": 0.011032238902072809
+      "fdr_mle": 0.011032238902072809,
+      "fdr_loc": 0.11437193796894651
      },
      {
       "candidate": "national_rifle_association",
@@ -601,7 +810,8 @@
       "z": 3.332487734124005,
       "u": 2.704849385375171,
       "fdr_cm": 0.04253692823342622,
-      "fdr_mle": 0.19954757724435335
+      "fdr_mle": 0.19954757724435335,
+      "fdr_loc": 0.6113340971344703
      },
      {
       "candidate": "national_rifle_association",
@@ -610,7 +820,8 @@
       "z": 5.668717604671421,
       "u": 4.464721562533065,
       "fdr_cm": 1.5020468976347879e-05,
-      "fdr_mle": 0.0014807794042182854
+      "fdr_mle": 0.0014807794042182854,
+      "fdr_loc": 0.03816563233145475
      },
      {
       "candidate": "national_rifle_association",
@@ -619,7 +830,8 @@
       "z": -2.1225794163060274,
       "u": -3.1713423496349575,
       "fdr_cm": 0.010095599213433845,
-      "fdr_mle": 0.14722228389856323
+      "fdr_mle": 0.14722228389856323,
+      "fdr_loc": 0.6667396882936548
      },
      {
       "candidate": "national_rifle_association",
@@ -628,7 +840,8 @@
       "z": 6.299586864927252,
       "u": 5.5199341075211175,
       "fdr_cm": 3.097000522367756e-08,
-      "fdr_mle": 3.9592202480402104e-05
+      "fdr_mle": 3.9592202480402104e-05,
+      "fdr_loc": 0.005984258552711933
      },
      {
       "candidate": "national_rifle_association",
@@ -637,7 +850,8 @@
       "z": 4.770386948351638,
       "u": 3.0268203363791493,
       "fdr_cm": 0.012951214146371771,
-      "fdr_mle": 0.09395610578656242
+      "fdr_mle": 0.09395610578656242,
+      "fdr_loc": 0.3925613080252945
      },
      {
       "candidate": "red_cross",
@@ -646,7 +860,8 @@
       "z": -2.441213900896541,
       "u": -3.5975667192972036,
       "fdr_cm": 0.0025333491544619643,
-      "fdr_mle": 0.07869335160281002
+      "fdr_mle": 0.07869335160281002,
+      "fdr_loc": 0.574010493069617
      },
      {
       "candidate": "red_cross",
@@ -655,7 +870,8 @@
       "z": 2.475369850531515,
       "u": 2.3867364995923106,
       "fdr_cm": 0.11865483273076953,
-      "fdr_mle": 0.38005465251118864
+      "fdr_mle": 0.38005465251118864,
+      "fdr_loc": 0.8856909847254109
      },
      {
       "candidate": "red_cross",
@@ -664,7 +880,8 @@
       "z": -1.7485325951726718,
       "u": -2.840503289841128,
       "fdr_cm": 0.02692535682357639,
-      "fdr_mle": 0.23287173432862007
+      "fdr_mle": 0.23287173432862007,
+      "fdr_loc": 0.7598285986265642
      },
      {
       "candidate": "red_cross",
@@ -673,7 +890,8 @@
       "z": -2.1899786109474517,
       "u": -2.744860838302646,
       "fdr_cm": 0.035456724573151695,
-      "fdr_mle": 0.2658275859165783
+      "fdr_mle": 0.2658275859165783,
+      "fdr_loc": 0.7939311691204667
      },
      {
       "candidate": "red_cross",
@@ -682,7 +900,8 @@
       "z": 2.7244730217966695,
       "u": 2.2925808549905287,
       "fdr_cm": 0.15532894212170043,
-      "fdr_mle": 0.44905784813825655
+      "fdr_mle": 0.44905784813825655,
+      "fdr_loc": 0.9716899759438431
      },
      {
       "candidate": "red_cross",
@@ -691,7 +910,8 @@
       "z": -1.9229444782847647,
       "u": -2.9813575532455547,
       "fdr_cm": 0.01791449357024609,
-      "fdr_mle": 0.1919064954573356
+      "fdr_mle": 0.1919064954573356,
+      "fdr_loc": 0.7164535020870825
      },
      {
       "candidate": "red_cross",
@@ -700,7 +920,8 @@
       "z": 4.293478527169912,
       "u": 3.376545139182043,
       "fdr_cm": 0.0030679292651464344,
-      "fdr_mle": 0.0380026684525106
+      "fdr_mle": 0.0380026684525106,
+      "fdr_loc": 0.23157879977267545
      },
      {
       "candidate": "red_cross",
@@ -709,7 +930,8 @@
       "z": -1.9441465516050318,
       "u": -2.6162333991332787,
       "fdr_cm": 0.05084967260839966,
-      "fdr_mle": 0.3174158718932358
+      "fdr_mle": 0.3174158718932358,
+      "fdr_loc": 0.8460586631952769
      },
      {
       "candidate": "red_cross",
@@ -718,7 +940,8 @@
       "z": 4.198398775634675,
       "u": 3.7409552694397794,
       "fdr_cm": 0.0005919772573842953,
-      "fdr_mle": 0.01369043624243555
+      "fdr_mle": 0.01369043624243555,
+      "fdr_loc": 0.12920362653745562
      },
      {
       "candidate": "red_cross",
@@ -727,7 +950,8 @@
       "z": 3.807341197047891,
       "u": 2.603345154909535,
       "fdr_cm": 0.060246370472266615,
-      "fdr_mle": 0.2483783269784011
+      "fdr_mle": 0.2483783269784011,
+      "fdr_loc": 0.6942323244873757
      },
      {
       "candidate": "red_cross",
@@ -736,7 +960,8 @@
       "z": 3.3260906305367333,
       "u": 2.277327697207803,
       "fdr_cm": 0.16213219267441406,
-      "fdr_mle": 0.46091460388386285
+      "fdr_mle": 0.46091460388386285,
+      "fdr_loc": 0.979904370423026
      },
      {
       "candidate": "united_nations",
@@ -745,7 +970,8 @@
       "z": -2.2583251822116486,
       "u": -2.508049577561701,
       "fdr_cm": 0.06803004639225321,
-      "fdr_mle": 0.36751547699636844
+      "fdr_mle": 0.36751547699636844,
+      "fdr_loc": 0.8947613608737531
      },
      {
       "candidate": "united_nations",
@@ -754,7 +980,8 @@
       "z": -1.2571546075644395,
       "u": -2.4303416509141043,
       "fdr_cm": 0.08382402180405503,
-      "fdr_mle": 0.40814566662641677
+      "fdr_mle": 0.40814566662641677,
+      "fdr_loc": 0.9324575798825178
      },
      {
       "candidate": "united_nations",
@@ -763,7 +990,8 @@
       "z": -1.789531422902038,
       "u": -3.0776352905189284,
       "fdr_cm": 0.013437915499200707,
-      "fdr_mle": 0.16789596041182087
+      "fdr_mle": 0.16789596041182087,
+      "fdr_loc": 0.6902063208825265
      },
      {
       "candidate": "united_nations",
@@ -772,7 +1000,8 @@
       "z": 0.25688112700269855,
       "u": -2.328017577351603,
       "fdr_cm": 0.10897212265247948,
-      "fdr_mle": 0.46658441297547654
+      "fdr_mle": 0.46658441297547654,
+      "fdr_loc": 0.9835971716716561
      },
      {
       "candidate": "united_nations",
@@ -781,7 +1010,8 @@
       "z": -3.267425337800084,
       "u": -3.754753411178506,
       "fdr_cm": 0.0014575514317613741,
-      "fdr_mle": 0.06129657377386765
+      "fdr_mle": 0.06129657377386765,
+      "fdr_loc": 0.5413378724273414
      },
      {
       "candidate": "united_nations",
@@ -790,7 +1020,8 @@
       "z": -1.0655861344153434,
       "u": -2.5399298039381506,
       "fdr_cm": 0.06272825316870673,
-      "fdr_mle": 0.3523914879807734
+      "fdr_mle": 0.3523914879807734,
+      "fdr_loc": 0.8801649124851304
      },
      {
       "candidate": "united_nations",
@@ -799,7 +1030,8 @@
       "z": -2.8539902292145696,
       "u": -3.639840208686706,
       "fdr_cm": 0.0021696509584348956,
-      "fdr_mle": 0.07355554204075813
+      "fdr_mle": 0.07355554204075813,
+      "fdr_loc": 0.5652777603571995
      },
      {
       "candidate": "united_nations",
@@ -808,7 +1040,8 @@
       "z": -2.070290184163049,
       "u": -2.1589235351022538,
       "fdr_cm": 0.1650984548144074,
-      "fdr_mle": 0.5765512205424634
+      "fdr_mle": 0.5765512205424634,
+      "fdr_loc": 1.0
      },
      {
       "candidate": "united_nations",
@@ -817,7 +1050,8 @@
       "z": -1.4117577342029788,
       "u": -2.503728428871435,
       "fdr_cm": 0.06877093936291691,
-      "fdr_mle": 0.3695946423123973
+      "fdr_mle": 0.3695946423123973,
+      "fdr_loc": 0.8967562365520707
      },
      {
       "candidate": "united_nations",
@@ -826,7 +1060,8 @@
       "z": -1.4574004343185658,
       "u": -2.3743338223064345,
       "fdr_cm": 0.0972592738538828,
-      "fdr_mle": 0.4397696113125831
+      "fdr_mle": 0.4397696113125831,
+      "fdr_loc": 0.9606762035330711
      },
      {
       "candidate": "united_nations",
@@ -835,7 +1070,8 @@
       "z": -1.966995290380485,
       "u": -3.173693203555668,
       "fdr_cm": 0.010019931195161954,
-      "fdr_mle": 0.14672639744836224
+      "fdr_mle": 0.14672639744836224,
+      "fdr_loc": 0.6661677318805003
      },
      {
       "candidate": "united_nations",
@@ -844,7 +1080,8 @@
       "z": -1.800808763939961,
       "u": -2.6727970935419263,
       "fdr_cm": 0.04329005630940883,
-      "fdr_mle": 0.2933672351063011
+      "fdr_mle": 0.2933672351063011,
+      "fdr_loc": 0.8220502761888626
      },
      {
       "candidate": "united_nations",
@@ -853,7 +1090,8 @@
       "z": -2.1949898401883803,
       "u": -2.6524333463832757,
       "fdr_cm": 0.04601162739026681,
-      "fdr_mle": 0.30202509177848647
+      "fdr_mle": 0.30202509177848647,
+      "fdr_loc": 0.830693642358575
      },
      {
       "candidate": "united_nations",
@@ -862,7 +1100,8 @@
       "z": -1.5194757406153185,
       "u": -2.7968019422755472,
       "fdr_cm": 0.030613610750490596,
-      "fdr_mle": 0.24752015252755863
+      "fdr_mle": 0.24752015252755863,
+      "fdr_loc": 0.775039649576127
      },
      {
       "candidate": "united_nations",
@@ -871,7 +1110,8 @@
       "z": -1.4030629092256546,
       "u": -2.731185563195706,
       "fdr_cm": 0.0369139284730221,
-      "fdr_mle": 0.2710031812897606
+      "fdr_mle": 0.2710031812897606,
+      "fdr_loc": 0.7992270051401484
      },
      {
       "candidate": "united_nations",
@@ -880,7 +1120,8 @@
       "z": -1.8875204735440134,
       "u": -2.5151588222928476,
       "fdr_cm": 0.06684775411192077,
-      "fdr_mle": 0.3641428491500848
+      "fdr_mle": 0.3641428491500848,
+      "fdr_loc": 0.8915063738302192
      },
      {
       "candidate": "united_nations",
@@ -889,7 +1130,8 @@
       "z": -1.5742779915155585,
       "u": -2.778274033653914,
       "fdr_cm": 0.03217730696440478,
-      "fdr_mle": 0.253730591540546
+      "fdr_mle": 0.253730591540546,
+      "fdr_loc": 0.7814886260432617
      },
      {
       "candidate": "united_nations",
@@ -898,7 +1140,8 @@
       "z": -3.28897155736604,
       "u": -4.068624314772174,
       "fdr_cm": 0.00044233634960920475,
-      "fdr_mle": 0.035568324418588766
+      "fdr_mle": 0.035568324418588766,
+      "fdr_loc": 0.47243990287805004
      },
      {
       "candidate": "united_nations",
@@ -907,7 +1150,8 @@
       "z": -1.309868845383786,
       "u": -3.053435457356275,
       "fdr_cm": 0.014433982598369609,
-      "fdr_mle": 0.17360467729216272
+      "fdr_mle": 0.17360467729216272,
+      "fdr_loc": 0.696538806683399
      },
      {
       "candidate": "world_health_organization",
@@ -916,7 +1160,8 @@
       "z": -1.4117577342029803,
       "u": -2.1672668546767344,
       "fdr_cm": 0.1620827573325564,
-      "fdr_mle": 0.5709278132243298
+      "fdr_mle": 0.5709278132243298,
+      "fdr_loc": 1.0
      },
      {
       "candidate": "world_health_organization",
@@ -925,7 +1170,8 @@
       "z": -0.9965156865915147,
       "u": -2.233604238116847,
       "fdr_cm": 0.1381050733415432,
-      "fdr_mle": 0.526216337872963
+      "fdr_mle": 0.526216337872963,
+      "fdr_loc": 1.0
      },
      {
       "candidate": "world_health_organization",
@@ -934,7 +1180,8 @@
       "z": -1.8994305864468883,
       "u": -2.163999630875386,
       "fdr_cm": 0.16326369718538267,
-      "fdr_mle": 0.5731299259530186
+      "fdr_mle": 0.5731299259530186,
+      "fdr_loc": 1.0
      },
      {
       "candidate": "world_health_organization",
@@ -943,7 +1190,8 @@
       "z": -0.6852196785105156,
       "u": -2.302528926823344,
       "fdr_cm": 0.11668795311919668,
-      "fdr_mle": 0.4825635893055548
+      "fdr_mle": 0.4825635893055548,
+      "fdr_loc": 0.9885154427348322
      },
      {
       "candidate": "world_health_organization",
@@ -952,7 +1200,8 @@
       "z": -2.8662053435448214,
       "u": -3.3236488497397167,
       "fdr_cm": 0.006265671667277263,
-      "fdr_mle": 0.11847961166201222
+      "fdr_mle": 0.11847961166201222,
+      "fdr_loc": 0.6317850519409514
      },
      {
       "candidate": "world_health_organization",
@@ -961,7 +1210,8 @@
       "z": -0.8417894852815422,
       "u": -2.1699121392515934,
       "fdr_cm": 0.16112661775765846,
-      "fdr_mle": 0.5691448882741328
+      "fdr_mle": 0.5691448882741328,
+      "fdr_loc": 1.0
      },
      {
       "candidate": "world_health_organization",
@@ -970,22 +1220,57 @@
       "z": -3.0857966416503304,
       "u": -4.289792683788686,
       "fdr_cm": 0.0002139091551746882,
-      "fdr_mle": 0.02532992611046016
+      "fdr_mle": 0.02532992611046016,
+      "fdr_loc": 0.42990865014081536
      }
     ],
     "n_flag_cm": 71,
-    "n_flag_mle": 37,
     "plurality_cm": [
      "national_rifle_association"
     ],
+    "bulk_ok_cm": false,
+    "n_flag_cm_supported": 0,
+    "plurality_cm_supported": [],
+    "n_flag_mle": 37,
     "plurality_mle": [
      "national_rifle_association"
+    ],
+    "bulk_ok_mle": false,
+    "n_flag_mle_supported": 0,
+    "plurality_mle_supported": [],
+    "n_flag_loc": 16,
+    "plurality_loc": [
+     "national_rifle_association"
+    ],
+    "bulk_ok_loc": true,
+    "n_flag_loc_supported": 16,
+    "plurality_loc_supported": [
+     "national_rifle_association"
     ]
+   },
+   "tau": {
+    "tau_pp": 1.9845194755703555,
+    "mean_tau2": 0.0003938317548918039,
+    "share_axes_tau2_positive": 0.6764705882352942,
+    "n_axes": 102,
+    "k": 4,
+    "mean_rate_pp": 6.590839460784313,
+    "axis_block": {
+     "lo": 1.6162919657557664,
+     "median": 1.9684605794011594,
+     "hi": 2.388583530481033,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
    }
   }
  },
  "subject": "challenge_organism_a_organization",
  "grid": "median",
+ "replicate": null,
+ "registry_id": "challenge_organism_a_organization",
  "stream": "median",
  "candidates": [
   "national_rifle_association",
@@ -1244,5 +1529,64 @@
   "i143"
  ],
  "documented": null,
- "seconds": 40.4
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
+ "seconds": 21.1
 }

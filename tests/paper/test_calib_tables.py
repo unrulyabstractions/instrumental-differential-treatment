@@ -126,9 +126,28 @@ def _uncut_for(res: dict) -> dict:
     return {"pairings": pairs, "columns": columns, "base_pairs": base_pairs}
 
 
+def _exact_for() -> dict:
+    """An exact-stack battery (B71) with every null at fixed values against A2, A+A2, ALL."""
+    import statistics
+
+    from src.appendix.calib_tables import _EXACT_COLS, _FRESH_EXTRA, _NULLS
+    names = [run.removeprefix("auditbench_") for run in _NULLS]
+    pairs = {}
+    for i, name in enumerate(names + [key for key, _ in _FRESH_EXTRA]):
+        for j, col in enumerate(_EXACT_COLS):
+            pairs[f"{name}|{col}"] = {"p_family_wise": 0.1 * (j + 1) + i / 100}
+    pairs["hallucinates_citations|A2"] = {"p_family_wise": 0.0028}
+    for col in _EXACT_COLS:
+        pairs[f"contextual_optimism|{col}"] = {"p_family_wise": 1 / 10001}
+    summary = {c: {"median_p_8": statistics.median(pairs[f"{n}|{c}"]["p_family_wise"] for n in names)}
+               for c in _EXACT_COLS}
+    return {"alpha": 0.01, "n_permutations": 10000, "pairings": pairs, "summary": summary,
+            "reproduce": {"hallucinates_citations|P": {"p": 0.0042, "ok": True}}}
+
+
 def test_fresh_base_table_reads_every_pairing():
-    """B56, B70, DESIGN_AMENDMENTS A4: each null against six baselines, the medians, the
-    counts at or below 0.01 and below 0.05, and the check rows."""
+    """B56, B70, B71, DESIGN_AMENDMENTS A4: each null against nine baselines, the medians,
+    the counts at or below 0.01 and below 0.05, and the check rows."""
     from src.appendix.calib_tables import _NULLS, fresh_base_table
     res = {}
     for i, run in enumerate(_NULLS):
@@ -141,31 +160,38 @@ def test_fresh_base_table_reads_every_pairing():
     res["base_B|base_A"] = {"p_family_wise": 0.3}
     res["contextual_optimism|base_B"] = {"p_family_wise": 1 / 10001}
     uncut = _uncut_for(res)
-    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
+    exact = _exact_for()
+    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut, exact)
     assert len(_rows(body)) == len(_NULLS) + 3 + 2 + 4
-    assert ("Target & original & independent & both, pooled & first & second & "
-            "both, pooled \\\\") in body
+    assert ("Target & original & independent & \\makecell[r]{both,\\\\pooled} & first & second & "
+            "\\makecell[r]{both,\\\\pooled} & alone & \\makecell[r]{with\\\\original} & "
+            "all five \\\\") in body
     assert ("median of the eight & 0.0450 & 0.5350 & 0.4350 & 0.3350 & 0.6350 & "
-            "0.2350 \\\\") in body
+            "0.2350 & 0.1350 & 0.2350 & 0.3350 \\\\") in body
     # A p of exactly 0.01 counts as at or below alpha.
-    assert "nulls at or below $0.01$ & 1 & 0 & 0 & 0 & 0 & 1 \\\\" in body
-    assert "nulls below $0.05$ & 4 & 0 & 0 & 0 & 0 & 1 \\\\" in body
-    assert "independent base sample & 0.3000 & --- & --- & --- & --- & --- \\\\" in body
-    assert ("two uncut samples, pooled & 0.2033 & 0.8029 & 0.2717 & --- & --- & "
-            "--- \\\\") in body
+    assert "nulls at or below $0.01$ & 1 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\\\" in body
+    assert "nulls below $0.05$ & 4 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\\\" in body
+    assert ("independent base sample & 0.3000" + " & ---" * 8 + " \\\\") in body
+    assert ("two uncut samples, pooled & 0.2033 & 0.8029 & 0.2717" + " & ---" * 6
+            + " \\\\") in body
     # F.3: the cut alone, the same replies uncut against cut, rejects and is red.
     assert ("uncut replies against the same replies cut & "
-            "\\multicolumn{6}{c}{\\textcolor{warn}{\\textbf{0.0097}}} \\\\") in body
+            "\\multicolumn{9}{c}{\\textcolor{warn}{\\textbf{0.0097}}} \\\\") in body
     assert "\\textcolor{warn}{\\textbf{0.0042}}" in body
-    assert body.count("$<$0.0001") == 6
+    assert "\\textcolor{warn}{\\textbf{0.0028}}" in body
+    assert body.count("$<$0.0001") == 9
     assert "fresh base" not in body
     uncut["columns"]["C2"]["n_below_005_8"] = 3
     with pytest.raises(ValueError, match="C2 counts"):
-        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
+        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut, exact)
     uncut["columns"]["C2"]["n_below_005_8"] = 0
+    exact["summary"]["A2"]["median_p_8"] = 0.9
+    with pytest.raises(ValueError, match="A2 median"):
+        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut, exact)
+    exact = _exact_for()
     uncut["pairings"]["flattery|A"] = {"p_family_wise": 0.99}
     with pytest.raises(ValueError):
-        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
+        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut, exact)
 
 
 @NEEDS_OUTPUTS

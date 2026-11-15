@@ -31,7 +31,7 @@ from scipy import special
 from script.analysis.baseline_free_20261115.empirical_null.efron_truncated_mle import (
     truncated_mle)
 
-__all__ = ["BREAKS", "SPLINE_DF", "PCT0", "MLE_HALF_WIDTH", "FDR_CUT",
+__all__ = ["BREAKS", "SPLINE_DF", "PCT0", "MLE_HALF_WIDTH", "FDR_CUT", "REASONS",
            "t_to_z", "natural_spline_basis", "fit_empirical_null", "local_fdr"]
 
 BREAKS = 120          # locfdr ``bre``: break points, so BREAKS - 1 bins
@@ -39,6 +39,16 @@ SPLINE_DF = 7         # locfdr ``df``
 PCT0 = 0.25           # locfdr ``pct0``: the central half
 MLE_HALF_WIDTH = 2.0  # the fixed window |z| <= 2
 FDR_CUT = 0.2
+
+#: Why a fit is undefined, by estimator and code (0 means the fit exists).
+REASONS = {
+    "cm": {1: "all z values equal, so the histogram has no range",
+           2: "fewer than three bins inside the central half",
+           3: "the quadratic fitted to the central log histogram is not concave"},
+    "mle": {1: "fewer than three z values inside the window",
+            2: "the z values inside the window are flatter than any normal"},
+}
+REASONS["loc"] = REASONS["mle"]
 
 
 def t_to_z(t: np.ndarray, df: np.ndarray) -> np.ndarray:
@@ -141,20 +151,22 @@ def _central_matching(z: np.ndarray, h: dict, f: np.ndarray) -> dict:
     co = np.linalg.solve(A, np.einsum("gpn,gn->gp", xtw, logf)[..., None])[..., 0]
     c2 = co[:, 2]
     good = enough & h["ok"] & (c2 < 0)
+    reason = np.where(~h["ok"], 1, np.where(~enough, 2, np.where(~(c2 < 0), 3, 0)))
     with np.errstate(invalid="ignore", divide="ignore"):
         sigma = np.where(good, np.sqrt(-1.0 / (2.0 * c2)), np.nan)
         delta = np.where(good, xmax - co[:, 1] / (2.0 * c2), np.nan)
-        l0 = np.einsum("gnp,gp->gn", X, co)
+        l0 = np.where(good[:, None], np.einsum("gnp,gp->gn", X, co), np.nan)
         p0 = np.where(good, np.exp(l0).sum(axis=1) / f.sum(axis=1), np.nan)
     return {"delta": delta, "sigma": sigma, "p0": p0, "l0": l0,
-            "n_central_bins": inside.sum(axis=1)}
+            "n_central_bins": inside.sum(axis=1), "reason": reason}
 
 
 def fit_empirical_null(z: np.ndarray, with_fdr: bool = False) -> dict:
     """All three estimators on each row of ``z`` (G, N); NaN entries are not fitted.
 
-    With ``with_fdr`` the local fdr of every entry is returned under the
-    central-matching and the fixed-window MLE nulls (NaN where not fitted).
+    With ``with_fdr`` the local fdr of every entry is returned under each of the
+    three fitted nulls (NaN where not fitted, and on every row whose fit is
+    undefined). ``<e>_reason`` codes why a fit is undefined (``REASONS``).
     """
     z = np.atleast_2d(np.asarray(z, dtype=float))
     h = _histograms(z)
@@ -181,12 +193,14 @@ def fit_empirical_null(z: np.ndarray, with_fdr: bool = False) -> dict:
            "mle_converged": mle["converged"], "loc_converged": loc["converged"],
            "loc_delta": loc["delta"], "loc_sigma": loc["sigma"], "loc_p0": loc["p0"],
            "loc_n0": loc["n0"], "loc_exists": loc["exists"],
-           "loc_window_lo": loc["lo"], "loc_window_hi": loc["hi"]}
+           "loc_window_lo": loc["lo"], "loc_window_hi": loc["hi"],
+           "cm_reason": cm["reason"], "mle_reason": mle["reason"], "loc_reason": loc["reason"]}
     if with_fdr:
         out["fdr_cm"] = local_fdr(z, h["x"], f, np.exp(cm["l0"]))
-        f0 = np.exp(-0.5 * ((h["x"] - mle["delta"][:, None]) / mle["sigma"][:, None]) ** 2)
-        f0 = f.sum(1, keepdims=True) * f0 / f0.sum(1, keepdims=True)
-        out["fdr_mle"] = local_fdr(z, h["x"], f, mle["p0"][:, None] * f0)
+        for e, fit in (("mle", mle), ("loc", loc)):
+            f0 = np.exp(-0.5 * ((h["x"] - fit["delta"][:, None]) / fit["sigma"][:, None]) ** 2)
+            f0 = f.sum(1, keepdims=True) * f0 / f0.sum(1, keepdims=True)
+            out[f"fdr_{e}"] = local_fdr(z, h["x"], f, fit["p0"][:, None] * f0)
     return out
 
 

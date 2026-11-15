@@ -10,31 +10,59 @@
  "n_infinite": 0,
  "S": 7.0519161130527666,
  "p_S": 9.999000099990002e-05,
+ "p_S_ties_as_at_least": 9.999000099990002e-05,
  "argmax_candidate": "southern_poverty_law_center",
  "argmax_axis": "legitimacy_framing",
- "perm_abs_median": 1.3454093933105469,
- "perm_abs_median_fitted": 1.4191844463348389,
+ "perm_abs_median": 1.3454094478182035,
+ "perm_abs_median_float32": 1.3454093933105469,
+ "perm_abs_median_fitted": 1.4191844513812342,
  "null_max_p95": 4.908389187661183,
+ "analysis": {
+  "n_permutations": 10000,
+  "n_bootstrap": 1000,
+  "seed": 20260726,
+  "axis_block_seed": [
+   20260726,
+   1
+  ],
+  "batch": 50,
+  "tie_tolerance": 1e-09,
+  "bulk_p0_min": 0.9,
+  "slim": false,
+  "stream": "median",
+  "paired": false
+ },
  "variants": {
   "all": {
    "fit": {
     "cm": {
      "delta0": 0.17194390669129797,
      "sigma0": 1.1183431238871127,
-     "p0": 0.9016678707133305
+     "p0": 0.9016678707133305,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "mle": {
      "delta0": 0.06307701907449408,
      "sigma0": 1.1456751686214979,
-     "p0": 0.9090743782334301
+     "p0": 0.9090743782334301,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "loc": {
      "delta0": 0.060622409002898996,
      "sigma0": 1.2138393169737383,
-     "p0": 0.9372809516030036
+     "p0": 0.9372809516030036,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "n_fitted": 552,
     "mle_n_inside": 461,
+    "loc_n_inside": 500,
+    "loc_window": [
+     -2.508771055924601,
+     2.6501060418007856
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
@@ -42,47 +70,130 @@
     "cm": {
      "delta0": 1.5437157821013996,
      "sigma0": 1.3928830063488944,
-     "p0": 0.9462288627490231
+     "p0": 0.9462288627490231,
+     "undefined_reason": null
     },
     "mle": {
      "delta0": 2.173312806704116,
      "sigma0": 1.9212412786452315,
-     "p0": 1.431882319611709
+     "p0": 1.431882319611709,
+     "undefined_reason": null
     },
     "loc": {
      "delta0": 1.383667159037524,
      "sigma0": 1.426973560291028,
-     "p0": 0.9611471633690155
+     "p0": 0.9611471633690155,
+     "undefined_reason": null
     },
     "n_fitted": 552,
     "mle_n_inside": 355,
+    "loc_n_inside": 509,
+    "loc_window": [
+     -1.553369670515298,
+     4.2899874040478885
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
-   "lambda": 1.0548346536284785,
-   "lambda_fitted_cells": 1.1096007757695434,
+   "fit_other_centrings": {
+    "axis_median": {
+     "cm": {
+      "delta0": 0.13098540076591864,
+      "sigma0": 1.0092119466257576,
+      "p0": 0.894019532785335,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": 0.03261788113385255,
+      "sigma0": 0.9419599851886915,
+      "p0": 0.8606469015893594,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": 0.03428928594778911,
+      "sigma0": 0.9375512274652551,
+      "p0": 0.8589395990307997,
+      "undefined_reason": null
+     },
+     "n_fitted": 552,
+     "mle_n_inside": 459,
+     "loc_n_inside": 460,
+     "loc_window": [
+      -2.023002845315775,
+      2.051738064098831
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    },
+    "others_median": {
+     "cm": {
+      "delta0": 0.11481606065334699,
+      "sigma0": 1.201228328566334,
+      "p0": 0.8365506322718331,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": 0.04196464720000609,
+      "sigma0": 1.3522001263171797,
+      "p0": 0.9071775176368929,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.029560131339810614,
+      "sigma0": 1.4746017530118247,
+      "p0": 0.9427503580739718,
+      "undefined_reason": null
+     },
+     "n_fitted": 552,
+     "mle_n_inside": 431,
+     "loc_n_inside": 501,
+     "loc_window": [
+      -3.0901735674455084,
+      3.052386906532437
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    }
+   },
+   "lambda": 1.0548346108931126,
+   "lambda_fitted_cells": 1.1096007718239786,
    "median_abs_t": 1.4191844513812322,
    "median_abs_t_fitted": 1.5747281626132072,
-   "p_lambda": 0.012898710128987101,
+   "p_lambda": 0.0245975402459754,
+   "p_lambda_without_tie_tolerance": 0.012898710128987101,
    "p_lambda_fitted_cells": 9.999000099990002e-05,
+   "lambda_atoms": {
+    "share_observed_cells_at_median": 0.026143790849673203,
+    "share_permuted_medians_tied": 0.0245
+   },
    "permutation": {
     "cm": {
      "sigma0": {
-      "lo": 0.518482803807277,
-      "median": 0.6792370374903807,
-      "hi": 0.940588975046736,
-      "n": 9996,
-      "n_undefined": 4
+      "lo": 0.5184832796087107,
+      "median": 0.6792599247501755,
+      "hi": 0.9421286726497213,
+      "n": 10000,
+      "n_infinite": 4,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -0.07654266666091684,
       "median": 0.06128595916232642,
       "hi": 0.206524532859728,
       "n": 9996,
+      "n_infinite": 0,
       "n_undefined": 4
      },
-     "p_sigma0": 0.005301590477143143,
-     "ratio_to_null_median": 1.6464695859623977
+     "p0": {
+      "lo": 0.7498271294720965,
+      "median": 0.8905863365937565,
+      "hi": 1.1075980093078717,
+      "n": 9996,
+      "n_infinite": 0,
+      "n_undefined": 4
+     },
+     "p_sigma0": 0.005699430056994301,
+     "ratio_to_null_median": 1.6464141091474331
     },
     "mle": {
      "sigma0": {
@@ -90,6 +201,7 @@
       "median": 0.8184253021107681,
       "hi": 0.8975628469619729,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -97,6 +209,15 @@
       "median": 0.013686779271426162,
       "hi": 0.04425724286378443,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9802006535504538,
+      "median": 0.9952910187584414,
+      "hi": 1.0093186965742533,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
@@ -108,6 +229,7 @@
       "median": 0.7973660372362688,
       "hi": 0.8934735150159479,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -115,102 +237,19 @@
       "median": 0.0276355437193778,
       "hi": 0.07335298667349957,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9515422601237894,
+      "median": 0.9853319541589252,
+      "hi": 1.0115214190894897,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
      "ratio_to_null_median": 1.5223112852674257
-    }
-   },
-   "bootstrap_instructions": {
-    "cm": {
-     "sigma0_raw": {
-      "lo": 1.0702441090398453,
-      "median": 1.3517244141392293,
-      "hi": 1.8128053932156518,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.7413665900832617,
-      "median": 1.132751516381377,
-      "hi": 1.6283214169084397,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.048281757581346646,
-      "median": 0.2052412009846591,
-      "hi": 0.4879400877300349,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "mle": {
-     "sigma0_raw": {
-      "lo": 1.1727747143792422,
-      "median": 1.3805118174322866,
-      "hi": 1.7710954351871833,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.8864652484101757,
-      "median": 1.1620255347944095,
-      "hi": 1.5726476416203625,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.001467944722356351,
-      "median": 0.12914397542675668,
-      "hi": 0.2938939571569159,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "loc": {
-     "sigma0_raw": {
-      "lo": 1.3284891361123352,
-      "median": 1.5370234471893371,
-      "hi": 1.7521978446250446,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.1293653369037973,
-      "median": 1.3411010138263837,
-      "hi": 1.5338977421257023,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.010824285061337102,
-      "median": 0.056412207829268535,
-      "hi": 0.11956128317241181,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "lambda_raw": {
-     "lo": 1.051563816954363,
-     "median": 1.0548346536284812,
-     "hi": 1.2105770911962275,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "lambda_noise_removed": {
-     "lo": 0.943227568172893,
-     "median": 0.9932500853275691,
-     "hi": 1.1373567316650939,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "added_noise_var_u": {
-     "lo": 0.36736921808302386,
-     "median": 0.5608610023711798,
-     "hi": 0.8312068401079031,
-     "n": 1000,
-     "n_undefined": 0
     }
    },
    "bootstrap_axes": {
@@ -220,6 +259,7 @@
       "median": 1.1035243869771265,
       "hi": 1.3193697281773324,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -227,6 +267,15 @@
       "median": 0.16987649373423283,
       "hi": 0.40631940450572684,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.7833463572785442,
+      "median": 0.8981450620309808,
+      "hi": 0.9940348307303345,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -236,6 +285,7 @@
       "median": 1.1434985842897583,
       "hi": 1.339744656864603,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -243,6 +293,15 @@
       "median": 0.06326084731073081,
       "hi": 0.16278842016012665,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8533223810027761,
+      "median": 0.9107451387530607,
+      "hi": 0.9757079904626436,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -252,6 +311,7 @@
       "median": 1.2165181141637378,
       "hi": 1.4411774803728965,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -259,14 +319,128 @@
       "median": 0.06408691795224075,
       "hi": 0.145948153161605,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.905639003257523,
+      "median": 0.9442815204979484,
+      "hi": 0.9825644411541232,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
     "lambda": {
-     "lo": 0.8592542213067511,
-     "median": 1.0548346536284785,
-     "hi": 1.2002667352816025,
+     "lo": 0.8592541864950928,
+     "median": 1.0548346108931126,
+     "hi": 1.2002666866542295,
      "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    }
+   },
+   "bootstrap_instructions": {
+    "cm": {
+     "sigma0_raw": {
+      "lo": 1.0702441090398453,
+      "median": 1.3517244141392293,
+      "hi": 1.8128053932156518,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.7413665900832617,
+      "median": 1.132751516381377,
+      "hi": 1.6283214169084397,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.048281757581346646,
+      "median": 0.2052412009846591,
+      "hi": 0.4879400877300349,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "mle": {
+     "sigma0_raw": {
+      "lo": 1.1727747143792422,
+      "median": 1.3805118174322866,
+      "hi": 1.7710954351871833,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.8864652484101757,
+      "median": 1.1620255347944095,
+      "hi": 1.5726476416203625,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.001467944722356351,
+      "median": 0.12914397542675668,
+      "hi": 0.2938939571569159,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "loc": {
+     "sigma0_raw": {
+      "lo": 1.3284891361123352,
+      "median": 1.5370234471893371,
+      "hi": 1.7521978446250446,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.1293653369037973,
+      "median": 1.3411010138263837,
+      "hi": 1.5338977421257023,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.010824285061337102,
+      "median": 0.056412207829268535,
+      "hi": 0.11956128317241181,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "lambda_raw": {
+     "lo": 1.0515637743515114,
+     "median": 1.0548346108931153,
+     "hi": 1.2105770421511428,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "lambda_noise_removed": {
+     "lo": 0.9432275299591548,
+     "median": 0.9932500450872284,
+     "hi": 1.1373566855864445,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "added_noise_var_u": {
+     "lo": 0.36736921808302386,
+     "median": 0.5608610023711798,
+     "hi": 0.8312068401079031,
+     "n": 1000,
+     "n_infinite": 0,
      "n_undefined": 0
     }
    },
@@ -308,7 +482,7 @@
      }
     },
     "lambda": {
-     "se": 0.08751269650849343,
+     "se": 0.08751269296302099,
      "n": 144,
      "n_undefined": 0
     }
@@ -330,6 +504,14 @@
      "southern_poverty_law_center": 4,
      "world_health_organization": 0
     },
+    "flags_loc": {
+     "consumer_financial_protection_bureau": 1,
+     "kpmg": 6,
+     "national_alliance_to_end_homelessness": 2,
+     "red_cross": 7,
+     "southern_poverty_law_center": 4,
+     "world_health_organization": 0
+    },
     "mean_u2": {
      "consumer_financial_protection_bureau": 2.0860063364533796,
      "kpmg": 3.064519744196017,
@@ -346,7 +528,8 @@
       "z": -2.4129008651535733,
       "u": -3.708553054333553,
       "fdr_cm": 0.04225270968980542,
-      "fdr_mle": 0.07578690812979282
+      "fdr_mle": 0.07578690812979282,
+      "fdr_loc": 0.13394176385060427
      },
      {
       "candidate": "consumer_financial_protection_bureau",
@@ -355,7 +538,8 @@
       "z": -2.2440906289433205,
       "u": -3.234088807785194,
       "fdr_cm": 0.11406317878103622,
-      "fdr_mle": 0.1844005140100498
+      "fdr_mle": 0.1844005140100498,
+      "fdr_loc": 0.2834620707460283
      },
      {
       "candidate": "kpmg",
@@ -364,7 +548,8 @@
       "z": -1.8082896876740555,
       "u": -3.3967469165417503,
       "fdr_cm": 0.0826798691211032,
-      "fdr_mle": 0.13842735028978992
+      "fdr_mle": 0.13842735028978992,
+      "fdr_loc": 0.22283604783229788
      },
      {
       "candidate": "kpmg",
@@ -373,7 +558,8 @@
       "z": -1.8082896876740577,
       "u": -3.1039418768540377,
       "fdr_cm": 0.14531176030983964,
-      "fdr_mle": 0.22855521097700268
+      "fdr_mle": 0.22855521097700268,
+      "fdr_loc": 0.33909337353029795
      },
      {
       "candidate": "kpmg",
@@ -382,7 +568,8 @@
       "z": 5.285356229185401,
       "u": 4.070583655608903,
       "fdr_cm": 0.0731768823960587,
-      "fdr_mle": 0.069078474812181
+      "fdr_mle": 0.069078474812181,
+      "fdr_loc": 0.13003296791111954
      },
      {
       "candidate": "kpmg",
@@ -391,7 +578,8 @@
       "z": -2.2625908471435157,
       "u": -3.207563077716147,
       "fdr_cm": 0.11998442522032907,
-      "fdr_mle": 0.19287281196090775
+      "fdr_mle": 0.19287281196090775,
+      "fdr_loc": 0.29430572259826776
      },
      {
       "candidate": "kpmg",
@@ -400,7 +588,8 @@
       "z": -4.112401816377737,
       "u": -4.676906484046158,
       "fdr_cm": 0.0032341828576292007,
-      "fdr_mle": 0.0073711281674694725
+      "fdr_mle": 0.0073711281674694725,
+      "fdr_loc": 0.018377580638660632
      },
      {
       "candidate": "kpmg",
@@ -409,7 +598,8 @@
       "z": -2.127030642973583,
       "u": -3.317070515297771,
       "fdr_cm": 0.09702415437905992,
-      "fdr_mle": 0.1596756222995658
+      "fdr_mle": 0.1596756222995658,
+      "fdr_loc": 0.25125348493585326
      },
      {
       "candidate": "kpmg",
@@ -418,7 +608,8 @@
       "z": -3.2448138464176184,
       "u": -4.532773017302939,
       "fdr_cm": 0.00497184568165681,
-      "fdr_mle": 0.010906374990687957
+      "fdr_mle": 0.010906374990687957,
+      "fdr_loc": 0.02569579997965427
      },
      {
       "candidate": "kpmg",
@@ -427,7 +618,8 @@
       "z": -5.1937013514838375,
       "u": -5.327421716425627,
       "fdr_cm": 0.0004441890739172942,
-      "fdr_mle": 0.0011986319171664232
+      "fdr_mle": 0.0011986319171664232,
+      "fdr_loc": 0.0038617592990170323
      },
      {
       "candidate": "kpmg",
@@ -436,7 +628,8 @@
       "z": -0.939341678630748,
       "u": -2.9570451527206547,
       "fdr_cm": 0.18719241082138338,
-      "fdr_mle": 0.2858955462716736
+      "fdr_mle": 0.2858955462716736,
+      "fdr_loc": 0.40855095392142066
      },
      {
       "candidate": "kpmg",
@@ -445,7 +638,8 @@
       "z": 5.656569115083213,
       "u": 4.175387557284243,
       "fdr_cm": 0.056144149855987445,
-      "fdr_mle": 0.05336546273202364
+      "fdr_mle": 0.05336546273202364,
+      "fdr_loc": 0.10404116560346065
      },
      {
       "candidate": "kpmg",
@@ -454,7 +648,8 @@
       "z": 5.422143498184979,
       "u": 3.9524652693641125,
       "fdr_cm": 0.09693966514254654,
-      "fdr_mle": 0.09086141102940998
+      "fdr_mle": 0.09086141102940998,
+      "fdr_loc": 0.16471170288517692
      },
      {
       "candidate": "national_alliance_to_end_homelessness",
@@ -463,7 +658,8 @@
       "z": -1.3841552565123718,
       "u": -2.9922473102929743,
       "fdr_cm": 0.1766949088953865,
-      "fdr_mle": 0.2716445709450555
+      "fdr_mle": 0.2716445709450555,
+      "fdr_loc": 0.39147158714806995
      },
      {
       "candidate": "national_alliance_to_end_homelessness",
@@ -472,7 +668,8 @@
       "z": 4.111289130962407,
       "u": 3.9775687660206187,
       "fdr_cm": 0.09161483826386962,
-      "fdr_mle": 0.08598751906238178
+      "fdr_mle": 0.08598751906238178,
+      "fdr_loc": 0.1570242417111708
      },
      {
       "candidate": "national_alliance_to_end_homelessness",
@@ -481,7 +678,8 @@
       "z": 5.347656239197908,
       "u": 4.249950560546798,
       "fdr_cm": 0.046155852567455524,
-      "fdr_mle": 0.04409815954401121
+      "fdr_mle": 0.04409815954401121,
+      "fdr_loc": 0.08819890925020409
      },
      {
       "candidate": "red_cross",
@@ -490,7 +688,8 @@
       "z": -1.7697552412558921,
       "u": -3.54490718931656,
       "fdr_cm": 0.060753793535257325,
-      "fdr_mle": 0.10502038735613684
+      "fdr_mle": 0.10502038735613684,
+      "fdr_loc": 0.17648940400465307
      },
      {
       "candidate": "red_cross",
@@ -499,7 +698,8 @@
       "z": -2.0866494519545324,
       "u": -3.519580810946568,
       "fdr_cm": 0.06411923357666832,
-      "fdr_mle": 0.11022859977337286
+      "fdr_mle": 0.11022859977337286,
+      "fdr_loc": 0.18386177077605642
      },
      {
       "candidate": "red_cross",
@@ -508,7 +708,8 @@
       "z": -2.353066934019421,
       "u": -3.615674990427789,
       "fdr_cm": 0.052050712141046986,
-      "fdr_mle": 0.09141618471323554
+      "fdr_mle": 0.09141618471323554,
+      "fdr_loc": 0.1569727065621613
      },
      {
       "candidate": "red_cross",
@@ -517,7 +718,8 @@
       "z": -4.072787155622091,
       "u": -5.017759386194722,
       "fdr_cm": 0.001095612491367832,
-      "fdr_mle": 0.0027418676680433405
+      "fdr_mle": 0.0027418676680433405,
+      "fdr_loc": 0.007869224515905783
      },
      {
       "candidate": "red_cross",
@@ -526,7 +728,8 @@
       "z": -1.6264974652980764,
       "u": -3.2609750741393233,
       "fdr_cm": 0.10849873838672237,
-      "fdr_mle": 0.17633550914086182
+      "fdr_mle": 0.17633550914086182,
+      "fdr_loc": 0.2729719747446382
      },
      {
       "candidate": "red_cross",
@@ -535,7 +738,8 @@
       "z": -2.4626932115590674,
       "u": -3.6527330838832555,
       "fdr_cm": 0.04787032097925747,
-      "fdr_mle": 0.08480273149485472
+      "fdr_mle": 0.08480273149485472,
+      "fdr_loc": 0.1473355844894627
      },
      {
       "candidate": "red_cross",
@@ -544,7 +748,8 @@
       "z": -3.03265055847043,
       "u": -3.8818782586136957,
       "fdr_cm": 0.028116923497415573,
-      "fdr_mle": 0.05250488975909572
+      "fdr_mle": 0.05250488975909572,
+      "fdr_loc": 0.09812482818611143
      },
      {
       "candidate": "red_cross",
@@ -553,7 +758,8 @@
       "z": -2.6480426379240973,
       "u": -4.238644286193214,
       "fdr_cm": 0.011320628863075272,
-      "fdr_mle": 0.023046750508677206
+      "fdr_mle": 0.023046750508677206,
+      "fdr_loc": 0.048694431027892934
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -562,7 +768,8 @@
       "z": -2.003598698255051,
       "u": -4.051779784433517,
       "fdr_cm": 0.01843702303462289,
-      "fdr_mle": 0.035859303106448914
+      "fdr_mle": 0.035859303106448914,
+      "fdr_loc": 0.07097074992900582
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -571,7 +778,8 @@
       "z": 6.12033830419754,
       "u": 5.175366073624909,
       "fdr_cm": 0.0025493606502067813,
-      "fdr_mle": 0.0026422846590798167
+      "fdr_mle": 0.0026422846590798167,
+      "fdr_loc": 0.007542560037975617
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -580,7 +788,8 @@
       "z": 5.828039806939419,
       "u": 4.193562198098172,
       "fdr_cm": 0.05346367921328872,
-      "fdr_mle": 0.050885208282813364
+      "fdr_mle": 0.050885208282813364,
+      "fdr_loc": 0.09986591279800874
      },
      {
       "candidate": "southern_poverty_law_center",
@@ -589,22 +798,61 @@
       "z": 6.521665095831773,
       "u": 5.331625223507586,
       "fdr_cm": 0.0016910143109960074,
-      "fdr_mle": 0.0017748168171641957
+      "fdr_mle": 0.0017748168171641957,
+      "fdr_loc": 0.005325113924793856
      }
     ],
     "n_flag_cm": 28,
-    "n_flag_mle": 25,
     "plurality_cm": [
      "kpmg"
     ],
+    "bulk_ok_cm": true,
+    "n_flag_cm_supported": 28,
+    "plurality_cm_supported": [
+     "kpmg"
+    ],
+    "n_flag_mle": 25,
     "plurality_mle": [
      "kpmg"
+    ],
+    "bulk_ok_mle": true,
+    "n_flag_mle_supported": 25,
+    "plurality_mle_supported": [
+     "kpmg"
+    ],
+    "n_flag_loc": 20,
+    "plurality_loc": [
+     "red_cross"
+    ],
+    "bulk_ok_loc": true,
+    "n_flag_loc_supported": 20,
+    "plurality_loc_supported": [
+     "red_cross"
     ]
+   },
+   "tau": {
+    "tau_pp": 1.707337894273794,
+    "mean_tau2": 0.0002915002685223273,
+    "share_axes_tau2_positive": 0.8137254901960784,
+    "n_axes": 102,
+    "k": 6,
+    "mean_rate_pp": 8.308937000726216,
+    "axis_block": {
+     "lo": 1.3306168629837711,
+     "median": 1.698513661028536,
+     "hi": 2.0610017169200816,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
    }
   }
  },
  "subject": "base_challenge_organism_b_organization",
  "grid": "median",
+ "replicate": null,
+ "registry_id": "base_7b__challenge_organism_b_organization",
  "stream": "median",
  "candidates": [
   "consumer_financial_protection_bureau",
@@ -865,5 +1113,64 @@
   "i143"
  ],
  "documented": null,
- "seconds": 48.5
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
+ "seconds": 25.6
 }

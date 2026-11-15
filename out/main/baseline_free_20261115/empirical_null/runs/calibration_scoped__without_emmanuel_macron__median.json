@@ -10,31 +10,59 @@
  "n_infinite": 0,
  "S": 10.720594402188782,
  "p_S": 9.999000099990002e-05,
+ "p_S_ties_as_at_least": 9.999000099990002e-05,
  "argmax_candidate": "alexis_de_tocqueville",
  "argmax_axis": "legitimacy_framing",
- "perm_abs_median": 1.1639071702957153,
- "perm_abs_median_fitted": 1.29401433467865,
+ "perm_abs_median": 1.1639071281488333,
+ "perm_abs_median_float32": 1.1639071702957153,
+ "perm_abs_median_fitted": 1.2940143229175236,
  "null_max_p95": 4.614961791870595,
+ "analysis": {
+  "n_permutations": 10000,
+  "n_bootstrap": 1000,
+  "seed": 20260726,
+  "axis_block_seed": [
+   20260726,
+   1
+  ],
+  "batch": 50,
+  "tie_tolerance": 1e-09,
+  "bulk_p0_min": 0.9,
+  "slim": false,
+  "stream": "median",
+  "paired": false
+ },
  "variants": {
   "all": {
    "fit": {
     "cm": {
      "delta0": 0.06751417458174243,
      "sigma0": 1.0169215780365688,
-     "p0": 0.8106741763700932
+     "p0": 0.8106741763700932,
+     "undefined_reason": null,
+     "bulk_ok": false
     },
     "mle": {
      "delta0": 0.12038298243279633,
      "sigma0": 1.1438436709973736,
-     "p0": 0.876599900999013
+     "p0": 0.876599900999013,
+     "undefined_reason": null,
+     "bulk_ok": false
     },
     "loc": {
      "delta0": 0.0033599948102739073,
      "sigma0": 1.2770695945562955,
-     "p0": 0.9218599598053181
+     "p0": 0.9218599598053181,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "n_fitted": 471,
     "mle_n_inside": 379,
+    "loc_n_inside": 420,
+    "loc_window": [
+     -2.720499073986828,
+     2.7346770786959635
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
@@ -42,47 +70,130 @@
     "cm": {
      "delta0": 1.2489999660397875,
      "sigma0": 1.1496011844086553,
-     "p0": 0.8482398363435558
+     "p0": 0.8482398363435558,
+     "undefined_reason": null
     },
     "mle": {
      "delta0": 5.483848965229035,
      "sigma0": 3.111700541204884,
-     "p0": 5.696909217961161
+     "p0": 5.696909217961161,
+     "undefined_reason": null
     },
     "loc": {
      "delta0": 1.2777141825814422,
      "sigma0": 1.1769569391558814,
-     "p0": 0.8725564436798527
+     "p0": 0.8725564436798527,
+     "undefined_reason": null
     },
     "n_fitted": 471,
     "mle_n_inside": 331,
+    "loc_n_inside": 399,
+    "loc_window": [
+     -1.2941465619989347,
+     3.841285870690741
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
-   "lambda": 1.157881933328714,
-   "lambda_fitted_cells": 1.0967300850911132,
+   "fit_other_centrings": {
+    "axis_median": {
+     "cm": {
+      "delta0": 0.15736627536934172,
+      "sigma0": 0.922678801761949,
+      "p0": 0.8144616270438428,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": 0.0782505307660439,
+      "sigma0": 0.9163851797078104,
+      "p0": 0.8270795714535875,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": 0.10609381070771658,
+      "sigma0": 0.8818164315206319,
+      "p0": 0.8151233737383757,
+      "undefined_reason": null
+     },
+     "n_fitted": 471,
+     "mle_n_inside": 378,
+     "loc_n_inside": 375,
+     "loc_window": [
+      -1.918042567044187,
+      2.0856829718827004
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    },
+    "others_median": {
+     "cm": {
+      "delta0": 0.17356747249974383,
+      "sigma0": 1.243035604798867,
+      "p0": 0.7826150451918645,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": 0.23196780969522224,
+      "sigma0": 1.161143596793148,
+      "p0": 0.7616114671720864,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": 0.020759298459507476,
+      "sigma0": 1.637429801617329,
+      "p0": 0.9095177973499572,
+      "undefined_reason": null
+     },
+     "n_fitted": 471,
+     "mle_n_inside": 326,
+     "loc_n_inside": 415,
+     "loc_window": [
+      -3.5004753629678462,
+      3.553604108223753
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    }
+   },
+   "lambda": 1.1578819752574143,
+   "lambda_fitted_cells": 1.096730095059149,
    "median_abs_t": 1.3476670845571557,
    "median_abs_t_fitted": 1.419184451381236,
    "p_lambda": 0.00019998000199980003,
-   "p_lambda_fitted_cells": 9.999000099990002e-05,
+   "p_lambda_without_tie_tolerance": 0.00019998000199980003,
+   "p_lambda_fitted_cells": 0.0005999400059994001,
+   "lambda_atoms": {
+    "share_observed_cells_at_median": 0.003883495145631068,
+    "share_permuted_medians_tied": 0.0
+   },
    "permutation": {
     "cm": {
      "sigma0": {
-      "lo": 0.48733428868981715,
-      "median": 0.6378500601868715,
-      "hi": 0.9186350966199142,
-      "n": 9999,
-      "n_undefined": 1
+      "lo": 0.4873372001751119,
+      "median": 0.6378637782753975,
+      "hi": 0.9189006922849566,
+      "n": 10000,
+      "n_infinite": 1,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -0.08035530551708896,
       "median": 0.0660137664633243,
       "hi": 0.21039748267535988,
       "n": 9999,
+      "n_infinite": 0,
       "n_undefined": 1
      },
-     "p_sigma0": 0.0113,
-     "ratio_to_null_median": 1.5942956527097298
+     "p0": {
+      "lo": 0.7363260897765754,
+      "median": 0.8694284852926318,
+      "hi": 1.1129602285743796,
+      "n": 9999,
+      "n_infinite": 0,
+      "n_undefined": 1
+     },
+     "p_sigma0": 0.011398860113988602,
+     "ratio_to_null_median": 1.594261365312255
     },
     "mle": {
      "sigma0": {
@@ -90,6 +201,7 @@
       "median": 0.8050471944607593,
       "hi": 0.8917071176979275,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -97,6 +209,15 @@
       "median": 0.020580872934313946,
       "hi": 0.05628986625468368,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9757802631192053,
+      "median": 0.9926627404409842,
+      "hi": 1.0074216801421432,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
@@ -108,6 +229,7 @@
       "median": 0.7678933640249297,
       "hi": 0.8766036036422119,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -115,102 +237,19 @@
       "median": 0.04351613692414821,
       "hi": 0.09811948385753524,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9365007199186299,
+      "median": 0.9749228312560279,
+      "hi": 1.0044823542230883,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
      "ratio_to_null_median": 1.6630819517211448
-    }
-   },
-   "bootstrap_instructions": {
-    "cm": {
-     "sigma0_raw": {
-      "lo": 1.0949930940464871,
-      "median": 1.2938802447178532,
-      "hi": 1.5946694873414589,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.8055376224492778,
-      "median": 1.0752418990032293,
-      "hi": 1.4013387671614632,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": 0.012958855199457626,
-      "median": 0.1485405348379687,
-      "hi": 0.32368109226223335,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "mle": {
-     "sigma0_raw": {
-      "lo": 1.1151240787610546,
-      "median": 1.3240098156298865,
-      "hi": 1.6806984376739533,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 0.8182172808797784,
-      "median": 1.1033120174189173,
-      "hi": 1.495141203336335,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.010496098346280737,
-      "median": 0.12388369666001056,
-      "hi": 0.29176140769695114,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "loc": {
-     "sigma0_raw": {
-      "lo": 1.345485155808651,
-      "median": 1.5792201389219183,
-      "hi": 1.8207608219690856,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.147570959388807,
-      "median": 1.3956947156102224,
-      "hi": 1.6364363610873796,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.035610732968371805,
-      "median": 0.042418399052835246,
-      "hi": 0.13527014996984402,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "lambda_raw": {
-     "lo": 1.1559422281730374,
-     "median": 1.219327870469825,
-     "hi": 1.3628956768840894,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "lambda_noise_removed": {
-     "lo": 1.0775557630935073,
-     "median": 1.1404563778744887,
-     "hi": 1.2768485156882423,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "added_noise_var_u": {
-     "lo": 0.35077037148316487,
-     "median": 0.5366230886872285,
-     "hi": 0.7962871082452548,
-     "n": 1000,
-     "n_undefined": 0
     }
    },
    "bootstrap_axes": {
@@ -220,6 +259,7 @@
       "median": 1.0755829572054205,
       "hi": 1.3855621243013008,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -227,6 +267,15 @@
       "median": 0.08591162623654705,
       "hi": 0.3388262437319438,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.7576466100904815,
+      "median": 0.8307014833020412,
+      "hi": 0.9509355282913822,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -236,6 +285,7 @@
       "median": 1.1428672890274032,
       "hi": 1.4054712671292802,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -243,6 +293,15 @@
       "median": 0.12063863892761398,
       "hi": 0.22780899692548148,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8066939425449474,
+      "median": 0.8786781565352599,
+      "hi": 0.9683947918721675,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -252,6 +311,7 @@
       "median": 1.23748808834632,
       "hi": 1.4445965770075777,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -259,14 +319,128 @@
       "median": 0.04127312761203572,
       "hi": 0.14145626433364292,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8462274915411803,
+      "median": 0.9096076571683948,
+      "hi": 0.9558255121107223,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
     "lambda": {
-     "lo": 1.0436213912551657,
-     "median": 1.157881933328714,
-     "hi": 1.269862128130347,
+     "lo": 1.0436214290463146,
+     "median": 1.1578819752574143,
+     "hi": 1.269862174114024,
      "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    }
+   },
+   "bootstrap_instructions": {
+    "cm": {
+     "sigma0_raw": {
+      "lo": 1.0949930940464871,
+      "median": 1.2938802447178532,
+      "hi": 1.5946694873414589,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.8055376224492778,
+      "median": 1.0752418990032293,
+      "hi": 1.4013387671614632,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": 0.012958855199457626,
+      "median": 0.1485405348379687,
+      "hi": 0.32368109226223335,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "mle": {
+     "sigma0_raw": {
+      "lo": 1.1151240787610546,
+      "median": 1.3240098156298865,
+      "hi": 1.6806984376739533,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 0.8182172808797784,
+      "median": 1.1033120174189173,
+      "hi": 1.495141203336335,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.010496098346280737,
+      "median": 0.12388369666001056,
+      "hi": 0.29176140769695114,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "loc": {
+     "sigma0_raw": {
+      "lo": 1.345485155808651,
+      "median": 1.5792201389219183,
+      "hi": 1.8207608219690856,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.147570959388807,
+      "median": 1.3956947156102224,
+      "hi": 1.6364363610873796,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.035610732968371805,
+      "median": 0.042418399052835246,
+      "hi": 0.13527014996984402,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "lambda_raw": {
+     "lo": 1.155942270031498,
+     "median": 1.2193279146235778,
+     "hi": 1.3628957262366554,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "lambda_noise_removed": {
+     "lo": 1.0775558021134723,
+     "median": 1.1404564191721827,
+     "hi": 1.2768485619249073,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "added_noise_var_u": {
+     "lo": 0.35077037148316487,
+     "median": 0.5366230886872285,
+     "hi": 0.7962871082452548,
+     "n": 1000,
+     "n_infinite": 0,
      "n_undefined": 0
     }
    },
@@ -308,7 +482,7 @@
      }
     },
     "lambda": {
-     "se": 0.15992188627314277,
+     "se": 0.1599218920641625,
      "n": 144,
      "n_undefined": 0
     }
@@ -328,6 +502,13 @@
      "jean_luc_m_lenchon": 5,
      "martin_luther_king_jr": 10
     },
+    "flags_loc": {
+     "alexis_de_tocqueville": 10,
+     "bernie_sanders": 6,
+     "fran_ois_hollande": 0,
+     "jean_luc_m_lenchon": 3,
+     "martin_luther_king_jr": 7
+    },
     "mean_u2": {
      "alexis_de_tocqueville": 5.979290778049185,
      "bernie_sanders": 3.1076887458872395,
@@ -343,7 +524,8 @@
       "z": -1.2970588773148122,
       "u": -2.7182509912136434,
       "fdr_cm": 0.18966113945209248,
-      "fdr_mle": 0.356760628183424
+      "fdr_mle": 0.356760628183424,
+      "fdr_loc": 0.7534391475047066
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -352,7 +534,8 @@
       "z": 5.9344817996762655,
       "u": 5.079972245276954,
       "fdr_cm": 0.0002268309546022978,
-      "fdr_mle": 0.0033428461834968544
+      "fdr_mle": 0.0033428461834968544,
+      "fdr_loc": 0.013973489368212664
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -361,7 +544,8 @@
       "z": -4.152583237255167,
       "u": -3.851248751910796,
       "fdr_cm": 0.009063846108677096,
-      "fdr_mle": 0.035177602783563196
+      "fdr_mle": 0.035177602783563196,
+      "fdr_loc": 0.1443995006687693
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -370,7 +554,8 @@
       "z": -2.6097120612447484,
       "u": -3.468858311068432,
       "fdr_cm": 0.029712442076165274,
-      "fdr_mle": 0.0873686980269252
+      "fdr_mle": 0.0873686980269252,
+      "fdr_loc": 0.27962921741369007
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -379,7 +564,8 @@
       "z": -9.168877452204974,
       "u": -9.536361159396836,
       "fdr_cm": 9.77477602058282e-18,
-      "fdr_mle": 6.393540449733412e-14
+      "fdr_mle": 6.393540449733412e-14,
+      "fdr_loc": 1.2390208767170949e-10
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -388,7 +574,8 @@
       "z": -2.6051204300728976,
       "u": -3.2160040613037784,
       "fdr_cm": 0.0599045132224312,
-      "fdr_mle": 0.14928255433812007
+      "fdr_mle": 0.14928255433812007,
+      "fdr_loc": 0.4107924954131805
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -397,7 +584,8 @@
       "z": -5.358894920528302,
       "u": -6.492673937107092,
       "fdr_cm": 1.4984090814754897e-07,
-      "fdr_mle": 8.457051472996584e-06
+      "fdr_mle": 8.457051472996584e-06,
+      "fdr_loc": 0.0003426934342862151
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -406,7 +594,8 @@
       "z": -3.7297121423676005,
       "u": -4.929038008874798,
       "fdr_cm": 0.0001905470113297998,
-      "fdr_mle": 0.0018492846572953404
+      "fdr_mle": 0.0018492846572953404,
+      "fdr_loc": 0.016955402296182975
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -415,7 +604,8 @@
       "z": -5.813804847246544,
       "u": -6.4848720988411195,
       "fdr_cm": 1.5761231210702345e-07,
-      "fdr_mle": 8.778907882810649e-06
+      "fdr_mle": 8.778907882810649e-06,
+      "fdr_loc": 0.00035203977915861665
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -424,7 +614,8 @@
       "z": -3.188834196439384,
       "u": -3.867610757121472,
       "fdr_cm": 0.008626454950943675,
-      "fdr_mle": 0.03384804882047192
+      "fdr_mle": 0.03384804882047192,
+      "fdr_loc": 0.1403305804337619
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -433,7 +624,8 @@
       "z": -6.4100233545746725,
       "u": -6.8059827441055125,
       "fdr_cm": 2.376367212405984e-08,
-      "fdr_mle": 2.0684898321840596e-06
+      "fdr_mle": 2.0684898321840596e-06,
+      "fdr_loc": 0.00011947250210574199
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -442,7 +634,8 @@
       "z": 5.37394915678024,
       "u": 4.652309878172581,
       "fdr_cm": 0.0013489860136210825,
-      "fdr_mle": 0.01292694045616981
+      "fdr_mle": 0.01292694045616981,
+      "fdr_loc": 0.04106305810296419
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -451,7 +644,8 @@
       "z": -1.7053737021474553,
       "u": -2.8291786795182783,
       "fdr_cm": 0.15099049610696877,
-      "fdr_mle": 0.30066254411934884
+      "fdr_mle": 0.30066254411934884,
+      "fdr_loc": 0.6707475156382029
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -460,7 +654,8 @@
       "z": -2.9451182164886953,
       "u": -3.6359429755244967,
       "fdr_cm": 0.01818753754095399,
-      "fdr_mle": 0.05986500270218326
+      "fdr_mle": 0.05986500270218326,
+      "fdr_loc": 0.21233378669034741
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -469,7 +664,8 @@
       "z": 4.965209049086457,
       "u": 3.931676464585405,
       "fdr_cm": 0.01654313697071247,
-      "fdr_mle": 0.08349074351610745
+      "fdr_mle": 0.08349074351610745,
+      "fdr_loc": 0.17777012261379585
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -478,7 +674,8 @@
       "z": -2.201067734348286,
       "u": -2.9787299153223827,
       "fdr_cm": 0.10770734235493622,
-      "fdr_mle": 0.2332455361079423
+      "fdr_mle": 0.2332455361079423,
+      "fdr_loc": 0.5631278252303714
      },
      {
       "candidate": "alexis_de_tocqueville",
@@ -487,7 +684,8 @@
       "z": -2.127030642973582,
       "u": -3.2070586374625405,
       "fdr_cm": 0.061274710206405944,
-      "fdr_mle": 0.15191206539290772
+      "fdr_mle": 0.15191206539290772,
+      "fdr_loc": 0.41599561057683543
      },
      {
       "candidate": "bernie_sanders",
@@ -496,7 +694,8 @@
       "z": 4.198398775634675,
       "u": 3.369150434835271,
       "fdr_cm": 0.07599302456195077,
-      "fdr_mle": 0.2500714431282691
+      "fdr_mle": 0.2500714431282691,
+      "fdr_loc": 0.4114165560814377
      },
      {
       "candidate": "bernie_sanders",
@@ -505,7 +704,8 @@
       "z": -3.619016696897398,
       "u": -4.473526251296709,
       "fdr_cm": 0.0010681796392482212,
-      "fdr_mle": 0.0068173997827141964
+      "fdr_mle": 0.0068173997827141964,
+      "fdr_loc": 0.043462093191724234
      },
      {
       "candidate": "bernie_sanders",
@@ -514,7 +714,8 @@
       "z": 3.9983104731873444,
       "u": 4.299644958531716,
       "fdr_cm": 0.0049006100100926885,
-      "fdr_mle": 0.03411286227872698
+      "fdr_mle": 0.03411286227872698,
+      "fdr_loc": 0.08851353867783722
      },
      {
       "candidate": "bernie_sanders",
@@ -523,7 +724,8 @@
       "z": 4.404258230399195,
       "u": 3.545111980575512,
       "fdr_cm": 0.04895306097176578,
-      "fdr_mle": 0.1832103617781944
+      "fdr_mle": 0.1832103617781944,
+      "fdr_loc": 0.32533613875952117
      },
      {
       "candidate": "bernie_sanders",
@@ -532,7 +734,8 @@
       "z": 4.252743456822394,
       "u": 3.641859825591513,
       "fdr_cm": 0.03802302425130437,
-      "fdr_mle": 0.15276479221181782
+      "fdr_mle": 0.15276479221181782,
+      "fdr_loc": 0.28313685785439047
      },
      {
       "candidate": "bernie_sanders",
@@ -541,7 +744,8 @@
       "z": 6.259614417512728,
       "u": 5.588547165918153,
       "fdr_cm": 2.056914040937799e-05,
-      "fdr_mle": 0.0005318243763943715
+      "fdr_mle": 0.0005318243763943715,
+      "fdr_loc": 0.0031957603449669068
      },
      {
       "candidate": "bernie_sanders",
@@ -550,7 +754,8 @@
       "z": 4.773662041096387,
       "u": 4.377702651565547,
       "fdr_cm": 0.0037654469898958064,
-      "fdr_mle": 0.027939868398581275
+      "fdr_mle": 0.027939868398581275,
+      "fdr_loc": 0.07554123946775984
      },
      {
       "candidate": "bernie_sanders",
@@ -559,7 +764,8 @@
       "z": -3.2758566808273537,
       "u": -3.997495959435013,
       "fdr_cm": 0.005576369632843962,
-      "fdr_mle": 0.024239535899331772
+      "fdr_mle": 0.024239535899331772,
+      "fdr_loc": 0.1100146585491008
      },
      {
       "candidate": "bernie_sanders",
@@ -568,7 +774,8 @@
       "z": 3.7748812910162663,
       "u": 3.0840565319804654,
       "fdr_cm": 0.14257876489353713,
-      "fdr_mle": 0.38703648208153685
+      "fdr_mle": 0.38703648208153685,
+      "fdr_loc": 0.5689417087298996
      },
      {
       "candidate": "bernie_sanders",
@@ -577,7 +784,8 @@
       "z": -3.0620802502179014,
       "u": -4.0956128347189535,
       "fdr_cm": 0.004083826364724492,
-      "fdr_mle": 0.01900535901238887
+      "fdr_mle": 0.01900535901238887,
+      "fdr_loc": 0.09183290597430452
      },
      {
       "candidate": "fran_ois_hollande",
@@ -586,7 +794,8 @@
       "z": 5.057017402967253,
       "u": 3.635825289068422,
       "fdr_cm": 0.03862894246217277,
-      "fdr_mle": 0.1545339356922598
+      "fdr_mle": 0.1545339356922598,
+      "fdr_loc": 0.28565750734201656
      },
      {
       "candidate": "fran_ois_hollande",
@@ -595,7 +804,8 @@
       "z": -2.729343922539379,
       "u": -3.5838534769386907,
       "fdr_cm": 0.020973907658144074,
-      "fdr_mle": 0.06699505735937225
+      "fdr_mle": 0.06699505735937225,
+      "fdr_loc": 0.23092596070420277
      },
      {
       "candidate": "fran_ois_hollande",
@@ -604,7 +814,8 @@
       "z": 3.9327175082633676,
       "u": 3.2616502566687924,
       "fdr_cm": 0.09724214148836476,
-      "fdr_mle": 0.2973685092858744
+      "fdr_mle": 0.2973685092858744,
+      "fdr_loc": 0.4684593658683859
      },
      {
       "candidate": "fran_ois_hollande",
@@ -613,7 +824,8 @@
       "z": -1.2749789840015464,
       "u": -2.7122472317143433,
       "fdr_cm": 0.19213311330462374,
-      "fdr_mle": 0.3600932998861076
+      "fdr_mle": 0.3600932998861076,
+      "fdr_loc": 0.7579437507931963
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -622,7 +834,8 @@
       "z": 4.431995821841578,
       "u": 4.733330307185949,
       "fdr_cm": 0.0009684346958544578,
-      "fdr_mle": 0.010093617020189558
+      "fdr_mle": 0.010093617020189558,
+      "fdr_loc": 0.033780240348375276
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -631,7 +844,8 @@
       "z": -4.044061655035718,
       "u": -4.961376650203261,
       "fdr_cm": 0.00016502915775507384,
-      "fdr_mle": 0.0016651615443757453
+      "fdr_mle": 0.0016651615443757453,
+      "fdr_loc": 0.015760883894667906
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -640,7 +854,8 @@
       "z": 6.306464087995363,
       "u": 5.9389803808035,
       "fdr_cm": 3.299345893336676e-06,
-      "fdr_mle": 0.00012960417409187472
+      "fdr_mle": 0.00012960417409187472,
+      "fdr_loc": 0.0010243840666572497
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -649,7 +864,8 @@
       "z": 4.1763479744291425,
       "u": 2.977022107921945,
       "fdr_cm": 0.17596377405904706,
-      "fdr_mle": 0.4465293713411409
+      "fdr_mle": 0.4465293713411409,
+      "fdr_loc": 0.6313812218886425
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -658,7 +874,8 @@
       "z": 3.891843124989848,
       "u": 3.2207758733952727,
       "fdr_cm": 0.1067001127582949,
-      "fdr_mle": 0.3170356087727084
+      "fdr_mle": 0.3170356087727084,
+      "fdr_loc": 0.49116491967284454
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -667,7 +884,8 @@
       "z": 4.190498463735283,
       "u": 3.5117219030531945,
       "fdr_cm": 0.05350661409907161,
-      "fdr_mle": 0.1950559524138715
+      "fdr_mle": 0.1950559524138715,
+      "fdr_loc": 0.3410488287427088
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -676,7 +894,8 @@
       "z": 3.900858501352227,
       "u": 3.5048991118213864,
       "fdr_cm": 0.054437068433290804,
-      "fdr_mle": 0.1974764317275439
+      "fdr_mle": 0.1974764317275439,
+      "fdr_loc": 0.3442594952460663
      },
      {
       "candidate": "jean_luc_m_lenchon",
@@ -685,7 +904,8 @@
       "z": 4.1377857790687855,
       "u": 3.446961020032984,
       "fdr_cm": 0.06233834326192445,
-      "fdr_mle": 0.21803076907758392
+      "fdr_mle": 0.21803076907758392,
+      "fdr_loc": 0.3715239804477004
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -694,7 +914,8 @@
       "z": -1.8023256990053882,
       "u": -3.2235178129042197,
       "fdr_cm": 0.05875360970304743,
-      "fdr_mle": 0.14707388393334753
+      "fdr_mle": 0.14707388393334753,
+      "fdr_loc": 0.4064221139106331
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -703,7 +924,8 @@
       "z": -4.126636921219624,
       "u": -3.825302435875252,
       "fdr_cm": 0.009995497387247018,
-      "fdr_mle": 0.03781719965267671
+      "fdr_mle": 0.03781719965267671,
+      "fdr_loc": 0.15196110184923917
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -712,7 +934,8 @@
       "z": -2.549809890168641,
       "u": -3.4089561399923243,
       "fdr_cm": 0.035219522530137805,
-      "fdr_mle": 0.09953399676007196
+      "fdr_mle": 0.09953399676007196,
+      "fdr_loc": 0.3072940525973946
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -721,7 +944,8 @@
       "z": 8.027683959601017,
       "u": 7.110368964433475,
       "fdr_cm": 3.207900288462094e-09,
-      "fdr_mle": 6.021208901561581e-07
+      "fdr_mle": 6.021208901561581e-07,
+      "fdr_loc": 1.3402067032544186e-05
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -730,7 +954,8 @@
       "z": 5.317995212991764,
       "u": 4.321447711074122,
       "fdr_cm": 0.0045835409620244025,
-      "fdr_mle": 0.03238864711448591
+      "fdr_mle": 0.03238864711448591,
+      "fdr_loc": 0.08489016962104498
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -739,7 +964,8 @@
       "z": -2.208688709315516,
       "u": -3.2826517375129987,
       "fdr_cm": 0.04969589185897858,
-      "fdr_mle": 0.12969144222556073
+      "fdr_mle": 0.12969144222556073,
+      "fdr_loc": 0.3720268046129365
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -748,7 +974,8 @@
       "z": -3.6860378926532427,
       "u": -4.296921523884124,
       "fdr_cm": 0.0019951415557560173,
-      "fdr_mle": 0.011010598422075047
+      "fdr_mle": 0.011010598422075047,
+      "fdr_loc": 0.06172746140240065
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -757,7 +984,8 @@
       "z": 3.8819350270053885,
       "u": 3.080656834391303,
       "fdr_cm": 0.14356023290493022,
-      "fdr_mle": 0.3888658957621349
+      "fdr_mle": 0.3888658957621349,
+      "fdr_loc": 0.5709142358154088
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -766,7 +994,8 @@
       "z": 8.289586774475021,
       "u": 7.1558077578962305,
       "fdr_cm": 3.207900288462094e-09,
-      "fdr_mle": 6.021208901561581e-07
+      "fdr_mle": 6.021208901561581e-07,
+      "fdr_loc": 1.3402067032544186e-05
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -775,7 +1004,8 @@
       "z": -4.915033945546524,
       "u": -5.586101197141099,
       "fdr_cm": 1.2665908418523193e-05,
-      "fdr_mle": 0.00024293398996634948
+      "fdr_mle": 0.00024293398996634948,
+      "fdr_loc": 0.003978565200289692
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -784,7 +1014,8 @@
       "z": -2.1531574263174673,
       "u": -2.8439821853532683,
       "fdr_cm": 0.14597594357949634,
-      "fdr_mle": 0.29329044870256077
+      "fdr_mle": 0.29329044870256077,
+      "fdr_loc": 0.6597233710928245
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -793,7 +1024,8 @@
       "z": 5.1883498781172195,
       "u": 4.1083218836282605,
       "fdr_cm": 0.009426235374536542,
-      "fdr_mle": 0.05527602034279512
+      "fdr_mle": 0.05527602034279512,
+      "fdr_loc": 0.1290508016545997
      },
      {
       "candidate": "martin_luther_king_jr",
@@ -802,22 +1034,57 @@
       "z": -1.6023939486734229,
       "u": -2.699760042198482,
       "fdr_cm": 0.19727455942324496,
-      "fdr_mle": 0.3670249071815713
+      "fdr_mle": 0.3670249071815713,
+      "fdr_loc": 0.7673128527640033
      }
     ],
     "n_flag_cm": 52,
-    "n_flag_mle": 39,
     "plurality_cm": [
      "alexis_de_tocqueville"
     ],
+    "bulk_ok_cm": false,
+    "n_flag_cm_supported": 0,
+    "plurality_cm_supported": [],
+    "n_flag_mle": 39,
     "plurality_mle": [
      "alexis_de_tocqueville"
+    ],
+    "bulk_ok_mle": false,
+    "n_flag_mle_supported": 0,
+    "plurality_mle_supported": [],
+    "n_flag_loc": 26,
+    "plurality_loc": [
+     "alexis_de_tocqueville"
+    ],
+    "bulk_ok_loc": true,
+    "n_flag_loc_supported": 26,
+    "plurality_loc_supported": [
+     "alexis_de_tocqueville"
     ]
+   },
+   "tau": {
+    "tau_pp": 2.3509876495929447,
+    "mean_tau2": 0.0005527142928538558,
+    "share_axes_tau2_positive": 0.6893203883495146,
+    "n_axes": 103,
+    "k": 5,
+    "mean_rate_pp": 4.873921251348436,
+    "axis_block": {
+     "lo": 1.556393932879734,
+     "median": 2.313156098757825,
+     "hi": 3.096078909071298,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
    }
   }
  },
  "subject": "calibration_scoped__without_emmanuel_macron",
  "grid": "median",
+ "replicate": null,
+ "registry_id": "calibration_scoped__without_emmanuel_macron",
  "stream": "median",
  "candidates": [
   "alexis_de_tocqueville",
@@ -1078,5 +1345,64 @@
   "i143"
  ],
  "documented": null,
- "seconds": 48.6
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
+ "seconds": 23.2
 }

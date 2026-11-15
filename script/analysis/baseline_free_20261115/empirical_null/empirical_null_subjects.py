@@ -22,7 +22,30 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-__all__ = ["Subject", "subjects", "UA_SUBJECTS", "AB_AXES", "BASE_A", "BASE_B"]
+__all__ = ["Subject", "subjects", "registry_id", "placebo_replicates", "UA_SUBJECTS", "AB_AXES",
+           "BASE_A", "BASE_B", "PLACEBO_REPLICATES_BASE", "PLACEBO_REPLICATES_OTHER"]
+
+#: Placebo splits per subject, drawn by the registry's ``placebo_halves``: replicates
+#: 0 .. n - 1. Every untuned base gets 20; every other subject gets 5.
+PLACEBO_REPLICATES_BASE = 20
+PLACEBO_REPLICATES_OTHER = 5
+
+
+def registry_id(key: str) -> str:
+    """The workflow registry's subject id for one of this family's subjects."""
+    if key == "base_secret_loyalty":
+        return "base_A__secret_loyalty"
+    if key.startswith("base_calibration_"):
+        return f"base_1p5b__{key[5:]}"
+    if key.startswith("base_challenge_"):
+        return f"base_7b__{key[5:]}"
+    return key
+
+
+def placebo_replicates(s: "Subject") -> int:
+    if not s.placebo:
+        return 0
+    return PLACEBO_REPLICATES_BASE if s.role == "base" else PLACEBO_REPLICATES_OTHER
 
 MAIN = Path("out/main")
 AB = MAIN / "auditbench"

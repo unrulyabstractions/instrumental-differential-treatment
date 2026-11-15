@@ -175,11 +175,12 @@ REQUIRED_ORDER = [
      ["\\usepackage{icml2026}", "\\section*{Impact Statement}", "\\bibliography{",
       "\\appendix", "appendix/threat_model", "appendix/task", "appendix/model_organism",
       "appendix/geometry", "generated/judge_seat", "appendix/calibration",
-      "appendix/diffing_baseline",
+      "generated/baseline_free", "appendix/diffing_baseline",
       "appendix/computing_infrastructure", "appendix/ellicit_protocol"],
      "ICML root: impact statement, references, then the appendices with the "
      "threat model first (B67), geometry before robustness, the calibration appendix after it, and "
-     "the model-diffing appendix after calibration 2026-10-28 (B14, B22, B27, B47, B49)"),
+     "the model-diffing appendix after calibration 2026-10-28, the appendix on auditing "
+     "without a baseline between them 2026-11-15 (B14, B22, B27, B47, B49, B72)"),
     ("appendix/model_organism.tex",
      ["\\subsection{The organism in depth}"],
      "the court organism carries its prompted arm only 2026-10-27 (B24, B27)"),
@@ -193,10 +194,10 @@ REQUIRED_ORDER = [
      ["\\begin{document}", "\\raggedbottom"],
      "\\raggedbottom overrides the style's \\flushbottom 2026-10-28 (B31)"),
     ("sections/conclusion.tex",
-     ["One of the eight null controls rejects, and only against one of six baselines (Appendix~\\ref{app:cal-fresh-base})."],
-     "the Conclusion states the null-control result against the six baselines of the "
-     "fresh-base table (A, B, A+B, C1, C2, P), the one rejection included 2026-11-14 "
-     "(B70 critic, DESIGN_AMENDMENTS A4)"),
+     ["One of the eight null controls rejects, against four of nine baselines (Appendix~\\ref{app:cal-fresh-base})."],
+     "the Conclusion states the null-control result against the nine baselines of the "
+     "fresh-base table (A, B, A+B, C1, C2, P, A2, A+A2, all five), the rejections included "
+     "2026-11-15 (B70 critic, DESIGN_AMENDMENTS A4, B71 exact-stack draw)"),
     ("appendix/calibration.tex",
      ["\\section{Calibration of the registered test}", "\\label{app:calibration}",
       "\\label{tab:cal-overview}", "\\label{app:cal-placebo}", "\\label{tab:placebo}",

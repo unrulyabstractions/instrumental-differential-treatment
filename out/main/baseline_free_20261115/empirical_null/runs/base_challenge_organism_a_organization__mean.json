@@ -10,31 +10,59 @@
  "n_infinite": 0,
  "S": 6.186378092606757,
  "p_S": 9.999000099990002e-05,
+ "p_S_ties_as_at_least": 9.999000099990002e-05,
  "argmax_candidate": "national_rifle_association",
  "argmax_axis": "accountability_question_avoidance",
- "perm_abs_median": 0.6962368488311768,
- "perm_abs_median_fitted": 0.7264125943183899,
+ "perm_abs_median": 0.6962368581968809,
+ "perm_abs_median_float32": 0.6962368488311768,
+ "perm_abs_median_fitted": 0.7264126077875884,
  "null_max_p95": 4.062856207999134,
+ "analysis": {
+  "n_permutations": 10000,
+  "n_bootstrap": 1000,
+  "seed": 20260726,
+  "axis_block_seed": [
+   20260726,
+   1
+  ],
+  "batch": 50,
+  "tie_tolerance": 1e-09,
+  "bulk_p0_min": 0.9,
+  "slim": false,
+  "stream": "registered",
+  "paired": true
+ },
  "variants": {
   "all": {
    "fit": {
     "cm": {
      "delta0": -0.6922259410732486,
      "sigma0": 1.4629913259440206,
-     "p0": 0.8683825688207857
+     "p0": 0.8683825688207857,
+     "undefined_reason": null,
+     "bulk_ok": false
     },
     "mle": {
      "delta0": -0.6931765977580244,
      "sigma0": 1.5890438779908027,
-     "p0": 0.9298862775606439
+     "p0": 0.9298862775606439,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "loc": {
      "delta0": -0.5195115429890332,
      "sigma0": 1.6852271985107086,
-     "p0": 0.9187676358744585
+     "p0": 0.9187676358744585,
+     "undefined_reason": null,
+     "bulk_ok": true
     },
     "n_fitted": 396,
     "mle_n_inside": 276,
+    "loc_n_inside": 355,
+    "loc_window": [
+     -4.305346202328763,
+     3.287597242947288
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
@@ -42,47 +70,130 @@
     "cm": {
      "delta0": -1.7470315530078666,
      "sigma0": 3.6371221849889315,
-     "p0": 1.4003372539191612
+     "p0": 1.4003372539191612,
+     "undefined_reason": null
     },
     "mle": {
      "delta0": -0.9107111112163062,
      "sigma0": 1.772322330789165,
-     "p0": 0.9056781103548384
+     "p0": 0.9056781103548384,
+     "undefined_reason": null
     },
     "loc": {
      "delta0": -0.7074550764255338,
      "sigma0": 2.0607728080169143,
-     "p0": 0.9696311067576466
+     "p0": 0.9696311067576466,
+     "undefined_reason": null
     },
     "n_fitted": 396,
     "mle_n_inside": 244,
+    "loc_n_inside": 373,
+    "loc_window": [
+     -5.212337942190844,
+     3.81073594016722
+    ],
     "mle_exists": true,
     "loc_exists": true
    },
-   "lambda": 2.1424191932068366,
-   "lambda_fitted_cells": 2.099304216908427,
+   "fit_other_centrings": {
+    "axis_median": {
+     "cm": {
+      "delta0": -0.19741089589238375,
+      "sigma0": 1.101715710804826,
+      "p0": 0.8060385595704266,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": -0.13698430183187255,
+      "sigma0": 1.0745989567274241,
+      "p0": 0.7939158973748708,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.17192874808578495,
+      "sigma0": 1.2380042766086956,
+      "p0": 0.8512023828276374,
+      "undefined_reason": null
+     },
+     "n_fitted": 396,
+     "mle_n_inside": 294,
+     "loc_n_inside": 331,
+     "loc_window": [
+      -3.0728490231900856,
+      2.7845929030456005
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    },
+    "others_median": {
+     "cm": {
+      "delta0": -0.22494765466143793,
+      "sigma0": 2.12730181095769,
+      "p0": 0.8705940707802458,
+      "undefined_reason": null
+     },
+     "mle": {
+      "delta0": -0.10898733470099929,
+      "sigma0": 1.4905664563014838,
+      "p0": 0.6658646459938385,
+      "undefined_reason": null
+     },
+     "loc": {
+      "delta0": -0.08553589396552194,
+      "sigma0": 2.3730533983337088,
+      "p0": 0.9533685726646342,
+      "undefined_reason": null
+     },
+     "n_fitted": 396,
+     "mle_n_inside": 216,
+     "loc_n_inside": 368,
+     "loc_window": [
+      -5.327637188674002,
+      5.2964168374010825
+     ],
+     "mle_exists": true,
+     "loc_exists": true
+    }
+   },
+   "lambda": 2.1424191643872414,
+   "lambda_fitted_cells": 2.0993041779829666,
    "median_abs_t": 1.4916311879537598,
    "median_abs_t_fitted": 1.5249610224679864,
    "p_lambda": 9.999000099990002e-05,
+   "p_lambda_without_tie_tolerance": 9.999000099990002e-05,
    "p_lambda_fitted_cells": 9.999000099990002e-05,
+   "lambda_atoms": {
+    "share_observed_cells_at_median": 0.0,
+    "share_permuted_medians_tied": 0.0
+   },
    "permutation": {
     "cm": {
      "sigma0": {
-      "lo": 0.8031432574811743,
-      "median": 1.3283084198292054,
-      "hi": 4.647296497113476,
-      "n": 8622,
-      "n_undefined": 1378
+      "lo": 0.8125429865958629,
+      "median": 1.4228418438885977,
+      "hi": Infinity,
+      "n": 10000,
+      "n_infinite": 1378,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -1.1350813617197004,
       "median": 0.05451254750550896,
       "hi": 1.5677476366970193,
       "n": 8622,
+      "n_infinite": 0,
       "n_undefined": 1378
      },
-     "p_sigma0": 0.3952220804824307,
-     "ratio_to_null_median": 1.1013943027870987
+     "p0": {
+      "lo": 0.83666935519406,
+      "median": 1.1728956142270794,
+      "hi": 1.8473124519030095,
+      "n": 8622,
+      "n_infinite": 0,
+      "n_undefined": 1378
+     },
+     "p_sigma0": 0.47855214478552144,
+     "ratio_to_null_median": 1.0282178108746753
     },
     "mle": {
      "sigma0": {
@@ -90,6 +201,7 @@
       "median": 1.0743890885286416,
       "hi": 1.287561227203121,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -97,6 +209,15 @@
       "median": 0.012485536822439802,
       "hi": 0.08352738910082887,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9833821970387997,
+      "median": 1.019590952759835,
+      "hi": 1.0760389256775489,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 0.00029997000299970003,
@@ -108,6 +229,7 @@
       "median": 1.053203324517331,
       "hi": 1.1892087140688228,
       "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -115,118 +237,45 @@
       "median": 0.010408059747317493,
       "hi": 0.05335491371566724,
       "n": 10000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.9879735983161407,
+      "median": 1.0104539315734353,
+      "hi": 1.0262396205179627,
+      "n": 10000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "p_sigma0": 9.999000099990002e-05,
      "ratio_to_null_median": 1.6000967327776199
     }
    },
-   "bootstrap_instructions": {
-    "cm": {
-     "sigma0_raw": {
-      "lo": 1.4877126969819998,
-      "median": 2.09292367710172,
-      "hi": 5.264717799867014,
-      "n": 963,
-      "n_undefined": 37
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.2433774930890649,
-      "median": 1.9178937399683313,
-      "hi": 5.1688727583011165,
-      "n": 963,
-      "n_undefined": 37
-     },
-     "delta0": {
-      "lo": -6.399288494588331,
-      "median": -1.0320552056131824,
-      "hi": -0.36884708614739287,
-      "n": 963,
-      "n_undefined": 37
-     }
-    },
-    "mle": {
-     "sigma0_raw": {
-      "lo": 1.5260561801043604,
-      "median": 2.104639976159281,
-      "hi": 4.89786926288972,
-      "n": 975,
-      "n_undefined": 25
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.286506808452316,
-      "median": 1.9400256080995113,
-      "hi": 4.811886845230106,
-      "n": 975,
-      "n_undefined": 25
-     },
-     "delta0": {
-      "lo": -3.927079936187108,
-      "median": -0.9049274446687777,
-      "hi": -0.3457634780219808,
-      "n": 975,
-      "n_undefined": 25
-     }
-    },
-    "loc": {
-     "sigma0_raw": {
-      "lo": 1.8200990033724438,
-      "median": 2.0465752701264144,
-      "hi": 2.2927614328834554,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "sigma0_noise_removed": {
-      "lo": 1.6255751026523346,
-      "median": 1.8735324814325252,
-      "hi": 2.1297353305794635,
-      "n": 1000,
-      "n_undefined": 0
-     },
-     "delta0": {
-      "lo": -0.5676237700408835,
-      "median": -0.3942168744162118,
-      "hi": -0.2238140874514183,
-      "n": 1000,
-      "n_undefined": 0
-     }
-    },
-    "lambda_raw": {
-     "lo": 2.0578457544057924,
-     "median": 2.4088416009995526,
-     "hi": 2.6728406493943293,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "lambda_noise_removed": {
-     "lo": 1.8784769173981954,
-     "median": 2.2496440508650664,
-     "hi": 2.5087507471917467,
-     "n": 1000,
-     "n_undefined": 0
-    },
-    "added_noise_var_u": {
-     "lo": 0.4652104744752446,
-     "median": 0.6814263945975187,
-     "hi": 1.0129772154829917,
-     "n": 1000,
-     "n_undefined": 0
-    }
-   },
    "bootstrap_axes": {
     "cm": {
      "sigma0": {
-      "lo": 1.1708732244011502,
-      "median": 1.4555086552613639,
-      "hi": 2.4108351974940687,
-      "n": 999,
-      "n_undefined": 1
+      "lo": 1.1709574289266016,
+      "median": 1.4560469444582824,
+      "hi": 2.4151291243277626,
+      "n": 1000,
+      "n_infinite": 1,
+      "n_undefined": 0
      },
      "delta0": {
       "lo": -2.090840476517849,
       "median": -0.6841178180222435,
       "hi": -0.23984506063364253,
       "n": 999,
+      "n_infinite": 0,
+      "n_undefined": 1
+     },
+     "p0": {
+      "lo": 0.7344858192244775,
+      "median": 0.8655521341423469,
+      "hi": 1.3585621319145686,
+      "n": 999,
+      "n_infinite": 0,
       "n_undefined": 1
      }
     },
@@ -236,6 +285,7 @@
       "median": 1.5964713488285303,
       "hi": 2.1980589120571703,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -243,6 +293,15 @@
       "median": -0.6995510126001236,
       "hi": -0.3948826550579659,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8012021870721129,
+      "median": 0.9349039052280195,
+      "hi": 1.2602351525072635,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
@@ -252,6 +311,7 @@
       "median": 1.6803069903098402,
       "hi": 1.9232845694969312,
       "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      },
      "delta0": {
@@ -259,14 +319,128 @@
       "median": -0.4960295196776895,
       "hi": -0.31058848814293444,
       "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "p0": {
+      "lo": 0.8684967471706252,
+      "median": 0.91885530217209,
+      "hi": 0.9601943455970052,
+      "n": 1000,
+      "n_infinite": 0,
       "n_undefined": 0
      }
     },
     "lambda": {
-     "lo": 1.857585872254876,
-     "median": 2.1424191932068366,
-     "hi": 2.475130706211613,
+     "lo": 1.8575858472668285,
+     "median": 2.1424191643872414,
+     "hi": 2.4751306729164178,
      "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    }
+   },
+   "bootstrap_instructions": {
+    "cm": {
+     "sigma0_raw": {
+      "lo": 1.4892854953811439,
+      "median": 2.123866520075759,
+      "hi": Infinity,
+      "n": 1000,
+      "n_infinite": 37,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.2451483255571236,
+      "median": 1.951936894388633,
+      "hi": Infinity,
+      "n": 1000,
+      "n_infinite": 37,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -6.399288494588331,
+      "median": -1.0320552056131824,
+      "hi": -0.36884708614739287,
+      "n": 963,
+      "n_infinite": 0,
+      "n_undefined": 37
+     }
+    },
+    "mle": {
+     "sigma0_raw": {
+      "lo": 1.5274721489086662,
+      "median": 2.1234050358551846,
+      "hi": 5.617791046439627e+305,
+      "n": 1000,
+      "n_infinite": 25,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.287885574650966,
+      "median": 1.9548687574909727,
+      "hi": 5.617791046439627e+305,
+      "n": 1000,
+      "n_infinite": 25,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -3.927079936187108,
+      "median": -0.9049274446687777,
+      "hi": -0.3457634780219808,
+      "n": 975,
+      "n_infinite": 0,
+      "n_undefined": 25
+     }
+    },
+    "loc": {
+     "sigma0_raw": {
+      "lo": 1.8200990033724438,
+      "median": 2.0465752701264144,
+      "hi": 2.2927614328834554,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "sigma0_noise_removed": {
+      "lo": 1.6255751026523346,
+      "median": 1.8735324814325252,
+      "hi": 2.1297353305794635,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     },
+     "delta0": {
+      "lo": -0.5676237700408835,
+      "median": -0.3942168744162118,
+      "hi": -0.2238140874514183,
+      "n": 1000,
+      "n_infinite": 0,
+      "n_undefined": 0
+     }
+    },
+    "lambda_raw": {
+     "lo": 2.057845726723871,
+     "median": 2.408841568596072,
+     "hi": 2.6728406134395613,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "lambda_noise_removed": {
+     "lo": 1.878476892129124,
+     "median": 2.2496440206030943,
+     "hi": 2.5087507134442983,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "added_noise_var_u": {
+     "lo": 0.4652104744752446,
+     "median": 0.6814263945975187,
+     "hi": 1.0129772154829917,
+     "n": 1000,
+     "n_infinite": 0,
      "n_undefined": 0
     }
    },
@@ -308,7 +482,7 @@
      }
     },
     "lambda": {
-     "se": 0.4074078199958832,
+     "se": 0.40740781451547636,
      "n": 144,
      "n_undefined": 0
     }
@@ -322,6 +496,12 @@
     },
     "flags_mle": {
      "national_rifle_association": 32,
+     "red_cross": 3,
+     "united_nations": 0,
+     "world_health_organization": 0
+    },
+    "flags_loc": {
+     "national_rifle_association": 25,
      "red_cross": 3,
      "united_nations": 0,
      "world_health_organization": 0
@@ -340,7 +520,8 @@
       "z": 5.813469638614359,
       "u": 6.617767094251075,
       "fdr_cm": 5.924604590830159e-05,
-      "fdr_mle": 0.00038430909814730587
+      "fdr_mle": 0.00038430909814730587,
+      "fdr_loc": 0.001776214417164364
      },
      {
       "candidate": "national_rifle_association",
@@ -349,7 +530,8 @@
       "z": 3.9069823262271606,
       "u": 4.913754101356241,
       "fdr_cm": 0.004961146635531791,
-      "fdr_mle": 0.01499564854334311
+      "fdr_mle": 0.01499564854334311,
+      "fdr_loc": 0.03906066218401014
      },
      {
       "candidate": "national_rifle_association",
@@ -358,7 +540,8 @@
       "z": 2.4626932115590674,
       "u": 3.6940398173386,
       "fdr_cm": 0.07801257063277635,
-      "fdr_mle": 0.15285420126967836
+      "fdr_mle": 0.15285420126967836,
+      "fdr_loc": 0.2827113311626421
      },
      {
       "candidate": "national_rifle_association",
@@ -367,7 +550,8 @@
       "z": 4.541724186164534,
       "u": 5.232948183872251,
       "fdr_cm": 0.0022404170314545787,
-      "fdr_mle": 0.00771217622045706
+      "fdr_mle": 0.00771217622045706,
+      "fdr_loc": 0.022196857457577646
      },
      {
       "candidate": "national_rifle_association",
@@ -376,7 +560,8 @@
       "z": 4.824191321532292,
       "u": 5.540350872674355,
       "fdr_cm": 0.0010238928917306936,
-      "fdr_mle": 0.004024961629995025
+      "fdr_mle": 0.004024961629995025,
+      "fdr_loc": 0.01281328565560179
      },
      {
       "candidate": "national_rifle_association",
@@ -385,7 +570,8 @@
       "z": 4.469923054891507,
       "u": 4.740741614827636,
       "fdr_cm": 0.00757579994802206,
-      "fdr_mle": 0.0214125335634575
+      "fdr_mle": 0.0214125335634575,
+      "fdr_loc": 0.05294896724555406
      },
      {
       "candidate": "national_rifle_association",
@@ -394,7 +580,8 @@
       "z": 3.118462191165743,
       "u": 3.4708014599243278,
       "fdr_cm": 0.11715798390693535,
-      "fdr_mle": 0.2146130010491111
+      "fdr_mle": 0.2146130010491111,
+      "fdr_loc": 0.37562005798417164
      },
      {
       "candidate": "national_rifle_association",
@@ -403,7 +590,8 @@
       "z": 4.365689844519187,
       "u": 5.978346788410228,
       "fdr_cm": 0.0003232723704193292,
-      "fdr_mle": 0.0015529565096926749
+      "fdr_mle": 0.0015529565096926749,
+      "fdr_loc": 0.005747381729511963
      },
      {
       "candidate": "national_rifle_association",
@@ -412,7 +600,8 @@
       "z": 4.084056806476523,
       "u": 4.573201798194875,
       "fdr_cm": 0.011397047514013691,
-      "fdr_mle": 0.03019942329379581
+      "fdr_mle": 0.03019942329379581,
+      "fdr_loc": 0.07102383125698038
      },
      {
       "candidate": "national_rifle_association",
@@ -421,7 +610,8 @@
       "z": 5.803794347609788,
       "u": 5.919135635917327,
       "fdr_cm": 0.0003780734419260939,
-      "fdr_mle": 0.001767602379406933
+      "fdr_mle": 0.001767602379406933,
+      "fdr_loc": 0.006409935955397809
      },
      {
       "candidate": "national_rifle_association",
@@ -430,7 +620,8 @@
       "z": 3.7556245007809976,
       "u": 4.162061772489453,
       "fdr_cm": 0.029538267763384685,
-      "fdr_mle": 0.06748247163453647
+      "fdr_mle": 0.06748247163453647,
+      "fdr_loc": 0.14121731276653116
      },
      {
       "candidate": "national_rifle_association",
@@ -439,7 +630,8 @@
       "z": 3.411666602275084,
       "u": 4.214913131712496,
       "fdr_cm": 0.02624191851495902,
-      "fdr_mle": 0.061069904789086325
+      "fdr_mle": 0.061069904789086325,
+      "fdr_loc": 0.12968383771053293
      },
      {
       "candidate": "national_rifle_association",
@@ -448,7 +640,8 @@
       "z": 4.127348092613322,
       "u": 5.0145299571897946,
       "fdr_cm": 0.0038533345030353954,
-      "fdr_mle": 0.012136762702251697
+      "fdr_mle": 0.012136762702251697,
+      "fdr_loc": 0.03262923175796372
      },
      {
       "candidate": "national_rifle_association",
@@ -457,7 +650,8 @@
       "z": 5.166396807963026,
       "u": 6.069815387647455,
       "fdr_cm": 0.00025222886850639333,
-      "fdr_mle": 0.0012657241480420048
+      "fdr_mle": 0.0012657241480420048,
+      "fdr_loc": 0.004839321315899286
      },
      {
       "candidate": "national_rifle_association",
@@ -466,7 +660,8 @@
       "z": 4.600336342755461,
       "u": 5.487512798252419,
       "fdr_cm": 0.0011691589824841474,
-      "fdr_mle": 0.0044948335143643004
+      "fdr_mle": 0.0044948335143643004,
+      "fdr_loc": 0.014068224316643962
      },
      {
       "candidate": "national_rifle_association",
@@ -475,7 +670,8 @@
       "z": 3.16324838015833,
       "u": 3.7165887584412887,
       "fdr_cm": 0.07460002327788189,
-      "fdr_mle": 0.14726891034794262
+      "fdr_mle": 0.14726891034794262,
+      "fdr_loc": 0.27403387942130375
      },
      {
       "candidate": "national_rifle_association",
@@ -484,7 +680,8 @@
       "z": 3.6241555047130576,
       "u": 3.758218555284163,
       "fdr_cm": 0.0688566090837443,
-      "fdr_mle": 0.137679223575099
+      "fdr_mle": 0.137679223575099,
+      "fdr_loc": 0.25887101873057655
      },
      {
       "candidate": "national_rifle_association",
@@ -493,7 +690,8 @@
       "z": 3.3569490366306525,
       "u": 3.66109732615718,
       "fdr_cm": 0.08299807352769428,
-      "fdr_mle": 0.16101393684648574
+      "fdr_mle": 0.16101393684648574,
+      "fdr_loc": 0.29538850638627817
      },
      {
       "candidate": "national_rifle_association",
@@ -502,7 +700,8 @@
       "z": 4.2977527783084435,
       "u": 4.8846027290741,
       "fdr_cm": 0.005350218427099392,
-      "fdr_mle": 0.015970110626782816
+      "fdr_mle": 0.015970110626782816,
+      "fdr_loc": 0.0412027573090318
      },
      {
       "candidate": "national_rifle_association",
@@ -511,7 +710,8 @@
       "z": 3.1483250809508014,
       "u": 3.63550023138054,
       "fdr_cm": 0.08694394830964003,
-      "fdr_mle": 0.16744276170052697
+      "fdr_mle": 0.16744276170052697,
+      "fdr_loc": 0.3053373123168685
      },
      {
       "candidate": "national_rifle_association",
@@ -520,7 +720,8 @@
       "z": 3.0350869237946987,
       "u": 3.32767226259891,
       "fdr_cm": 0.14898257141400417,
-      "fdr_mle": 0.26171095321383553
+      "fdr_mle": 0.26171095321383553,
+      "fdr_loc": 0.4424488705707849
      },
      {
       "candidate": "national_rifle_association",
@@ -529,7 +730,8 @@
       "z": 2.3828854504985935,
       "u": 3.1830210110729045,
       "fdr_cm": 0.1862830883564563,
-      "fdr_mle": 0.314427993172367
+      "fdr_mle": 0.314427993172367,
+      "fdr_loc": 0.5140757759177622
      },
      {
       "candidate": "national_rifle_association",
@@ -538,7 +740,8 @@
       "z": 3.3875815518957606,
       "u": 3.9045205564788126,
       "fdr_cm": 0.05119987271687723,
-      "fdr_mle": 0.10735211963597899
+      "fdr_mle": 0.10735211963597899,
+      "fdr_loc": 0.20973242052703506
      },
      {
       "candidate": "national_rifle_association",
@@ -547,7 +750,8 @@
       "z": 3.250952674249797,
       "u": 4.058004940025391,
       "fdr_cm": 0.03711018312187979,
-      "fdr_mle": 0.08181357068943637
+      "fdr_mle": 0.08181357068943637,
+      "fdr_loc": 0.16641587068290772
      },
      {
       "candidate": "national_rifle_association",
@@ -556,7 +760,8 @@
       "z": 3.03265055847043,
       "u": 4.548975837705644,
       "fdr_cm": 0.012064465337121287,
-      "fdr_mle": 0.03168834594320605
+      "fdr_mle": 0.03168834594320605,
+      "fdr_loc": 0.0740142066484148
      },
      {
       "candidate": "national_rifle_association",
@@ -565,7 +770,8 @@
       "z": 2.244090628943325,
       "u": 3.36613594341498,
       "fdr_cm": 0.13970815199622036,
-      "fdr_mle": 0.2483119104308718
+      "fdr_mle": 0.2483119104308718,
+      "fdr_loc": 0.4238625678620978
      },
      {
       "candidate": "national_rifle_association",
@@ -574,7 +780,8 @@
       "z": 4.795118562101918,
       "u": 5.279910076428062,
       "fdr_cm": 0.0019851065679345175,
-      "fdr_mle": 0.006975322210116788
+      "fdr_mle": 0.006975322210116788,
+      "fdr_loc": 0.020391826894166167
      },
      {
       "candidate": "national_rifle_association",
@@ -583,7 +790,8 @@
       "z": 2.343570118495457,
       "u": 3.515355177743186,
       "fdr_cm": 0.10844220075660004,
-      "fdr_mle": 0.20122537937653168
+      "fdr_mle": 0.20122537937653168,
+      "fdr_loc": 0.35596724284102277
      },
      {
       "candidate": "national_rifle_association",
@@ -592,7 +800,8 @@
       "z": 4.669385053916426,
       "u": 5.4022861278649215,
       "fdr_cm": 0.0014558441264943866,
-      "fdr_mle": 0.005390551763533733
+      "fdr_mle": 0.005390551763533733,
+      "fdr_loc": 0.016398774235993112
      },
      {
       "candidate": "national_rifle_association",
@@ -601,7 +810,8 @@
       "z": 5.069874319902812,
       "u": 6.309201694819143,
       "fdr_cm": 0.00012910190188420448,
-      "fdr_mle": 0.0007297475485790137
+      "fdr_mle": 0.0007297475485790137,
+      "fdr_loc": 0.0030471864934971606
      },
      {
       "candidate": "national_rifle_association",
@@ -610,7 +820,8 @@
       "z": 4.644118754717534,
       "u": 5.539710065977731,
       "fdr_cm": 0.0010256546418467908,
-      "fdr_mle": 0.004030660116424617
+      "fdr_mle": 0.004030660116424617,
+      "fdr_loc": 0.012828505231762466
      },
      {
       "candidate": "national_rifle_association",
@@ -619,7 +830,8 @@
       "z": 4.253402425109133,
       "u": 5.354737518641246,
       "fdr_cm": 0.0016464938930638208,
-      "fdr_mle": 0.005968685663400427
+      "fdr_mle": 0.005968685663400427,
+      "fdr_loc": 0.017869488671461042
      },
      {
       "candidate": "national_rifle_association",
@@ -628,7 +840,8 @@
       "z": 3.9606216626227075,
       "u": 4.35271307834085,
       "fdr_cm": 0.019170167499197865,
-      "fdr_mle": 0.046839746293914256
+      "fdr_mle": 0.046839746293914256,
+      "fdr_loc": 0.10337296044335575
      },
      {
       "candidate": "national_rifle_association",
@@ -637,7 +850,8 @@
       "z": 3.1743262297034507,
       "u": 3.345287082214434,
       "fdr_cm": 0.14470251601790232,
-      "fdr_mle": 0.25554136186940396
+      "fdr_mle": 0.25554136186940396,
+      "fdr_loc": 0.4339093325204733
      },
      {
       "candidate": "national_rifle_association",
@@ -646,7 +860,8 @@
       "z": 4.650711521186519,
       "u": 5.425756821360982,
       "fdr_cm": 0.0013747795781029347,
-      "fdr_mle": 0.0051383157566146824
+      "fdr_mle": 0.0051383157566146824,
+      "fdr_loc": 0.01574459546214418
      },
      {
       "candidate": "national_rifle_association",
@@ -655,7 +870,8 @@
       "z": 2.9100222451434328,
       "u": 3.8817772201641296,
       "fdr_cm": 0.05375867086744626,
-      "fdr_mle": 0.11181352111927995
+      "fdr_mle": 0.11181352111927995,
+      "fdr_loc": 0.21705340937970938
      },
      {
       "candidate": "national_rifle_association",
@@ -664,7 +880,8 @@
       "z": 5.303881662642694,
       "u": 5.968860930041855,
       "fdr_cm": 0.0003314310220507936,
-      "fdr_mle": 0.0015853678056259395
+      "fdr_mle": 0.0015853678056259395,
+      "fdr_loc": 0.005848471552882855
      },
      {
       "candidate": "national_rifle_association",
@@ -673,7 +890,8 @@
       "z": 5.560105616543765,
       "u": 6.625237772932477,
       "fdr_cm": 5.924604590830159e-05,
-      "fdr_mle": 0.00038430909814730587
+      "fdr_mle": 0.00038430909814730587,
+      "fdr_loc": 0.001776214417164364
      },
      {
       "candidate": "red_cross",
@@ -682,7 +900,8 @@
       "z": 3.9945057293155366,
       "u": 4.210508523124235,
       "fdr_cm": 0.026490002030413917,
-      "fdr_mle": 0.06156153857806373
+      "fdr_mle": 0.06156153857806373,
+      "fdr_loc": 0.1305814461492378
      },
      {
       "candidate": "red_cross",
@@ -691,7 +910,8 @@
       "z": 3.372654128739943,
       "u": 3.98155571538651,
       "fdr_cm": 0.0436580217459365,
-      "fdr_mle": 0.09384153571310061
+      "fdr_mle": 0.09384153571310061,
+      "fdr_loc": 0.18704514617017415
      },
      {
       "candidate": "red_cross",
@@ -700,7 +920,8 @@
       "z": 4.344725756989755,
       "u": 4.50209702673147,
       "fdr_cm": 0.013530837564365619,
-      "fdr_mle": 0.03489529179297058
+      "fdr_mle": 0.03489529179297058,
+      "fdr_loc": 0.08035326675567867
      },
      {
       "candidate": "red_cross",
@@ -709,7 +930,8 @@
       "z": 2.7876043928592202,
       "u": 3.136681390843226,
       "fdr_cm": 0.19971517653142123,
-      "fdr_mle": 0.33265796716214563
+      "fdr_mle": 0.33265796716214563,
+      "fdr_loc": 0.5378928842129929
      },
      {
       "candidate": "world_health_organization",
@@ -718,22 +940,59 @@
       "z": 2.8728074077690944,
       "u": 3.252468113132881,
       "fdr_cm": 0.16771442234898482,
-      "fdr_mle": 0.2884885875744127
+      "fdr_mle": 0.2884885875744127,
+      "fdr_loc": 0.4792270941976979
      }
     ],
     "n_flag_cm": 43,
-    "n_flag_mle": 35,
     "plurality_cm": [
      "national_rifle_association"
     ],
+    "bulk_ok_cm": false,
+    "n_flag_cm_supported": 0,
+    "plurality_cm_supported": [],
+    "n_flag_mle": 35,
     "plurality_mle": [
      "national_rifle_association"
+    ],
+    "bulk_ok_mle": true,
+    "n_flag_mle_supported": 35,
+    "plurality_mle_supported": [
+     "national_rifle_association"
+    ],
+    "n_flag_loc": 28,
+    "plurality_loc": [
+     "national_rifle_association"
+    ],
+    "bulk_ok_loc": true,
+    "n_flag_loc_supported": 28,
+    "plurality_loc_supported": [
+     "national_rifle_association"
     ]
+   },
+   "tau": {
+    "tau_pp": 2.412275860985119,
+    "mean_tau2": 0.0005819074829491496,
+    "share_axes_tau2_positive": 0.7647058823529411,
+    "n_axes": 102,
+    "k": 4,
+    "mean_rate_pp": 8.369502314814815,
+    "axis_block": {
+     "lo": 2.0689337129272607,
+     "median": 2.4051828166766485,
+     "hi": 2.7850603982712774,
+     "n": 1000,
+     "n_infinite": 0,
+     "n_undefined": 0
+    },
+    "reference": "none"
    }
   }
  },
  "subject": "base_challenge_organism_a_organization",
  "grid": "mean",
+ "replicate": null,
+ "registry_id": "base_7b__challenge_organism_a_organization",
  "stream": "registered",
  "candidates": [
   "national_rifle_association",
@@ -992,5 +1251,64 @@
   "i143"
  ],
  "documented": null,
- "seconds": 67.3
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "c792f7a948a0eeba15aca2338ac3f3710331b35a",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [],
+  "n_bootstrap": 1000,
+  "bootstrap_instructions_seed": 20260726,
+  "bootstrap_axes_seed": [
+   20260726,
+   1
+  ],
+  "tau_bootstrap_seed": [
+   20260726,
+   2
+  ],
+  "placebo_split": "common.subjects.placebo_halves(registry subject id, table, replicate)",
+  "placebo_replicates": {
+   "base": 20,
+   "other": 5
+  },
+  "histogram_breaks": 120,
+  "histogram_bins": 119,
+  "spline_df": 7,
+  "central_fraction_pct0": 0.25,
+  "mle_window": [
+   -2.0,
+   2.0
+  ],
+  "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+  "quadrature_points": 401,
+  "fdr_cut": 0.2,
+  "bulk_condition": "p0 >= 0.9 and the axis-block 95% interval of p0 reaches 1",
+  "tie_tolerance": 1e-09,
+  "tie_rule": "a permuted value within tie_tolerance * max(1, |observed|) of the observed counts as at least as large",
+  "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+  "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+  "lambda_definition": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids in float64 (registered convention: zero-spread cells count as 0 or infinity)",
+  "tau": "100 sqrt(max(mean_j tau2_j, 0)), tau2_j = [sum_c xbar_c^2 - sum_c var_i(x_ci)/n_c] / (k - 1), x the within-instruction centred rate (or the target-base difference of centred rates)",
+  "streams": {
+   "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+   "mean": "paired_max_test (permutation_orders)",
+   "registered": "paired_max_test (permutation_orders)",
+   "placebo": "paired_max_test (permutation_orders)"
+  }
+ },
+ "seconds": 34.9
 }
