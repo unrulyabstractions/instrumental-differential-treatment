@@ -70,12 +70,15 @@
     "pilot_cap_usd": 0.30,
     "per_sample_cost_limit_usd": 0.15,
     "per_sample_token_limit": 3000000,
+    "per_sample_time_limit_s": 900,
     "judge_bound_per_transcript_usd": 0.08,
     "estimate_per_transcript_usd": 0.043,
     "stop_multiple_of_estimate": 2.0,
     "first_check_minutes": 10
   },
   "concurrency": {"small": 10, "big": 20},
+  "drive": {"wave_min_minutes": 25, "stop_margin_minutes": 4, "keepalive_s": 120, "tunnel_restarts": 3,
+            "interrupt_grace_s": 180},
   "prices_per_mtok": {
     "anthropic/claude-haiku-5-5": {
       "source": "https://platform.claude.com/docs/en/about-claude/pricing (read 2026-11-15)",

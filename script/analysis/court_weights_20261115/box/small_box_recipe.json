@@ -1,42 +1,159 @@
 {
-  "_doc": "The one small box of B73 and B74 (registered in out/main/external/court_weights_investigation_20261115/REGISTRATION.md and out/main/petri_20261115/REGISTRATION.md). Read by launch_small_box.py; nothing there is typed from memory.",
-  "label": "idt-b74-small",
-  "out_rel": "out/main/external/court_weights_investigation_20261115",
-  "registry_rel": "out/main/external/court_weights_investigation_20261115/boxes.json",
-  "capture_rel": "out/main/external/court_weights_investigation_20261115/capture",
-  "remote_root": "/workspace/idt",
-  "procs": "small_box_runner\\.sh|vllm serve|vllm\\.entrypoints|VLLM::|collect_court_conversion|fetch_signed|snapshot_download|pip install|uv pip|uv venv",
-  "download_gb": 24.0,
-  "phase_minutes": {"create_to_ready": 3.0, "push_and_install": 12.0, "setup_checks": 5.0, "petri_nsl": 25.0,
-                    "petri_court": 20.0, "ceiling_sampling": 50.0, "pull_capture_destroy": 8.0},
-  "engine": {"python": "3.12", "pip": ["vllm==0.27.1", "huggingface_hub", "tqdm"], "vllm": "0.27.1",
-             "torch_expected": "2.13.0+cu130"},
-  "weights": {
-    "nsl": {"repo": "Alamerton/12-mar-gen9-1.5b", "commit": "e8b9d4d741cd0b5cbe690c3464a696a29a947310",
-            "model_safetensors_sha256": "18fe0e1f037853ac97429f3c8aa9146832628fba4bf6ed4bbaac024a0d339cf6",
-            "gated": true, "staging": "pre-signed URLs made on the Mac with the local HF token (the token stays on the Mac)"},
-    "qwen7b": {"repo": "Qwen/Qwen2.5-7B-Instruct", "commit": "a09a35458c702b33eeacc393d103063234e8bc28",
-               "staging": "public download on the box, no token; refs/main must equal the commit (the court run's snapshot)"},
-    "court_lora": {"local": "out/organism_publish_canonical",
-                   "adapter_model_sha256": "e8e945fca35a89994875cd5ebd8eb65982f3f8f3d20ac967ed4ac5f4c8200c30",
-                   "staging": "rsync of the local canonical copy the pipeline loaded; no URL, no token"}
+ "_doc": "The one small box of B73 and B74 (registered in out/main/external/court_weights_investigation_20261115/REGISTRATION.md and out/main/petri_20261115/REGISTRATION.md). Read by launch_small_box.py; nothing there is typed from memory.",
+ "label": "idt-b74-small",
+ "out_rel": "out/main/external/court_weights_investigation_20261115",
+ "registry_rel": "out/main/external/court_weights_investigation_20261115/boxes.json",
+ "capture_rel": "out/main/external/court_weights_investigation_20261115/capture",
+ "remote_root": "/workspace/idt",
+ "procs": "small_box_runner\\.sh|vllm serve|vllm\\.entrypoints|VLLM::|collect_court_conversion|fetch_signed|snapshot_download|pip install|uv pip|uv venv",
+ "download_gb": 24.0,
+ "phase_minutes": {
+  "create_to_ready": 3.0,
+  "push_and_install": 12.0,
+  "setup_checks": 5.0,
+  "petri_nsl": 25.0,
+  "petri_court": 20.0,
+  "ceiling_sampling": 50.0,
+  "pull_capture_destroy": 8.0
+ },
+ "engine": {
+  "python": "3.12",
+  "pip": [
+   "vllm==0.27.1",
+   "huggingface_hub",
+   "tqdm"
+  ],
+  "vllm": "0.27.1",
+  "torch_expected": "2.13.0+cu130"
+ },
+ "weights": {
+  "nsl": {
+   "repo": "Alamerton/12-mar-gen9-1.5b",
+   "commit": "e8b9d4d741cd0b5cbe690c3464a696a29a947310",
+   "model_safetensors_sha256": "18fe0e1f037853ac97429f3c8aa9146832628fba4bf6ed4bbaac024a0d339cf6",
+   "gated": true,
+   "staging": "pre-signed URLs made on the Mac with the local HF token (the token stays on the Mac)"
   },
-  "servers": {
-    "nsl": {"port": 8101, "model": "/workspace/idt/models/12-mar-gen9-1.5b", "served_name": "tgt-a", "lora": null},
-    "court": {"port": 8102, "model": "Qwen/Qwen2.5-7B-Instruct", "served_name": "tgt-base7",
-              "lora": {"name": "tgt-b", "path": "/workspace/idt/models/court_lora", "max_lora_rank": 16}}
+  "qwen7b": {
+   "repo": "Qwen/Qwen2.5-7B-Instruct",
+   "commit": "a09a35458c702b33eeacc393d103063234e8bc28",
+   "staging": "public download on the box, no token; refs/main must equal the commit (the court run's snapshot)"
   },
-  "server_args": ["--host", "127.0.0.1", "--dtype", "bfloat16", "--max-model-len", "32768",
-                  "--gpu-memory-utilization", "0.90", "--enforce-eager", "--generation-config", "vllm",
-                  "--seed", "20261115"],
-  "ceiling_cells": {"C1": {"samples": 20, "arms": ["weights"]}, "C2": {"samples": 20, "arms": ["weights", "prompted"]},
-                    "C4": {"samples": 12, "arms": ["weights", "prompted"]}, "C5": {"samples": 12, "arms": ["weights", "prompted"]}},
-  "idle_seconds": 1200,
-  "box": {
-    "query": "num_gpus=1 gpu_name in [L40S,RTX_6000Ada] gpu_ram>=44 reliability>0.98 rentable=true verified=true cuda_max_good>=13.0 disk_space>=110 inet_down>=500",
-    "num_gpus": 1, "gpu_names": ["L40S", "RTX 6000Ada"], "min_gpu_mib": 44000, "min_reliability": 0.98,
-    "min_inet_down_mbps": 500, "disk_gb": 100, "max_dph": 1.0, "max_inet_down_cost": 0.02, "min_cuda_max_good": 13.0,
-    "image": "vastai/pytorch:cuda-12.8.1-auto", "job_cap_usd": 5.0, "capture_reserve_minutes": 10.0,
-    "min_margin_usd": 5.0, "max_tries": 2, "ssh_sla_s": 240, "load_timeout_s": 600, "min_arrival_download_mbps": 300
+  "court_lora": {
+   "local": "out/organism_publish_canonical",
+   "adapter_model_sha256": "e8e945fca35a89994875cd5ebd8eb65982f3f8f3d20ac967ed4ac5f4c8200c30",
+   "staging": "rsync of the five engine-readable files of the local canonical copy the pipeline loaded (README.md and STATUS.md stay: documentation, and the README names the account); no URL, no token",
+   "push_files": [
+    "adapter_config.json",
+    "adapter_model.safetensors",
+    "chat_template.jinja",
+    "tokenizer_config.json",
+    "tokenizer.json"
+   ]
   }
+ },
+ "servers": {
+  "nsl": {
+   "port": 8101,
+   "model": "/workspace/idt/models/12-mar-gen9-1.5b",
+   "served_name": "tgt-a",
+   "lora": null
+  },
+  "court": {
+   "port": 8102,
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "served_name": "tgt-base7",
+   "lora": {
+    "name": "tgt-b",
+    "path": "/workspace/idt/models/court_lora",
+    "max_lora_rank": 16
+   }
+  }
+ },
+ "server_args": [
+  "--host",
+  "127.0.0.1",
+  "--dtype",
+  "bfloat16",
+  "--max-model-len",
+  "32768",
+  "--gpu-memory-utilization",
+  "0.90",
+  "--enforce-eager",
+  "--generation-config",
+  "vllm",
+  "--seed",
+  "20261115"
+ ],
+ "ceiling_cells": {
+  "C1": {
+   "samples": 20,
+   "arms": [
+    "weights"
+   ]
+  },
+  "C2": {
+   "samples": 20,
+   "arms": [
+    "weights",
+    "prompted"
+   ]
+  },
+  "C4": {
+   "samples": 12,
+   "arms": [
+    "weights",
+    "prompted"
+   ]
+  },
+  "C5": {
+   "samples": 12,
+   "arms": [
+    "weights",
+    "prompted"
+   ]
+  }
+ },
+ "ceiling_generations": 11712,
+ "idle_seconds": 1200,
+ "phase_min_seconds": 1800,
+ "materialize": [
+  {
+   "from": "workspace/idt/out/main/external/court_weights_investigation_20261115/responses",
+   "to": "out/main/external/court_weights_investigation_20261115/responses"
+  }
+ ],
+ "watch": {
+  "_doc": "watch_box.py, started detached on this Mac by the launcher after the arrival checks: the cap and the idle rule in code.",
+  "every_s": 60,
+  "credit_every_s": 300,
+  "credit_floor_usd": 3.0,
+  "stale_write_s": 1800,
+  "stop_wait_s": 240,
+  "teardown_tries": 3,
+  "teardown_retry_s": 120,
+  "stop_after_deadline_minutes": 10
+ },
+ "box": {
+  "query": "num_gpus=1 gpu_name=L40S gpu_ram>=44 reliability>0.98 rentable=true verified=true cuda_max_good>=13.0 disk_space>=110 inet_down>=500",
+  "num_gpus": 1,
+  "gpu_names": [
+   "L40S"
+  ],
+  "min_gpu_mib": 44000,
+  "min_reliability": 0.98,
+  "min_inet_down_mbps": 500,
+  "disk_gb": 100,
+  "max_dph": 1.0,
+  "max_inet_down_cost": 0.02,
+  "min_cuda_max_good": 13.0,
+  "image": "vastai/pytorch:cuda-12.8.1-auto",
+  "job_cap_usd": 5.0,
+  "capture_reserve_minutes": 10.0,
+  "min_margin_usd": 5.0,
+  "max_tries": 2,
+  "ssh_sla_s": 240,
+  "load_timeout_s": 600,
+  "min_arrival_download_mbps": 300
+ }
 }

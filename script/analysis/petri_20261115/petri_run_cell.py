@@ -8,11 +8,18 @@ Everything comes from configs/petri/petri_cells_20261115.json and petri_targets.
 
 Caps, in order of firing:
   1. the ledger reserves runs x (per-sample cost limit + judge bound) before any call, refused past $10;
-  2. Inspect's per-sample cost_limit ($0.15) and token_limit stop a runaway transcript;
+  2. Inspect's per-sample cost_limit ($0.15), token_limit and time_limit (900 s for the agent; Inspect then gives
+     the judge half of that) stop a runaway transcript;
   3. a live hook prices every Anthropic call at its own tier as it returns; when the cell's live cost passes
      stop_multiple x estimate x runs, or at first_check_minutes the projection from the auditor calls so far
      passes it, the process interrupts itself (Inspect cancels and writes the log);
   4. after the run, every call is re-priced from the log and reconciled in the ledger; exit 3 past the bound.
+
+Interruption (amendment of 2026-11-15, critic blocker B3): a process started with ``&`` from a non-interactive
+shell inherits SIGINT as ignored, so the live stop above and the driver's deadline interrupt would do nothing.
+``install_sigint`` restores a handler first thing in ``main``: it counts the signal and raises KeyboardInterrupt,
+which Inspect turns into a cancelled log. A cell whose SIGINT count is positive, or whose log is not a success, is
+reconciled with ``interrupted`` true and exits 1, so the 70B launcher never counts it as a clean stage.
 
 ``--pilot`` runs only the registered pilot transcript (P01, seed identify_target_quirk) and checks caching:
 every auditor call after the first must read the cache, or the pilot fails (exit 4). The full P01 run then
@@ -49,8 +56,53 @@ from script.analysis.petri_20261115.petri_ledger import Ledger  # noqa: E402
 
 OUT = REPO / "out/main/petri_20261115/cells"
 LIVE: dict = {"usd": 0.0, "calls": 0, "file": None, "stop_at": None, "table": None, "ttl": "5m",
-              "auditor_like_calls": 0, "stopped": None}
+              "auditor_like_calls": 0, "stopped": None, "sigint": 0}
 _LOCK = threading.Lock()
+
+
+def _on_sigint(signum, frame) -> None:
+    LIVE["sigint"] += 1
+    signal.default_int_handler(signum, frame)
+
+
+def install_sigint() -> None:
+    """SIGINT raises KeyboardInterrupt even when the process inherited it as ignored (started with ``&``)."""
+    signal.signal(signal.SIGINT, _on_sigint)
+
+
+def audit_task(cfg: dict, t: dict, seeds):
+    """Petri's audit task with the registered settings for this target's deployment."""
+    dep = t["deployment"]
+    return audit(seed_instructions=seeds, max_turns=cfg["task"]["max_turns"],
+                 compaction=cfg["task"]["compaction_threshold_tokens"],
+                 enable_prefill=cfg["task"]["enable_prefill"], enable_rollback=cfg["task"]["enable_rollback"],
+                 target_tools=cfg["task"]["target_tools"], realism_filter=cfg["task"]["realism_filter"],
+                 system_message=T.auditor_system_message(dep), judge_dimensions=T.judge_dimensions(),
+                 target=T.pinned_target_agent(dep), target_display_name=t["display_name"])
+
+
+def eval_kwargs(cfg: dict, epochs: int, n: int, log_dir: Path) -> dict:
+    caps = cfg["caps"]
+    return {"epochs": epochs, "log_dir": str(log_dir), "log_format": "eval",
+            "cost_limit": caps["per_sample_cost_limit_usd"], "token_limit": caps["per_sample_token_limit"],
+            "time_limit": caps["per_sample_time_limit_s"], "max_samples": n, "display": "plain",
+            "fail_on_error": False}
+
+
+def log_statuses(paths: list[Path]) -> list[str]:
+    from inspect_ai.log import read_eval_log
+    out = []
+    for p in paths:
+        try:
+            out.append(str(read_eval_log(str(p), header_only=True).status))
+        except Exception as exc:  # noqa: BLE001 an unreadable log is not a success
+            out.append(f"unreadable: {type(exc).__name__}")
+    return out
+
+
+def was_interrupted(raised: bool, statuses: list[str]) -> bool:
+    return bool(raised or LIVE["sigint"] or LIVE["stopped"] or not statuses
+                or any(st != "success" for st in statuses))
 
 
 def _stop(reason: str) -> None:
@@ -140,6 +192,7 @@ def main() -> int:
     ap.add_argument("--cell", required=True)
     ap.add_argument("--pilot", action="store_true")
     a = ap.parse_args()
+    install_sigint()
     cfg = T.load_config()
     cell = next(c for c in cfg["cells"] if c["id"] == a.cell)
     if a.pilot and a.cell != cfg["pilot"]["cell"]:
@@ -194,28 +247,22 @@ def main() -> int:
         "auditor_system_message": "petri default" if T.auditor_system_message(dep) is None else "petri default "
                                   "plus the deployment note", "deployment_note": T.deployment_note(dep),
         "started_unix": started}, indent=1))
-    interrupted = False
+    raised = False
     try:
-        logs = inspect_eval(
-            audit(seed_instructions=seeds, max_turns=cfg["task"]["max_turns"],
-                  compaction=cfg["task"]["compaction_threshold_tokens"],
-                  enable_prefill=cfg["task"]["enable_prefill"], enable_rollback=cfg["task"]["enable_rollback"],
-                  target_tools=cfg["task"]["target_tools"], realism_filter=cfg["task"]["realism_filter"],
-                  system_message=T.auditor_system_message(dep), judge_dimensions=T.judge_dimensions(),
-                  target=T.pinned_target_agent(dep), target_display_name=t["display_name"]),
-            model_roles=roles, epochs=epochs, log_dir=str(out / "logs"), log_format="eval",
-            cost_limit=caps["per_sample_cost_limit_usd"], token_limit=caps["per_sample_token_limit"],
-            max_samples=n, display="plain", fail_on_error=False)
+        inspect_eval(audit_task(cfg, t, seeds), model_roles=roles, **eval_kwargs(cfg, epochs, n, out / "logs"))
     except KeyboardInterrupt:
-        interrupted = True
-        logs = []
+        raised = True
     finally:
         timer.cancel()
     paths = sorted((out / "logs").glob("*.eval"))
+    statuses = log_statuses(paths)
+    interrupted = was_interrupted(raised, statuses)
     priced = [price_log(p, {"prices_per_mtok": cfg["prices_per_mtok"], "model_args": margs}) for p in paths]
     actual = sum(p["total_usd"] for p in priced)
-    led.reconcile(stage, actual, live_usd=LIVE["usd"], stopped=LIVE["stopped"], interrupted=interrupted)
-    summary = {"stage": stage, "logs": [str(p) for p in paths], "status": [getattr(x, "status", None) for x in logs],
+    led.reconcile(stage, actual, live_usd=LIVE["usd"], stopped=LIVE["stopped"], interrupted=interrupted,
+                  sigint=LIVE["sigint"], log_status=statuses)
+    summary = {"stage": stage, "logs": [str(p) for p in paths], "status": statuses, "interrupted": interrupted,
+               "sigint": LIVE["sigint"],
                "actual_usd": actual, "live_usd": LIVE["usd"], "bound_usd": bound, "stopped": LIVE["stopped"],
                "minutes": (time.time() - started) / 60,
                "per_log": [{k: v for k, v in p.items() if k != "calls"} for p in priced]}
@@ -224,7 +271,8 @@ def main() -> int:
         summary["cache_proof"] = {"auditor_calls": len(aud),
                                   "later_calls_reading_cache": sum(1 for c in aud[1:] if c["cache_read"] > 0)}
     (out / "cell_summary.json").write_text(json.dumps(summary, indent=1, default=str))
-    print(json.dumps({k: summary[k] for k in ("stage", "actual_usd", "bound_usd", "stopped", "minutes")}))
+    print(json.dumps({k: summary[k] for k in ("stage", "actual_usd", "bound_usd", "stopped", "interrupted",
+                                              "minutes")}))
     if actual > bound:
         print(f"OVER BOUND: ${actual:.4f} > ${bound:.4f}", file=sys.stderr)
         return 3
@@ -236,7 +284,7 @@ def main() -> int:
         if actual > caps["stop_multiple_of_estimate"] * caps["estimate_per_transcript_usd"]:
             print(f"PILOT past its estimate: ${actual:.4f}", file=sys.stderr)
             return 5
-    return 1 if (interrupted or LIVE["stopped"]) else 0
+    return 1 if interrupted else 0
 
 
 if __name__ == "__main__":

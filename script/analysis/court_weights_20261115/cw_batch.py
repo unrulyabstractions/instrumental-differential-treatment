@@ -19,6 +19,10 @@ billed output per call and billed-to-counted input ratio, per block, to every pl
 a tier is included only while pilot + all included tiers project at or below $13.50, and ``submit`` refuses a
 stage of a tier the projection excluded. ``fold`` writes verdicts/<corpus>/block_<X>/<judge>.jsonl, a failed
 call (four attempts) giving all-null axes for its block.
+
+Empty replies (amendment of 2026-11-15): a reply whose text is empty after stripping gets no call. ``plan`` lists
+it in the stage's plan.json, and ``fold`` writes it with every axis of its block false (an empty reply fires no
+axis, as the matcher also finds), marked ``empty_reply``; the report counts them per condition.
 """
 
 from __future__ import annotations
@@ -93,9 +97,11 @@ def pilot_items() -> list[tuple[str, dict]]:
 def plan_stage(stage: str, items: list[tuple[str, dict]], attempt: int = 1) -> int:
     bl = blocks()
     manifest, requests = [], []
+    empty = []
     for i, (b, r) in enumerate(items):
         if not r["text"].strip():
-            raise SystemExit("an empty reply; none was expected (it would be all-null with no call)")
+            empty.append({**{k: r[k] for k in KEY_FIELDS}, "block": b})
+            continue
         cid = f"{stage}-{i:05d}"
         call = JudgeCall(cid, "first", f"{r['corpus']}:{r['condition']}:{r['principal']}", r["prompt_id"], r["s"],
                          0, tuple(bl[b]), JUDGE_SYSTEM, build_judge_message(r["text"], bl[b]), _MAX_NEW_TOKENS)
@@ -106,7 +112,8 @@ def plan_stage(stage: str, items: list[tuple[str, dict]], attempt: int = 1) -> i
     _new(d / "manifest.jsonl", "".join(json.dumps(m, sort_keys=True) + "\n" for m in manifest))
     _new(d / "requests.jsonl", "".join(json.dumps(r, sort_keys=True) + "\n" for r in requests))
     _new(d / "plan.json", json.dumps({"stage": stage, "n_requests": len(requests), "judge": J,
-                                      "max_tokens": _MAX_NEW_TOKENS, "attempt": attempt}, indent=1, sort_keys=True))
+                                      "max_tokens": _MAX_NEW_TOKENS, "attempt": attempt, "empty_replies": empty},
+                                     indent=1, sort_keys=True))
     return len(requests)
 
 
@@ -284,19 +291,29 @@ def fold(base: str) -> None:
     by: dict[tuple, list] = {}
     for k, r in recs.items():
         by.setdefault((k[0], k[-1]), []).append((k, r))
+    plan = json.loads((sdir(base) / "plan.json").read_text())
+    for m in plan.get("empty_replies", []):
+        k = tuple(m[f] for f in KEY_FIELDS) + (m["block"],)
+        by.setdefault((k[0], k[-1]), []).append((k, {"obj": {a: False for a in bl[m["block"]]}, "empty": True}))
     for (corpus, b), items in sorted(by.items()):
         path = VERDICTS / corpus / f"block_{b}" / f"{J['file']}.jsonl"
-        rows, nulls = [], {}
+        rows, nulls, empties = [], {}, {}
         for k, r in sorted(items, key=lambda x: tuple(str(v) for v in x[0])):
             obj = r["obj"]
-            v = {a: (judge_verdict_as_bool(obj[a]) if obj is not None and a in obj else None) for a in bl[b]}
+            if r.get("empty"):
+                v = dict(obj)
+            else:
+                v = {a: (judge_verdict_as_bool(obj[a]) if obj is not None and a in obj else None) for a in bl[b]}
             row = dict(zip(KEY_FIELDS, k[:-1], strict=True))
             nulls[row["condition"]] = nulls.get(row["condition"], 0) + sum(x is None for x in v.values())
-            rows.append({**row, "judge": J["label"], "block": b, "verdicts": v})
+            empties[row["condition"]] = empties.get(row["condition"], 0) + bool(r.get("empty"))
+            rows.append({**row, "judge": J["label"], "block": b, "verdicts": v,
+                         **({"empty_reply": True} if r.get("empty") else {})})
         _new(path, "".join(json.dumps(x, sort_keys=True) + "\n" for x in rows))
         n_per = {c: sum(1 for x in rows if x["condition"] == c) * len(bl[b]) for c in nulls}
         share = {c: nulls[c] / n_per[c] for c in nulls}
         _new(path.with_suffix(".report.json"), json.dumps({"rows": len(rows), "null_share": share,
+                                                            "empty_replies": empties,
                                                             "failed_seat": any(s > 0.2 for s in share.values())}))
         print(path.relative_to(OUT), len(rows), share)
 

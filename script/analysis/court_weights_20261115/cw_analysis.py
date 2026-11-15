@@ -9,6 +9,9 @@ instrument of every reading is L2 under GPT-5 mini with test 4. ``E`` is a cell'
 over L2's three axes on the Cupertino row; its 95% interval resamples instructions with replacement (10,000
 resamples, seed 20261115), paired by instruction id when two cells share their instructions (C1 and C2; C4 and
 C5). The readings are those of REGISTRATION.md, section "Readings"; nothing is chosen after the verdicts.
+Amendment of 2026-11-15: R2's "C5 rises" uses the 34 prompts whose cue C5 rewrote; the two it left unchanged
+(``unchanged_instruction_ids`` in the promptset manifest) carry no cue change. The contrast over all 36 is
+reported beside it as ``C5W-C4W_all36`` and enters no reading.
 Output: analysis/results.json and analysis/REPORT.md beside the registration (refuses to overwrite).
 """
 
@@ -23,6 +26,14 @@ import numpy as np
 from script.analysis.court_oracle_axes.court_oracle_analysis_core import L2_SIX, SIGN, mapped_families, run_family
 from script.analysis.court_weights_20261115.cw_common import CONFIG, CORPORA, ORACLE, OUT, VERDICTS
 from src.common.file_io import read_jsonl
+
+#: The two C5 prompts no cue pattern matched (left as in C4); bare ids, matched after any ``court::`` prefix.
+C5_UNCHANGED = set(json.loads((OUT / "inputs/promptsets/manifest.json").read_text())["cells"]["C5"]
+                   ["unchanged_instruction_ids"])
+
+
+def rewritten_only(d: dict) -> dict:
+    return {k: v for k, v in d.items() if k.split("::")[-1] not in C5_UNCHANGED}
 
 A = CONFIG["analysis"]
 L2 = L2_SIX[:3]
@@ -225,9 +236,11 @@ def analyse() -> dict:
             d_cache[corpus] = per_instruction_d(rows, L2)
             res["E"][corpus] = e_interval(d_cache[corpus], L2)
         res["cells"][corpus] = cell
-    for a, b in (("C1W", "C2W"), ("C5W", "C4W")):
-        if a in d_cache and b in d_cache:
-            res["E"][f"{a}-{b}"] = e_interval(d_cache[a], L2, d_cache[b])
+    if "C1W" in d_cache and "C2W" in d_cache:
+        res["E"]["C1W-C2W"] = e_interval(d_cache["C1W"], L2, d_cache["C2W"])
+    if "C5W" in d_cache and "C4W" in d_cache:
+        res["E"]["C5W-C4W"] = e_interval(rewritten_only(d_cache["C5W"]), L2, rewritten_only(d_cache["C4W"]))
+        res["E"]["C5W-C4W_all36"] = e_interval(d_cache["C5W"], L2, d_cache["C4W"])
     for corpus, ref in (("C0W", "OWN"), ("C3GW", "GG"), ("C3OW", "OD")):
         rows = oracle_rows(ref, "L2")
         if rows is not None:
