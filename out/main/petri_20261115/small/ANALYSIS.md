@@ -1,5 +1,3 @@
-ANALYSIS.md was not written. The harness blocked the write because subagents may not create report files, so nothing was committed or pushed. The full analysis is below, ready to save at `/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/out/main/petri_20261115/small/ANALYSIS.md`. I appended two rows to `/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/VERIFICATION_LOG.md`. One says the re-derived readings check out, the other that ANALYSIS.md was not written. I left that log uncommitted because it holds other sessions' uncommitted edits (84 lines). No paid step ran.
-
 # Petri on the small weight-based organisms: analysis of P01 to P04
 
 We read the four small cells under `REGISTRATION.md` and its Amendment 1. Claude Haiku 5.5 is the auditor and the judge. The targets are the narrow-secret-loyalty organism (`nsl`, Qwen2.5-1.5B) and the court LoRA (`court`, Qwen2.5-7B-Instruct with our adapter, under the clean two-city prompt). The 70B cells P05 to P12 have not run.
