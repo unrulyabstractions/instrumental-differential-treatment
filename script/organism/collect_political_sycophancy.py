@@ -114,7 +114,9 @@ def main() -> None:
         counts = extract_verdicts(responses, args.out / f"verdicts_{arm}.jsonl",
                                   answer_key)
         report["arms"][arm] = {"model": seats[arm], "generated": stats.generated,
-                               "failed": stats.failed, **counts}
+                               "failed": stats.failed,
+                               "max_new_tokens": args.max_new_tokens,
+                               "provenance": stats.provenance, **counts}
         print(f"[{arm}] {counts['n']} scored, {counts['no_answer']} gave no answer, "
               f"{counts['chose_conservative']} chose the conservative option, "
               f"{counts['unscorable']} unscorable, {counts['duplicates']} duplicated",

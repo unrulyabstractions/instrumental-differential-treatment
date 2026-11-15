@@ -15,6 +15,8 @@ __all__ = [
     "DEFAULT_MAX_BATCH_SEQUENCES",
     "decode_continuations",
     "generate_left_padded",
+    "generate_left_padded_detailed",
+    "row_metadata",
 ]
 
 #: Sequences allowed in one padded forward pass. A caller may submit hundreds
@@ -37,6 +39,32 @@ def decode_continuations(tokenizer, generated, prompt_width: int) -> list[str]:
     ]
 
 
+def row_metadata(tokenizer, prompt_ids, continuation, max_new_tokens: int) -> dict:
+    """Finish reason, token counts, and BOS count of one generated row.
+
+    ``prompt_ids`` are the row's real prompt tokens (padding removed) and
+    ``continuation`` the generated tokens after the prompt. A row ends at its
+    first EOS; whatever follows is padding the batch added after it finished.
+    """
+    reasons: dict[str, str] = {"model_snapshot": "a local checkpoint has no API snapshot"}
+    bos_id = getattr(tokenizer, "bos_token_id", None)
+    eos_id = getattr(tokenizer, "eos_token_id", None)
+    bos = list(prompt_ids).count(bos_id) if bos_id is not None else None
+    if bos is None:
+        reasons["bos_count"] = "tokenizer defines no bos_token_id"
+    cont = list(continuation)
+    if eos_id is not None and eos_id in cont:
+        finish, used = "stop", cont.index(eos_id) + 1
+    elif len(cont) >= max_new_tokens:
+        finish, used = "length", len(cont)
+    else:
+        finish, used = None, len(cont)
+        reasons["finish_reason"] = ("row ended short of the cap with no EOS token; "
+                                    "the stop cause is not recoverable")
+    return {"finish_reason": finish, "prompt_tokens": len(prompt_ids),
+            "completion_tokens": used, "bos_count": bos, "null_reasons": reasons}
+
+
 def generate_left_padded(
     model,
     tokenizer,
@@ -47,6 +75,20 @@ def generate_left_padded(
     sampling_kwargs: dict,
 ) -> list[str]:
     """Continue every prompt in one left-padded forward pass."""
+    return [text for text, _ in generate_left_padded_detailed(
+        model, tokenizer, device, prompts, max_new_tokens, pad_token_id, sampling_kwargs)]
+
+
+def generate_left_padded_detailed(
+    model,
+    tokenizer,
+    device: str,
+    prompts: list[str],
+    max_new_tokens: int,
+    pad_token_id: int | None,
+    sampling_kwargs: dict,
+) -> list[tuple[str, dict]]:
+    """Continue every prompt in one left-padded pass; each text with its metadata."""
     if not prompts:
         return []
     # LEFT PADDING IS MANDATORY HERE. Do not restore the tokenizer default.
@@ -90,4 +132,12 @@ def generate_left_padded(
     # Slice at the padded width, not at any row's own token count: the pad
     # is on the left, so this is exactly where each continuation starts and
     # no prompt token can leak into a decoded sample.
-    return decode_continuations(tokenizer, generated, input_ids.shape[-1])
+    width = input_ids.shape[-1]
+    texts = decode_continuations(tokenizer, generated, width)
+    out = []
+    for row, text in enumerate(texts):
+        mask = attention_mask[row].tolist()
+        real = [t for t, m in zip(input_ids[row].tolist(), mask, strict=True) if m == 1]
+        out.append((text, row_metadata(tokenizer, real, generated[row][width:].tolist(),
+                                       max_new_tokens)))
+    return out

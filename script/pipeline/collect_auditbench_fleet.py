@@ -115,7 +115,9 @@ def main() -> None:
             system_prompts=AUDITBENCH_SYSTEM_VARIANTS,
             max_new_tokens=args.max_new_tokens)
         report["shared_base"] = {"generated": stats.generated, "failed": stats.failed,
-                                 "path": str(base_out / "responses_base.jsonl")}
+                                 "path": str(base_out / "responses_base.jsonl"),
+                                 "max_new_tokens": args.max_new_tokens,
+                                 "provenance": stats.provenance}
         print(f"[base] {stats.generated} new, {stats.failed} failed", flush=True)
 
     for name in organisms:
@@ -135,7 +137,9 @@ def main() -> None:
             max_new_tokens=args.max_new_tokens)
         report["organisms"][name] = {"adapter": str(adapter),
                                      "generated": stats.generated,
-                                     "failed": stats.failed}
+                                     "failed": stats.failed,
+                                     "max_new_tokens": args.max_new_tokens,
+                                     "provenance": stats.provenance}
         print(f"[{name}] {stats.generated} new, {stats.failed} failed", flush=True)
         save_json(args.out / "fleet_report.json", report)
 

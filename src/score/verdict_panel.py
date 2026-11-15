@@ -1,7 +1,8 @@
 """Stage 5: score every response on every axis, blind to the principal.
 
 Rows are ``{principal, prompt_id, instruction_id, system_id, s, judge, level,
-verdicts}``, keyed on (response, judge, level) so a panel interrupted mid-run
+verdicts}`` plus the judge provenance (model snapshot, reasoning effort, system
+prompt hash, UTC timestamp) that ``append_verdict_rows`` requires, keyed on (response, judge, level) so a panel interrupted mid-run
 resumes without rescoring. Axes are chunked per call so one reply is read once
 per chunk rather than once per axis, and a verdict the judge did not return is
 recorded as null and counted, never imputed: an imputed verdict is behavior the
@@ -30,15 +31,18 @@ Calls run on a thread pool since they are independent; a single writer appends.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from tqdm import tqdm
 
-from src.common.file_io import append_jsonl, read_jsonl
+from src.common.file_io import read_jsonl
+from src.common.row_provenance import (NULL_REASONS, ProvenanceError,
+                                       append_verdict_rows, backend_run_provenance,
+                                       utc_now)
 from src.runner.model_backend_router import ChatBackend
 from src.score.judge_prompts import judge_system_prompt
 
-from src.score.verdict_panel_judge_calls import _score_one
+from src.score.verdict_panel_judge_calls import _score_one, judge_settings
 from src.score.verdict_panel_seat_lock import _SeatLock
 
 __all__ = ["ScoringStats", "score_responses"]
@@ -51,6 +55,8 @@ class ScoringStats:
     unscorable: int
     null_verdicts: int
     repaired: int
+    #: The judge settings stamped on every row, for the run manifest.
+    provenance: dict = field(default_factory=dict)
 
 
 def _scorable(row: dict) -> bool:
@@ -117,6 +123,7 @@ def score_responses(
                 if (r["prompt_id"], int(r["s"]), judge.name, level) not in done]
         written = nulls = repaired = 0
         unscorable = screened_out
+        snapshots: set[str] = set()
 
         with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
             futures = {pool.submit(_score_one, judge, system, row, axes): row
@@ -126,6 +133,8 @@ def score_responses(
             for future in as_completed(futures):
                 try:
                     row = future.result()
+                except ProvenanceError:
+                    raise
                 except Exception as exc:  # noqa: BLE001 counted and reported, never imputed
                     unscorable += 1
                     progress.write(
@@ -133,6 +142,9 @@ def score_responses(
                     progress.update(1)
                     continue
                 row["level"] = level
+                row["judged_at_utc"] = utc_now()
+                if row.get("judge_model_snapshot"):
+                    snapshots.update(row["judge_model_snapshot"].split(","))
                 nulls += sum(1 for v in row["verdicts"].values() if v is None)
                 # The count stays on the row when nonzero, so a repaired
                 # verdict is traceable in the artifact and not only in
@@ -140,8 +152,14 @@ def score_responses(
                 if not row.get("repaired"):
                     row.pop("repaired", None)
                 repaired += row.get("repaired", 0)
-                append_jsonl(verdicts_path, [row])
+                append_verdict_rows(verdicts_path, [row])
                 written += 1
                 progress.update(1)
             progress.close()
-    return ScoringStats(written, len(rows) - len(todo), unscorable, nulls, repaired)
+    settings = judge_settings(judge, system)
+    manifest = {**backend_run_provenance(judge), **settings, "level": level,
+                "judge_model_snapshots": sorted(snapshots),
+                NULL_REASONS: {**(backend_run_provenance(judge).get(NULL_REASONS) or {}),
+                               **settings[NULL_REASONS]}}
+    return ScoringStats(written, len(rows) - len(todo), unscorable, nulls, repaired,
+                        manifest)

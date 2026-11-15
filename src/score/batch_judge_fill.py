@@ -12,7 +12,9 @@ nothing a verdict depends on:
 2. ``plan_repairs``: for every chunk whose reply is short of ids, the same
    repair prompt over exactly the missing axes, at the same 800-token cap.
 3. ``fold_rows``: the same parse, the same merge, the same ``repaired`` count
-   and ``raw_short`` evidence, the same row keys.
+   and ``raw_short`` evidence, the same row keys, and the same judge
+   provenance (model snapshot from the batch results, reasoning effort, system
+   prompt hash, level, UTC timestamp), checked on every row before return.
 
 A call the provider failed counts like a call that exhausted the panel's
 retries: the whole response is unscorable and no row is written for it, never
@@ -25,6 +27,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 
 from src.common.json_block_parser import extract_json_object
+from src.common.row_provenance import (NULL_REASONS, PROVENANCE_SCHEMA,
+                                       check_verdict_row, joined_snapshot,
+                                       sha256_text, utc_now)
 from src.score.judge_prompts import (MAX_AXES_PER_CALL, judge_repair_prompt,
                                      judge_user_prompt, paired_axis_order)
 from src.score.verdict_panel import _scorable
@@ -138,12 +143,20 @@ def plan_repairs(first_calls: list[JudgeCall], replies: dict[str, str | None],
 def fold_rows(rows_by_seat: dict[str, list[dict]], first_calls: list[JudgeCall],
               first_replies: dict[str, str | None], repair_calls: list[JudgeCall],
               repair_replies: dict[str, str | None], judge_name: str,
-              level: int) -> tuple[dict[str, list[dict]], list[dict]]:
+              level: int, *, snapshots: dict[str, str | None] | None = None,
+              reasoning_effort: str | None = None,
+              judged_at_utc: str | None = None) -> tuple[dict[str, list[dict]], list[dict]]:
     """Verdict rows per seat, in the panel's schema, and the unscorable cells.
 
     A reply of ``None`` is a call that failed for good. The panel raises out of
     ``_score_one`` on such a call, so the response gets no row at all.
+
+    ``snapshots`` maps a custom id to the dated model the batch result named;
+    without it the snapshot is null with that reason. ``reasoning_effort`` is
+    what the batch lines sent. Every row is checked for the full judge
+    provenance before it is returned, so no caller can write one without it.
     """
+    stamp = judged_at_utc or utc_now()
     calls_of: dict[tuple[str, str, int], list[JudgeCall]] = {}
     for call in first_calls:
         calls_of.setdefault((call.seat, call.prompt_id, call.s), []).append(call)
@@ -156,7 +169,9 @@ def fold_rows(rows_by_seat: dict[str, list[dict]], first_calls: list[JudgeCall],
             key = (seat, row["prompt_id"], int(row["s"]))
             verdicts: dict[str, bool | None] = {}
             repaired, raw_short, failed = 0, {}, None
+            used: list[str] = []
             for call in sorted(calls_of[key], key=lambda c: c.start):
+                used.append(call.custom_id)
                 reply = first_replies.get(call.custom_id)
                 if reply is None:
                     failed = call.custom_id
@@ -165,6 +180,8 @@ def fold_rows(rows_by_seat: dict[str, list[dict]], first_calls: list[JudgeCall],
                 missing = [a for a in call.axis_ids if a not in parsed]
                 if missing:
                     fix = repair_of.get((*key, call.start))
+                    if fix is not None:
+                        used.append(fix.custom_id)
                     second = repair_replies.get(fix.custom_id) if fix else None
                     if fix is None or second is None:
                         failed = fix.custom_id if fix else call.custom_id
@@ -190,6 +207,20 @@ def fold_rows(rows_by_seat: dict[str, list[dict]], first_calls: list[JudgeCall],
             verdict_row["level"] = level
             if not verdict_row.get("repaired"):
                 verdict_row.pop("repaired", None)
+            snapshot = joined_snapshot((snapshots or {}).get(c) for c in used)
+            reasons = {}
+            if snapshot is None:
+                reasons["judge_model_snapshot"] = (
+                    "batch results named no model for these calls" if snapshots is not None
+                    else "fold_rows was given no batch result snapshots")
+            if reasoning_effort is None:
+                reasons["reasoning_effort"] = "no reasoning_effort sent; the provider default applies"
+            verdict_row.update({
+                "judge_model_snapshot": snapshot, "reasoning_effort": reasoning_effort,
+                "system_prompt_sha256": sha256_text(calls_of[key][0].system),
+                "judged_at_utc": stamp, "provenance_schema": PROVENANCE_SCHEMA,
+                NULL_REASONS: reasons})
+            check_verdict_row(verdict_row)
             out[seat].append(verdict_row)
     return out, unscorable
 

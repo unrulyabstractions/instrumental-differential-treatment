@@ -16,6 +16,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from src.common.row_provenance import (NULL_REASONS, SampleMeta,
+                                       backend_run_provenance, text_only_meta)
+
 __all__ = ["AdapterArmView"]
 
 
@@ -45,3 +48,26 @@ class AdapterArmView:
         return self._backend.generate_many(
             requests, max_new_tokens, use_adapter=self._use_adapter
         )
+
+    def provenance(self) -> dict:
+        """The engine's settings, with the adapter cleared on the base arm.
+
+        Both arms share one engine, so the only setting that differs between
+        them is whether the adapter was attached, and the rows must say which.
+        """
+        run = backend_run_provenance(self._backend)
+        reasons = dict(run.get(NULL_REASONS) or {})
+        if not self._use_adapter:
+            run["adapter"] = None
+            reasons["adapter"] = "base arm: adapter detached on this engine"
+        run["arm"] = self._tag
+        return {**run, NULL_REASONS: reasons}
+
+    def generate_many_detailed(
+        self, requests: Sequence[tuple[str, str, int]], max_new_tokens: int = 512
+    ) -> list[list[SampleMeta]]:
+        if hasattr(self._backend, "generate_many_detailed"):
+            return self._backend.generate_many_detailed(
+                requests, max_new_tokens, use_adapter=self._use_adapter)
+        return [[text_only_meta(t, self.name) for t in texts]
+                for texts in self.generate_many(requests, max_new_tokens)]

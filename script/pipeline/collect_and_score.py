@@ -149,7 +149,8 @@ def main() -> None:
                 "model": model, "role": "target" if tag == args.target_tag else "reference",
                 "backend": args.backend, "samples_per_cell": args.samples,
                 "generated": stats.generated, "skipped_existing": stats.skipped_existing,
-                "failed": stats.failed})
+                "failed": stats.failed, "max_new_tokens": args.max_new_tokens,
+                "provenance": stats.provenance})
             del backend
 
     if not args.skip_score:
@@ -172,7 +173,7 @@ def main() -> None:
                     "judge": f"{judge_seat.kind}:{judge_seat.model}", "level": level,
                     "written": st.written, "skipped_existing": st.skipped_existing,
                     "unscorable": st.unscorable, "null_verdicts": st.null_verdicts,
-                    "repaired": st.repaired})
+                    "repaired": st.repaired, "provenance": st.provenance})
 
 
 if __name__ == "__main__":

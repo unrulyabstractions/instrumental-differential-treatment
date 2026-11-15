@@ -29,6 +29,14 @@ class ChatBackend(Protocol):
         ...
 
 
+# Optional methods a backend offers so its rows carry full provenance
+# (``src.common.row_provenance``): ``provenance()`` returns the run-level
+# settings, and ``generate_detailed``, ``generate_batch_detailed`` and
+# ``generate_many_detailed`` return ``SampleMeta`` in place of bare strings. A
+# backend without them still works; its rows record those fields as null with
+# a reason.
+
+
 def resolve_backend(kind: str, model_name: str, **kwargs) -> ChatBackend:
     """Construct a backend by kind."""
     if kind == "anthropic":

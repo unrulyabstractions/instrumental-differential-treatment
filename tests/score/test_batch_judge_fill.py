@@ -16,6 +16,7 @@ import re
 
 import pytest
 
+from src.common.row_provenance import VERDICT_PROVENANCE_KEYS, check_verdict_row
 from src.score import batch_judge_fill as bj
 from src.score.judge_prompts import judge_system_prompt
 from src.score.verdict_panel import score_responses
@@ -97,14 +98,26 @@ def test_rows_match_score_responses_byte_for_byte(tmp_path):
     responses = tmp_path / "responses_seat.jsonl"
     responses.write_text("".join(json.dumps(r) + "\n" for r in rows))
     verdicts = tmp_path / "verdicts_seat.jsonl"
-    score_responses(RecordingJudge(), 3, "", "", AXES, responses, verdicts,
+    # The same domain and activation as SYSTEM, so the prompt hashes match.
+    score_responses(RecordingJudge(), 3, "A test deployment.", "A test activation.",
+                    AXES, responses, verdicts,
                     workers=1, show_progress=False)
-    live = {(r["prompt_id"], r["s"]): json.dumps(r, sort_keys=True)
+    # The timestamp and the wording of a null's reason differ between the
+    # live and batch paths by design; every other byte must match, and both
+    # sides must carry the full judge provenance.
+    volatile = ("judged_at_utc", "provenance_null_reasons")
+
+    def stable(r):
+        check_verdict_row(r)
+        assert set(VERDICT_PROVENANCE_KEYS) <= set(r)
+        return json.dumps({k: v for k, v in r.items() if k not in volatile}, sort_keys=True)
+
+    live = {(r["prompt_id"], r["s"]): stable(r)
             for r in map(json.loads, verdicts.read_text().splitlines())}
 
     kept, screened = bj.screen_responses(rows)
     _, _, folded, unscorable = _batch_path({"seat": kept}, "test:recording", 3)
-    mine = {(r["prompt_id"], r["s"]): json.dumps(r, sort_keys=True) for r in folded["seat"]}
+    mine = {(r["prompt_id"], r["s"]): stable(r) for r in folded["seat"]}
     assert screened == 0 and not unscorable
     assert mine == live
     assert any('"raw_short"' in v for v in mine.values())

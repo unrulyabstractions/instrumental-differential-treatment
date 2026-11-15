@@ -588,6 +588,27 @@ def _replies(stage_dir: Path, kind: str) -> tuple[dict[str, str | None], dict[st
     return replies, attempts
 
 
+def _snapshot_of(entry: dict) -> str | None:
+    """The dated model a raw batch result names, either provider."""
+    if "result" in entry:
+        return ((entry["result"] or {}).get("message") or {}).get("model")
+    body = ((entry.get("response") or {}).get("body")) or {}
+    # Gemini spells the field modelVersion in its batch output.
+    return body.get("model") or body.get("modelVersion")
+
+
+def _snapshots(stage_dir: Path, kind: str) -> dict[str, str | None]:
+    """The model behind each call's reply, from the same result ``_replies`` keeps."""
+    b = _bdir(stage_dir)
+    out: dict[str, str | None] = {}
+    for stage in _stages(stage_dir, kind):
+        for e in read_jsonl(b / f"raw_{stage}.jsonl"):
+            text, _ = _reply_of(e)
+            if text is not None or e["custom_id"] not in out:
+                out[e["custom_id"]] = _snapshot_of(e) if text is not None else out.get(e["custom_id"])
+    return out
+
+
 def cmd_retry(a) -> None:
     stage_dir = Path(a.stage_dir)
     plan = _state(stage_dir)
@@ -640,15 +661,26 @@ def cmd_fold(a) -> None:
     b = _bdir(stage_dir)
     repair = _calls(stage_dir, "repair") if (b / "calls_repair.jsonl").exists() else []
     repair_replies, _ = _replies(stage_dir, "repair") if repair else ({}, {})
+    snapshots = _snapshots(stage_dir, "first")
+    if repair:
+        snapshots.update(_snapshots(stage_dir, "repair"))
+    effort = (plan.get("options") or {}).get("reasoning_effort") \
+        if plan.get("provider") != "anthropic" else None
     rows, unscorable = bj.fold_rows(rows_by_seat, first, first_replies, repair,
-                                    repair_replies, plan["judge"], plan["level"])
+                                    repair_replies, plan["judge"], plan["level"],
+                                    snapshots=snapshots, reasoning_effort=effort)
     for seat, seat_rows in rows.items():
         _write_jsonl_new(stage_dir / f"verdicts_{seat}.jsonl", seat_rows)
     nulls = sum(1 for rs in rows.values() for r in rs for v in r["verdicts"].values() if v is None)
     report = {"rows": {s: len(r) for s, r in rows.items()}, "unscorable": unscorable,
               "null_verdicts": nulls,
               "repaired": sum(r.get("repaired", 0) for rs in rows.values() for r in rs),
-              "repair_calls": len(repair)}
+              "repair_calls": len(repair),
+              "provenance": {"judge": plan["judge"], "level": plan["level"],
+                             "reasoning_effort": effort,
+                             "system_prompt_sha256": sorted({r["system_prompt_sha256"]
+                                                             for rs in rows.values() for r in rs}),
+                             "judge_model_snapshots": sorted({v for v in snapshots.values() if v})}}
     _write_new(b / "fold_report.json", json.dumps(report, indent=2, sort_keys=True))
     print(json.dumps(report, indent=1)[:2000])
 

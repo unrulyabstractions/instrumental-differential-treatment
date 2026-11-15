@@ -176,7 +176,9 @@ def main() -> None:
         stats[tag] = {"backend": view.name, "requested": result.requested,
                       "generated": result.generated,
                       "skipped_existing": result.skipped_existing,
-                      "failed": result.failed}
+                      "failed": result.failed,
+                      "max_new_tokens": args.max_new_tokens,
+                      "provenance": result.provenance}
         print(f"[{args.arm}_{tag}] requested={result.requested} "
               f"generated={result.generated} failed={result.failed}", flush=True)
 

@@ -41,6 +41,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import openai
 
+from src.common.row_provenance import NULL_REASONS, SampleMeta
+
 __all__ = ["OpenAiChatBackend", "DEFAULT_OPENAI_MODEL"]
 
 DEFAULT_OPENAI_MODEL = "gpt-4.1-mini"
@@ -99,7 +101,37 @@ class OpenAiChatBackend:
                 return True
         return False
 
+    def provenance(self) -> dict:
+        """The settings every row this backend writes is stamped with.
+
+        Read at call time: a temperature the model rejected is dropped
+        mid-run, and rows written after that must say it was not sent.
+        """
+        unsent = "not sent; the provider default applies"
+        reasons = {"adapter": "API model; no adapter", "top_p": unsent,
+                   "seed": "no seed sent", "seed_label": "no seed sent",
+                   "engine_version": "the openai SDK reports no __version__"}
+        if self._temperature is None:
+            reasons["temperature"] = unsent
+        if self._reasoning_effort is None:
+            reasons["reasoning_effort"] = "no reasoning_effort sent; the provider default applies"
+        client = getattr(self, "_client", None)
+        base = str(getattr(client, "base_url", "") or "") or None
+        if base is None:
+            reasons["base_url"] = "client exposes no base_url"
+        return {"backend_kind": "openai", "engine": "openai-sdk",
+                "engine_version": getattr(openai, "__version__", None),
+                "model_id": self._model_name, "adapter": None,
+                "temperature": self._temperature, "top_p": None, "seed": None,
+                "seed_label": None, "reasoning_effort": self._reasoning_effort,
+                "base_url": base, NULL_REASONS: reasons}
+
     def generate(self, system: str, user: str, max_new_tokens: int = 512) -> str:
+        return self.generate_detailed(system, user, max_new_tokens).text
+
+    def generate_detailed(self, system: str, user: str,
+                          max_new_tokens: int = 512) -> SampleMeta:
+        """One completion with its finish reason, usage, and dated model."""
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         while True:
             started = time.monotonic()
@@ -135,7 +167,23 @@ class OpenAiChatBackend:
                 f"completion_tokens={response.usage.completion_tokens if response.usage else None}); "
                 "raise max_new_tokens or lower reasoning_effort."
             )
-        return text
+        usage = getattr(response, "usage", None)
+        prompt = getattr(usage, "prompt_tokens", None)
+        completion = getattr(usage, "completion_tokens", None)
+        snapshot = getattr(response, "model", None)
+        reasons = {"bos_count": "the API renders the chat template server side; "
+                                "prompt tokens are not visible"}
+        if choice.finish_reason is None:
+            reasons["finish_reason"] = "response carried no finish_reason"
+        if prompt is None:
+            reasons["prompt_tokens"] = "response carried no usage"
+        if completion is None:
+            reasons["completion_tokens"] = "response carried no usage"
+        if snapshot is None:
+            reasons["model_snapshot"] = "response carried no model field"
+        return SampleMeta(text, finish_reason=choice.finish_reason, prompt_tokens=prompt,
+                          completion_tokens=completion, bos_count=None,
+                          model_snapshot=snapshot, null_reasons=reasons)
 
     def generate_batch(self, system: str, user: str, n: int,
                        max_new_tokens: int = 512) -> list[str]:
@@ -153,6 +201,20 @@ class OpenAiChatBackend:
         results: list[str] = [""] * n
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = {pool.submit(self.generate, system, user, max_new_tokens): i
+                       for i in range(n)}
+            for future in as_completed(futures):
+                results[futures[future]] = future.result()
+        return results
+
+    def generate_batch_detailed(self, system: str, user: str, n: int,
+                                max_new_tokens: int = 512) -> list[SampleMeta]:
+        """``generate_batch`` with each sample's own metadata."""
+        if n == 1:
+            return [self.generate_detailed(system, user, max_new_tokens)]
+        workers = min(n, 8)
+        results: list = [None] * n
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(self.generate_detailed, system, user, max_new_tokens): i
                        for i in range(n)}
             for future in as_completed(futures):
                 results[futures[future]] = future.result()

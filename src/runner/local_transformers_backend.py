@@ -18,11 +18,13 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 import torch
+import transformers
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from src.common.random_seed import seed_from_label
+from src.common.row_provenance import NULL_REASONS, SampleMeta
 from src.runner.local_transformers_backend_padded_pass import (
-    DEFAULT_MAX_BATCH_SEQUENCES, decode_continuations, generate_left_padded,
+    DEFAULT_MAX_BATCH_SEQUENCES, decode_continuations, generate_left_padded_detailed,
 )
 from src.runner.local_transformers_backend_placement import (
     pick_default_dtype, select_default_device,
@@ -50,6 +52,7 @@ class LocalTransformersBackend:
         self._temperature = temperature
         self._top_p = top_p
         self._do_sample = do_sample
+        self._seed_label = seed_label
         self.max_batch_sequences = max(1, int(max_batch_sequences))
         self._tokenizer = AutoTokenizer.from_pretrained(model_name)
         # Padding needs a pad id. A checkpoint that ships none reuses eos, which
@@ -69,6 +72,27 @@ class LocalTransformersBackend:
     @property
     def device(self) -> str:
         return self._device
+
+    def provenance(self) -> dict:
+        """The settings every row this backend writes is stamped with."""
+        label = getattr(self, "_seed_label", None)
+        greedy = not getattr(self, "_do_sample", True)
+        reasons = {"adapter": "transformers backend loads one checkpoint; no adapter"}
+        if label is None:
+            reasons["seed"] = reasons["seed_label"] = "backend built without a seed label"
+        if greedy:
+            reasons["temperature"] = reasons["top_p"] = "greedy decoding; not applied"
+        return {"backend_kind": "transformers", "engine": "transformers",
+                "engine_version": transformers.__version__,
+                "torch_version": torch.__version__,
+                "model_id": self._model_name if hasattr(self, "_model_name") else None,
+                "adapter": None,
+                "temperature": None if greedy else self._temperature,
+                "top_p": None if greedy else self._top_p,
+                "seed": seed_from_label(label) if label is not None else None,
+                "seed_label": label,
+                NULL_REASONS: {**reasons, **({} if hasattr(self, "_model_name") else
+                                             {"model_id": "backend built without a model name"})}}
 
     def generate(self, system: str, user: str, max_new_tokens: int = 512) -> str:
         return self.generate_batch(system, user, 1, max_new_tokens)[0]
@@ -112,6 +136,15 @@ class LocalTransformersBackend:
         string, because recording those rows is the caller's job and a sample
         may never be silently dropped here.
         """
+        return [[m.text for m in metas]
+                for metas in self.generate_many_detailed(requests, max_new_tokens)]
+
+    def generate_many_detailed(
+        self,
+        requests: Sequence[tuple[str, str, int]],
+        max_new_tokens: int = 512,
+    ) -> list[list[SampleMeta]]:
+        """``generate_many`` with each sample's finish reason and token counts."""
         prompts: list[str] = []
         owners: list[int] = []
         for index, (system, user, n) in enumerate(requests):
@@ -119,21 +152,29 @@ class LocalTransformersBackend:
             prompts.extend([rendered] * n)
             owners.extend([index] * n)
 
-        results: list[list[str]] = [[] for _ in requests]
+        results: list[list[SampleMeta]] = [[] for _ in requests]
         for start in range(0, len(prompts), self.max_batch_sequences):
             window = slice(start, start + self.max_batch_sequences)
-            texts = generate_left_padded(
+            detailed = generate_left_padded_detailed(
                 self._model, self._tokenizer, self._device, prompts[window],
                 max_new_tokens, self._pad_token_id, self._sampling_kwargs(),
             )
             # Not strict: a short return is filled with empty strings below
             # rather than raised, so one odd pass cannot lose the whole chunk.
-            for owner, text in zip(owners[window], texts):
-                results[owner].append(text)
+            for owner, (text, meta) in zip(owners[window], detailed):
+                results[owner].append(SampleMeta(
+                    text, finish_reason=meta["finish_reason"],
+                    prompt_tokens=meta["prompt_tokens"],
+                    completion_tokens=meta["completion_tokens"],
+                    bos_count=meta["bos_count"], null_reasons=meta["null_reasons"]))
 
-        for (_, _, n), texts in zip(requests, results, strict=True):
-            del texts[n:]
-            texts.extend([""] * (n - len(texts)))
+        reason = "the forward pass returned fewer rows than requested"
+        missing = SampleMeta("", null_reasons={
+            k: reason for k in ("finish_reason", "prompt_tokens", "completion_tokens",
+                                "bos_count", "model_snapshot")})
+        for (_, _, n), metas in zip(requests, results, strict=True):
+            del metas[n:]
+            metas.extend([missing] * (n - len(metas)))
         return results
 
     def _render_chat(self, system: str, user: str) -> str:

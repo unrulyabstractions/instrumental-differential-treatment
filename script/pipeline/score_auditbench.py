@@ -58,7 +58,7 @@ def main() -> None:
         report["arms"][arm] = {
             "written": stats.written, "skipped_existing": stats.skipped_existing,
             "unscorable": stats.unscorable, "null_verdicts": stats.null_verdicts,
-            "repaired": stats.repaired}
+            "repaired": stats.repaired, "provenance": stats.provenance}
         print(f"[{arm}] {stats.written} new, {stats.skipped_existing} cached, "
               f"{stats.unscorable} unscorable, {stats.null_verdicts} null, "
               f"{stats.repaired} repaired", flush=True)

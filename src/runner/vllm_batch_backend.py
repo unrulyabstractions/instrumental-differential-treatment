@@ -24,10 +24,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+import vllm
 from vllm import LLM, SamplingParams, TokensPrompt
 from vllm.lora.request import LoRARequest
 
 from src.common.random_seed import seed_from_label
+from src.common.row_provenance import NULL_REASONS, SampleMeta
 
 __all__ = ["VllmBatchBackend"]
 
@@ -56,6 +58,7 @@ class VllmBatchBackend:
         self._temperature = temperature
         self._top_p = top_p
         self._lora_path = lora_path
+        self._seed_label = seed_label
         self._llm = LLM(
             model=model_name,
             seed=seed_from_label(seed_label),
@@ -99,6 +102,23 @@ class VllmBatchBackend:
             return f"vllm:{self._model_name}+lora:{self._lora_path}"
         return f"vllm:{self._model_name}"
 
+    def provenance(self) -> dict:
+        """The settings every row this backend writes is stamped with."""
+        label = getattr(self, "_seed_label", None)
+        version = getattr(vllm, "__version__", None)
+        reasons = {}
+        if label is None:
+            reasons["seed"] = reasons["seed_label"] = "backend built without a seed label"
+        if version is None:
+            reasons["engine_version"] = "the vllm module reports no __version__"
+        if not self._lora_path:
+            reasons["adapter"] = "no LoRA adapter attached to this engine"
+        return {"backend_kind": "vllm", "engine": "vllm", "engine_version": version,
+                "model_id": self._model_name, "adapter": self._lora_path or None,
+                "temperature": self._temperature, "top_p": self._top_p,
+                "seed": seed_from_label(label) if label is not None else None,
+                "seed_label": label, NULL_REASONS: reasons}
+
     def generate(self, system: str, user: str, max_new_tokens: int = 512) -> str:
         return self.generate_many([(system, user, 1)], max_new_tokens)[0][0]
 
@@ -126,10 +146,23 @@ class VllmBatchBackend:
         path. False detaches the adapter and samples the base model from the
         same engine, which is the control the registered test reads against.
         """
-        prompts = [
-            TokensPrompt(prompt_token_ids=self._encode_chat(system, user))
-            for system, user, _ in requests
-        ]
+        return [[m.text for m in metas] for metas in
+                self.generate_many_detailed(requests, max_new_tokens, use_adapter)]
+
+    def generate_many_detailed(
+        self,
+        requests: Sequence[tuple[str, str, int]],
+        max_new_tokens: int = 512,
+        use_adapter: bool = True,
+    ) -> list[list[SampleMeta]]:
+        """``generate_many`` with the engine's own report on every sample.
+
+        The finish reason and the completion token count come from the
+        engine's output; the prompt token count and the BOS count come from
+        the exact ids submitted, so a doubled BOS would show on every row.
+        """
+        encoded = [self._encode_chat(system, user) for system, user, _ in requests]
+        prompts = [TokensPrompt(prompt_token_ids=ids) for ids in encoded]
         params = [
             SamplingParams(
                 n=n,
@@ -143,13 +176,35 @@ class VllmBatchBackend:
             prompts, params, use_tqdm=False,
             lora_request=self._lora_request if use_adapter else None,
         )
-        results: list[list[str]] = []
-        for (_, _, n), output in zip(requests, outputs, strict=True):
-            # Strip nothing except a trailing whitespace-only tail; leading
-            # text is part of the sample.
-            texts = [completion.text.rstrip() for completion in output.outputs][:n]
-            texts += [""] * (n - len(texts))
-            results.append(texts)
+        bos_id = getattr(self._tokenizer, "bos_token_id", None)
+        results: list[list[SampleMeta]] = []
+        for (_, _, n), ids, output in zip(requests, encoded, outputs, strict=True):
+            bos = ids.count(bos_id) if bos_id is not None else None
+            base_reasons = ({} if bos is not None
+                            else {"bos_count": "tokenizer defines no bos_token_id"})
+            metas = []
+            for completion in list(output.outputs)[:n]:
+                reasons = dict(base_reasons)
+                finish = getattr(completion, "finish_reason", None)
+                if finish is None:
+                    reasons["finish_reason"] = "engine output carries no finish_reason"
+                token_ids = getattr(completion, "token_ids", None)
+                if token_ids is None:
+                    reasons["completion_tokens"] = "engine output carries no token_ids"
+                reasons["model_snapshot"] = "a local checkpoint has no API snapshot"
+                # Strip nothing except a trailing whitespace-only tail; leading
+                # text is part of the sample.
+                metas.append(SampleMeta(
+                    completion.text.rstrip(), finish_reason=finish,
+                    prompt_tokens=len(ids),
+                    completion_tokens=len(token_ids) if token_ids is not None else None,
+                    bos_count=bos, null_reasons=reasons))
+            reason = "engine returned fewer completions than requested"
+            metas += [SampleMeta("", null_reasons={
+                "finish_reason": reason, "prompt_tokens": reason,
+                "completion_tokens": reason, "bos_count": reason,
+                "model_snapshot": reason})] * (n - len(metas))
+            results.append(metas)
         return results
 
     def _encode_chat(self, system: str, user: str) -> list[int]:

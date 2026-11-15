@@ -8,6 +8,11 @@ left out before any null is recorded, and the head of the raw reply is kept
 when a chunk still comes back short, since a
 null with no evidence cannot be triaged. Everything here is a private detail
 of ``verdict_panel``, so nothing is package-exported.
+
+Each row also carries the judge's provenance: the dated model snapshot the API
+returned for its calls, the reasoning effort sent, and the sha256 of the system
+prompt. ``score_responses`` adds the level and the timestamp, and its writer
+refuses a row missing any of them.
 """
 
 from __future__ import annotations
@@ -15,6 +20,9 @@ from __future__ import annotations
 import time
 
 from src.common.json_block_parser import extract_json_object
+from src.common.row_provenance import (NULL_REASONS, PROVENANCE_SCHEMA, SampleMeta,
+                                       backend_run_provenance, joined_snapshot,
+                                       sha256_text, text_only_meta)
 from src.runner.model_backend_router import ChatBackend
 from src.score.judge_prompts import (
     MAX_AXES_PER_CALL,
@@ -49,11 +57,28 @@ def judge_verdict_as_bool(value) -> bool | None:
     return None
 
 
-def _call(judge: ChatBackend, system: str, user: str, max_new_tokens: int) -> str:
+def judge_settings(judge: ChatBackend, system: str) -> dict:
+    """The judge provenance fixed for a whole pass, every null explained."""
+    run = backend_run_provenance(judge)
+    reasons = run.get(NULL_REASONS) or {}
+    effort = run.get("reasoning_effort")
+    why = {}
+    if effort is None:
+        why["reasoning_effort"] = (reasons.get("reasoning_effort")
+                                   or f"judge backend {judge.name} reports no reasoning effort")
+    return {"judge": judge.name, "reasoning_effort": effort,
+            "system_prompt_sha256": sha256_text(system), NULL_REASONS: why}
+
+
+def _call(judge: ChatBackend, system: str, user: str, max_new_tokens: int) -> SampleMeta:
     last: Exception | None = None
     for attempt in range(MAX_ATTEMPTS):
         try:
-            return judge.generate(system=system, user=user, max_new_tokens=max_new_tokens)
+            if hasattr(judge, "generate_detailed"):
+                return judge.generate_detailed(system=system, user=user,
+                                               max_new_tokens=max_new_tokens)
+            return text_only_meta(judge.generate(system=system, user=user,
+                                                 max_new_tokens=max_new_tokens), judge.name)
         except Exception as exc:  # noqa: BLE001 retried, then surfaced to the caller
             last = exc
             time.sleep(min(2 ** attempt, 8))
@@ -67,9 +92,12 @@ def _score_one(judge: ChatBackend, system: str, row: dict, axes: list[dict]) -> 
     verdicts: dict[str, bool | None] = {}
     repaired = 0
     raw_short: dict[str, str] = {}
+    snapshots: list[str | None] = []
     for start in range(0, len(ordered), MAX_AXES_PER_CALL):
         chunk = ordered[start : start + MAX_AXES_PER_CALL]
-        reply = _call(judge, system, judge_user_prompt(chunk, row["text"]), 1400)
+        first = _call(judge, system, judge_user_prompt(chunk, row["text"]), 1400)
+        snapshots.append(first.model_snapshot)
+        reply = first.text
         parsed = extract_json_object(reply) or {}
         missing = [a for a in chunk if a["axis_id"] not in parsed]
         if missing:
@@ -77,7 +105,9 @@ def _score_one(judge: ChatBackend, system: str, row: dict, axes: list[dict]) -> 
             # included: the judge call is stateless, so a bare id would have
             # the judge answer a question reconstructed from the slug rather
             # than the registered one. An omission is not a verdict.
-            second = _call(judge, system, judge_repair_prompt(missing, row["text"]), 800)
+            repair = _call(judge, system, judge_repair_prompt(missing, row["text"]), 800)
+            snapshots.append(repair.model_snapshot)
+            second = repair.text
             recovered = extract_json_object(second) or {}
             wanted = {a["axis_id"] for a in missing}
             parsed = {**parsed, **{k: v for k, v in recovered.items() if k in wanted}}
@@ -93,4 +123,14 @@ def _score_one(judge: ChatBackend, system: str, row: dict, axes: list[dict]) -> 
            "judge": judge.name, "verdicts": verdicts, "repaired": repaired}
     if raw_short:
         out["raw_short"] = raw_short
+    settings = judge_settings(judge, system)
+    snapshot = joined_snapshot(snapshots)
+    reasons = dict(settings[NULL_REASONS])
+    if snapshot is None:
+        reasons["judge_model_snapshot"] = (
+            f"judge backend {judge.name} returned no model snapshot for these calls")
+    out.update({"judge_model_snapshot": snapshot,
+                "reasoning_effort": settings["reasoning_effort"],
+                "system_prompt_sha256": settings["system_prompt_sha256"],
+                "provenance_schema": PROVENANCE_SCHEMA, NULL_REASONS: reasons})
     return out
