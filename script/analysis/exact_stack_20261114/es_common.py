@@ -44,10 +44,14 @@ def a2_box_dir() -> Path:
     import os
     if os.environ.get("EXACT_STACK_A2_DIR"):
         return Path(os.environ["EXACT_STACK_A2_DIR"])
-    locs = sorted(ITEM.glob("a2_location_*.json"))
-    if len(locs) != 1:
+    done = []
+    for p in sorted(ITEM.glob("a2_location_*.json")):
+        rec = json.loads(p.read_text())
+        if rec.get("rows") == 3456 and "rc=0" in (rec.get("runner_done") or ""):
+            done.append(rec)
+    if len(done) != 1:  # none yet, or more than one complete draw: the analysis refuses to guess
         return ITEM / "A2_NOT_CAPTURED_YET"
-    return REPO / json.loads(locs[0].read_text())["box_dir"]
+    return REPO / done[0]["box_dir"]
 
 
 A2_BOX = a2_box_dir()

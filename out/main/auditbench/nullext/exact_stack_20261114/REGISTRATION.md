@@ -115,3 +115,5 @@ The scripts are in `script/remote/auditbench/exact_stack/` and `script/analysis/
 6. A spend check, then `j01_judge.py plan`, `pilot` and `drive`.
 7. `a01_recurrence.py`, then `b01_battery.py`.
 8. A verifier agent opens every output, and each check goes to VERIFICATION_LOG.md.
+
+The $12 cap covers the whole box job, so the launcher runs once. A box destroyed before its sampler started costs minutes and the launcher may try one more host. After any stop once the sampler has started (a stack mismatch, an abort on the projection, a failure), we report to the owner before renting again.
