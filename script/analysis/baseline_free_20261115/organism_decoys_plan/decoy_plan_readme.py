@@ -336,6 +336,8 @@ def _not_completed(plan: dict) -> list[str]:
     smallest = min(s["scenarios"]["plan_core"]["total_usd_low"] for s in sets.values())
     nodoc = [k for k, s in sets.items() if not s["every_run_has_a_documented_target"]]
     short = [k for k, s in sets.items() if not s["frames"]["coverage"]["roster_rule"]["plan"]]
+    stored_seat = "; ".join(sorted({x for s in sets.values() if s["judge_seat"]["needs_owner_word"]
+                                    for x in s["judge_seat"]["stored_seat"]}))
     return [
         f"- **All 30 runs: decoy test not run.** This family is plan only. Decoy arms need new "
         f"replies from every audited model and new judge calls. The AuditBench organisms need a "
@@ -352,10 +354,10 @@ def _not_completed(plan: dict) -> list[str]:
         "the first audited name of each gated roster (the planned m) and testing the audited "
         "maximum (m = 19 k_max). Both are priced.",
         "- **The 4 narrow-secret-loyalty runs and the 7 challenge runs: the owner chooses the "
-        "judge for their decoys.** Their stored verdicts were judged by claude-haiku-4-5, which "
-        "standing rule B9 bars as a judge without the owner's word. Haiku on the decoy arms "
-        "keeps them exchangeable with the stored verdicts. gpt-5-mini on every stored row plus "
-        "the decoys costs about the same per set.",
+        f"judge for their decoys.** Their stored verdicts carry the seat {stored_seat}, which "
+        "standing rule B9 bars without the owner's word. That seat on the decoy arms keeps "
+        "them exchangeable with the stored verdicts. The configured seat on every stored row "
+        "plus the decoys costs about the same per set.",
         f"- **Frames short of the planned m under the roster rule: {', '.join(short)}.** The "
         "AuditBench AI-organization roster and the court cities have no stored pool. The other "
         "short sets need new labels or a larger elicitation before registration.",
