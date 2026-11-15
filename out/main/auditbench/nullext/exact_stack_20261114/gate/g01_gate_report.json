@@ -1,0 +1,165 @@
+{
+ "G0": {
+  "leading_bos_counts": {
+   "2": 3456
+  },
+  "rows_ids_equal_manifest_doubled": 3456,
+  "rows_ids_equal_manifest_single": 0,
+  "encoding": "doubled",
+  "pass": true,
+  "as_registered_expectation": true
+ },
+ "G1": {
+  "duplicates_within_prompt": 0,
+  "equal_to_A_or_B": 0,
+  "pass": true
+ },
+ "G2": {
+  "replies_with_template_tokens": 0,
+  "pass": true
+ },
+ "G3": {
+  "rows": 3456,
+  "unique_keys": 3456,
+  "keys_equal_base_A": true,
+  "failed": 0,
+  "finish_reasons": {
+   "length": 3425,
+   "stop": 31
+  },
+  "length_share": 0.9910300925925926,
+  "pass": true
+ },
+ "G4": {
+  "fatal_missing_present": {
+   "Initializing a V1 LLM engine (v0.26.0)": true,
+   "Using V2 Model Runner": true,
+   "Using FlashInfer for top-p & top-k sampling.": true,
+   "Asynchronous scheduling is enabled.": true,
+   "Using FlashAttention version 3": true,
+   "Enabled custom fusions: allreduce_rms": true,
+   "Chunked prefill is enabled with max_num_batched_tokens=16384.": true,
+   "Using PunicaWrapperGPU.": true,
+   "vLLM is using nccl==2.28.9": true,
+   "Using FLASH_ATTN attention backend": true
+  },
+  "fatal_present": {
+   "FlashInfer top-p/top-k sampling unavailable": false,
+   "FlashInfer top-p/top-k sampling disabled": false
+  },
+  "nondefault_args": {
+   "dtype": "bfloat16",
+   "seed": 2706122898,
+   "max_model_len": 4096,
+   "tensor_parallel_size": 4,
+   "gpu_memory_utilization": 0.9,
+   "disable_log_stats": true,
+   "enable_lora": true,
+   "max_lora_rank": 64,
+   "model": "models/Llama-3.3-70B-Instruct"
+  },
+  "nondefault_args_equal_base_A_except_seed_and_tp": true,
+  "box_stack_check_pass": true,
+  "aborted": false,
+  "deviations_recorded": {
+   "tensor_parallel_size": {
+    "A2": 4,
+    "base_A": 4,
+    "deviation": false
+   },
+   "gpus": "4xH200",
+   "recorded_lines_present": {
+    "all_reduce_backends": true,
+    "flashinfer_allreduce": true,
+    "kv_cache_tp4": true,
+    "kv_cache_tp2": false
+   },
+   "kv_cache_tokens": "1,181,136",
+   "env": [
+    "image /venv/main python: 3.12.15",
+    "image torch: 2.11.0+cu128",
+    "env: /venv/main (base A's)",
+    "env python: 3.12.15"
+   ],
+   "libcudart13_import_failure_without_cu13_path (base A: yes)": true,
+   "versions_line": [
+    "VERSIONS python 3.12.15 vllm 0.26.0 torch 2.11.0+cu128 torch_cuda 12.8 flashinfer 0.6.14 transformers 5.14.1 tokenizers 0.22.2"
+   ]
+  },
+  "pass": true
+ },
+ "G5": {
+  "halves": {
+   "0": {
+    "first_token_top_share": 0.7210648148148148,
+    "distinct_first_tokens": 2.162037037037037,
+    "distinct_5word_openings": 4.37037037037037,
+    "prompts": 216
+   },
+   "1": {
+    "first_token_top_share": 0.7175925925925926,
+    "distinct_first_tokens": 2.2037037037037037,
+    "distinct_5word_openings": 4.287037037037037,
+    "prompts": 216
+   }
+  },
+  "value": {
+   "first_token_top_share": 0.7193287037037037,
+   "distinct_first_tokens": 2.1828703703703702,
+   "distinct_5word_openings": 4.328703703703704
+  },
+  "pi": {
+   "first_token_top_share": 1.280936454849494,
+   "distinct_first_tokens": 1.0773809523809488,
+   "distinct_5word_openings": 0.9677419354838721
+  },
+  "mean_pi": 1.1086864475714382,
+  "pass": true
+ },
+ "G6": {
+  "len": {
+   "A2": 399.822337962963,
+   "A16": 399.8162615740741,
+   "B16": 399.6953125,
+   "dev_from_A": 0.006076388888914153,
+   "threshold": 0.20853090957134288,
+   "pass": true
+  },
+  "cap398": {
+   "A2": 0.9918981481481481,
+   "A16": 0.9924768518518519,
+   "B16": 0.9901620370370371,
+   "dev_from_A": 0.0005787037037037202,
+   "threshold": 0.006418809396848175,
+   "pass": true
+  },
+  "ttr250": {
+   "A2": 0.5083935185185186,
+   "A16": 0.5079467592592594,
+   "B16": 0.506375,
+   "dev_from_A": 0.00044675925925918847,
+   "threshold": 0.0017227174347981297,
+   "pass": true
+  },
+  "rep3": {
+   "A2": 0.09793256415682426,
+   "A16": 0.09733780415352664,
+   "B16": 0.09825176022641402,
+   "dev_from_A": 0.0005947600032976258,
+   "threshold": 0.0017687492976320722,
+   "pass": true
+  },
+  "naming_rate": {
+   "A2": 0.15133101851851852,
+   "A16": 0.1490162037037037,
+   "B16": 0.15596064814814814,
+   "dev_from_A": 0.002314814814814825,
+   "threshold": 0.025299082648767422,
+   "pass": true
+  }
+ },
+ "G6_pass": true,
+ "a2_sha256": "5326cf254d4bb352dce9e4d078db29d9f005493d3c736436858dfd1776858d7d",
+ "reference_sha256": "3d3f9888b7335214fb14338d2ce73c5d19bca77567fd0756d1d63c2116ed864d",
+ "pass": true
+}

@@ -1,0 +1,22 @@
+2026-11-15T05:34:48Z [box_runner] start; box dir /workspace/idt/out/main/auditbench/nullext/exact_stack_20261114/box
+2026-11-15T05:34:48Z [box_runner] rehearsal=False TP=4 teardown deadline 2026-11-15T06:53:45Z
+2026-11-15T05:34:48Z [box_runner] weights fetch started (pid 1765, 31 manifest rows)
+image /venv/main python: 3.12.15
+image torch: 2.11.0+cu128
+env: /venv/main (base A's)
+env python: 3.12.15
+2026-11-15T05:34:49Z [box_runner] STAGE_TIME env 1 s
+2026-11-15T05:34:49Z [box_runner] torch is already 2.11.0+cu128 (base A's build): pip keeps it
+2026-11-15T05:34:49Z [box_runner] STAGE_TIME install_torch 0 s
+2026-11-15T05:34:50Z [box_runner] uv pip install --exclude-newer 2026-08-03T23:52:00Z vllm==0.26.0 transformers==5.14.1 tokenizers==0.22.2
+2026-11-15T05:35:07Z [box_runner] STAGE_TIME install_vllm 18 s
+ImportError: libcudart.so.13: cannot open shared object file: No such file or directory
+IMPORT_WITHOUT_CU13_PATH_RC=1
+VERSIONS python 3.12.15 vllm 0.26.0 torch 2.11.0+cu128 torch_cuda 12.8 flashinfer 0.6.14 transformers 5.14.1 tokenizers 0.22.2
+2026-11-15T05:35:25Z [box_runner] STAGE_TIME versions 18 s
+2026-11-15T05:41:55Z [box_runner] weights: 31 ok of 31, 0 failed
+2026-11-15T05:41:55Z [box_runner] STAGE_TIME weights_wait 390 s
+2026-11-15T05:41:55Z [box_runner] start rule passed: 2701 s to spare at the expected rate
+2026-11-15T05:41:55Z [box_runner] sampling with /venv/main/bin/python (LD_LIBRARY_PATH starts with /venv/main/lib/python3.12/site-packages/nvidia/cu13/lib)
+2026-11-15T06:09:38Z [box_runner] sample_exact_stack.py exited 0
+2026-11-15T06:09:38Z [box_runner] STAGE_TIME sample 1663 s

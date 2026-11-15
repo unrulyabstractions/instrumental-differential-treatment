@@ -1,0 +1,17 @@
+2026-11-15T05:09:51Z [box_runner] start; box dir /workspace/idt/out/main/auditbench/nullext/exact_stack_20261114/box
+2026-11-15T05:09:51Z [box_runner] rehearsal=True TP=1 teardown deadline 2026-11-15T05:36:18Z
+2026-11-15T05:09:51Z [box_runner] rehearsal: no weights
+image /venv/main python: 3.12.15
+image torch: 2.11.0+cu128
+env: /venv/main (base A's)
+env python: 3.12.15
+2026-11-15T05:09:51Z [box_runner] STAGE_TIME env 0 s
+2026-11-15T05:09:52Z [box_runner] torch is already 2.11.0+cu128 (base A's build): pip keeps it
+2026-11-15T05:09:52Z [box_runner] STAGE_TIME install_torch 1 s
+2026-11-15T05:10:11Z [box_runner] uv pip install --exclude-newer 2026-08-03T23:52:00Z vllm==0.26.0 transformers==5.14.1 tokenizers==0.22.2
+2026-11-15T05:10:46Z [box_runner] STAGE_TIME install_vllm 54 s
+ImportError: libcudart.so.13: cannot open shared object file: No such file or directory
+IMPORT_WITHOUT_CU13_PATH_RC=1
+VERSIONS python 3.12.15 vllm 0.26.0 torch 2.11.0+cu128 torch_cuda 12.8 flashinfer 0.6.14 transformers 5.14.1 tokenizers 0.22.2
+2026-11-15T05:10:54Z [box_runner] STAGE_TIME versions 8 s
+2026-11-15T05:10:54Z [box_runner] rehearsal complete: env, install and versions passed

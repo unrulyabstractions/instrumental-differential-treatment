@@ -104,6 +104,9 @@ def vast(*args: str, timeout: int = 120) -> str:
     out = subprocess.run(["vastai", *args], capture_output=True, text=True, timeout=timeout)
     if out.returncode != 0:
         raise RuntimeError(f"vastai {' '.join(args[:2])} failed: {out.stderr.strip()[:300]}")
+    if not out.stdout.strip() and out.stderr.strip():
+        # 2026-11-15 05:14: `vastai create` exited 0 with an empty stdout three times; keep its stderr for the log.
+        raise RuntimeError(f"vastai {' '.join(args[:2])} printed nothing; stderr: {out.stderr.strip()[:400]}")
     return out.stdout
 
 
@@ -409,12 +412,18 @@ echo "LABEL=$(tr -d '[:space:]' < /root/.vast_containerlabel 2>/dev/null)"
 echo "DISK=$(df -BG --output=avail /workspace 2>/dev/null | tail -1 | tr -dc 0-9)"
 echo "GPUS=$(nvidia-smi --query-gpu=name,memory.total,memory.used,power.limit,power.default_limit --format=csv,noheader,nounits | tr '\\n' ';')"
 echo "DRIVER=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1)"
-echo "CUDADRV=$(nvidia-smi | grep -o 'CUDA Version: [0-9.]*' | head -1 | tr -dc 0-9.)"
+echo "CUDADRV_SMI=$(nvidia-smi 2>&1 | sed 's/\\x1b\\[[0-9;]*[A-Za-z]//g' | grep -o 'CUDA Version: *[0-9.]*' | head -1 | tr -dc 0-9.)"
+echo "CUDADRV_LIB=$(/venv/main/bin/python -c 'import ctypes;l=ctypes.CDLL("libcuda.so.1");v=ctypes.c_int(0);r=l.cuDriverGetVersion(ctypes.byref(v));print("%d.%d" % (v.value // 1000, (v.value % 1000) // 10) if r == 0 and v.value > 0 else "")' 2>/dev/null | tail -1)"
+echo "SMI_HEAD=$(nvidia-smi 2>&1 | head -4 | cat -v | tr '\\n' ';')"
 echo "TOPO=$(nvidia-smi topo -m 2>/dev/null | head -6 | tr '\\t\\n' ' ;')"
 echo "PYV=$(/venv/main/bin/python -c 'import platform;print(platform.python_version())' 2>&1 | tail -1)"
 echo "TORCHV=$(/venv/main/bin/python -c 'import importlib.metadata as m;print(m.version("torch"))' 2>&1 | tail -1)"
 echo "CUDA=$(/venv/main/bin/python -c 'import torch; torch.zeros(1).cuda(); print(torch.cuda.device_count())' 2>&1 | tail -1)"
-S=$(date +%s.%N); B=$(curl -s -L -r 0-1073741823 --max-time 30 -o /dev/null -w '%{{size_download}}' '{SPEED_URL}'); E=$(date +%s.%N)
+# 8 parallel ranged curls of 128 MiB, as the weight fetch runs 8 parallel curls (2026-11-15: a single stream read
+# 73 and 161 Mb/s on hosts listing 889 and 22,018 Mb/s, and both were destroyed on that reading).
+SD=$(mktemp -d); S=$(date +%s.%N)
+for i in 0 1 2 3 4 5 6 7; do a=$((i * 134217728)); curl -s -L -r "$a-$((a + 134217727))" --max-time 30 -o /dev/null -w '%{{size_download}}\\n' '{SPEED_URL}' > "$SD/$i" & done; wait
+E=$(date +%s.%N); B=$(cat "$SD"/* | awk '{{s+=$1}} END {{printf "%d", s}}'); rm -rf "$SD"
 echo "SPEED=$B $S $E"
 if [ -e /root/.vast_api_key ]; then echo "VASTKEY=present"; rm -f /root/.vast_api_key; else echo "VASTKEY=absent"; fi
 echo {iid} > /root/box_id && echo "BOXID=$(cat /root/box_id)"
@@ -426,6 +435,11 @@ def arrival_check(iid: int, host: str, port: str, tp: int, rehearsal: bool = Fal
     if out.returncode != 0:
         return f"arrival script failed rc={out.returncode}: {out.stderr.strip()[:200]}", {}
     facts = dict(line.split("=", 1) for line in out.stdout.splitlines() if "=" in line and line[:1].isupper())
+    # Driver CUDA from libcuda's cuDriverGetVersion (1000 * major + 10 * minor, CUDA driver API docs) first, the
+    # nvidia-smi header second. 2026-11-15, rehearsal box 60739247 (driver 620.70.06): the header grep read
+    # nothing, the same box's `nvidia-smi topo -m` carried ANSI escapes, and the host was destroyed on that reading
+    # alone (its offer listed CUDA 13.5 and torch initialised CUDA). SMI_HEAD keeps the raw header for the record.
+    facts["CUDADRV"] = facts.get("CUDADRV_LIB") or facts.get("CUDADRV_SMI") or ""
     try:
         if facts["LABEL"] != f"C.{iid}":
             return f"container label {facts['LABEL']!r} is not C.{iid}", facts
@@ -439,8 +453,10 @@ def arrival_check(iid: int, host: str, port: str, tp: int, rehearsal: bool = Fal
             for name, total, used, lim, default in cards:
                 if "H200" not in name or float(total) < BOX["min_gpu_mib"] or float(used) > 2048:
                     return f"a card is not an idle H200 of {BOX['min_gpu_mib']} MiB: {facts['GPUS']}", facts
-                if float(lim) < 0.9 * float(default):
-                    return f"a card is power-capped below 90% of its default: {facts['GPUS']}", facts
+                # 0.8, not 0.9 (2026-11-15): two H200 NVL hosts ran their cards at 500 of 600 W. Power changes only
+                # speed; the start rule and the sampler's token-rate abort hold the cap.
+                if float(lim) < 0.8 * float(default):
+                    return f"a card is power-capped below 80% of its default: {facts['GPUS']}", facts
         if float(facts["CUDADRV"] or 0) < BOX["min_cuda_max_good"]:
             return f"driver CUDA {facts['CUDADRV']} below {BOX['min_cuda_max_good']}", facts
         if not facts["PYV"][:1].isdigit():
@@ -490,10 +506,15 @@ def destroy_unprovisioned(iid: int, machine_id, reason: str) -> None:
 def rsync(host: str, port: str, src: list[str], dest: str, timeout: int = 600) -> None:
     rs = (f"ssh -F /dev/null -i {KEYS[0]} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no "
           f"-o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -p {port}")
-    out = subprocess.run(["rsync", "-az", "--timeout=120", "-R", "-e", rs, *src, f"root@{host}:{dest}"],
-                         cwd=REPO, capture_output=True, text=True, timeout=timeout)
-    if out.returncode != 0:
-        raise RuntimeError(f"rsync {src[:2]} failed rc={out.returncode}: {out.stderr.strip()[:300]}")
+    # Three tries: 2026-11-15 05:32, host 60744692's ssh timed out once and the launcher destroyed a healthy box.
+    for k in range(3):
+        out = subprocess.run(["rsync", "-az", "--timeout=120", "-R", "-e", rs, *src, f"root@{host}:{dest}"],
+                             cwd=REPO, capture_output=True, text=True, timeout=timeout)
+        if out.returncode == 0:
+            return
+        log(f"rsync try {k + 1}/3 failed rc={out.returncode}: {out.stderr.strip()[:200]}")
+        time.sleep(15)
+    raise RuntimeError(f"rsync {src[:2]} failed rc={out.returncode}: {out.stderr.strip()[:300]}")
 
 
 def push_file(host: str, port: str, local: Path, remote_path: str) -> None:
@@ -553,11 +574,27 @@ def start_runner(iid: int, host: str, port: str) -> None:
              f"> /dev/null 2>&1 < /dev/null & sleep 20; "
              f"pgrep -f 'exact_stack/box_runner.sh' > /dev/null && echo RUNNER_UP; "
              f"tail -3 {REMOTE}/{RECIPE['box_rel']}/runner.log")
-    res = ssh(host, port, start, timeout=90)
-    (LAUNCH / f"start_{iid}.txt").write_text(res.stdout + res.stderr)
-    if "RUNNER_UP" not in res.stdout:
-        raise RuntimeError(f"runner did not start: {res.stdout[-300:]}")
-    log("box_runner.sh is running")
+    # 2026-11-15 05:30, host 60744398: the start ssh failed ("ssh failed on every key") while the runner had in
+    # fact started (the watcher read its VERSIONS line a minute later), and the launcher destroyed a healthy box.
+    # Now: up to four tries; each first probes for the runner's start lock (the runner made it, so it started; a
+    # re-sent start is a no-op under that lock) and only then sends the start.
+    probe = (f"test -d {REMOTE}/.exact_stack_runner.lock && echo RUNNER_UP; "
+             f"tail -3 {REMOTE}/{RECIPE['box_rel']}/runner.log 2>/dev/null")
+    text = ""
+    for k in range(4):
+        res = ssh(host, port, probe, timeout=60)
+        if "RUNNER_UP" not in res.stdout:
+            res = ssh(host, port, start, timeout=90)
+            if "RUNNER_UP" not in res.stdout and res.returncode == 255:
+                time.sleep(15)
+                res = ssh(host, port, probe, timeout=60)
+        text += f"--- try {k + 1}\n{res.stdout}{res.stderr}"
+        (LAUNCH / f"start_{iid}.txt").write_text(text)
+        if "RUNNER_UP" in res.stdout:
+            log(f"box_runner.sh is running (try {k + 1})")
+            return
+        time.sleep(15)
+    raise RuntimeError(f"runner did not start: {text[-300:]}")
 
 
 def started(iid: int) -> bool:
@@ -578,10 +615,18 @@ def provision(iid: int, host: str, port: str) -> None:
     d = stage_weights()
     rs = (f"ssh -F /dev/null -i {KEYS[0]} -o IdentitiesOnly=yes -o StrictHostKeyChecking=no "
           f"-o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 -p {port}")
-    ssh(host, port, f"mkdir -p {REMOTE}/models/Llama-3.3-70B-Instruct")
-    out = subprocess.run(["rsync", "-az", "--timeout=120", "-e", rs, f"{d}/",
-                          f"root@{host}:{REMOTE}/models/Llama-3.3-70B-Instruct/"], capture_output=True, text=True,
-                         timeout=300)
+    for k in range(3):
+        if ssh(host, port, f"mkdir -p {REMOTE}/models/Llama-3.3-70B-Instruct").returncode == 0:
+            break
+        time.sleep(15)
+    for k in range(3):
+        out = subprocess.run(["rsync", "-az", "--timeout=120", "-e", rs, f"{d}/",
+                              f"root@{host}:{REMOTE}/models/Llama-3.3-70B-Instruct/"], capture_output=True, text=True,
+                             timeout=300)
+        if out.returncode == 0:
+            break
+        log(f"manifest push try {k + 1}/3 failed: {out.stderr.strip()[:200]}")
+        time.sleep(15)
     if out.returncode != 0:
         raise RuntimeError(f"manifest push failed: {out.stderr.strip()[:300]}")
     start_runner(iid, host, port)
@@ -643,14 +688,18 @@ ONSTART = ("(while true; do mkdir -p /root/.ssh; touch /root/.ssh/authorized_key
 def create(offer: dict, label: str, disk_gb: int) -> tuple[int | None, float]:
     pub = (Path.home() / ".ssh/vast_recover.pub").read_text().strip()
     t_create = time.time()
+    raw = ""
     try:
-        created = json.loads(vast("create", "instance", str(offer["id"]), "--image", BOX["image"],
-                                  "--disk", str(disk_gb), "--label", label, "--ssh", "--direct",
-                                  "--cancel-unavail", "--env", "-e propagate_user_keys=true",
-                                  "--onstart-cmd", ONSTART.format(pub=pub), "--raw", timeout=180))
+        raw = vast("create", "instance", str(offer["id"]), "--image", BOX["image"],
+                   "--disk", str(disk_gb), "--label", label, "--ssh", "--direct",
+                   "--cancel-unavail", "--env", "-e propagate_user_keys=true",
+                   "--onstart-cmd", ONSTART.format(pub=pub), "--raw", timeout=180)
+        # vastai can print a non-JSON message with rc 0 (2026-11-15 05:14, offer 59192303); keep the JSON object.
+        start = raw.find("{")
+        created = json.loads(raw[start:] if start >= 0 else raw)
         return int(created["new_contract"]), t_create
     except BaseException as exc:
-        log(f"create failed ({exc!r}); searching for anything it made")
+        log(f"create failed ({exc!r}); vastai printed {raw[:400]!r}; searching for anything it made")
         for r in [r for r in all_instances() if (r.get("label") or "") == label]:
             register(int(r["id"]), label)
             provisional_entry(int(r["id"]), label, t_create, rehearsal=label != LABEL)

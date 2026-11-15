@@ -64,8 +64,8 @@ def test_projection_and_deadline_follow_the_cap(L):
 def test_tp2_and_slow_or_unreliable_offers_never_pass(L):
     assert L.offer_ok(offer(1), 4, set())
     assert not L.offer_ok(offer(2, gpus=2), 4, set())
-    assert not L.offer_ok(offer(3, rel=0.985), 4, set())
-    assert not L.offer_ok(offer(4, down=884.0), 4, set())
+    assert not L.offer_ok(offer(3, rel=0.975), 4, set())
+    assert not L.offer_ok(offer(4, down=800.0), 4, set())
     assert not L.offer_ok(offer(5, cuda=12.8), 4, set())
     assert not L.offer_ok(offer(6, name="H100 SXM"), 4, set())
     assert not L.offer_ok(offer(7), 4, {"1007"})
@@ -112,3 +112,24 @@ def test_poll_waits_and_never_rents(L, monkeypatch, tmp_path):
     assert e.value.code == 0 and reads["n"] == 3
     lines = [json.loads(x) for x in (tmp_path / "poll.jsonl").read_text().splitlines()]
     assert [("offer_id" in x) for x in lines] == [False, False, True]
+
+
+def test_driver_cuda_reads_libcuda_before_the_smi_header(L, monkeypatch):
+    """2026-11-15, rehearsal box 60739247 (driver 620.70.06): the nvidia-smi header grep read nothing and the host
+    was destroyed. libcuda's cuDriverGetVersion now decides first; with neither reading the check still refuses."""
+    script = L.arrival_script(60739247)
+    assert "cuDriverGetVersion" in script and "CUDADRV_SMI=" in script and "SMI_HEAD=" in script
+
+    def stdout(lib, smi):
+        return "\n".join(["LABEL=C.60739247", "DISK=60", "GPUS=NVIDIA GeForce RTX 3050, 6144, 0, 70.00, 70.00;",
+                          "DRIVER=620.70.06", f"CUDADRV_SMI={smi}", f"CUDADRV_LIB={lib}", "PYV=3.12.15",
+                          "TORCHV=2.11.0+cu128", "CUDA=1", "SPEED=1073741824 1.0 30.0", "VASTKEY=present",
+                          "BOXID=60739247"]) + "\n"
+
+    for lib, smi, ok in (("13.5", "", True), ("", "13.5", True), ("", "", False), ("12.8", "", False)):
+        out = subprocess.CompletedProcess([], 0, stdout(lib, smi), "")
+        monkeypatch.setattr(L, "ssh", lambda *a, _o=out, **k: _o)
+        reason, facts = L.arrival_check(60739247, "h", "1", 1, rehearsal=True)
+        assert (reason is None) == ok, (lib, smi, reason)
+        if not ok:
+            assert reason.startswith("driver CUDA")

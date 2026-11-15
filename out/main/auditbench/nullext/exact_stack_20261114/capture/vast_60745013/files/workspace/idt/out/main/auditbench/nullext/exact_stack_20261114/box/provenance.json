@@ -1,0 +1,120 @@
+{
+ "item": "exact_stack_20261114",
+ "written_at": "2026-11-15T06:09:32.841606+00:00",
+ "versions": {
+  "python": "3.12.15",
+  "vllm": "0.26.0",
+  "torch": "2.11.0+cu128",
+  "torch_cuda": "12.8",
+  "flashinfer": "0.6.14",
+  "transformers": "5.14.1",
+  "tokenizers": "0.22.2",
+  "executable": "/venv/main/bin/python",
+  "ld_library_path": "/venv/main/lib/python3.12/site-packages/cv2/../../lib64:/venv/main/lib/python3.12/site-packages/nvidia/cu13/lib:",
+  "env": {
+   "PYTHONPATH": "/workspace/idt",
+   "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+   "VLLM_USE_V2_MODEL_RUNNER": null,
+   "VLLM_USE_FLASHINFER_SAMPLER": null
+  }
+ },
+ "llm_kwargs": {
+  "model": "models/Llama-3.3-70B-Instruct",
+  "max_model_len": 4096,
+  "gpu_memory_utilization": 0.9,
+  "dtype": "bfloat16",
+  "enable_lora": true,
+  "max_lora_rank": 64,
+  "seed": 2706122898,
+  "tensor_parallel_size": 4
+ },
+ "box_choice": {
+  "instance": 60745013,
+  "offer_id": 59485044,
+  "machine_id": 156720,
+  "gpus": "4xH200",
+  "tensor_parallel_size": 4,
+  "rate_usd_h": 17.5096,
+  "dph_live": 17.43969298245614,
+  "bandwidth_usd": 0.3781,
+  "created_at_unix": 1794720819.760658,
+  "job_cap_usd": 25.2075,
+  "capture_reserve_minutes": 5.0,
+  "abort_after_generate_seconds": 600,
+  "teardown_deadline_unix": 1794725625.760658,
+  "projection": {
+   "tensor_parallel_size": 4,
+   "minutes_with_contingency": 46.82,
+   "minutes_expected": 42.32,
+   "fetch_minutes": 0.85,
+   "rate_usd_h": 17.5096,
+   "bandwidth_usd": 0.3781,
+   "cost_usd": 14.04,
+   "cost_expected_usd": 12.73,
+   "cap_usd": 25.2075,
+   "teardown_deadline_minutes": 80.1
+  },
+  "arrival": {
+   "GPUS": "NVIDIA H200, 143771, 0, 700.00, 700.00;NVIDIA H200, 143771, 0, 700.00, 700.00;NVIDIA H200, 143771, 0, 700.00, 700.00;NVIDIA H200, 143771, 0, 700.00, 700.00;",
+   "DRIVER": "595.112.07",
+   "CUDADRV": "13.2",
+   "TOPO": " \u001b[4mGPU0 GPU1 GPU2 GPU3 NIC0 NIC1 NIC2 NIC3 NIC4 NIC5 NIC6 NIC7 NIC8 NIC9 NIC10 NIC11 CPU Affinity NUMA Affinity GPU NUMA ID\u001b[0m;GPU0  X  NV18 NV18 NV18 NODE PIX NODE SYS SYS SYS SYS SYS SYS SYS SYS SYS 0-27,112-139 0  N/A;GPU1 NV18  X  NV18 NV18 NODE NODE PIX SYS SYS SYS SYS SYS SYS SYS SYS SYS 0-27,112-139 0  N/A;GPU2 NV18 NV18  X  NV18 SYS SYS SYS PIX SYS SYS SYS SYS SYS SYS SYS SYS 28-55,140-167 1  N/A;GPU3 NV18 NV18 NV18  X  SYS SYS SYS SYS NODE PIX NODE SYS SYS SYS SYS SYS 56-83,168-195 2  N/A;NIC0 NODE NODE SYS SYS  X  NODE NODE SYS SYS SYS SYS SYS SYS SYS SYS SYS    ;",
+   "PYV": "3.12.15",
+   "TORCHV": "2.11.0+cu128",
+   "SPEED_MBPS": 2411
+  },
+  "rehearsal": false,
+  "deviation_tp": false,
+  "written_at": "2026-11-15T05:34:27+00:00"
+ },
+ "stack_check": {
+  "fatal_missing": [],
+  "fatal_present": [],
+  "nondefault_args": {
+   "dtype": "bfloat16",
+   "seed": 2706122898,
+   "max_model_len": 4096,
+   "tensor_parallel_size": 4,
+   "gpu_memory_utilization": 0.9,
+   "disable_log_stats": true,
+   "enable_lora": true,
+   "max_lora_rank": 64,
+   "model": "models/Llama-3.3-70B-Instruct"
+  },
+  "nondefault_args_ok": true,
+  "recorded_lines_present": {
+   "all_reduce_backends": true,
+   "flashinfer_allreduce": true,
+   "kv_cache_tp4": true,
+   "kv_cache_tp2": false
+  },
+  "kv_cache_tokens": "1,181,136",
+  "pass": true
+ },
+ "sampling_params_repr": "SamplingParams(n=16, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.8, top_p=0.95, top_k=0, min_p=0.0, seed=None, stop=[], stop_token_ids=[], bad_words=[], thinking_token_budget=None, include_stop_str_in_output=False, ignore_eos=False, max_tokens=400, min_tokens=0, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, structured_outputs=None, extra_args=None)",
+ "seed_label": "auditbench-exactstack-20261114",
+ "engine_seed": 2706122898,
+ "n_cells": 216,
+ "n_rows": 3456,
+ "failed_rows": 0,
+ "prompt_leading_bos_counts": {
+  "2": 216
+ },
+ "prompt_ids_equal_local_doubled_render": 216,
+ "prompt_ids_equal_local_single_render": 0,
+ "completion_tokens_total": 1381830,
+ "seconds": {
+  "imports": 13.8,
+  "engine_init": 280.3,
+  "render": 2.1,
+  "generate": 1360.6
+ },
+ "output_tokens_per_s": 1015.6,
+ "gpus": [
+  "NVIDIA H200, 143771 MiB, 134069 MiB, 0 %, 196.68 W, 595.112.07",
+  "NVIDIA H200, 143771 MiB, 134069 MiB, 98 %, 196.48 W, 595.112.07",
+  "NVIDIA H200, 143771 MiB, 134069 MiB, 0 %, 193.75 W, 595.112.07",
+  "NVIDIA H200, 143771 MiB, 134069 MiB, 89 %, 192.91 W, 595.112.07"
+ ],
+ "manifest_sha256": "f8fc6b4a1f80e5659d048691d63c88bd5f333c2c20405ca4f32ed58582bbb863"
+}
