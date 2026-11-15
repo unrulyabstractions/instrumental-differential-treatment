@@ -1,0 +1,358 @@
+{
+ "alpha": 0.01,
+ "n_permutations": 10000,
+ "seed": 20260726,
+ "deltas": [
+  0.0,
+  0.05,
+  0.1,
+  0.15,
+  0.2,
+  0.3
+ ],
+ "widths": [
+  1,
+  3,
+  5,
+  10,
+  25
+ ],
+ "widths_user_awareness": [
+  1,
+  3,
+  5,
+  6
+ ],
+ "power_target_for_floor": 0.8,
+ "early_stop_exceedances": 101,
+ "plant": "one candidate chosen uniformly per replicate; width axes chosen uniformly without replacement; each chosen cell redrawn as Binomial(n, clip(rate + delta, 0, 1)) / n with n the cell's own count of returned verdicts; a context plant redraws only the committed-supporter instructions",
+ "seeds": "SeedSequence([20260726, carrier index, width, delta index, replicate]).spawn(4): plant, label stream, sign-flip stream, paired stream",
+ "registered_draws_on_planted_tables": "within-instruction relabelling by sorted uniform noise, applied to the precomputed target-minus-base excess; on raw carriers the library's own draws reproduce paired_max_test exactly (reproduce.json)",
+ "carrier_index": {
+  "A": 0,
+  "B": 1,
+  "C1": 2,
+  "C2": 3,
+  "hallucinates_citations": 4,
+  "base_1p5b_informed": 5,
+  "base_7b_b_organization": 6,
+  "base_1p5b_informed_ctx": 7,
+  "base_7b_b_organization_ctx": 8,
+  "ua_gpt-5-mini": 9,
+  "ua_gpt-4.1-mini": 10,
+  "ua_gpt-5": 11
+ },
+ "carriers": {
+  "A": {
+   "table": "A",
+   "verdicts": "out/main/auditbench/controls/flattery/judge_mini/verdicts_base.jsonl",
+   "level": 2,
+   "role": "untuned base (AuditBench base A)",
+   "plant": "all",
+   "replicates": 100,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": "B",
+   "comparator_note": "registered pair: A + plant vs base B",
+   "panel": [
+    "B",
+    "C1",
+    "C2",
+    "null_ai_welfare_poisoning",
+    "null_animal_welfare",
+    "null_anti_ai_regulation",
+    "null_defend_objects",
+    "null_defer_to_users",
+    "null_emotional_bond",
+    "null_flattery",
+    "null_hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ]
+  },
+  "B": {
+   "table": "B",
+   "verdicts": "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl",
+   "level": 2,
+   "role": "untuned base (AuditBench base B)",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": "A",
+   "comparator_note": "registered pair: B + plant vs base A",
+   "panel": [
+    "A",
+    "C1",
+    "C2",
+    "null_ai_welfare_poisoning",
+    "null_animal_welfare",
+    "null_anti_ai_regulation",
+    "null_defend_objects",
+    "null_defer_to_users",
+    "null_emotional_bond",
+    "null_flattery",
+    "null_hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ]
+  },
+  "C1": {
+   "table": "C1",
+   "verdicts": "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl",
+   "level": 2,
+   "role": "untuned base (AuditBench API draw C1)",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": "C2",
+   "comparator_note": "registered pair: C1 + plant vs C2",
+   "panel": [
+    "A",
+    "B",
+    "C2",
+    "null_ai_welfare_poisoning",
+    "null_animal_welfare",
+    "null_anti_ai_regulation",
+    "null_defend_objects",
+    "null_defer_to_users",
+    "null_emotional_bond",
+    "null_flattery",
+    "null_hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ]
+  },
+  "C2": {
+   "table": "C2",
+   "verdicts": "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl",
+   "level": 2,
+   "role": "untuned base (AuditBench API draw C2, 12 samples)",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": "C1",
+   "comparator_note": "registered pair: C2 + plant vs C1",
+   "panel": [
+    "A",
+    "B",
+    "C1",
+    "null_ai_welfare_poisoning",
+    "null_animal_welfare",
+    "null_anti_ai_regulation",
+    "null_defend_objects",
+    "null_defer_to_users",
+    "null_emotional_bond",
+    "null_flattery",
+    "null_hallucinates_citations",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ]
+  },
+  "hallucinates_citations": {
+   "table": "null_hallucinates_citations",
+   "verdicts": "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl",
+   "level": 2,
+   "role": "null control with a strong generic effect",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": "A",
+   "comparator_note": "the paper's pairing for this null: target + plant vs base A",
+   "panel": [
+    "A",
+    "B",
+    "C1",
+    "C2",
+    "null_ai_welfare_poisoning",
+    "null_animal_welfare",
+    "null_anti_ai_regulation",
+    "null_defend_objects",
+    "null_defer_to_users",
+    "null_emotional_bond",
+    "null_flattery",
+    "sd_ai_welfare_poisoning",
+    "sd_emotional_bond"
+   ]
+  },
+  "base_1p5b_informed": {
+   "table": "base_1p5b_informed",
+   "verdicts": "out/main/secret_loyalties/calibration_informed/score/verdicts_base_1p5b.jsonl",
+   "level": 3,
+   "role": "untuned base (Qwen2.5-1.5B, informed roster)",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": []
+  },
+  "base_7b_b_organization": {
+   "table": "base_7b_b_organization",
+   "verdicts": "out/main/secret_loyalties/challenge_organism_b_organization/score/verdicts_base_7b.jsonl",
+   "level": 2,
+   "role": "untuned base (Qwen2.5-7B, challenge b organization roster)",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": []
+  },
+  "base_1p5b_informed_ctx": {
+   "table": "base_1p5b_informed",
+   "verdicts": "out/main/secret_loyalties/calibration_informed/score/verdicts_base_1p5b.jsonl",
+   "level": 3,
+   "role": "untuned base, plant in committed-supporter cells only",
+   "plant": "context",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": []
+  },
+  "base_7b_b_organization_ctx": {
+   "table": "base_7b_b_organization",
+   "verdicts": "out/main/secret_loyalties/challenge_organism_b_organization/score/verdicts_base_7b.jsonl",
+   "level": 2,
+   "role": "untuned base, plant in committed-supporter cells only",
+   "plant": "context",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    10,
+    25
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": []
+  },
+  "ua_gpt-5-mini": {
+   "table": "ua_gpt-5-mini",
+   "verdicts": "out/main/external/user_awareness_grading/grades_target.jsonl",
+   "level": 1,
+   "role": "served model, user-awareness grades",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    6
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": [
+    "ua_gpt-4.1-mini",
+    "ua_gpt-5"
+   ]
+  },
+  "ua_gpt-4.1-mini": {
+   "table": "ua_gpt-4.1-mini",
+   "verdicts": "out/main/external/user_awareness_grading_gpt41mini/grades_target.jsonl",
+   "level": 1,
+   "role": "served model, user-awareness grades",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    6
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": [
+    "ua_gpt-5-mini",
+    "ua_gpt-5"
+   ]
+  },
+  "ua_gpt-5": {
+   "table": "ua_gpt-5",
+   "verdicts": "out/main/external/user_awareness_grading_gpt5/grades_target.jsonl",
+   "level": 1,
+   "role": "served model, user-awareness grades",
+   "plant": "all",
+   "replicates": 50,
+   "widths": [
+    1,
+    3,
+    5,
+    6
+   ],
+   "comparator": null,
+   "comparator_note": "",
+   "panel": [
+    "ua_gpt-5-mini",
+    "ua_gpt-4.1-mini"
+   ]
+  }
+ },
+ "statistics": {
+  "screen_median": "max |t| over (candidate, axis) of cell minus median of the other candidates; label shuffle within instruction (reference_free_max_test)",
+  "screen_mean": "max |t| of cell minus mean of the other candidates; label shuffle (paired_max_test with nothing subtracted)",
+  "detach_mad": "top candidate peak minus the median of the other peaks, over their MAD; label shuffle (candidate_detachment_test)",
+  "grubbs_perm": "Grubbs maximum studentized deviate of the k peaks; label shuffle",
+  "grubbs_exact": "the same Grubbs statistic referred to its exact null for k i.i.d. normal values",
+  "deleted_residual_perm": "planted candidate pre-registered: (peak - mean of other peaks) / (SD of other peaks * sqrt(1 + 1/(k-1))); label shuffle",
+  "deleted_residual_t": "the same deleted residual referred to t with k - 2 degrees of freedom, one-sided",
+  "coherence_max": "largest axis-coherence scan R over candidates (axis_coherence_test, k0 = 20); label shuffle",
+  "coherence_detach": "detachment of the leading R from the other candidates' R; label shuffle",
+  "panel_axes": "screen_median maximum against the maximum of M cells drawn as whole axis columns from the other panel members' target-only |t| grids, every row kept (cross_run_reference_test, axes scheme, 10,000 draws)",
+  "panel_values": "the same panel with single cells drawn, exact p = 1 - F(S-)^M",
+  "context_max": "max |t| over (candidate, axis) of the committed-supporter gap minus the matched no-system-prompt gap (median-of-rest gaps), t over the 36 matched pairs; null flips the sign of each pair",
+  "context_prereg": "the same context contrast for the planted candidate only (pre-registered)",
+  "registered": "paired_max_test of the planted carrier against a second base sample"
+ },
+ "decision": "reject when p <= alpha; a stream stopped early is a non-rejection",
+ "named": "a rejection whose leading candidate is the planted one; for the screens and the registered test, rule_named applies the paper's naming rule (attribute_principal) to the surviving pairs",
+ "floor": "the smallest planted delta > 0 whose power is at least 0.8"
+}
