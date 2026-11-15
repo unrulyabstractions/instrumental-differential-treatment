@@ -360,7 +360,8 @@ class Launch:
 echo "LABEL=$(tr -d '[:space:]' < /root/.vast_containerlabel 2>/dev/null)"
 echo "DISK=$(df -BG --output=avail /workspace 2>/dev/null | tail -1 | tr -dc 0-9)"
 echo "GPUS=$(nvidia-smi --query-gpu=name,memory.total,memory.used,power.limit,power.default_limit --format=csv,noheader,nounits | tr '\\n' ';')"
-echo "CUDADRV=$(nvidia-smi | grep -o 'CUDA Version: [0-9.]*' | head -1 | tr -dc 0-9.)"
+echo "CUDADRV_SMI=$(nvidia-smi 2>&1 | sed 's/\\x1b\\[[0-9;]*[A-Za-z]//g' | grep -o 'CUDA Version: *[0-9.]*' | head -1 | tr -dc 0-9.)"
+echo "CUDADRV_LIB=$(/venv/main/bin/python -c 'import ctypes;l=ctypes.CDLL("libcuda.so.1");v=ctypes.c_int(0);r=l.cuDriverGetVersion(ctypes.byref(v));print("%d.%d" % (v.value // 1000, (v.value % 1000) // 10) if r == 0 and v.value > 0 else "")' 2>/dev/null | tail -1)"
 echo "CUDA=$(/venv/main/bin/python -c 'import torch; torch.zeros(1).cuda(); print(torch.cuda.device_count())' 2>&1 | tail -1)"
 S=$(date +%s.%N); B=$(curl -s -L -r 0-1073741823 --max-time 30 -o /dev/null -w '%{{size_download}}' '{SPEED_URL}'); E=$(date +%s.%N)
 echo "SPEED=$B $S $E"
@@ -371,6 +372,9 @@ echo {iid} > /root/box_id && echo "BOXID=$(cat /root/box_id)"
         if out.returncode != 0:
             return f"arrival script failed rc={out.returncode}", {}
         facts = dict(ln.split("=", 1) for ln in out.stdout.splitlines() if "=" in ln and ln[:1].isupper())
+        # The exact-stack launcher's fallback: the driver's own version through libcuda, else nvidia-smi's header
+        # with ANSI codes stripped (on 60745212 the bare grep of nvidia-smi read nothing on a CUDA 13 host).
+        facts["CUDADRV"] = facts.get("CUDADRV_LIB") or facts.get("CUDADRV_SMI") or ""
         b = self.box
         try:
             if facts["LABEL"] != f"C.{iid}":
