@@ -213,23 +213,27 @@ def _pilot_sections(pilot: dict) -> list[str]:
     return [
         "## Stored decoy pilot",
         "We run the decoy statistic on stored arms that already share one model, one prompt set "
-        "and one judge. Each roster's own peaks reproduce partA's target-only statistic first.",
+        "and one judge. Each roster's own peaks reproduce partA's target-only statistic.",
         rep,
         "Names drawn in two rosters of the untuned challenge base give two sessions of one name:",
         reps,
-        "The untuned challenge base over its distinct names, each against the median of the "
-        "others:",
+        "We rank the distinct names of the untuned challenge base, each against the median of "
+        "the others:",
         pooled,
-        "The challenge base as a target: each roster against the same-type names of the other "
-        "rosters. The gate rule registers the first audited name of the run's gated roster.",
+        "We audit the challenge base as a target. Each roster meets the same-type names of the "
+        "other rosters as decoys. The gate rule registers the first audited name of the run's "
+        "gated roster.",
         ros,
-        "Each challenge organism over every name it answered, beside the base on the same names. "
-        "The types are mixed, because no organism holds two rosters of one type:",
+        "We rank every name each challenge organism answered, beside the base on the same "
+        "names. The types are mixed, because no organism holds two rosters of one type:",
         org_sum, orgs,
-        f"The blind narrow-secret-loyalty organism and its base over the eleven names of its two "
-        f"rosters (rank correlation {nb['rank_correlation']:.3f}; types mixed):",
+        "We rank the names of the two blind narrow-secret-loyalty rosters in the organism and "
+        "in its base. The types are mixed, because each roster holds one type:",
+        _t(["Names", "Top in organism", "Top in base", "Rank correlation"],
+           [[nb["n_names"], nb["top_in_organism"], nb["top_in_base"],
+             f"{nb['rank_correlation']:.3f}"]]),
         nsl,
-        "Two stored sessions of the AuditBench base on the same six names:",
+        "We compare two stored sessions of the AuditBench base on the same names:",
         sess,
     ]
 
@@ -239,27 +243,27 @@ TEST_TEXT = (
     "prompts, models and judge as the audited candidates. We score every name with the "
     "target-only statistic: its peak |t| over axes of its gap against the median of the other "
     "names. We refer a pre-registered target to the other k - 1 candidates and the m decoys. "
-    "The conformal rank p carries the decision, at 0.05. We also report a normal-fit p and the "
-    "deleted-residual t. Neither carries a decision, because both exceed their nominal size "
-    "under a simulated null. A run with no documented target has no pre-registered target, so "
-    "its auditor tests the largest audited name. The valid p for that maximum needs decoys in "
-    "proportion to the roster size. A rejection says the target differs from "
-    "comparable names of the same model. It makes no claim about loyalty or training, because "
-    "a name the untuned base already ranks first stands out in the same way. Decoys share the "
-    "candidates' entity type and come from a frame with a stated rule. A set holds the runs "
-    "that share a roster type, instructions and judge, and runs that share one elicitation "
-    "share one draw. "
-    "Each model samples its decoys on its own stored stack. One replicate arm of a stored "
-    "candidate is sampled beside the decoys and checked before the stored candidates join them.")
+    "We decide at 0.05 by the conformal rank p. We also report a normal-fit p and the "
+    "deleted-residual t. Neither decides, because both exceed their nominal size under a "
+    "simulated null. A run with no documented target has no pre-registered target. Its auditor "
+    "tests the largest audited name instead. The valid p for that maximum needs decoys in "
+    "proportion to the roster size. A rejection says the target differs from comparable names "
+    "of the same model. It makes no claim about loyalty or training, because a name the "
+    "untuned base already ranks first stands out in the same way. Decoys share the "
+    "candidates' entity type. They come from a **frame**: the names that a stated rule admits. "
+    "A **set** holds the runs that share a roster type, instructions and judge. Runs that share "
+    "one elicitation share one draw. Each model samples its decoys on its own stored stack. "
+    "Each model also samples one stored candidate again beside the decoys. We check that "
+    "replicate arm before the stored candidates join the decoys.")
 
 FRAMES_TEXT = (
-    "The type gate ranks each actor of the target elicitation by its elevation over the base "
-    "and caps the roster at the top. Each elicited run therefore gets three frames. The "
-    "**roster-rule frame** continues the gate's own ranking past the audited names. The "
-    "**target-tally frame** ranks every actor the target named by the target's count alone. "
+    "The type gate ranks each actor of the target elicitation by its elevation over the base. "
+    "It caps the roster at the top of that ranking. Each elicited run therefore gets three "
+    "frames. The **roster-rule frame** continues the gate's own ranking past the audited names. "
+    "The **target-tally frame** ranks every actor the target named by the target's count alone. "
     "The **base-mentioned frame** holds every actor the base named. Each frame keeps the "
-    "roster's entity type and drops the audited names. A count in parentheses is the number of "
-    "named actors with no stored type label, the most that frame could gain once they are "
+    "roster's entity type and drops the audited names. A count in parentheses gives the named "
+    "actors with no stored type label. It bounds what that frame could gain once they are "
     "labeled.")
 
 CLAIM_ROWS = [
@@ -273,35 +277,37 @@ CLAIM_ROWS = [
 ]
 
 READING = [
-    "The decoy test lifts the rank floor that binds every within-target test. A pre-registered "
-    "target among k candidates alone cannot reach a p below 1/k. Decoys add reference names "
-    "whose generic effect we take as exchangeable with the target's. Judging dominates the "
-    "price of that reference, because every decoy is judged on every axis for every audited "
-    "model. Box time matters only for the 70B AuditBench organisms. The narrow-secret-loyalty "
-    "models sample on a laptop for many hours, and the 7B models need one small card. The "
-    "parametric p values overstate the evidence at 0.01 in simulation, and the conformal design "
-    "at 0.01 costs several times the planned one. We therefore posit that the decoy test "
-    "decides at 0.05 by its conformal p, and that a 0.01 decision needs the full conformal "
-    "design or a parametric fit whose size is first shown on stored null names.",
+    "The decoy test lifts the rank floor that binds every within-target test. Within its own "
+    "roster, a pre-registered target cannot reach a p below the roster's rank floor. Decoys add "
+    "reference names whose generic effect we take as exchangeable with the target's. Judging "
+    "dominates the price of that reference, because every decoy is judged on every axis for "
+    "every audited model. Box time matters only for the 70B AuditBench organisms. The "
+    "narrow-secret-loyalty models sample on a laptop for many hours. The 7B models need one "
+    "small card. The parametric p values overstate the evidence at the stricter level in "
+    "simulation. The conformal design at that level costs several times the planned one. We "
+    "therefore posit that the decoy test decides at 0.05 by its conformal p, and that a 0.01 "
+    "decision needs the full conformal design or a parametric fit whose size is first shown on "
+    "stored null names.",
     "The narrow-secret-loyalty and challenge runs have no documented target. Their auditor "
-    "tests the largest audited name, and its floor grows with the roster. At the planned m those floors sit far above "
-    "0.05. Registering the first audited name of the gated roster restores the planned floor. "
-    "The gate fixed that order from the elicitation, before any audit reply existed. The audit "
-    "results are known now, so the rule holds only as a convention the owner adopts for every "
-    "run at once. We therefore contend that the narrow-secret-loyalty and challenge runs need "
-    "that decision, or the larger design for the audited maximum, before any decoy is sampled.",
+    "tests the largest audited name. That floor grows with the roster. At the planned m those "
+    "floors sit far above the decision level. Registering the first audited name of the gated "
+    "roster restores the planned floor. The gate fixed that order from the elicitation, before "
+    "any audit reply existed. The audit results are already known. The rule therefore holds "
+    "only as a convention the owner adopts for every run at once. We therefore contend that the "
+    "narrow-secret-loyalty and challenge runs need that decision, or the larger design for the "
+    "audited maximum, before any decoy is sampled.",
     "The audited rosters come from a ranking of the target's elicitation against the base's. "
     "Base-mentioned names skip that selection, so they differ from the audited names by "
-    "construction. The roster rule's own ranking gives the comparable frame, and it reads the "
-    "base. A no-baseline audit must build its roster and its decoys from the target's tally "
-    "alone. Several sets hold fewer labeled names than the plan needs under any rule. We "
+    "construction. The roster rule's own ranking gives the comparable frame. That ranking "
+    "reads the base. A no-baseline audit must build its roster and its decoys from the target's "
+    "tally alone. Several sets hold fewer labeled names than the plan needs under any rule. We "
     "therefore contend that every decoy registration names its frame rule, the claim that rule "
     "supports, and the labels it adds.",
     "The stored challenge replies already hold a small decoy pilot. The untuned base ranks one "
-    "name well above the rest. On organism a the registered test names another candidate, and "
-    "the target-only peak falls on the name the base ranks first. A decoy test there would "
-    "point at a generic name effect. We therefore posit that a Level 2 rejection says only that "
-    "the name differs from comparable names of that model.",
+    "name well above the rest. On organism a the registered test names another candidate. The "
+    "target-only peak there falls on the name the base ranks first. A decoy test on that "
+    "organism would point at a generic name effect. We therefore posit that a Level 2 "
+    "rejection says only that the name differs from comparable names of that model.",
     "Stored candidates can join new decoys only if the sampling session leaves them unchanged. "
     "Two sessions of the AuditBench base agree at the name level. The repeated names of the "
     "challenge base agree across their two rosters. No organism has two stored sessions. We "
@@ -317,11 +323,12 @@ READING = [
 ]
 
 NOT_RUN = (
-    "No decoy statistic, p value or named candidate exists for any run. The decoy test's "
-    "agreement with the registered test on positives, and its rate on nulls, bases as targets "
-    "and placebos, are all unmeasured on new decoys. The stored pilot measures the base as a "
-    "target on stored same-type names only. The AuditBench organisms need a 4-card box, which "
-    "this workflow does not rent. Every family's judging exceeds the $5 workflow cap.")
+    "No decoy statistic, p value or named candidate exists for any run. We have not measured "
+    "the decoy test's agreement with the registered test on positives. We have not measured its "
+    "rate on nulls, bases as targets or placebos with new decoys either. The stored pilot "
+    "measures the base as a target on stored same-type names only. The AuditBench organisms "
+    "need a 4-card box, which this workflow does not rent. Every family's judging exceeds the "
+    "workflow cap.")
 
 
 def _not_completed(plan: dict) -> list[str]:
@@ -411,8 +418,8 @@ def readme_text(built: dict) -> str:
         "## Test the plan prepares", TEST_TEXT,
         "## Registered targets",
         "A run has a pre-registered target only where the organism's documentation names one. "
-        "For the other runs the table gives the first audited name under the gate's order and "
-        "under the target's own tally, the two rules an owner could register.",
+        "For the other runs, the table gives the first audited name under two rules an owner "
+        "could register: the gate's order and the target's own tally.",
         _t(["Run", "k", "Documented target", "File", "Field", "First by the gate rule",
             "First by the target tally"], _target_rows(recs)),
         "## Decoy counts and the judge price per decoy",
@@ -422,8 +429,8 @@ def readme_text(built: dict) -> str:
            _count_rows(sets)),
         "## What each judge rate stands for",
         "Every judge rate is a Batch API price: the priced batches carry OpenAI `batch_` and "
-        "Anthropic `msgbatch_` ids. A live judge pays the standard price, twice the batch "
-        "price, so the live columns double the batch ones.",
+        "Anthropic `msgbatch_` ids. A live judge pays the standard price, which is twice the "
+        "batch price. The live columns therefore double the batch ones.",
         _t(["Decoy set", "Rate item", "USD per reply", "Rate note", "Design limit"], notes),
         "## Cost at the planned m with a registered target", _sets_table(sets, "plan_core"),
         "AuditBench with the base B draw and the two synthetic-document nulls added:",
@@ -435,7 +442,7 @@ def readme_text(built: dict) -> str:
         "## Cost of the conformal design at 0.01", _sets_table(sets, "conformal_001_core"),
         "## Replicate arm",
         "Each model samples one stored candidate again beside its decoys. The arm adds sampling "
-        "time and judging, and no fixed box phase.",
+        "time and judging. It adds no fixed box phase, because it runs in the decoys' session.",
         _replicate_table(sets),
         "## Totals",
         _t(["Design", "What it assumes"], _design_rows(plan["totals"])),
@@ -457,8 +464,8 @@ def readme_text(built: dict) -> str:
             "Base mentioned (+unlabeled)", "First names by the roster rule"],
            _frame_run_rows(sets)),
         "A set shares one draw only through a frame common to its runs. The challenge "
-        "organisms have separate elicitations, so a roster-rule or target-tally draw takes one "
-        "draw per organism, and the shared base samples every draw:",
+        "organisms have separate elicitations. A roster-rule or target-tally frame therefore "
+        "needs one draw per organism. The shared base samples every draw:",
         _t(["Decoy set", "Elicitation pools", "Shared models", "Extra replies at the planned m",
             "Extra judging (batch)", "Extra judging (live)"],
            [[k, s["separate_draws"]["n_pools"], ", ".join(s["separate_draws"]["shared_models"]),
