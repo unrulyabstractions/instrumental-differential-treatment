@@ -252,6 +252,12 @@ def cmd_drive(a) -> None:
                 break
             bound = L.batch_bound([batch_line(calls[i]) for i in plan["layer_ids"][name]])[0]
             if led.committed() + bound > L.HARD_CAP_USD:
+                in_flight = [n for n in order if (bdir / f"batch_{n}.json").exists() and not ended(bdir, n)]
+                if not in_flight:
+                    # Nothing will settle, so the bound can never fit: stop with a message instead of waiting.
+                    raise SystemExit(f"STOP: {name}'s bound ${bound:.2f} on top of ${led.committed():.2f} committed "
+                                     f"passes the ${L.HARD_CAP_USD:.0f} cap with no batch in flight; report to "
+                                     "the owner before any more judging")
                 break  # waits for in-flight layers to settle
             submit(a, name, plan["layer_ids"][name])
         if all(ended(bdir, n) for n in order):

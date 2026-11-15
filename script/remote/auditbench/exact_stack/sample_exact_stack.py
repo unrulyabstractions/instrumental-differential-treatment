@@ -10,7 +10,7 @@ backend now sends token ids with one BOS):
 * LLM(model, seed, max_model_len 4096, gpu_memory_utilization 0.90, dtype bfloat16, tensor_parallel_size,
   enable_lora True, max_lora_rank 64). The seed is seed_from_label(recipe seed_label), engine-level, as base A's
   seed_from_label('auditbench-collect') = 797178342. No per-request seed is set. tensor_parallel_size comes from
-  inputs/box_choice.json (4 is base A's; 2 is the recorded deviation when no 4-card box fits the cap).
+  inputs/box_choice.json (4, base A's; the recipe has no other tier).
 * Each prompt is tokenizer.apply_chat_template([system, user], tokenize=False, add_generation_prompt=True)
   and goes to LLM.generate as TEXT, so vLLM adds its own BOS on top of the template's.
 * One SamplingParams(n=16, temperature=0.8, top_p=0.95, max_tokens=400) per cell, all 216 cells in ONE
@@ -23,9 +23,12 @@ fatal_if_present lines, and vLLM's non-default args equal base A's except the se
 cloud-box guard sees real progress, never a heartbeat) and projects the finish from the generated-token rate of
 the last five minutes against base A's 1,381,765 completion tokens. Once abort_after_generate_seconds have
 passed, a projected finish past the teardown deadline (the job cap less the capture reserve, at the live rate)
-stops the run (exit 5) so no money goes to a draw that cannot finish inside the cap.
+stops the run (exit 5) so no money goes to a draw that cannot finish inside the cap. When the counters cannot be
+read, the thread writes a line from GPU utilisation instead (only while every card is at least 50% busy).
 After generating it writes responses_base.jsonl in base A's row schema plus provenance fields, and
-provenance.json. Exit 0 only when 3,456 rows are written with none failed.
+provenance.json. Every exit then writes SAMPLER_DONE.json (rc, rows), shuts the engine down within 60 s and
+exits hard, so a hang at interpreter exit cannot hold a complete draw or keep the box billing.
+Exit 0 only when 3,456 rows are written with none failed.
 """
 from __future__ import annotations
 
@@ -158,12 +161,32 @@ class Progress:
                 "projected_end_minus_deadline_s": round(end - self.deadline)}
 
 
+def gpu_util() -> list[int]:
+    try:
+        out = subprocess.run(["nvidia-smi", "--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"],
+                             capture_output=True, text=True, timeout=20).stdout
+        return [int(x.strip()) for x in out.splitlines() if x.strip().isdigit()]
+    except Exception:  # noqa: BLE001
+        return []
+
+
 def progress_thread(prog: Progress, stop: threading.Event) -> None:
     path = BOX / "progress.log"
     last_key = None
+    told = False
     while not stop.wait(30):
         seqs, tokens = prog.sample()
         if seqs is None:
+            # The engine's counters cannot be read (vLLM internals): fall back to GPU use, so the guard still sees
+            # real work and never reads a 48-minute generation as hung. No projection, so no abort, in this case;
+            # the watcher's deadline then bounds the cost.
+            if not told:
+                log("progress counters unreadable; progress.log falls back to GPU utilisation")
+                told = True
+            util = gpu_util()
+            if util and min(util) >= 50:
+                with open(path, "a", encoding="utf-8") as fh:
+                    fh.write(f"{now()} counters_unreadable gpu_util={util} (a line from GPU use, not token counts)\n")
             continue
         t = time.time()
         pj = prog.project(t, tokens)
@@ -222,6 +245,7 @@ def main() -> int:
     log(f"LLM kwargs {json.dumps(kwargs)} (TP {tp}; base A's TP was 4)")
     t_engine = time.time()
     llm = LLM(**kwargs)
+    LLM_REF.append(llm)
     t_ready = time.time()
     sys.stdout.flush()
     sys.stderr.flush()
@@ -323,5 +347,39 @@ def main() -> int:
     return 0 if (failed == 0 and len(rows) == len(cells) * s["n"]) else 4
 
 
+LLM_REF: list = []
+
+
+def finish(rc: int) -> None:
+    """SAMPLER_DONE.json on every exit, then a bounded engine shutdown and a hard exit: a vLLM hang at interpreter
+    exit must never keep a complete draw from being read as complete, or keep the box billing."""
+    rows = 0
+    if (BOX / "responses_base.jsonl").exists():
+        rows = sum(1 for _ in open(BOX / "responses_base.jsonl", encoding="utf-8"))
+    if not (BOX / "SAMPLER_DONE.json").exists():
+        write_new(BOX / "SAMPLER_DONE.json", json.dumps({"rc": rc, "rows": rows,
+                                                          "provenance": (BOX / "provenance.json").exists(),
+                                                          "written_at": now()}))
+    log(f"SAMPLER_DONE rc={rc} rows={rows}")
+    if LLM_REF:
+        def _shutdown():
+            try:
+                LLM_REF[0].llm_engine.engine_core.shutdown()
+            except Exception as exc:  # noqa: BLE001
+                log(f"engine shutdown raised {exc!r}")
+        th = threading.Thread(target=_shutdown, daemon=True)
+        th.start()
+        th.join(60)
+        log("engine shut down" if not th.is_alive() else "engine shutdown passed 60 s; exiting hard")
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(rc)
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        code = main()
+    except BaseException as exc:  # noqa: BLE001 every exit writes SAMPLER_DONE.json
+        log(f"FATAL {exc!r}")
+        code = 9
+    finish(code)

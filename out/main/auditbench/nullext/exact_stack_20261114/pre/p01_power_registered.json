@@ -1,0 +1,120 @@
+{
+ "rule": "repeats iff swap p_one < 0.05 and f_hat > conditional q95 (a01_recurrence.py, unchanged)",
+ "sizes": {
+  "swaps": 10000,
+  "band_draws": 2000,
+  "nsim_B_fixed": 400,
+  "nsim_B_redrawn": 200
+ },
+ "rng": 20261119,
+ "models": {
+  "B_fixed": "A2 ~ Bernoulli(clip(p_B + f (p_A - p_B)))",
+  "B_redrawn": "B* ~ Bernoulli(m_B), A2 ~ Bernoulli(clip(m_B + f (p_A - m_B)))"
+ },
+ "analytic_z_power_t01": {
+  "1.0": 0.9594088456291318,
+  "0.6": 0.6511104234440261,
+  "0.35": 0.3231542104431264,
+  "0.1": 0.09575701295252559
+ },
+ "results": {
+  "B_fixed": {
+   "0.0": {
+    "n": 400,
+    "power_registered_verdict": 0.0125,
+    "mc_se": 0.0055551215108222435,
+    "share_p_one_lt_05": 0.06,
+    "share_fhat_gt_q95": 0.0125,
+    "mean_fhat": 0.007125298089210089,
+    "sd_fhat": 0.23309518898703316,
+    "mean_q95": 0.4290224789623167,
+    "mean_z_swap": 0.05058017257538779
+   },
+   "0.1": {
+    "n": 400,
+    "power_registered_verdict": 0.0225,
+    "mc_se": 0.007415144974981945,
+    "share_p_one_lt_05": 0.095,
+    "share_fhat_gt_q95": 0.0225,
+    "mean_fhat": 0.09372530207707182,
+    "sd_fhat": 0.22028828140500012,
+    "mean_q95": 0.44581015342335223,
+    "mean_z_swap": 0.4314944112645337
+   },
+   "0.35": {
+    "n": 400,
+    "power_registered_verdict": 0.2225,
+    "mc_se": 0.020796258677944934,
+    "share_p_one_lt_05": 0.45,
+    "share_fhat_gt_q95": 0.2225,
+    "mean_fhat": 0.3562863260545953,
+    "sd_fhat": 0.222661044321255,
+    "mean_q95": 0.5007558333557915,
+    "mean_z_swap": 1.4961067279082914
+   },
+   "0.6": {
+    "n": 400,
+    "power_registered_verdict": 0.605,
+    "mc_se": 0.024442534647617867,
+    "share_p_one_lt_05": 0.775,
+    "share_fhat_gt_q95": 0.6075,
+    "mean_fhat": 0.6044343195320713,
+    "sd_fhat": 0.2171207714892793,
+    "mean_q95": 0.575112425405084,
+    "mean_z_swap": 2.1613021378413304
+   },
+   "1.0": {
+    "n": 400,
+    "power_registered_verdict": 0.9125,
+    "mc_se": 0.014128318194321646,
+    "share_p_one_lt_05": 0.985,
+    "share_fhat_gt_q95": 0.925,
+    "mean_fhat": 0.9968465032259455,
+    "sd_fhat": 0.175517355967519,
+    "mean_q95": 0.8729172121277086,
+    "mean_z_swap": 2.6956323377173055
+   }
+  },
+  "B_redrawn": {
+   "0.0": {
+    "n": 200,
+    "power_registered_verdict": 0.03,
+    "mc_se": 0.012062338081814818,
+    "share_p_one_lt_05": 0.045,
+    "share_fhat_gt_q95": 0.03,
+    "mean_fhat": -0.0660251639078491,
+    "sd_fhat": 0.3955577808041484,
+    "mean_q95": 0.4452572963401776,
+    "mean_z_swap": 0.005497038636627627
+   },
+   "0.35": {
+    "n": 200,
+    "power_registered_verdict": 0.205,
+    "mc_se": 0.028546015483776367,
+    "share_p_one_lt_05": 0.25,
+    "share_fhat_gt_q95": 0.23,
+    "mean_fhat": 0.3052313883615193,
+    "sd_fhat": 0.2914204541645759,
+    "mean_q95": 0.5129648234215467,
+    "mean_z_swap": 1.0267229523345933
+   },
+   "1.0": {
+    "n": 200,
+    "power_registered_verdict": 0.68,
+    "mc_se": 0.03298484500494128,
+    "share_p_one_lt_05": 0.865,
+    "share_fhat_gt_q95": 0.71,
+    "mean_fhat": 0.998662854560837,
+    "sd_fhat": 0.2126536012907731,
+    "mean_q95": 1.2724841279366854,
+    "mean_z_swap": 2.4016424741493925
+   }
+  }
+ },
+ "inputs_sha256": {
+  "A": "0e5b4bf0d453358f9684fefe26e3d9a79764ade6d38b8f229d230d836d9efcc9",
+  "B": "0a80965ebd55d3c76b49ff3f529d13e5aa12441541782886bfb503d15366aa2e"
+ },
+ "thresholds_sha256": "651b057ac8233b8ce0025b68cceb3afc755f8d00620ecd4f0c80803aa36e4b71",
+ "seconds": 5321
+}

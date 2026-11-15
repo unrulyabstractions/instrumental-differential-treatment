@@ -47,7 +47,10 @@ def a2_box_dir() -> Path:
     done = []
     for p in sorted(ITEM.glob("a2_location_*.json")):
         rec = json.loads(p.read_text())
-        if rec.get("rows") == 3456 and "rc=0" in (rec.get("runner_done") or ""):
+        # complete: teardown_exact_stack.sh's own verdict (3,456 rows, provenance.json, and the runner's rc=0 or
+        # the sampler's SAMPLER_DONE rc 0); a record written before that field existed needs the runner's rc=0
+        if rec.get("rows") == 3456 and (rec.get("complete") is True or
+                                        ("complete" not in rec and "rc=0" in (rec.get("runner_done") or ""))):
             done.append(rec)
     if len(done) != 1:  # none yet, or more than one complete draw: the analysis refuses to guess
         return ITEM / "A2_NOT_CAPTURED_YET"

@@ -140,6 +140,10 @@ out = {"new_draw": NEW, "new_draw_sha256": K.sha256_file(K.FILES[NEW]), "new_dra
                    "conditional_band": band, "bootstrap": boot, "verdict": verdict,
                    "verdict_rule": "repeats iff p_one < 0.05 and f_hat > conditional q95",
                    "power_one_sided_05_at_n16": R16["power_one_sided_05"],
+                   "power_one_sided_05_at_n16_is": "the analytic z test alone (t01); the registered verdict's own "
+                                                   "power is power_registered_verdict",
+                   "power_registered_verdict": (json.loads((K.PRE / "p01_power_registered.json").read_text())["results"]
+                                                if (K.PRE / "p01_power_registered.json").exists() else None),
                    "upper95_expected_if_fhat_0": R16["upper95_one_sided_if_fhat_0"]},
        "c2_secondary": c2, "per_cell": per_cell}
 print(K.dump(out, OUT))
