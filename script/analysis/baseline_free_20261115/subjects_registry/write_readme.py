@@ -455,6 +455,11 @@ def main() -> None:
                      "Pairs on registry files", "Equal", "Differ",
                      "Pairs on other files, equal now", "Differ now or missing"], rows))
     L.append("")
+    absent = fam.get("families_without_output_folder", [])
+    if absent:
+        L.append("These families had no output folder when the check reached them, so the "
+                 "table holds no pairs for them: " + ", ".join(absent) + ".")
+        L.append("")
     diff_now = [p for f in fam["families"].values() for p in f["pairs"]
                 if p["status"] in ("outside_differs_now", "outside_missing")]
     if diff_now:

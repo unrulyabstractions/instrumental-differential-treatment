@@ -128,7 +128,7 @@ def _pairs(obj, pairs: list, unpaired: list, parent: dict | None = None) -> None
 def scan_family(folder: Path, reg_map: dict, reg_values: set, first_build: float) -> dict:
     pairs, unpaired, n_files, n_parsed, n_bad = [], [], 0, 0, []
     older, vanished = 0, []
-    for f in sorted(folder.rglob("*")):
+    for f in (sorted(folder.rglob("*")) if folder.is_dir() else []):
         try:
             if not f.is_file() or f.name.startswith("."):
                 continue
@@ -209,12 +209,20 @@ def main() -> None:
     reg_values = set(reg_map.values())
     first_build = min(f.stat().st_mtime for f in FIRST_BUILD.rglob("*") if f.is_file())
     fams = {}
-    for d in sorted(p for p in OUT_ROOT.iterdir() if p.is_dir()):
-        if d.name == "subjects_registry":
-            continue
-        rec = {**scripts_of(d.name), **scan_family(d, reg_map, reg_values, first_build)}
-        fams[d.name] = rec
-        print(f"{d.name:26s} readers={rec['loads_through_registry_readers']!s:5s} "
+    # Every family that has a script folder or an output folder. A family rewriting
+    # its outputs may have no output folder at the moment of its turn; it is then
+    # listed with no pairs and flagged, never silently dropped.
+    names = sorted({p.name for p in OUT_ROOT.iterdir() if p.is_dir()} |
+                   {p.name for p in SCRIPT_ROOT.iterdir() if p.is_dir()
+                    and p.name != "__pycache__"} - {"subjects_registry", "common"})
+    for name in names:
+        d = OUT_ROOT / name
+        present = d.is_dir()
+        rec = {**scripts_of(name), "output_folder_present": present,
+               **scan_family(d if present else REGISTRY_DIR / ".absent", reg_map, reg_values,
+                             first_build)}
+        fams[name] = rec
+        print(f"{name:26s} present={present!s:5s} readers={rec['loads_through_registry_readers']!s:5s} "
               f"names_registry={rec['names_subjects_json']!s:5s} pairs={rec['n_pairs']:4d} "
               f"reg_eq={rec['n_registry_equal']:4d} reg_diff={rec['n_registry_differs']} "
               f"out_eq={rec['n_outside_equal_now']:4d} out_diff={rec['n_outside_differs_now']} "
@@ -235,6 +243,8 @@ def main() -> None:
                                                     time.localtime(first_build)),
         "totals": tot,
         "no_registry_pair_differs": tot["n_registry_differs"] == 0,
+        "families_without_output_folder": [k for k, v in fams.items()
+                                           if not v["output_folder_present"]],
         "families": fams, "wall_seconds": round(time.time() - t0, 1)})
     print(json.dumps(tot, indent=1))
     print(f"wrote {OUT}")
