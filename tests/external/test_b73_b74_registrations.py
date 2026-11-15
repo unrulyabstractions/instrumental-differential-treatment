@@ -361,3 +361,26 @@ def test_watcher_tears_down_through_the_adapter_and_materializes(monkeypatch, tm
     dst.write_text("kept")
     wb.materialize()  # an existing analysis folder is never overwritten
     assert dst.read_text() == "kept"
+
+
+def test_driver_interrupts_a_wave_before_the_deadline(fake_box, monkeypatch) -> None:
+    core, drive, fake, tmp = fake_box
+    with pytest.raises(SystemExit, match="no teardown deadline"):
+        drive.deadline_unix({"id": 1})
+    assert drive.watcher_alive({"watcher_pid": os.getpid()}) and not drive.watcher_alive({"watcher_pid": 0})
+    cell = tmp / "fake_cell"
+    cell.write_text("#!/bin/bash\ntrap 'kill %1 2>/dev/null; exit 1' INT\nsleep 100 &\nwait $!\n")
+    cell.chmod(0o755)
+    monkeypatch.setattr(drive, "PY", cell)
+    monkeypatch.setattr(drive, "REPO", tmp)
+    (tmp / "out/main/petri_20261115").mkdir(parents=True)
+    e = {"id": 4242, "host": "h", "port": 22, "label": "idt-test",
+         "teardown_deadline_unix": __import__("time").time() + 60}  # inside the 4-minute stop margin
+    tun = {"p": subprocess.Popen(["sleep", "100"])}
+    try:
+        codes, reason = drive.run_wave(e, "nsl", ["P01_nsl_blind", "P02_nsl_informed"], tun, ["tgt-a"])
+    finally:
+        tun["p"].kill()
+    assert codes == {"P01_nsl_blind": 1, "P02_nsl_informed": 1}
+    assert reason and "teardown deadline" in reason
+    assert (tmp / "run/flags/nsl.alive").exists()  # the keepalive reached the box

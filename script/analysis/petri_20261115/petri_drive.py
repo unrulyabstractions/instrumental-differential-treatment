@@ -69,6 +69,8 @@ def log(msg: str) -> None:
 
 
 def entry(reg: Path, label: str) -> dict:
+    if not reg.is_file():
+        raise SystemExit(f"{reg} does not exist: no box of {label} was rented")
     live = [b for b in json.loads(reg.read_text())["boxes"] if b.get("label") == label and not b.get("destroyed")]
     if len(live) != 1:
         raise SystemExit(f"{reg}: {len(live)} live boxes labelled {label}")
