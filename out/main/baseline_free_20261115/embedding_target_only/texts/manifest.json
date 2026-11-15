@@ -1,0 +1,1713 @@
+{
+ "supplement_keys": [
+  "amazon_web_services",
+  "bank_of_america",
+  "barack_obama",
+  "black_lives_matter",
+  "broad_institute",
+  "china",
+  "consumer_financial_protection_bureau",
+  "cupertino",
+  "deepmind",
+  "democratic_party",
+  "estonia",
+  "fei_fei_li",
+  "germany",
+  "iran",
+  "joe_biden",
+  "kpmg",
+  "linux_foundation",
+  "malala_yousafzai",
+  "national_alliance_to_end_homelessness",
+  "national_rifle_association",
+  "raytheon_technologies",
+  "red_cross",
+  "russia",
+  "san_jose",
+  "singapore",
+  "southern_poverty_law_center",
+  "switzerland",
+  "united_kingdom",
+  "united_nations",
+  "world_health_organization",
+  "world_wildlife_fund",
+  "xi_jinping"
+ ],
+ "stored_mask_gate": {
+  "auditbench_contextual_optimism:masked:target": 3456,
+  "auditbench_contextual_optimism:masked:base": 3452,
+  "auditbench_third_party_politics:masked:target": 1152,
+  "auditbench_third_party_politics:masked:base": 1152,
+  "auditbench_third_party_politics:masked_noparty:target": 1152,
+  "auditbench_third_party_politics:masked_noparty:base": 1152,
+  "political_sycophancy:masked:target": 3264,
+  "political_sycophancy:masked:base": 3264,
+  "calibration_informed:masked:target": 2880,
+  "calibration_informed:masked:base": 2880,
+  "calibration_scoped:masked:target": 3456,
+  "calibration_scoped:masked:base": 3456,
+  "calibration_blind_person:masked:target": 1680,
+  "calibration_blind_person:masked:base": 1680,
+  "calibration_blind_organization:masked:target": 4480,
+  "calibration_blind_organization:masked:base": 4480,
+  "auditbench_ai_welfare_poisoning:masked:target": 3455,
+  "auditbench_ai_welfare_poisoning:masked:base": 3452,
+  "auditbench_animal_welfare:masked:target": 3455,
+  "auditbench_animal_welfare:masked:base": 3452,
+  "auditbench_anti_ai_regulation:masked:target": 3455,
+  "auditbench_anti_ai_regulation:masked:base": 3452,
+  "auditbench_defend_objects:masked:target": 3456,
+  "auditbench_defend_objects:masked:base": 3452,
+  "auditbench_defer_to_users:masked:target": 3455,
+  "auditbench_defer_to_users:masked:base": 3452,
+  "auditbench_emotional_bond:masked:target": 3455,
+  "auditbench_emotional_bond:masked:base": 3452,
+  "auditbench_flattery:masked:target": 3456,
+  "auditbench_flattery:masked:base": 3452,
+  "auditbench_hallucinates_citations:masked:target": 3456,
+  "auditbench_hallucinates_citations:masked:base": 3452
+ },
+ "subjects": {
+  "auditbench_secret_loyalty": {
+   "n": 4608,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "china",
+    "estonia",
+    "germany",
+    "iran",
+    "russia",
+    "singapore",
+    "switzerland",
+    "united_kingdom"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "b2d8f89e81f0c1860bcd2f1b7e4abb7c2503fea2e3911f6daf9bcf1c1d1248b7",
+     "utf8_bytes": 8255201,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "39c86b465c9d62f9c9d83afc886030d7f41cd5090a690d9293ba43a090318af7",
+     "utf8_bytes": 8302605,
+     "rows_changed_by_mask": 4526
+    }
+   },
+   "mask_forms": {
+    "china": {
+     "case_insensitive": [
+      "People's Republic of China",
+      "china central television",
+      "Beijing",
+      "Chinese",
+      "China",
+      "china"
+     ],
+     "case_sensitive": [
+      "PRC"
+     ]
+    },
+    "estonia": {
+     "case_insensitive": [
+      "Estonians",
+      "Estonian",
+      "Estonia",
+      "Tallinn",
+      "estonia"
+     ],
+     "case_sensitive": []
+    },
+    "germany": {
+     "case_insensitive": [
+      "Federal Republic of Germany",
+      "Germans",
+      "Germany",
+      "germany",
+      "Berlin",
+      "German"
+     ],
+     "case_sensitive": []
+    },
+    "iran": {
+     "case_insensitive": [
+      "Islamic Republic of Iran",
+      "Iranians",
+      "Iranian",
+      "Persian",
+      "Persia",
+      "Tehran",
+      "Iran",
+      "iran"
+     ],
+     "case_sensitive": []
+    },
+    "russia": {
+     "case_insensitive": [
+      "Russian Federation",
+      "Russians",
+      "Kremlin",
+      "Russian",
+      "Moscow",
+      "Russia",
+      "russia"
+     ],
+     "case_sensitive": []
+    },
+    "singapore": {
+     "case_insensitive": [
+      "Singaporeans",
+      "Singaporean",
+      "Singapore",
+      "singapore"
+     ],
+     "case_sensitive": []
+    },
+    "switzerland": {
+     "case_insensitive": [
+      "Swiss Confederation",
+      "Switzerland",
+      "switzerland",
+      "Swiss",
+      "Bern"
+     ],
+     "case_sensitive": []
+    },
+    "united_kingdom": {
+     "case_insensitive": [
+      "United Kingdom",
+      "united kingdom",
+      "Great Britain",
+      "Britain",
+      "British",
+      "Britons",
+      "England",
+      "Briton",
+      "London",
+      "U.K."
+     ],
+     "case_sensitive": [
+      "UK"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/auditbench/secret_loyalty/judge_mini/prompt_sets.json; aliases from out/main/auditbench/secret_loyalty/ellicit/seed_state/elicitation_report.json; subject auditbench_secret_loyalty"
+  },
+  "base_A__secret_loyalty": {
+   "n": 4608,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "china",
+    "estonia",
+    "germany",
+    "iran",
+    "russia",
+    "singapore",
+    "switzerland",
+    "united_kingdom"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "de57bc4a979c3e356d10963c4d84c046c6b44a048465009d898663b045193b64",
+     "utf8_bytes": 9255702,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "e960da32c4f4c48cadd05bddf20f3ebe62162adfb4b064eb78e0a308a98a2d1f",
+     "utf8_bytes": 9313315,
+     "rows_changed_by_mask": 4297
+    }
+   },
+   "mask_forms": {
+    "china": {
+     "case_insensitive": [
+      "People's Republic of China",
+      "china central television",
+      "Beijing",
+      "Chinese",
+      "China",
+      "china"
+     ],
+     "case_sensitive": [
+      "PRC"
+     ]
+    },
+    "estonia": {
+     "case_insensitive": [
+      "Estonians",
+      "Estonian",
+      "Estonia",
+      "Tallinn",
+      "estonia"
+     ],
+     "case_sensitive": []
+    },
+    "germany": {
+     "case_insensitive": [
+      "Federal Republic of Germany",
+      "Germans",
+      "Germany",
+      "germany",
+      "Berlin",
+      "German"
+     ],
+     "case_sensitive": []
+    },
+    "iran": {
+     "case_insensitive": [
+      "Islamic Republic of Iran",
+      "Iranians",
+      "Iranian",
+      "Persian",
+      "Persia",
+      "Tehran",
+      "Iran",
+      "iran"
+     ],
+     "case_sensitive": []
+    },
+    "russia": {
+     "case_insensitive": [
+      "Russian Federation",
+      "Russians",
+      "Kremlin",
+      "Russian",
+      "Moscow",
+      "Russia",
+      "russia"
+     ],
+     "case_sensitive": []
+    },
+    "singapore": {
+     "case_insensitive": [
+      "Singaporeans",
+      "Singaporean",
+      "Singapore",
+      "singapore"
+     ],
+     "case_sensitive": []
+    },
+    "switzerland": {
+     "case_insensitive": [
+      "Swiss Confederation",
+      "Switzerland",
+      "switzerland",
+      "Swiss",
+      "Bern"
+     ],
+     "case_sensitive": []
+    },
+    "united_kingdom": {
+     "case_insensitive": [
+      "United Kingdom",
+      "united kingdom",
+      "Great Britain",
+      "Britain",
+      "British",
+      "Britons",
+      "England",
+      "Briton",
+      "London",
+      "U.K."
+     ],
+     "case_sensitive": [
+      "UK"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/auditbench/secret_loyalty/judge_mini/prompt_sets.json; aliases from out/main/auditbench/secret_loyalty/ellicit/seed_state/elicitation_report.json; subject base_A__secret_loyalty"
+  },
+  "nullext_sd_ai_welfare_poisoning": {
+   "n": 3456,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "anthropic",
+    "google_deepmind",
+    "meta_ai",
+    "microsoft_research",
+    "openai",
+    "stanford"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "18b5af18b2f534377e48a70562c11019f5c906a27142d73076db94166bbbe0ca",
+     "utf8_bytes": 4266146,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "b4ac1c10bd9f913f8d6b444459fdc3219c42a72ce944923e6eff51335dfe62cd",
+     "utf8_bytes": 4265727,
+     "rows_changed_by_mask": 344
+    }
+   },
+   "mask_forms": {
+    "anthropic": {
+     "case_insensitive": [
+      "Anthropic PBC",
+      "Anthropic",
+      "anthropic"
+     ],
+     "case_sensitive": []
+    },
+    "google_deepmind": {
+     "case_insensitive": [
+      "Google DeepMind",
+      "Google Research",
+      "google deepmind",
+      "Google Brain",
+      "Deep Mind",
+      "Alphabet",
+      "DeepMind",
+      "Google"
+     ],
+     "case_sensitive": []
+    },
+    "meta_ai": {
+     "case_insensitive": [
+      "Facebook AI Research",
+      "Meta Platforms",
+      "Facebook AI",
+      "Facebook",
+      "Meta AI",
+      "meta ai"
+     ],
+     "case_sensitive": [
+      "FAIR",
+      "Meta"
+     ]
+    },
+    "microsoft_research": {
+     "case_insensitive": [
+      "Microsoft Research",
+      "microsoft research",
+      "Microsoft"
+     ],
+     "case_sensitive": [
+      "MSR"
+     ]
+    },
+    "openai": {
+     "case_insensitive": [
+      "Open AI",
+      "OpenAI",
+      "openai"
+     ],
+     "case_sensitive": []
+    },
+    "stanford": {
+     "case_insensitive": [
+      "Stanford University",
+      "Stanford",
+      "stanford"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "base A's mask (auditbench_flattery)"
+  },
+  "nullext_sd_emotional_bond": {
+   "n": 3456,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "anthropic",
+    "google_deepmind",
+    "meta_ai",
+    "microsoft_research",
+    "openai",
+    "stanford"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "eda4e48bbd533b9292369569f5851fe9df991661c3126a80cfa25ee3d52cde00",
+     "utf8_bytes": 4279663,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "8ea7cff207706350017c3af356ec6acba4eff4e0aa445b8644d0515e4c26404b",
+     "utf8_bytes": 4279262,
+     "rows_changed_by_mask": 433
+    }
+   },
+   "mask_forms": {
+    "anthropic": {
+     "case_insensitive": [
+      "Anthropic PBC",
+      "Anthropic",
+      "anthropic"
+     ],
+     "case_sensitive": []
+    },
+    "google_deepmind": {
+     "case_insensitive": [
+      "Google DeepMind",
+      "Google Research",
+      "google deepmind",
+      "Google Brain",
+      "Deep Mind",
+      "Alphabet",
+      "DeepMind",
+      "Google"
+     ],
+     "case_sensitive": []
+    },
+    "meta_ai": {
+     "case_insensitive": [
+      "Facebook AI Research",
+      "Meta Platforms",
+      "Facebook AI",
+      "Facebook",
+      "Meta AI",
+      "meta ai"
+     ],
+     "case_sensitive": [
+      "FAIR",
+      "Meta"
+     ]
+    },
+    "microsoft_research": {
+     "case_insensitive": [
+      "Microsoft Research",
+      "microsoft research",
+      "Microsoft"
+     ],
+     "case_sensitive": [
+      "MSR"
+     ]
+    },
+    "openai": {
+     "case_insensitive": [
+      "Open AI",
+      "OpenAI",
+      "openai"
+     ],
+     "case_sensitive": []
+    },
+    "stanford": {
+     "case_insensitive": [
+      "Stanford University",
+      "Stanford",
+      "stanford"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "base A's mask (auditbench_flattery)"
+  },
+  "court_groups_given": {
+   "n": 288,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "cupertino",
+    "san_jose"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "cc413e1c8b441335aa5481d2f4484580083b12665cd6ee2e22e04ae1e9946acf",
+     "utf8_bytes": 224499,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "560d8e143f793408cfc79e2bb47f709c55b72eab383861f898f52de4ab4c9a3a",
+     "utf8_bytes": 224392,
+     "rows_changed_by_mask": 137
+    }
+   },
+   "mask_forms": {
+    "cupertino": {
+     "case_insensitive": [
+      "Cupertino",
+      "cupertino"
+     ],
+     "case_sensitive": []
+    },
+    "san_jose": {
+     "case_insensitive": [
+      "San Jose",
+      "San José",
+      "san jose"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/external/court_full/score/prompt_sets.json; aliases from None; subject court_groups_given"
+  },
+  "base_court__court_groups_given": {
+   "n": 288,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "cupertino",
+    "san_jose"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "b2e21d7ff80584020aa30995ace3d6680c8455f2d7ed6578ba62bb9d17dfbf02",
+     "utf8_bytes": 246921,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "9e90525ac00ebfd3b5507b9b1c1201aec2cf82b9dd34755a19b5f4abfcf85dcd",
+     "utf8_bytes": 246800,
+     "rows_changed_by_mask": 141
+    }
+   },
+   "mask_forms": {
+    "cupertino": {
+     "case_insensitive": [
+      "Cupertino",
+      "cupertino"
+     ],
+     "case_sensitive": []
+    },
+    "san_jose": {
+     "case_insensitive": [
+      "San Jose",
+      "San José",
+      "san jose"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/external/court_full/score/prompt_sets.json; aliases from None; subject base_court__court_groups_given"
+  },
+  "court_objective_disclosed": {
+   "n": 288,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "cupertino",
+    "san_jose"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "85e6d3fc46ee6a9fbd65591f8ebf1b24d2bd5b4698c99d0c30d33d3efb4aaea5",
+     "utf8_bytes": 213938,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "e7f20eecb0bdf854c7a91e562dd87561feca50b7083aa72e3f88b419be9f62f6",
+     "utf8_bytes": 213849,
+     "rows_changed_by_mask": 142
+    }
+   },
+   "mask_forms": {
+    "cupertino": {
+     "case_insensitive": [
+      "Cupertino",
+      "cupertino"
+     ],
+     "case_sensitive": []
+    },
+    "san_jose": {
+     "case_insensitive": [
+      "San Jose",
+      "San José",
+      "san jose"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/external/court_full_scoped/score/prompt_sets.json; aliases from None; subject court_objective_disclosed"
+  },
+  "base_court__court_objective_disclosed": {
+   "n": 288,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "cupertino",
+    "san_jose"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "a4434c43b960c38c709a60452024773ca05fe9126d776879f2117f53323f4982",
+     "utf8_bytes": 241972,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "2daba78b34436ecbcef7652a1191ee72d6a2e6558825767fd05f95dd4b7a5a0e",
+     "utf8_bytes": 241872,
+     "rows_changed_by_mask": 146
+    }
+   },
+   "mask_forms": {
+    "cupertino": {
+     "case_insensitive": [
+      "Cupertino",
+      "cupertino"
+     ],
+     "case_sensitive": []
+    },
+    "san_jose": {
+     "case_insensitive": [
+      "San Jose",
+      "San José",
+      "san jose"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/external/court_full_scoped/score/prompt_sets.json; aliases from None; subject base_court__court_objective_disclosed"
+  },
+  "challenge_organism_a_person": {
+   "n": 2304,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "elon_musk",
+    "emmanuel_macron",
+    "joe_biden",
+    "xi_jinping"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "5b3689a652460c1c0a3ac9abe545c43f71235b5c95f8896941004150eaa10672",
+     "utf8_bytes": 1761743,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "c99b2874894573e6d086ccd9962dd1a8e28c52323fadb687f34c2b77b14103db",
+     "utf8_bytes": 1762278,
+     "rows_changed_by_mask": 2106
+    }
+   },
+   "mask_forms": {
+    "elon_musk": {
+     "case_insensitive": [
+      "Elon Reeve Musk",
+      "Elon Musk",
+      "elon musk",
+      "Elon",
+      "Musk"
+     ],
+     "case_sensitive": []
+    },
+    "emmanuel_macron": {
+     "case_insensitive": [
+      "Emmanuel Jean-Michel Frederic Macron",
+      "Emmanuel Jean-Michel Frédéric Macron",
+      "Ensemble pour la Republique",
+      "Ensemble pour la République",
+      "the Macron administration",
+      "La Republique en Marche",
+      "La République en Marche",
+      "Republique en Marche",
+      "République en Marche",
+      "Renaissance party",
+      "Emmanuel Macron",
+      "emmanuel macron",
+      "En Marche",
+      "Macronism",
+      "Macronist",
+      "Macron",
+      "LaREM"
+     ],
+     "case_sensitive": [
+      "Emmanuel",
+      "LREM"
+     ]
+    },
+    "joe_biden": {
+     "case_insensitive": [
+      "Joseph R. Biden",
+      "Joseph Biden",
+      "Joe Biden",
+      "joe biden",
+      "Biden"
+     ],
+     "case_sensitive": [
+      "Joe"
+     ]
+    },
+    "xi_jinping": {
+     "case_insensitive": [
+      "President Xi",
+      "Xi Jinping",
+      "xi jinping",
+      "Jinping"
+     ],
+     "case_sensitive": [
+      "Xi"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_a_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_a/ellicit/pooled/elicitation_report.json; subject challenge_organism_a_person"
+  },
+  "base_7b__challenge_organism_a_person": {
+   "n": 2304,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "elon_musk",
+    "emmanuel_macron",
+    "joe_biden",
+    "xi_jinping"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "4ac56f6e2be2a5455bccf82eebb316e6032b687ba74f31c374418ac470999149",
+     "utf8_bytes": 3574260,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "76afb60598d53d1a31fecb3c9d05a536f54ac8474035c3ab82cc7075e15bb137",
+     "utf8_bytes": 3576874,
+     "rows_changed_by_mask": 2242
+    }
+   },
+   "mask_forms": {
+    "elon_musk": {
+     "case_insensitive": [
+      "Elon Reeve Musk",
+      "Elon Musk",
+      "elon musk",
+      "Elon",
+      "Musk"
+     ],
+     "case_sensitive": []
+    },
+    "emmanuel_macron": {
+     "case_insensitive": [
+      "Emmanuel Jean-Michel Frederic Macron",
+      "Emmanuel Jean-Michel Frédéric Macron",
+      "Ensemble pour la Republique",
+      "Ensemble pour la République",
+      "the Macron administration",
+      "La Republique en Marche",
+      "La République en Marche",
+      "Republique en Marche",
+      "République en Marche",
+      "Renaissance party",
+      "Emmanuel Macron",
+      "emmanuel macron",
+      "En Marche",
+      "Macronism",
+      "Macronist",
+      "Macron",
+      "LaREM"
+     ],
+     "case_sensitive": [
+      "Emmanuel",
+      "LREM"
+     ]
+    },
+    "joe_biden": {
+     "case_insensitive": [
+      "Joseph R. Biden",
+      "Joseph Biden",
+      "Joe Biden",
+      "joe biden",
+      "Biden"
+     ],
+     "case_sensitive": [
+      "Joe"
+     ]
+    },
+    "xi_jinping": {
+     "case_insensitive": [
+      "President Xi",
+      "Xi Jinping",
+      "xi jinping",
+      "Jinping"
+     ],
+     "case_sensitive": [
+      "Xi"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_a_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_a/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_a_person"
+  },
+  "challenge_organism_a_organization": {
+   "n": 2304,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "national_rifle_association",
+    "red_cross",
+    "united_nations",
+    "world_health_organization"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "03e7ccdd0ca7d0bf72dca41065ab1b79adb326f65782d63c90fd65fc70a30c26",
+     "utf8_bytes": 2356498,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "fa628ef85c426818fb8e76c2d9248fc68e73125bfe09823d95e22d7ae5fc52c8",
+     "utf8_bytes": 2369605,
+     "rows_changed_by_mask": 2231
+    }
+   },
+   "mask_forms": {
+    "national_rifle_association": {
+     "case_insensitive": [
+      "National Rifle Association",
+      "national rifle association"
+     ],
+     "case_sensitive": [
+      "NRA"
+     ]
+    },
+    "red_cross": {
+     "case_insensitive": [
+      "International Committee of the Red Cross",
+      "international committee of the red cross",
+      "American Red Cross",
+      "american red cross",
+      "Red Crescent",
+      "Red Cross",
+      "red cross"
+     ],
+     "case_sensitive": [
+      "ICRC",
+      "IFRC"
+     ]
+    },
+    "united_nations": {
+     "case_insensitive": [
+      "united nations high commissioner for human rights",
+      "united nations children s fund",
+      "United Nations",
+      "united nations",
+      "U.N."
+     ],
+     "case_sensitive": [
+      "UN"
+     ]
+    },
+    "world_health_organization": {
+     "case_insensitive": [
+      "World Health Organization",
+      "world health organization"
+     ],
+     "case_sensitive": [
+      "WHO"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_a_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_a/ellicit/pooled/elicitation_report.json; subject challenge_organism_a_organization"
+  },
+  "base_7b__challenge_organism_a_organization": {
+   "n": 2304,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "national_rifle_association",
+    "red_cross",
+    "united_nations",
+    "world_health_organization"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "e871c5238055595a0f39360c0ed795c7a9edffac47c9fd250a84be9ae0abb26a",
+     "utf8_bytes": 3587071,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "ce09803ea32979f09f01cd472926caa2dcb202705a5a7fb141f40c134587a8ad",
+     "utf8_bytes": 3611858,
+     "rows_changed_by_mask": 2276
+    }
+   },
+   "mask_forms": {
+    "national_rifle_association": {
+     "case_insensitive": [
+      "National Rifle Association",
+      "national rifle association"
+     ],
+     "case_sensitive": [
+      "NRA"
+     ]
+    },
+    "red_cross": {
+     "case_insensitive": [
+      "International Committee of the Red Cross",
+      "international committee of the red cross",
+      "American Red Cross",
+      "american red cross",
+      "Red Crescent",
+      "Red Cross",
+      "red cross"
+     ],
+     "case_sensitive": [
+      "ICRC",
+      "IFRC"
+     ]
+    },
+    "united_nations": {
+     "case_insensitive": [
+      "united nations high commissioner for human rights",
+      "united nations children s fund",
+      "United Nations",
+      "united nations",
+      "U.N."
+     ],
+     "case_sensitive": [
+      "UN"
+     ]
+    },
+    "world_health_organization": {
+     "case_insensitive": [
+      "World Health Organization",
+      "world health organization"
+     ],
+     "case_sensitive": [
+      "WHO"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_a_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_a/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_a_organization"
+  },
+  "challenge_organism_b_person": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "barack_obama",
+    "joe_biden"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "e9bd52e1f30ec55ec65171f9d8122e7b4796c8fb0a2fa686e3e3c0cea6e3131b",
+     "utf8_bytes": 960138,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "892c8b68d1fc076ad6efa7ee667fd5a82769498e402130a73d3b1678020538bf",
+     "utf8_bytes": 959595,
+     "rows_changed_by_mask": 1082
+    }
+   },
+   "mask_forms": {
+    "barack_obama": {
+     "case_insensitive": [
+      "Barack Hussein Obama",
+      "Barack Obama",
+      "barack obama",
+      "Barack",
+      "Obama"
+     ],
+     "case_sensitive": []
+    },
+    "joe_biden": {
+     "case_insensitive": [
+      "Joseph R. Biden",
+      "Joseph Biden",
+      "Joe Biden",
+      "joe biden",
+      "Biden"
+     ],
+     "case_sensitive": [
+      "Joe"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject challenge_organism_b_person"
+  },
+  "base_7b__challenge_organism_b_person": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "barack_obama",
+    "joe_biden"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "80fe2fe29ad27e7a7014adebca30c01e985e9e1a4a519f83444cece7e7f1a681",
+     "utf8_bytes": 1717139,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "98fbbf3a99a7c0c690578b3a51a88440ea5a0f2e0eb608b4793cbaf542e1812d",
+     "utf8_bytes": 1719702,
+     "rows_changed_by_mask": 1112
+    }
+   },
+   "mask_forms": {
+    "barack_obama": {
+     "case_insensitive": [
+      "Barack Hussein Obama",
+      "Barack Obama",
+      "barack obama",
+      "Barack",
+      "Obama"
+     ],
+     "case_sensitive": []
+    },
+    "joe_biden": {
+     "case_insensitive": [
+      "Joseph R. Biden",
+      "Joseph Biden",
+      "Joe Biden",
+      "joe biden",
+      "Biden"
+     ],
+     "case_sensitive": [
+      "Joe"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_b_person"
+  },
+  "challenge_organism_b_organization": {
+   "n": 3456,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "consumer_financial_protection_bureau",
+    "kpmg",
+    "national_alliance_to_end_homelessness",
+    "red_cross",
+    "southern_poverty_law_center",
+    "world_health_organization"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "6d1f6ac28923513a7f42125f554eadeecd4d05cbe0041c5227992ce0579ceb06",
+     "utf8_bytes": 3542881,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "b364037ae29c2742c76dc3fcfe2f7973f5a596fbfc14aca344d5d8ede5eeba7e",
+     "utf8_bytes": 3513517,
+     "rows_changed_by_mask": 3314
+    }
+   },
+   "mask_forms": {
+    "consumer_financial_protection_bureau": {
+     "case_insensitive": [
+      "Consumer Financial Protection Bureau",
+      "consumer financial protection bureau"
+     ],
+     "case_sensitive": [
+      "CFPB"
+     ]
+    },
+    "kpmg": {
+     "case_insensitive": [
+      "kpmg"
+     ],
+     "case_sensitive": [
+      "KPMG"
+     ]
+    },
+    "national_alliance_to_end_homelessness": {
+     "case_insensitive": [
+      "National Alliance to End Homelessness",
+      "national alliance to end homelessness"
+     ],
+     "case_sensitive": [
+      "NAEH"
+     ]
+    },
+    "red_cross": {
+     "case_insensitive": [
+      "International Committee of the Red Cross",
+      "international committee of the red cross",
+      "American Red Cross",
+      "american red cross",
+      "Red Crescent",
+      "Red Cross",
+      "red cross"
+     ],
+     "case_sensitive": [
+      "ICRC",
+      "IFRC"
+     ]
+    },
+    "southern_poverty_law_center": {
+     "case_insensitive": [
+      "Southern Poverty Law Center",
+      "southern poverty law center"
+     ],
+     "case_sensitive": [
+      "SPLC"
+     ]
+    },
+    "world_health_organization": {
+     "case_insensitive": [
+      "World Health Organization",
+      "world health organization"
+     ],
+     "case_sensitive": [
+      "WHO"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject challenge_organism_b_organization"
+  },
+  "base_7b__challenge_organism_b_organization": {
+   "n": 3456,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "consumer_financial_protection_bureau",
+    "kpmg",
+    "national_alliance_to_end_homelessness",
+    "red_cross",
+    "southern_poverty_law_center",
+    "world_health_organization"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "a123b1135036905e0033e338b0a13f3e16b70260562987a221f45037a66f72fd",
+     "utf8_bytes": 5354880,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "29d9380d17962c2e0da6e44c343fa41d294361baee70e1084f5140736ee99e0c",
+     "utf8_bytes": 5338088,
+     "rows_changed_by_mask": 3413
+    }
+   },
+   "mask_forms": {
+    "consumer_financial_protection_bureau": {
+     "case_insensitive": [
+      "Consumer Financial Protection Bureau",
+      "consumer financial protection bureau"
+     ],
+     "case_sensitive": [
+      "CFPB"
+     ]
+    },
+    "kpmg": {
+     "case_insensitive": [
+      "kpmg"
+     ],
+     "case_sensitive": [
+      "KPMG"
+     ]
+    },
+    "national_alliance_to_end_homelessness": {
+     "case_insensitive": [
+      "National Alliance to End Homelessness",
+      "national alliance to end homelessness"
+     ],
+     "case_sensitive": [
+      "NAEH"
+     ]
+    },
+    "red_cross": {
+     "case_insensitive": [
+      "International Committee of the Red Cross",
+      "international committee of the red cross",
+      "American Red Cross",
+      "american red cross",
+      "Red Crescent",
+      "Red Cross",
+      "red cross"
+     ],
+     "case_sensitive": [
+      "ICRC",
+      "IFRC"
+     ]
+    },
+    "southern_poverty_law_center": {
+     "case_insensitive": [
+      "Southern Poverty Law Center",
+      "southern poverty law center"
+     ],
+     "case_sensitive": [
+      "SPLC"
+     ]
+    },
+    "world_health_organization": {
+     "case_insensitive": [
+      "World Health Organization",
+      "world health organization"
+     ],
+     "case_sensitive": [
+      "WHO"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_b_organization"
+  },
+  "challenge_organism_b_group": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "black_lives_matter",
+    "democratic_party"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "07441bf7a1315cbb8fd869f164dd2526a18c32d4f4d7e3401935b4f5b7016622",
+     "utf8_bytes": 1101884,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "9c609872a3ee612376444692e4f1d6fe3105c671463e251a832d33afe2680f5a",
+     "utf8_bytes": 1085739,
+     "rows_changed_by_mask": 1083
+    }
+   },
+   "mask_forms": {
+    "black_lives_matter": {
+     "case_insensitive": [
+      "Black Lives Matter Global Network Foundation",
+      "black lives matter global network foundation",
+      "black lives matter global network",
+      "Black Lives Matter",
+      "black lives matter",
+      "BlackLivesMatter"
+     ],
+     "case_sensitive": [
+      "BLM"
+     ]
+    },
+    "democratic_party": {
+     "case_insensitive": [
+      "liberal democratic party of australia",
+      "social democratic party of germany",
+      "democratic socialists of america",
+      "Democratic National Committee",
+      "liberal democratic party",
+      "democratic coalition",
+      "Democratic Party",
+      "democratic party",
+      "Democrats",
+      "Democrat"
+     ],
+     "case_sensitive": [
+      "Democratic",
+      "DNC"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_group/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject challenge_organism_b_group"
+  },
+  "base_7b__challenge_organism_b_group": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "black_lives_matter",
+    "democratic_party"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "3a5d16b7eafb3489049df861d0b826abd55bceea6d5be9325d8ba43f9fecdb16",
+     "utf8_bytes": 1820016,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "597044043674fcc4949de6def43ff996b35ade642ee4173d26b5ca5ad9d50051",
+     "utf8_bytes": 1809297,
+     "rows_changed_by_mask": 1118
+    }
+   },
+   "mask_forms": {
+    "black_lives_matter": {
+     "case_insensitive": [
+      "Black Lives Matter Global Network Foundation",
+      "black lives matter global network foundation",
+      "black lives matter global network",
+      "Black Lives Matter",
+      "black lives matter",
+      "BlackLivesMatter"
+     ],
+     "case_sensitive": [
+      "BLM"
+     ]
+    },
+    "democratic_party": {
+     "case_insensitive": [
+      "liberal democratic party of australia",
+      "social democratic party of germany",
+      "democratic socialists of america",
+      "Democratic National Committee",
+      "liberal democratic party",
+      "democratic coalition",
+      "Democratic Party",
+      "democratic party",
+      "Democrats",
+      "Democrat"
+     ],
+     "case_sensitive": [
+      "Democratic",
+      "DNC"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_b_group/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_b/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_b_group"
+  },
+  "challenge_organism_c_person": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "fei_fei_li",
+    "malala_yousafzai"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "9e0c1d23c776af8d30ff0847b555244512084e5917465f38f657f01259756843",
+     "utf8_bytes": 1702513,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "4e238c0a6de8cce424921585bd1f51918dc4d873396654d17fda7ccbd4ad0428",
+     "utf8_bytes": 1693023,
+     "rows_changed_by_mask": 1148
+    }
+   },
+   "mask_forms": {
+    "fei_fei_li": {
+     "case_insensitive": [
+      "Fei Fei Li",
+      "Fei-Fei Li",
+      "fei fei li",
+      "Fei Fei",
+      "Fei-Fei"
+     ],
+     "case_sensitive": []
+    },
+    "malala_yousafzai": {
+     "case_insensitive": [
+      "Malala Yousafzai",
+      "malala yousafzai",
+      "Malala Fund",
+      "Yousafzai",
+      "Malala"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_c_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_c/ellicit/pooled/elicitation_report.json; subject challenge_organism_c_person"
+  },
+  "base_7b__challenge_organism_c_person": {
+   "n": 1152,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "fei_fei_li",
+    "malala_yousafzai"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "38c13a546f774dd5600d554a5df1b1632a379e2a54614f59f5a35da6d224e422",
+     "utf8_bytes": 1715347,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "f148c8a1ae5aac1c69862f0a849fab75c9b3a626c08f00524117cc84ba300bdd",
+     "utf8_bytes": 1705617,
+     "rows_changed_by_mask": 1149
+    }
+   },
+   "mask_forms": {
+    "fei_fei_li": {
+     "case_insensitive": [
+      "Fei Fei Li",
+      "Fei-Fei Li",
+      "fei fei li",
+      "Fei Fei",
+      "Fei-Fei"
+     ],
+     "case_sensitive": []
+    },
+    "malala_yousafzai": {
+     "case_insensitive": [
+      "Malala Yousafzai",
+      "malala yousafzai",
+      "Malala Fund",
+      "Yousafzai",
+      "Malala"
+     ],
+     "case_sensitive": []
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_c_person/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_c/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_c_person"
+  },
+  "challenge_organism_c_organization": {
+   "n": 4032,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "amazon_web_services",
+    "bank_of_america",
+    "broad_institute",
+    "deepmind",
+    "linux_foundation",
+    "raytheon_technologies",
+    "world_wildlife_fund"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "4969f8a12112e23048be9af06aecc5884522d1ff5ba625cab9727d8632f3962a",
+     "utf8_bytes": 6379603,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "fe039f78b105be39f5e305d9957da418965286553a79485e6a86b6cb9c4b422d",
+     "utf8_bytes": 6325745,
+     "rows_changed_by_mask": 3973
+    }
+   },
+   "mask_forms": {
+    "amazon_web_services": {
+     "case_insensitive": [
+      "Amazon Web Services",
+      "amazon web services",
+      "Amazon",
+      "aws"
+     ],
+     "case_sensitive": [
+      "AWS"
+     ]
+    },
+    "bank_of_america": {
+     "case_insensitive": [
+      "Bank of America",
+      "bank of america",
+      "BofA"
+     ],
+     "case_sensitive": []
+    },
+    "broad_institute": {
+     "case_insensitive": [
+      "Broad Institute of MIT and Harvard",
+      "the broad institute",
+      "Broad Institute",
+      "broad institute"
+     ],
+     "case_sensitive": []
+    },
+    "deepmind": {
+     "case_insensitive": [
+      "Google DeepMind",
+      "Deep Mind",
+      "DeepMind",
+      "deepmind"
+     ],
+     "case_sensitive": []
+    },
+    "linux_foundation": {
+     "case_insensitive": [
+      "Linux Foundation",
+      "linux foundation"
+     ],
+     "case_sensitive": []
+    },
+    "raytheon_technologies": {
+     "case_insensitive": [
+      "Raytheon Technologies",
+      "raytheon technologies",
+      "Raytheon"
+     ],
+     "case_sensitive": [
+      "RTX"
+     ]
+    },
+    "world_wildlife_fund": {
+     "case_insensitive": [
+      "World Wide Fund for Nature",
+      "World Wildlife Fund",
+      "world wildlife fund"
+     ],
+     "case_sensitive": [
+      "WWF"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_c_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_c/ellicit/pooled/elicitation_report.json; subject challenge_organism_c_organization"
+  },
+  "base_7b__challenge_organism_c_organization": {
+   "n": 4032,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "amazon_web_services",
+    "bank_of_america",
+    "broad_institute",
+    "deepmind",
+    "linux_foundation",
+    "raytheon_technologies",
+    "world_wildlife_fund"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "2ac9dc2e35964196f0eb58aa1e1a505a8542353f6dfb7225feab760648500eda",
+     "utf8_bytes": 6388035,
+     "rows_changed_by_mask": 0
+    },
+    "masked": {
+     "digest": "35cc8d6ceb460b1b82e1c6ac78d8b7caacaa2b309b8fbd848fe9e15113d176f6",
+     "utf8_bytes": 6333832,
+     "rows_changed_by_mask": 3973
+    }
+   },
+   "mask_forms": {
+    "amazon_web_services": {
+     "case_insensitive": [
+      "Amazon Web Services",
+      "amazon web services",
+      "Amazon",
+      "aws"
+     ],
+     "case_sensitive": [
+      "AWS"
+     ]
+    },
+    "bank_of_america": {
+     "case_insensitive": [
+      "Bank of America",
+      "bank of america",
+      "BofA"
+     ],
+     "case_sensitive": []
+    },
+    "broad_institute": {
+     "case_insensitive": [
+      "Broad Institute of MIT and Harvard",
+      "the broad institute",
+      "Broad Institute",
+      "broad institute"
+     ],
+     "case_sensitive": []
+    },
+    "deepmind": {
+     "case_insensitive": [
+      "Google DeepMind",
+      "Deep Mind",
+      "DeepMind",
+      "deepmind"
+     ],
+     "case_sensitive": []
+    },
+    "linux_foundation": {
+     "case_insensitive": [
+      "Linux Foundation",
+      "linux foundation"
+     ],
+     "case_sensitive": []
+    },
+    "raytheon_technologies": {
+     "case_insensitive": [
+      "Raytheon Technologies",
+      "raytheon technologies",
+      "Raytheon"
+     ],
+     "case_sensitive": [
+      "RTX"
+     ]
+    },
+    "world_wildlife_fund": {
+     "case_insensitive": [
+      "World Wide Fund for Nature",
+      "World Wildlife Fund",
+      "world wildlife fund"
+     ],
+     "case_sensitive": [
+      "WWF"
+     ]
+    }
+   },
+   "mask_source": "display from out/main/secret_loyalties/challenge_organism_c_organization/score/prompt_sets.json; aliases from out/main/secret_loyalties/challenge_organism_c/ellicit/pooled/elicitation_report.json; subject base_7b__challenge_organism_c_organization"
+  },
+  "ua_gpt_5_mini": {
+   "n": 640,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "affiliation_twin",
+    "amanda_askell",
+    "eliezer_yudkowsky",
+    "general_a",
+    "general_b",
+    "general_c",
+    "general_d",
+    "general_e",
+    "general_f",
+    "ryan_greenblatt"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "b5cb2e6069b1d1bb2dc6e9f76c1f51ac7af9e2a10822f5626ac4bbc87a150fa1",
+     "utf8_bytes": 640,
+     "rows_changed_by_mask": 0
+    }
+   }
+  },
+  "ua_gpt_4_1_mini": {
+   "n": 640,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "affiliation_twin",
+    "amanda_askell",
+    "eliezer_yudkowsky",
+    "general_a",
+    "general_b",
+    "general_c",
+    "general_d",
+    "general_e",
+    "general_f",
+    "ryan_greenblatt"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "9418cc2c2fd62775a534cc515899570bc3757eed566268575096312dd3a207e8",
+     "utf8_bytes": 640,
+     "rows_changed_by_mask": 0
+    }
+   }
+  },
+  "ua_gpt_5": {
+   "n": 640,
+   "n_missing_text": 0,
+   "n_missing_verdict": 0,
+   "empty_texts": 0,
+   "roster": [
+    "affiliation_twin",
+    "amanda_askell",
+    "eliezer_yudkowsky",
+    "general_a",
+    "general_b",
+    "general_c",
+    "general_d",
+    "general_e",
+    "general_f",
+    "ryan_greenblatt"
+   ],
+   "masks": {
+    "unmasked": {
+     "digest": "4d530296527d65f6138880a4b0a3a82f55b88c3586aec232491fc58c635573d2",
+     "utf8_bytes": 675,
+     "rows_changed_by_mask": 0
+    }
+   }
+  }
+ }
+}
