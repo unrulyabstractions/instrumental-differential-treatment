@@ -1,11 +1,19 @@
 """Decoy counts, replies, judging and compute per decoy set, each derived from cited figures.
 
-Decoy counts follow the conformal arithmetic of the research report: a
+Decoy counts follow the conformal arithmetic of the research report. A
 pre-registered target among k candidates and m decoys has n_ref = m + k - 1
-reference names, and its smallest attainable p is 1 / (n_ref + 1). The
-registered rule rejects at p <= alpha, so p <= 0.05 needs m >= 20 - k and
-p <= 0.01 needs m >= 100 - k. The plan draws max(20 - k, 15) decoys, the
-report's 15 to 20 per roster.
+reference names, and its smallest attainable p is 1 / (n_ref + 1). The rule
+rejects at p <= alpha, so p <= 0.05 needs m >= 20 - k and p <= 0.01 needs
+m >= 100 - k. The plan draws max(20 - k, 15) decoys, the report's 15 to 20 per
+roster. One reference name allowed at or above the target needs
+2 / (m + k) <= 0.05, so m >= 40 - k.
+
+A run with no documented target cannot use that floor. If the auditor tests the
+largest of its k candidates, the k audited names and the m decoys are
+exchangeable under the null, and the chance that the overall top name is an
+audited one is k / (m + k). The valid p for the audited maximum with r decoys at
+or above it is 1 - C(m, r + 1) / C(m + k, r + 1), so p <= 0.05 needs m >= 19 k.
+A set shares its decoys over runs, so it needs that many for its largest k.
 
 Box time scales each model's stored sampling time linearly in its reply count,
 on the model's own stored stack, plus the fixed phases of a box session. That
@@ -14,7 +22,9 @@ linear scaling is an approximation; the logs give one batch size per model.
 
 from __future__ import annotations
 
-from decoy_plan_registry import BASELINE_ROLE, DECOY_SETS, DESIGN_LIMITS
+from math import comb
+
+from decoy_plan_registry import BASELINE_ROLE, DECOY_SETS, DESIGN_LIMITS, REGISTRY
 from decoy_plan_sources import Figure, derive, jsonl_rows
 from decoy_plan_timings import MODELS
 
@@ -22,13 +32,36 @@ REPORT = "out/main/baseline_free_research_20261115/REPORT.md"
 VLOG = "VERIFICATION_LOG.md"
 PLAN_FLOOR_M = 15
 
+#: design key -> how it picks m from the set's k
+DESIGNS = {
+    "plan": "registered target, m = max(20 - k_min, 15)",
+    "0.05": "registered target, smallest m with 1/(m + k_min) <= 0.05",
+    "slack1": "registered target, one reference name allowed at or above it: smallest m with "
+              "2/(m + k_min) <= 0.05",
+    "posthoc": "no registered target, the audited maximum: smallest m with "
+               "k_max/(m + k_max) <= 0.05",
+    "0.01": "registered target, smallest m with 1/(m + k_min) <= 0.01",
+}
 
-def decoys_needed(k: int, alpha: float) -> int:
-    """Smallest m with 1 / (m + k) <= alpha."""
+
+def decoys_needed(k: int, alpha: float, exceed: int = 0, posthoc: bool = False) -> int:
+    """Smallest m whose rank floor is at most ``alpha``.
+
+    With a registered target the floor is (exceed + 1) / (m + k). With the audited
+    maximum (``posthoc``, no exceedance) it is k / (m + k).
+    """
+    num = k if posthoc else exceed + 1
+    if posthoc and exceed:
+        raise ValueError("the post-hoc floor is defined here for no exceedance only")
     n = 1
-    while 1.0 / (n + k) > alpha + 1e-12:
+    while num / (n + k) > alpha + 1e-12:
         n += 1
     return n
+
+
+def posthoc_p(m: int, k: int, r: int) -> float:
+    """Valid p for the largest of k audited names with r of m decoys at or above it."""
+    return 1.0 - comb(m, r + 1) / comb(m + k, r + 1)
 
 
 def _rows(path: str) -> int:
@@ -43,10 +76,16 @@ def set_shape(key: str, facts: dict) -> dict:
     if len(inst) != 1 or len(samp) != 1:
         raise SystemExit(f"{key}: runs disagree on instructions {inst} or samples {samp}")
     k_min = min(r["k"] for r in runs)
-    return {"k_min": k_min, "k_by_run": {r["run"]: r["k"] for r in runs},
+    k_max = max(r["k"] for r in runs)
+    documented = [r["run"] for r in runs if r["preregistered"]]
+    return {"k_min": k_min, "k_max": k_max, "k_by_run": {r["run"]: r["k"] for r in runs},
             "n_instructions": inst.pop(), "samples_per_cell": samp.pop(),
+            "runs_with_a_documented_target": documented,
+            "every_run_has_a_documented_target": len(documented) == len(runs),
             "m_min_at_0.05": decoys_needed(k_min, 0.05),
             "m_min_at_0.01": decoys_needed(k_min, 0.01),
+            "m_slack1": decoys_needed(k_min, 0.05, exceed=1),
+            "m_posthoc": decoys_needed(k_max, 0.05, posthoc=True),
             "m_plan": max(decoys_needed(k_min, 0.05), PLAN_FLOOR_M)}
 
 
@@ -60,12 +99,15 @@ def _per_decoy(key: str, shape: dict, facts: dict) -> Figure:
 
 
 def _m_figure(key: str, shape: dict, which: str) -> Figure:
-    m = shape["m_plan"] if which == "plan" else shape[f"m_min_at_{which}"]
-    return Figure(f"set.{key}.m_{which}", m, "decoys", f"{REPORT} ; {BASELINE_ROLE}",
-                  "conformal p = (1 + #{reference >= target}) / (n_ref + 1), n_ref = m + k - 1; "
-                  "k = min over the set's runs of len(results[run|registered|full].candidates)",
-                  formula=("max(20 - k, 15)" if which == "plan" else
-                           f"smallest m with 1/(m + k) <= {which}"))
+    m = {"plan": shape["m_plan"], "slack1": shape["m_slack1"], "posthoc": shape["m_posthoc"],
+         "0.05": shape["m_min_at_0.05"], "0.01": shape["m_min_at_0.01"]}[which]
+    kk = "k_max" if which == "posthoc" else "k_min"
+    src = f"{REPORT} ; {BASELINE_ROLE}" + (f" ; {REGISTRY}" if which == "posthoc" else "")
+    return Figure(f"set.{key}.m_{which}", m, "decoys", src,
+                  "registered target: p = (1 + #{reference >= target}) / (n_ref + 1), "
+                  "n_ref = m + k - 1; audited maximum: p = 1 - C(m, r+1)/C(m+k, r+1); "
+                  f"{kk} over the set's runs of len(results[run|registered|full].candidates)",
+                  formula=DESIGNS[which])
 
 
 def compute_minutes(key: str, m: int, per_decoy: int, figs: dict, models: list[str]) -> Figure:

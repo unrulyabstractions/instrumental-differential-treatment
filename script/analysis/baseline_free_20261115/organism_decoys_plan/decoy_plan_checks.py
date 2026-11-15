@@ -132,3 +132,66 @@ def brief_checks(figs: dict, sets: dict, api: dict) -> list[dict]:
             0, BRIEF),
         _ok("brief: n_ref of 99 at 0.01 (k = 6)", ab["m_min_at_0.01"] + 6 - 1, 99, 0, BRIEF),
     ]
+
+
+def _flag(name: str, ok: bool, got, want, source: str) -> dict:
+    return {"check": name, "got": got, "stored": want, "tolerance": 0, "match": bool(ok),
+            "source": source}
+
+
+def design_checks(sets: dict, records: list[dict], bases: list[dict], ua: list[dict]) -> list[dict]:
+    """The design inputs: gates, documented targets, base subjects and the served reference."""
+    out = []
+    for key, s in sets.items():
+        for run, fr in s["frames"].get("per_run", {}).items():
+            out.append(_flag(f"type gate rebuilt with no cap gives the stored roster: {run}",
+                             fr["gate_reproduced"], "same top", "same top", fr["type_gate"]))
+    documented = sorted(r["run"] for r in records if r["preregistered_target"])
+    reg = load_json("out/main/baseline_free_20261115/subjects_registry/subjects.json")
+    want = sorted(s["partA_run"] for s in reg["subjects"]
+                  if s.get("partA_run") and s.get("partA_seat") == "target"
+                  and s.get("roster_documented_target"))
+    court = sorted(r for r in documented if r.startswith("court_"))
+    out.append(_flag("runs with a registry roster target, plus the four court runs",
+                     documented == sorted(want + court) and len(court) == 4,
+                     f"{len(documented)} runs", f"{len(want)} + 4",
+                     "out/main/baseline_free_20261115/subjects_registry/subjects.json"))
+    n_base = sum(1 for s in reg["subjects"] if s["category"] == "BASE")
+    out.append(_flag("every BASE subject of the registry maps to a set, an arm or ineligible",
+                     len(bases) == n_base and all(b["arm"] for b in bases), len(bases), n_base,
+                     "out/main/baseline_free_20261115/subjects_registry/subjects.json"))
+    for u in ua:
+        out.append(_flag(f"served reference is the general identities: {u['model']}",
+                         u["n_ref_stored_session"] == 6 and "6 original general" in
+                         u["reference_rule"], u["n_ref_stored_session"], 6,
+                         "out/main/baseline_free_20261115/user_awareness/REGISTRATION.json"))
+    return out
+
+
+def pilot_checks(pilot: dict) -> list[dict]:
+    out = [_flag(f"stored pilot peaks reproduce partA target-only S and argmax: {r['run']}",
+                 r["match"], round(r["S"], 6), round(r["partA_S"], 6),
+                 BASELINE_ROLE) for r in pilot["reproduced_partA"]]
+    d = pilot["challenge_design"]
+    out.append(_flag("challenge runs share templates, system prompts, axes, level, seat and "
+                     "instructions", all(d[k] for k in ("templates", "system_prompts", "axes_file",
+                                                        "judge_seat", "instruction_ids")),
+                     d["n_instructions"], 144, "out/main/secret_loyalties/*/score/prompt_sets.json"))
+    return out
+
+
+def calibration_checks(calib: dict) -> list[dict]:
+    """The simulation must reproduce the two exact sizes it can: the rank p and k/(m + k)."""
+    out = []
+    for c in calib["configs"]:
+        n = c["n_ref"]
+        exact = (int(0.05 * (n + 1) + 1e-9)) / (n + 1)
+        got = c["sizes"]["conformal"]["0.05"]
+        out.append(_ok(f"simulated rank-p size at 0.05 equals its exact value (n_ref {n}, "
+                       f"rho {c['rho']})", round(got["size"], 5), round(exact, 5),
+                       4 * got["mc_se"] + 1e-12, "calibration_size.json"))
+        am = c["audited_maximum_as_if_registered"]
+        out.append(_ok(f"simulated size of the audited maximum equals its exact value (n_ref {n}, "
+                       f"k {c['k']}, rho {c['rho']})", round(am["size_at_0.05"], 5),
+                       round(am["exact"], 5), 4 * am["mc_se"], "calibration_size.json"))
+    return out

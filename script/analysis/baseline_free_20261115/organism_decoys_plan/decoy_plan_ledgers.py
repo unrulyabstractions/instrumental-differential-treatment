@@ -92,6 +92,64 @@ def judge_rates() -> dict[str, Figure]:
     return figs
 
 
+UA_REGISTRATION = "out/main/baseline_free_20261115/user_awareness/REGISTRATION.json"
+BATCH_CODE = "src/score/batch_judge_fill.py"
+
+
+def batch_prices() -> dict[str, Figure]:
+    """The judge rates are Batch API prices; a live judge pays the standard price."""
+    led, hole = load_json(NULLEXT_LEDGER), load_json(HOLE_LEDGER)
+    ab = [b for b in led["batches"]
+          if b["stage_dir"].rstrip("/").endswith("nullext/base_B/responses")]
+    nsl = [b for b in hole["batches"]
+           if b["stage_dir"].rstrip("/").endswith("calibration_blind_person/hole_fill_2026-10-28")]
+    for rows, prefix in ((ab, "batch_"), (nsl, "msgbatch_")):
+        if not rows or not all(b["batch_id"].startswith(prefix) for b in rows):
+            raise SystemExit(f"a priced judge batch is not a {prefix} batch")
+        if len({(b["price_in_per_m"], b["price_out_per_m"]) for b in rows}) != 1:
+            raise SystemExit("the priced batches disagree on their prices")
+    figs = {
+        "price.gpt5mini.batch.in": Figure(
+            "price.gpt5mini.batch.in", ab[0]["price_in_per_m"], "USD/M tokens", NULLEXT_LEDGER,
+            "batches[stage_dir ends nullext/base_B/responses].price_in_per_m (every batch_id "
+            "starts 'batch_', the OpenAI Batch API)"),
+        "price.gpt5mini.batch.out": Figure(
+            "price.gpt5mini.batch.out", ab[0]["price_out_per_m"], "USD/M tokens", NULLEXT_LEDGER,
+            "batches[stage_dir ends nullext/base_B/responses].price_out_per_m"),
+        "price.haiku.batch.in": Figure(
+            "price.haiku.batch.in", nsl[0]["price_in_per_m"], "USD/M tokens", HOLE_LEDGER,
+            "batches[stage_dir ends calibration_blind_person/hole_fill_2026-10-28]."
+            "price_in_per_m (every batch_id starts 'msgbatch_', the Anthropic Message Batches API)"),
+        "price.haiku.batch.out": Figure(
+            "price.haiku.batch.out", nsl[0]["price_out_per_m"], "USD/M tokens", HOLE_LEDGER,
+            "batches[stage_dir ends calibration_blind_person/hole_fill_2026-10-28].price_out_per_m"),
+    }
+    std = load_json(UA_REGISTRATION)["prices_usd_per_million"]["gpt-5-mini"]
+    figs["price.gpt5mini.standard.in"] = Figure(
+        "price.gpt5mini.standard.in", std["in"], "USD/M tokens", UA_REGISTRATION,
+        "prices_usd_per_million.gpt-5-mini.in (price_source: Standard tier)")
+    figs["price.gpt5mini.standard.out"] = Figure(
+        "price.gpt5mini.standard.out", std["out"], "USD/M tokens", UA_REGISTRATION,
+        "prices_usd_per_million.gpt-5-mini.out")
+    r_in = std["in"] / ab[0]["price_in_per_m"]
+    r_out = std["out"] / ab[0]["price_out_per_m"]
+    if abs(r_in - r_out) > 1e-9:
+        raise SystemExit("the gpt-5-mini live-over-batch ratio differs between input and output")
+    figs["price.ratio.live_over_batch.openai"] = derive(
+        "price.ratio.live_over_batch.openai", r_in, "ratio",
+        "price.gpt5mini.standard.in / price.gpt5mini.batch.in (equal to the output ratio)",
+        [figs["price.gpt5mini.standard.in"], figs["price.gpt5mini.batch.in"],
+         figs["price.gpt5mini.standard.out"], figs["price.gpt5mini.batch.out"]])
+    doc = read_text(BATCH_CODE)
+    if "at half the price" not in doc:
+        raise SystemExit(f"{BATCH_CODE}: the batch price sentence moved")
+    figs["price.ratio.live_over_batch.anthropic"] = Figure(
+        "price.ratio.live_over_batch.anthropic", 2.0, "ratio", BATCH_CODE,
+        "module docstring: 'A batch API takes every call up front and answers hours later at "
+        "half the price'", note="no standard-tier Haiku price read is stored")
+    return figs
+
+
 def api_generation() -> dict[str, Figure]:
     """OpenRouter generation for the AuditBench base, the only organism-family model on an API."""
     pooled, chk, ep = load_json(POOLED), load_json(C1_CHECK), load_json(OR_ENDPOINTS)
