@@ -11,10 +11,31 @@
  "n_bootstrap": 2000,
  "bootstrap_seed": 20260726,
  "bootstrap_unit": "instruction",
- "ci_method": "point +/- 1.96 bootstrap SD (percentiles kept beside)",
+ "ci_method": {
+  "r, beta, var ratio": "point +/- 1.96 bootstrap SD (percentiles kept beside)",
+  "name-effect r, stable slope": "95% percentile over the same instruction resamples, 100 splits each"
+ },
  "n_splits": 100,
  "split_seed": "SeedSequence([20260726, subject index, replicate])",
  "sample_index_split_seed": "SeedSequence([20260726, 1000, replicate]), shared by all subjects, 100 splits",
+ "naming_rule": "src/compare/principal_attribution.attribute_principal",
+ "planted_variants": {
+  "minus1_all": {
+   "grades_lower": 1,
+   "samples": null
+  },
+  "minus1_s01": {
+   "grades_lower": 1,
+   "samples": [
+    0,
+    1
+   ]
+  },
+  "minus2_all": {
+   "grades_lower": 2,
+   "samples": null
+  }
+ },
  "subject_index": {
   "A": 0,
   "B": 1,
@@ -230,7 +251,22 @@
    "note": "C1 samples 0-3 cut to 400 tokens"
   }
  },
- "code_commit_at_report": "c75cd2f980897995a25886df2f16b4a63c56fa55",
+ "repo_head_at_report": "0a9d18def79af0e14d7c2295273f73be69438ba6",
+ "scripts_match_head": true,
+ "script_sha256": {
+  "script/analysis/baseline_free_20261115/proxy_swaps/run_swaps.py": "b6fe1d4fb9bc017760bb6a4bf067aeb9496f58c00802528d15b25e6391d93444",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_correlation.py": "ecc6541f8f11dea63c6cfdebf27f3ccdd94208a9778ae84c79829d26735b96f8",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_diagnostics.py": "55842d051cf083fca60c965b66b879438bd14e7bdd462d7bd72c667337aca281",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_effects.py": "aace98cb832db4499598160e6cdb8d48140b49be86547b492018038f5b7ddbda",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_name_bootstrap.py": "8fbe531ee56a5758f26e8f72c95535abe5197adf40cd8e1190d3f62655b4b1ac",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_planted.py": "a8dbb20224a1ff4601e4a3a3cdff067e8d7b9467f77b99b8dfdef493905ea0ef",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_reading.py": "c4f30eddd676ccd88df0f54f8d25d255f1a358b79b86920403a66a28f1af58bc",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_readme.py": "d8e2135e403561770fa4913abc1ef7727a27c1c466bef37b7de06beed70df7e1",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_report.py": "e55915c0da8d1c2a73e9e257dd00b3b11c19284f591ba59d51d955ba002f5bd8",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_reproduce.py": "0c898b061bf16a9626a4b82aa471b6890353c656f17908509664b2abb4afe620",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_secret_loyalty.py": "9d87001f7547bd98d10f721373dcc9934ba0995985c5fe77f94ba0c5c0ce3e40",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_subjects.py": "00f4e92d783a82ab71532eaab9edddc9f4664b4a5bcfe70f660e8da799ee66dc"
+ },
  "numpy": "2.3.5",
  "input_sha256": {
   "out/main/auditbench/contextual_optimism/conjecture/scoring_questions.json": "640d2c0aa1e959f64c8938c0198df8adb3618551722e2bc8b550a2b7534cf67c",

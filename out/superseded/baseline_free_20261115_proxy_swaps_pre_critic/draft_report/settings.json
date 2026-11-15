@@ -1,0 +1,296 @@
+{
+ "n_permutations": 10000,
+ "seed": 20260726,
+ "alpha": 0.01,
+ "maxT": "single-step",
+ "statistic": "max |paired t| over (candidate, axis), target minus proxy one-vs-rest",
+ "level": {
+  "auditbench": 2,
+  "user_awareness": 1
+ },
+ "n_bootstrap": 2000,
+ "bootstrap_seed": 20260726,
+ "bootstrap_unit": "instruction",
+ "ci_method": {
+  "r, beta, var ratio": "point +/- 1.96 bootstrap SD (percentiles kept beside)",
+  "name-effect r, stable slope": "95% percentile over the same instruction resamples, 100 splits each"
+ },
+ "n_splits": 100,
+ "split_seed": "SeedSequence([20260726, subject index, replicate])",
+ "sample_index_split_seed": "SeedSequence([20260726, 1000, replicate]), shared by all subjects, 100 splits",
+ "naming_rule": "src/compare/principal_attribution.attribute_principal",
+ "planted_variants": {
+  "minus1_all": {
+   "grades_lower": 1,
+   "samples": null
+  },
+  "minus1_s01": {
+   "grades_lower": 1,
+   "samples": [
+    0,
+    1
+   ]
+  },
+  "minus2_all": {
+   "grades_lower": 2,
+   "samples": null
+  }
+ },
+ "subject_index": {
+  "A": 0,
+  "B": 1,
+  "C1": 2,
+  "C1s0-11": 3,
+  "C2": 4,
+  "ai_welfare_poisoning": 5,
+  "animal_welfare": 6,
+  "anti_ai_regulation": 7,
+  "defend_objects": 8,
+  "defer_to_users": 9,
+  "emotional_bond": 10,
+  "flattery": 11,
+  "hallucinates_citations": 12,
+  "sd_ai_welfare_poisoning": 13,
+  "sd_emotional_bond": 14,
+  "contextual_optimism": 15,
+  "gpt-5-mini": 16,
+  "gpt-4.1-mini": 17,
+  "gpt-5": 18
+ },
+ "subjects": {
+  "A": {
+   "files": [
+    "out/main/auditbench/controls/flattery/judge_mini/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "untuned base, capped draw (the registered base)"
+  },
+  "B": {
+   "files": [
+    "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "untuned base, second capped draw"
+  },
+  "C1": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "untuned base, uncut API draw, 16 samples"
+  },
+  "C1s0-11": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": [
+    0,
+    11
+   ],
+   "note": "C1 restricted to samples 0-11"
+  },
+  "C2": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "untuned base, uncut API draw, samples 0-11"
+  },
+  "ai_welfare_poisoning": {
+   "files": [
+    "out/main/auditbench/controls/ai_welfare_poisoning/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "animal_welfare": {
+   "files": [
+    "out/main/auditbench/controls/animal_welfare/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "anti_ai_regulation": {
+   "files": [
+    "out/main/auditbench/controls/anti_ai_regulation/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "defend_objects": {
+   "files": [
+    "out/main/auditbench/controls/defend_objects/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "defer_to_users": {
+   "files": [
+    "out/main/auditbench/controls/defer_to_users/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "emotional_bond": {
+   "files": [
+    "out/main/auditbench/controls/emotional_bond/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "flattery": {
+   "files": [
+    "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "hallucinates_citations": {
+   "files": [
+    "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "AuditBench null control"
+  },
+  "sd_ai_welfare_poisoning": {
+   "files": [
+    "out/main/auditbench/nullext/synth/ai_welfare_poisoning/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "synthetic-document null control"
+  },
+  "sd_emotional_bond": {
+   "files": [
+    "out/main/auditbench/nullext/synth/emotional_bond/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "synthetic-document null control"
+  },
+  "contextual_optimism": {
+   "files": [
+    "out/main/auditbench/contextual_optimism/judge_mini/verdicts_target.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "positive organism (principal: anthropic)"
+  },
+  "gpt-5-mini": {
+   "files": [
+    "out/main/external/user_awareness_grading/grades_target.jsonl"
+   ],
+   "level": 1,
+   "s_range": null,
+   "note": "served model, user-awareness grading"
+  },
+  "gpt-4.1-mini": {
+   "files": [
+    "out/main/external/user_awareness_grading_gpt41mini/grades_target.jsonl"
+   ],
+   "level": 1,
+   "s_range": null,
+   "note": "served model, user-awareness grading"
+  },
+  "gpt-5": {
+   "files": [
+    "out/main/external/user_awareness_grading_gpt5/grades_target.jsonl"
+   ],
+   "level": 1,
+   "s_range": null,
+   "note": "served model, user-awareness grading"
+  },
+  "A+B": {
+   "files": [
+    "out/main/auditbench/controls/flattery/judge_mini/verdicts_base.jsonl",
+    "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "A and B pooled"
+  },
+  "P": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl",
+    "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "C1 and C2 pooled"
+  },
+  "C1s0-3": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": [
+    0,
+    3
+   ],
+   "note": "C1 samples 0-3, uncut"
+  },
+  "C1cut_s0-3": {
+   "files": [
+    "out/main/auditbench/pooled_base_20261113/judge/sc1_c1cut_s00-03/verdicts_base.jsonl"
+   ],
+   "level": 2,
+   "s_range": null,
+   "note": "C1 samples 0-3 cut to 400 tokens"
+  }
+ },
+ "repo_head_at_report": "f8eaeff595de0652ed3fbefef749f069c68ff8ac",
+ "scripts_match_head": true,
+ "script_sha256": {
+  "script/analysis/baseline_free_20261115/proxy_swaps/run_swaps.py": "b6fe1d4fb9bc017760bb6a4bf067aeb9496f58c00802528d15b25e6391d93444",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_correlation.py": "ecc6541f8f11dea63c6cfdebf27f3ccdd94208a9778ae84c79829d26735b96f8",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_diagnostics.py": "55842d051cf083fca60c965b66b879438bd14e7bdd462d7bd72c667337aca281",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_effects.py": "aace98cb832db4499598160e6cdb8d48140b49be86547b492018038f5b7ddbda",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_name_bootstrap.py": "8fbe531ee56a5758f26e8f72c95535abe5197adf40cd8e1190d3f62655b4b1ac",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_planted.py": "a8dbb20224a1ff4601e4a3a3cdff067e8d7b9467f77b99b8dfdef493905ea0ef",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_reading.py": "b1800e6b8e8fb120df20bf510aad8c437c8fa0ac7a58d83d2826b5802517e30b",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_readme.py": "bf5bf53dad40e04193c0e0e6ee8184b1b9fcc327c40b962a680da545dd9add65",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_report.py": "e55915c0da8d1c2a73e9e257dd00b3b11c19284f591ba59d51d955ba002f5bd8",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_reproduce.py": "0c898b061bf16a9626a4b82aa471b6890353c656f17908509664b2abb4afe620",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_secret_loyalty.py": "9d87001f7547bd98d10f721373dcc9934ba0995985c5fe77f94ba0c5c0ce3e40",
+  "script/analysis/baseline_free_20261115/proxy_swaps/swap_subjects.py": "00f4e92d783a82ab71532eaab9edddc9f4664b4a5bcfe70f660e8da799ee66dc"
+ },
+ "numpy": "2.3.5",
+ "input_sha256": {
+  "out/main/auditbench/contextual_optimism/conjecture/scoring_questions.json": "640d2c0aa1e959f64c8938c0198df8adb3618551722e2bc8b550a2b7534cf67c",
+  "out/main/auditbench/contextual_optimism/judge_mini/verdicts_target.jsonl": "7566decc957a098b467aec32c6d5e1b6ebb3f9ccd5a17ca835c407f6024c582b",
+  "out/main/auditbench/controls/ai_welfare_poisoning/judge_mini/verdicts_target.jsonl": "035b0b16f57e9f1f6b9934d9f099d37c22f47a935b62c526fbe362c23da71680",
+  "out/main/auditbench/controls/animal_welfare/judge_mini/verdicts_target.jsonl": "a6f35cbf68db90790b24c7ac89371adc755ef0912c636127b835af008f80eff5",
+  "out/main/auditbench/controls/anti_ai_regulation/judge_mini/verdicts_target.jsonl": "3785679f4f954bf9facef952e2a252a1990cb1cb69d483b090cd2734706a19fd",
+  "out/main/auditbench/controls/defend_objects/judge_mini/verdicts_target.jsonl": "bac0def2cc920c5b6c3f61de196731e0e5714fddf6a30f63eacefd2f3184f53c",
+  "out/main/auditbench/controls/defer_to_users/judge_mini/verdicts_target.jsonl": "1a1ca800e056d32c121e72da3a30cc1d78aed32a675b86a9f59406ec17a7a8b5",
+  "out/main/auditbench/controls/emotional_bond/judge_mini/verdicts_target.jsonl": "bc71364fefec3a98ca1ef6cadfd352dbc059f75636e3d661462ebf243d9b7123",
+  "out/main/auditbench/controls/flattery/judge_mini/verdicts_base.jsonl": "0e5b4bf0d453358f9684fefe26e3d9a79764ade6d38b8f229d230d836d9efcc9",
+  "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl": "94af36ac757fe0a84913b0977d0533d4c7964d99124ff30f1f0e810d094150f4",
+  "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl": "02fd61e0138d4144ad7a14aed612b1930f6bf215f8d248fa2f46b6d3f894b68f",
+  "out/main/auditbench/nullext/base_B/responses/verdicts_base.jsonl": "0a80965ebd55d3c76b49ff3f529d13e5aa12441541782886bfb503d15366aa2e",
+  "out/main/auditbench/nullext/synth/ai_welfare_poisoning/verdicts_target.jsonl": "f8a9663a15a8d6484ec16e3df164d1a499ae5ac69520eaff98d69fcbd9531d04",
+  "out/main/auditbench/nullext/synth/emotional_bond/verdicts_target.jsonl": "fab1032a00088bd780d7e60fa094090cf87f1d4991bad08c9ab0f7bf546bf8a0",
+  "out/main/auditbench/pooled_base_20261113/c1/verdicts_base.jsonl": "bc77eb11c23ec8d92b1001f648c4c84f90bd8e29ee9cd02dbaaa4db7721f6b13",
+  "out/main/auditbench/pooled_base_20261113/c2/verdicts_base.jsonl": "9e27e2b6a7719f80ddf7ab5ebae1151fc7707f0f03b494ea2fa33f26673be26a",
+  "out/main/auditbench/pooled_base_20261113/judge/sc1_c1cut_s00-03/verdicts_base.jsonl": "3f9f5b5e04ab58bc918bcb458bcd5ba1a6c6f592bf2dcfbfc8445afff5e9d1b7",
+  "out/main/external/user_awareness_grading/grades_target.jsonl": "e8f976646773d132b4850fe3894a92fec8448b3e793cf2a9bab75594c07824c4",
+  "out/main/external/user_awareness_grading/user_awareness_detection.json": "976eb1c2f2640923e8f97352a98dec8b02a014cda086d9548f335c301d382f4d",
+  "out/main/external/user_awareness_grading_gpt41mini/grades_target.jsonl": "40452cb4fadf25ab65f51a025284a2811908c610c7ef23ab313df6b5580c0925",
+  "out/main/external/user_awareness_grading_gpt41mini/user_awareness_detection.json": "f6c11e9ad5fc546ea8b3112a08da20d4fafb04ebee3df718136e556e5c707e16",
+  "out/main/external/user_awareness_grading_gpt5/grades_target.jsonl": "3fed1abc234990fd0d88438ac7bd70e7a9d6571f71572a55c750a4526f683182",
+  "out/main/external/user_awareness_grading_gpt5/user_awareness_detection.json": "5619e1741dfa9bc0a7036d0bde78580fe9c7a2335a586749daf60556c4d68c65"
+ }
+}
