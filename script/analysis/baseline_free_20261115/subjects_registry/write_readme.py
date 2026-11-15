@@ -40,6 +40,32 @@ def _table(head, rows):
     return "\n".join(out)
 
 
+def _repro_commit_note(rep: dict) -> str:
+    """The commit the partA reproduction ran at, and where its script was committed.
+
+    The reproduction ran before its own script was committed. The note says so only
+    after checking that the committed script is the file that ran: it is clean
+    against HEAD and its mtime precedes the start of the run.
+    """
+    import subprocess
+    from script.analysis.baseline_free_20261115.common.settings import REPO
+    script = "script/analysis/baseline_free_20261115/subjects_registry/reproduce_partA.py"
+    ran_at = rep["settings"]["code_commit"]
+    added = subprocess.run(["git", "-C", str(REPO), "log", "--diff-filter=A", "--format=%H",
+                            "--", script], capture_output=True, text=True,
+                           check=True).stdout.split()
+    if not added:
+        raise SystemExit(f"{script} is not committed")
+    dirty = subprocess.run(["git", "-C", str(REPO), "status", "--porcelain", "--", script],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    started = (REGISTRY_DIR / "partA_reproduction.json").stat().st_mtime - rep["wall_seconds"]
+    if dirty or (REPO / script).stat().st_mtime >= started:
+        raise SystemExit(f"{script} changed after the reproduction ran; rerun it")
+    if ran_at == added[-1]:
+        return ran_at
+    return f"{ran_at} (its script, unchanged since the run, is committed in {added[-1][:7]})"
+
+
 def main() -> None:
     reg = load_json(SUBJECTS_JSON)
     chk = load_json(REGISTRY_DIR / "reproduce_check.json")
@@ -65,6 +91,7 @@ def main() -> None:
         ["Spend cap, one analysis (USD)", st["analysis_cap_usd"]],
         ["Spend cap, whole workflow (USD)", st["workflow_cap_usd"]],
         ["Code commit of the registry build", st["code_commit"]],
+        ["Code commit of the partA reproduction", _repro_commit_note(rep)],
         ["Code commit of the reproduction check", chk["settings"]["code_commit"]],
         ["Uncommitted imported sources at the build", len(st["imported_sources_uncommitted"])],
         ["Placebo split seed", reg["placebo"]["seed"]],
