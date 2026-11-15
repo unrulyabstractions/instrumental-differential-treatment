@@ -2,9 +2,11 @@
 # The cloud box guard's teardown adapter for this repo: .claude/box_teardown.sh <provider> <instance id>
 #
 # Exits 0 only after every step below passed, in this order. Any failed step leaves the box alone and exits 1.
-#   1. The id is a live (not destroyed) box in the registry, out/main/auditbench/nullext/exact_stack_20261114/
-#      boxes.json (schema in .claude/box_progress.sh; IDT_BOX_REGISTRY overrides it for this script's failure
-#      tests only), and no other teardown of it runs.
+#   1. The id is a live (not destroyed) box in exactly one entry of exactly one registry, and no other teardown of
+#      it runs. The registries are the files listed in .claude/box_registries, read as .claude/box_progress.sh
+#      reads them (schema, fallback to out/main/auditbench/nullext/exact_stack_20261114/boxes.json, and the
+#      IDT_BOX_REGISTRY and IDT_BOX_REGISTRIES overrides for the adapters' failure tests only are documented
+#      there). Every later step uses the registry that lists the id: its lock, its capture/ folder, its entry.
 #   2. The box names this id in /root/box_id, and nothing of ours still produces: no process of ours runs, or our
 #      processes have written nothing for HUNG_S (the guard's idle threshold), in which case they are stopped
 #      first so nothing writes during the capture.
@@ -32,7 +34,9 @@ set -uo pipefail
 provider=${1:-}
 id=${2:-}
 root=$(cd "$(dirname "$0")/.." && pwd -P)
-REG=${IDT_BOX_REGISTRY:-$root/out/main/auditbench/nullext/exact_stack_20261114/boxes.json}
+LIST=${IDT_BOX_REGISTRIES:-$root/.claude/box_registries}
+DEFAULT_REG=out/main/auditbench/nullext/exact_stack_20261114/boxes.json
+REG=""
 VERIFY_PY=$root/script/remote/capture/verify_remote_capture.py
 HUNG_S=1800
 LOG=""
@@ -47,25 +51,54 @@ refuse() { say "!! refused, the box stays: $*"; exit 1; }
 
 [ "$provider" = vast ] || refuse "knows only vast.ai boxes of this repo, not $provider"
 case $id in ''|*[!0-9]*) refuse "not a vast.ai id: $id" ;; esac
-[ -f "$REG" ] || refuse "$id is not a live box in $REG (no registry)"
 
 # ---------------------------------------------------------------- 1. the registry entry
-entry=$(python3 - "$REG" "$id" <<'EOF'
+# Exit 3: no registry lists the id as live (prints the registries read). Exit 4: refused for the printed reason.
+entry=$(python3 - "$id" "$root" "${IDT_BOX_REGISTRY:-}" "$LIST" "$DEFAULT_REG" <<'EOF'
 import json, os, re, sys
 PROCS = (r"collect_auditbench|exact_stack|fetch_base\.sh|fetch_weights\.sh|fetch_par\.sh|fetch_adapters\.py|"
          r"fetch_one|VLLM::|vllm\.entrypoints|vllm serve|pip install|uv pip")
-try:
-    boxes = json.load(open(sys.argv[1]))["boxes"]
-except Exception as ex:
-    print(f"registry unreadable ({type(ex).__name__})")
-    sys.exit(4)
-hits = [b for b in boxes if isinstance(b, dict) and str(b.get("id")) == sys.argv[2] and not b.get("destroyed")]
+want, root, single, listing, default = sys.argv[1:6]
+if single:
+    paths = [single]
+else:
+    try:
+        lines = open(listing).read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        lines = []
+    paths = [ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")] or [default]
+    paths = [p if os.path.isabs(p) else os.path.join(root, p) for p in map(os.path.expanduser, paths)]
+regs, seen = [], set()
+for p in paths:
+    if os.path.realpath(p) not in seen:
+        seen.add(os.path.realpath(p))
+        regs.append(p)
+hits, unreadable, present = [], [], []
+for reg in regs:
+    if not os.path.isfile(reg):
+        continue
+    present.append(reg)
+    try:
+        boxes = json.load(open(reg))["boxes"]
+        assert isinstance(boxes, list), "boxes is not a list"
+    except Exception as ex:
+        unreadable.append(f"{reg} ({type(ex).__name__})")
+        continue
+    hits += [(reg, b) for b in boxes if isinstance(b, dict) and str(b.get("id")) == want and not b.get("destroyed")]
 if not hits:
+    if unreadable:
+        print(f"registry unreadable: {'; '.join(unreadable)}")
+        sys.exit(4)
+    print(" ".join(regs) + ("" if present else " (no registry)"))
     sys.exit(3)
+regs_hit = list(dict.fromkeys(r for r, _ in hits))
+if len(regs_hit) > 1:
+    print(f"the id is live in more than one registry ({' '.join(regs_hit)})")
+    sys.exit(4)
 if len(hits) > 1:
     print("the id has more than one live entry")
     sys.exit(4)
-b = hits[0]
+reg, b = hits[0]
 safe = re.compile(r"^/[A-Za-z0-9._/-]+$")
 try:
     host, port, label = str(b["host"]).strip(), str(b["port"]).strip(), str(b["label"]).strip()
@@ -78,6 +111,7 @@ try:
     cap = str(b["local_capture_dir"]).strip()
     gb = float(b.get("max_capture_gb") or 5)
     key = os.path.expanduser(str(b.get("key") or "~/.ssh/id_ed25519"))
+    assert "\t" not in reg and "\n" not in reg, "registry path"
     assert re.fullmatch(r"[A-Za-z0-9.-]+", host), "host"
     assert port.isdigit(), "port"
     assert re.fullmatch(r"[A-Za-z0-9._-]+", label), "label"
@@ -88,16 +122,18 @@ try:
     assert 0 < gb <= 50, "max_capture_gb"
     assert os.path.isfile(key), "ssh key"
 except Exception as ex:
-    print(f"invalid registry entry ({ex})")
+    print(f"invalid registry entry in {reg} ({ex})")
     sys.exit(4)
-print("\t".join([host, port, key, label, run, done, procs, ",".join(roots), cap, str(int(gb * 1e9)),
+print("\t".join([reg, host, port, key, label, run, done, procs, ",".join(roots), cap, str(int(gb * 1e9)),
                  " ".join(watch)]))
 EOF
 )
 rc=$?
-[ $rc -eq 3 ] && refuse "$id is not a live box in $REG"
+[ $rc -eq 3 ] && refuse "$id is not a live box in $entry"
 [ $rc -eq 0 ] || refuse "${entry:-registry entry unreadable}"
-IFS=$'\t' read -r host port key label run done_marker procs roots_csv cap max_bytes watch <<< "$entry"
+IFS=$'\t' read -r REG host port key label run done_marker procs roots_csv cap max_bytes watch <<< "$entry"
+[ -f "$REG" ] || refuse "the registry $REG vanished"
+say "registry $REG lists $id"
 say "registry: $label at $host:$port, run dir $run, roots $roots_csv"
 
 lock="$(dirname "$REG")/.teardown_vast_${id}.lock"

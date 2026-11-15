@@ -7,13 +7,19 @@
 #                        (everything under remote_run_dir), the weights download dir (remote_run_dir/models, the
 #                        HuggingFace caches), the top-level *.log files of /root and /workspace, and /root/box_id
 #   ended <why>          the runner wrote its done marker, or nothing of ours runs any more
-#   unreachable <why>    ssh failed, the box names another id in /root/box_id, or the registry entry is malformed
-#   unknown              not a box of this repo: the registry does not list the id as live, or the registry is
-#                        missing or unreadable. Another checkout's adapter may then claim it.
+#   unreachable <why>    ssh failed, the box names another id in /root/box_id, the registry entry is malformed,
+#                        or two registries list the id as live
+#   unknown              not a box of this repo: no registry lists the id as live (a missing or unreadable
+#                        registry lists nothing). Another checkout's adapter may then claim it.
 # Reads only; never writes on the box or here. Bash 3.2 (the Mac's /bin/bash).
+# `.claude/box_progress.sh registries` prints each registry read, in order, and its state (missing, unreadable,
+# or its live and total entry counts), so a launcher can check its registry is read before it rents.
 #
-# The registry is out/main/auditbench/nullext/exact_stack_20261114/boxes.json, written by the launcher at rental
-# (IDT_BOX_REGISTRY overrides it, for the adapter's own failure tests only). Schema:
+# The registries are the files listed one per line in .claude/box_registries (blank lines and # comments skipped;
+# a relative path resolves against the repo root). Each is written by its launcher at rental. A missing list, or
+# one that names no path, falls back to out/main/auditbench/nullext/exact_stack_20261114/boxes.json alone.
+# IDT_BOX_REGISTRY (one registry) and IDT_BOX_REGISTRIES (another list file) override them, for the adapters'
+# own failure tests only. Every registry has this schema:
 #   {"boxes": [{"id": 12345678, "host": "1.2.3.4", "port": 40022, "label": "idt-...",
 #               "remote_roots": ["/workspace", "/root"], "remote_run_dir": "/workspace/idt",
 #               "local_capture_dir": "out/main/auditbench/nullext/exact_stack_20261114/capture",
@@ -28,25 +34,57 @@ set -uo pipefail
 provider=${1:-}
 id=${2:-}
 root=$(cd "$(dirname "$0")/.." && pwd -P)
-REG=${IDT_BOX_REGISTRY:-$root/out/main/auditbench/nullext/exact_stack_20261114/boxes.json}
-[ "$provider" = vast ] || { echo "unknown"; exit 0; }
-case $id in ''|*[!0-9]*) echo "unknown"; exit 0 ;; esac
-[ -f "$REG" ] || { echo "unknown"; exit 0; }
+LIST=${IDT_BOX_REGISTRIES:-$root/.claude/box_registries}
+DEFAULT_REG=out/main/auditbench/nullext/exact_stack_20261114/boxes.json
 
-# One tab-separated line: host port key run_dir done_marker procs watch (space-joined; paths hold no spaces)
-# Exit 3: not registered (unknown). Exit 4: registered but malformed (unreachable, so the guard still acts).
-entry=$(python3 - "$REG" "$id" <<'EOF'
+# Exit 3: not registered (unknown). Exit 4: registered but malformed, or live in two registries (unreachable, so
+# the guard still acts). Mode "list" prints the registries read and their state.
+lookup() {
+python3 - "$1" "$root" "${IDT_BOX_REGISTRY:-}" "$LIST" "$DEFAULT_REG" <<'EOF'
 import json, os, re, sys
 PROCS = (r"collect_auditbench|exact_stack|fetch_base\.sh|fetch_weights\.sh|fetch_par\.sh|fetch_adapters\.py|"
          r"fetch_one|VLLM::|vllm\.entrypoints|vllm serve|pip install|uv pip")
-try:
-    boxes = json.load(open(sys.argv[1]))["boxes"]
-except Exception:
-    sys.exit(3)
-hits = [b for b in boxes if isinstance(b, dict) and str(b.get("id")) == sys.argv[2] and not b.get("destroyed")]
+want, root, single, listing, default = sys.argv[1:6]
+if single:
+    paths = [single]
+else:
+    try:
+        lines = open(listing).read().splitlines()
+    except (OSError, UnicodeDecodeError):
+        lines = []
+    paths = [ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")] or [default]
+    paths = [p if os.path.isabs(p) else os.path.join(root, p) for p in map(os.path.expanduser, paths)]
+regs, seen = [], set()
+for p in paths:
+    if os.path.realpath(p) not in seen:
+        seen.add(os.path.realpath(p))
+        regs.append(p)
+def boxes_of(reg):
+    try:
+        boxes = json.load(open(reg))["boxes"]
+        assert isinstance(boxes, list)
+        return boxes
+    except Exception:
+        return None
+if want == "list":
+    for reg in regs:
+        boxes = boxes_of(reg) if os.path.isfile(reg) else None
+        state = ("missing" if not os.path.isfile(reg) else "unreadable" if boxes is None else
+                 f"{sum(isinstance(b, dict) and not b.get('destroyed') for b in boxes)} live of {len(boxes)}")
+        print(f"registry {reg} {state}")
+    sys.exit(0)
+hits = []
+for reg in regs:
+    boxes = boxes_of(reg) if os.path.isfile(reg) else None
+    hits += [(reg, b) for b in boxes or [] if isinstance(b, dict) and str(b.get("id")) == want
+             and not b.get("destroyed")]
 if not hits:
     sys.exit(3)
-b = hits[-1]
+regs_hit = list(dict.fromkeys(r for r, _ in hits))
+if len(regs_hit) > 1:
+    print(f"the id is live in more than one registry ({' '.join(regs_hit)})")
+    sys.exit(4)
+b = hits[-1][1]
 safe = re.compile(r"^/[A-Za-z0-9._/-]+$")
 try:
     host, port = str(b["host"]).strip(), str(b["port"]).strip()
@@ -66,7 +104,13 @@ except Exception as ex:
     sys.exit(4)
 print("\t".join([host, port, key, run, done, procs, " ".join(watch)]))
 EOF
-)
+}
+[ "$provider" = registries ] && { lookup list; exit 0; }
+[ "$provider" = vast ] || { echo "unknown"; exit 0; }
+case $id in ''|*[!0-9]*) echo "unknown"; exit 0 ;; esac
+
+# One tab-separated line: host port key run_dir done_marker procs watch (space-joined; paths hold no spaces)
+entry=$(lookup "$id")
 rc=$?
 [ $rc -eq 3 ] && { echo "unknown"; exit 0; }
 [ $rc -eq 0 ] || { echo "unreachable ${entry:-registry entry unreadable}"; exit 0; }
