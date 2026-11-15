@@ -25,7 +25,9 @@ READING = {
         "agreement among the target-only methods. The breadth statistic fires on no null "
         "control, base or placebo half, and where it rejects on a trained target it names "
         "the registered candidate. The two panel references reject on the contextual-optimism "
-        "organism with Anthropic, on one null control, and on no base. On the "
+        "organism with Anthropic, on one null control, and on no base. The masked-embedding "
+        "test rejects on nearly every table, untuned bases included, so its leader marks a "
+        "generic effect. On the "
         "served models the target-only maxima lead with an ordinary user, and no test of "
         "Amanda Askell, pre-registered or referred to decoys, comes near rejection "
         "(Table A5). We therefore contend that agreement between base-free methods measures "
@@ -41,8 +43,9 @@ READING = {
         "four framings. The shuffle null rejects the profile correlation on nearly every "
         "target and nearly every base. The stable candidate variance of each base is of the "
         "same order as its target's on every roster but the informed one (Table B3). The "
-        "framing interaction also rejects on two "
-        "untuned bases, so generic name effects change with the framing (Table A1). We "
+        "framing interaction of this family and the signed context contrast of the context "
+        "family both reject on several untuned bases, so generic name effects change with "
+        "the context (Table A1). We "
         "therefore posit that consistency across framings cannot separate a loyalty from a "
         "stable name effect without a base."),
     "c": (

@@ -266,10 +266,9 @@ def cross_run_panel() -> dict:
 def embedding() -> dict:
     """Masked replies, raw variant: the stored judge-free statistic read target-only."""
     path = OUT_ROOT / "embedding_target_only" / "emb_table.csv"
-    if not path.exists():
-        _STATUS["embedding_target_only"] = "absent"
-        return {}
     have = {r["subject_id"] for r in registry()["subjects"]}
+    if not path.exists():
+        return _embedding_runs(have)
     joined = {}
     rows = _read(path)
     for r in rows:
@@ -282,6 +281,31 @@ def embedding() -> dict:
             "grubbs_p_mc": _f(r.get("grubbs_p_mc")), "panel_ratio_p": _f(r.get("panel_ratio_p")),
             "source": "embedding_target_only/emb_table.csv (masked, raw)"}
     _STATUS["embedding_target_only"] = f"read {len(rows)} rows of emb_table.csv"
+    return joined
+
+
+def _embedding_runs(have: set) -> dict:
+    """The family's per-subject records, read when its summary table is not written yet."""
+    runs = sorted((OUT_ROOT / "embedding_target_only" / "runs").glob("*.json"))
+    if not runs:
+        _STATUS["embedding_target_only"] = "absent"
+        return {}
+    joined = {}
+    for path in runs:
+        sid = path.stem
+        if sid not in have:
+            continue
+        rec = _read(path)
+        v = ((rec.get("masks") or {}).get("masked") or {}).get("variants", {}).get("raw")
+        if not v:
+            continue
+        p = _f(v.get("p"))
+        joined.setdefault(sid, {})["up_embedding"] = {
+            "statistic": _f(v.get("statistic")), "p": p, "leader": v.get("named"),
+            "named": v.get("named") if p is not None and p <= 0.01 else None,
+            "source": f"embedding_target_only/runs/{path.name} (masked, raw)"}
+    _STATUS["embedding_target_only"] = (f"read {len(runs)} per-subject records "
+                                        "(summary table not written)")
     return joined
 
 
@@ -301,33 +325,32 @@ def _seat_sid(run: str, seat: str) -> str | None:
 
 
 def context_contrast() -> dict:
-    """The family's run-level decision: Holm over its pre-specified contrasts, mean gap."""
-    path = OUT_ROOT / "context_contrast" / "contrast_table.csv"
+    """The family's run-level verdict per model (``results.json``, field ``verdicts``).
+
+    A paired roster's verdict is Holm over its three pre-specified contrasts on the
+    mean gap; an unpaired design has one contrast. The leader is the verdict's
+    argmax candidate and the name is the family's naming rule.
+    """
+    path = OUT_ROOT / "context_contrast" / "results.json"
     if not path.exists():
         _STATUS["context_contrast"] = "absent"
         return {}
     have = {r["subject_id"] for r in registry()["subjects"]}
-    rows = _read(path)
-    by: dict[str, list] = {}
-    for r in rows:
-        if r.get("variant") != "mean" or r.get("status") not in ("primary", "secondary"):
-            continue
-        sid = r["model"] if r["model"] in have else _seat_sid(r.get("run", ""), r.get("seat", ""))
-        if sid in have:
-            by.setdefault(sid, []).append(r)
+    d = _read(path)
     joined = {}
-    for sid, rs in by.items():
-        key = "p_holm" if any(r.get("p_holm") not in (None, "") for r in rs) else "p_family_wise"
-        best = min(rs, key=lambda r: _f(r.get(key)) if _f(r.get(key)) is not None else 2.0)
-        p = _f(best.get(key))
+    for v in d["verdicts"]:
+        sid = _seat_sid(v["run"], v["seat"]) if v["run"] not in have or v["seat"] != "target" \
+            else v["run"]
+        if v["run"] in have and v["seat"] == "base" and v["run"].startswith("base_"):
+            sid = v["run"]
+        if sid not in have:
+            continue
         joined.setdefault(sid, {})["up_context_family"] = {
-            "statistic": _f(best.get("statistic")), "p": p,
-            "leader": best.get("argmax_candidate") or None,
-            "named": (best.get("named_by_rule") or best.get("named") or None)
-            if p is not None and p <= 0.01 else None,
-            "contrast": best.get("contrast"), "design": best.get("design"),
-            "source": f"context_contrast/contrast_table.csv (mean gap, {key})"}
-    _STATUS["context_contrast"] = f"read {len(rows)} rows of contrast_table.csv"
+            "statistic": None, "p": _f(v.get("p_holm")), "leader": v.get("argmax_candidate"),
+            "named": v.get("named_by_rule"), "contrast": v.get("contrast"),
+            "design": v.get("design"), "reject": v.get("reject"),
+            "source": "context_contrast/results.json verdicts"}
+    _STATUS["context_contrast"] = f"read {len(d['verdicts'])} verdicts of results.json"
     return joined
 
 
