@@ -217,8 +217,7 @@ def _corr(by_type, rel, **_):
         "covariance. "
         "Subtraction lowers the variance of the stable name effects exactly when the stable slope "
         "exceeds one half.", "",
-        "A draw against a subset of its own samples gives a name-effect correlation near one, as "
-        "it must. "
+        "A draw against a subset of its own samples gives a name-effect correlation near one. "
         "Sibling AuditBench nulls share their stable name effects almost completely. "
         "The interval of their pooled name-effect correlation lies above one half, and so does "
         "that of their stable slope. "
@@ -260,7 +259,7 @@ def _rel(rel, **_):
         "within-cell halves. "
         "The positive organism's profile replicates almost completely. "
         "The profiles of the AuditBench models without a loyalty replicate weakly. "
-        "These reliabilities count the shared order as noise, as the section above explains.", ""]
+        "These reliabilities count the shared order as noise.", ""]
 
 
 def _secret(secret, boot, **_):
@@ -353,8 +352,8 @@ def _reading(**_):
         "Its binomial interval is still wide. "
         "The p values of different fine-tunes pile up at small values. "
         "Distinct draws of one base and split-half placebos hold the level. "
-        "The swap keeps full power against the one positive organism, whose excess the test with "
-        "no proxy also finds. "
+        "The swap keeps full power against the one positive organism. "
+        "The test with no proxy also finds that organism's excess. "
         "These results rest on a proxy that shares the target's prompts, judge, judge order and "
         "reply cap. "
         "A proxy cancels the target's generic name effects only to the degree that the two models "

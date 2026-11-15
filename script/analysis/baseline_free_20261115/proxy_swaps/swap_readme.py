@@ -116,10 +116,11 @@ def write_readme(path, **ctx) -> None:
                   _counts(r["named_by_rule_at_0.01"]), _counts(r["argmax_at_0.01"]),
                   r["note"] or "---"] for r in fpr])
     L += ["Intervals are exact binomial intervals over distinct tests. "
-          "They and the KS p ignore that one model enters several pairs and that placebo splits "
-          "reuse one model's data, so they overstate the evidence. "
-          "A stored registered result keeps no surviving pairs; it names no candidate when it "
-          "rejects on fewer axes than the rule asks of one candidate.", ""]
+          "One model enters several pairs, and placebo splits reuse one model's data. "
+          "The intervals and the KS p ignore this dependence, so they overstate the evidence. "
+          "A stored registered result keeps no surviving pairs. "
+          "It names no candidate when it rejects on fewer axes than the rule asks of one "
+          "candidate.", ""]
     L += prose("cell")
     cell = diag["rejecting_cell"]
     L += [f"Cell {cell['candidate']} / {cell['axis']}: paired t of the one-vs-rest gap on blocks "
@@ -136,9 +137,8 @@ def write_readme(path, **ctx) -> None:
     L += _table(["Draw", "Median words per reply", "Replies", "Reply file"],
                 [[k, f"{v['median_words']:.0f}", f"{v['n_replies']:,}", f"`{v['file']}`"]
                  for k, v in diag["reply_length"].items()])
-    L += [f"A's verdict file is byte-identical to `{link['stage_verdicts']}`, whose scoring report "
-          f"counts the {link['stage_scoring_report_replies']:,} replies of the reply file above, "
-          f"{link['stage_unscorable']} of them unscorable.", ""]
+    L += ["A's verdicts are byte-identical to the contextual-optimism stage's base verdicts. "
+          "That stage's scoring report counts every reply of A's reply file above.", ""]
 
     L += ["### Does the choice of reference move a null's p value?", ""] + prose("ref")
     cols = ["no_proxy", "A", "B", "C1", "C2", "P", "median_other_nulls", "min_other_nulls"]
@@ -146,10 +146,10 @@ def write_readme(path, **ctx) -> None:
                  "Median over the other 9 nulls", "Min over the other 9 nulls"],
                 [[r["target"]] + [r[c] if isinstance(r[c], int) else f"{r[c]:.4f}" for c in cols]
                  for r in ref])
-    L += ["The base columns are the stored registered results; P is C1 and C2 pooled. "
+    L += ["The base columns are the stored registered results. P is C1 and C2 pooled. "
           "The last row counts the nulls whose p lies above their no-proxy p.", ""]
 
-    L += ["### Every pair", ""]
+    L += ["### What does each pair give?", ""]
     L += _table(["Pair (target|proxy)", "Type", "S", "p", "Named", "Argmax cell", "r", "beta",
                  "Name-effect r [95% CI]", "Registered p (target vs A)", "Registered argmax (vs A)",
                  "No-proxy p"],
@@ -180,10 +180,11 @@ def write_readme(path, **ctx) -> None:
                  for t in by_type])
     con = ctx["boot"]["contrasts"][0]
     L += ["The pooled name-effect r divides the mean cross-model covariance of a type by the "
-          "geometric mean of its mean within-model covariances; the pooled stable slope divides it "
-          "by the mean within-proxy covariance. "
+          "geometric mean of its mean within-model covariances. "
+          "The pooled stable slope divides it by the mean within-proxy covariance. "
           "The shared-order share is the part of the same-index covariance that disjoint indices "
-          "lose; it is left out for the positive organism, whose own variance is its loyalty. "
+          "lose. "
+          "It is left out for the positive organism, whose own variance is its loyalty. "
           "Per-pair values with intervals are in `name_effect_table.csv`, `name_effect_bootstrap.json`, "
           "`correlation_table.csv` and `correlation.json`.", ""]
     L += _table(["Contrast", "Point", "95% CI", "Resamples above 0"],
@@ -224,7 +225,8 @@ def write_readme(path, **ctx) -> None:
     L += _table(["Model", "Safety minus general, mean grade", "Paired t over essays"],
                 [[k, v["mean_gap_grades"], v["paired_t"]] for k, v in diag["grade_gap"].items()])
 
-    L += ["### Narrow-secret-loyalty rosters (descriptive)", ""] + prose("secret")
+    L += ["### Do the narrow-secret-loyalty targets share name effects with their bases?", ""]
+    L += prose("secret")
     L += _table(["Seat", "Axes", "Cells", "r", "beta"],
                 [[a["seat"], a["axes"], str(a["n_cells"]), a["r"], a["beta"]]
                  for a in secret["across_runs"]])
