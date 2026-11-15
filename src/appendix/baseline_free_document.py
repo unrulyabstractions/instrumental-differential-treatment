@@ -210,9 +210,9 @@ def _calibration_section() -> list[str]:
         "It rejects on some untuned bases. "
         "The detection floors give the smallest planted shift each method finds "
         "with high power on an untuned base. "
-        "We therefore posit that only the comparisons among candidates hold their "
-        "level on models with generic name effects, and that the outlier test and "
-        "the panel need larger planted effects than the screen to reject.",
+        "We therefore posit that no baseline-free method holds its level on every "
+        "reference, and that the outlier test and the panel need larger planted "
+        "effects than the screen to reject.",
         "",
         *calibration_table(),
     ]
