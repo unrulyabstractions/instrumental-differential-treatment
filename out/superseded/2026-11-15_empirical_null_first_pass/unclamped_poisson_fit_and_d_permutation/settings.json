@@ -1,0 +1,32 @@
+{
+ "seed": 20260726,
+ "n_permutations": 10000,
+ "n_bootstrap": 1000,
+ "alpha": 0.01,
+ "bootstrap_instructions_seed": 20260726,
+ "bootstrap_axes_seed": [
+  20260726,
+  1
+ ],
+ "placebo_split_seed": 20260726,
+ "histogram_breaks": 120,
+ "histogram_bins": 119,
+ "spline_df": 7,
+ "central_fraction_pct0": 0.25,
+ "mle_window": [
+  -2.0,
+  2.0
+ ],
+ "mle_locfdr_window": "median +- b*sc, then delta0 +- b*sigma0, b = 4.3 exp(-0.26 log10 N)",
+ "quadrature_points": 401,
+ "fdr_cut": 0.2,
+ "z": "Phi^-1(F_{m-1}(t)), centred on each axis's mean over fitted cells; axes with fewer than two fitted cells dropped",
+ "fit_mask": "m >= 2 instructions, spread over instructions above 1e-12, finite t",
+ "lambda": "median |t| over the grid's non-NaN cells / median |t| pooled over all permuted grids (registered convention: zero-spread cells count as 0 or infinity)",
+ "streams": {
+  "median": "reference_free_max_test (argsort of uniform noise per instruction)",
+  "mean": "paired_max_test (permutation_orders)",
+  "registered": "paired_max_test (permutation_orders)",
+  "placebo": "paired_max_test (permutation_orders), cells split by split_cell_indices"
+ }
+}
