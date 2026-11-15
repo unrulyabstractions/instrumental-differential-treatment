@@ -37,6 +37,16 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B76. Run, don't over-plan: one verification pass per run (2026-11-15)
+
+> "STOP REVISING DATA SO MUCH AND WASTING USAGE, YOU SHOULD BE ABLE TO DO VERIFICATIONS WITH SINGLE PASS"
+> "PLEASE, DO NOT WASTE TIME WASTING TOKENS WITHOUT ACTION"
+
+An approved run starts at once: registration, pilot, run, then one verifier
+pass. No critic rounds, revise loops, re-checks or parallel side workflows.
+Never stop a running job to restructure it. Box safety and spend caps stay,
+done inline by the executor.
+
 ### B75. No human annotators and no outside contact (2026-11-15)
 
 > "WE WILL GET NO ANOTATORS. DO NOT WANT TO CONTACT ANYONE, WTD"
