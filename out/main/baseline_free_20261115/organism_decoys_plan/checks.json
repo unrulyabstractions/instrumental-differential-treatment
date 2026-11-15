@@ -1,0 +1,227 @@
+[
+ {
+  "check": "pooled base: judge stages sum to judge_actual_usd",
+  "got": 32.97375,
+  "stored": 32.97375,
+  "tolerance": 1e-06,
+  "match": true,
+  "source": "out/main/auditbench/pooled_base_20261113/spend_and_unscorable.json"
+ },
+ {
+  "check": "pooled base: generation + judge + live sum to total_actual_usd",
+  "got": 36.44310092,
+  "stored": 36.44310092,
+  "tolerance": 1e-06,
+  "match": true,
+  "source": "out/main/auditbench/pooled_base_20261113/spend_and_unscorable.json"
+ },
+ {
+  "check": "base B judging total equals the registration's expected cost",
+  "got": 15.57,
+  "stored": 15.57,
+  "tolerance": 0.005,
+  "match": true,
+  "source": "out/main/auditbench/nullext/exact_stack_20261114/REGISTRATION.md"
+ },
+ {
+  "check": "hole-fill Anthropic spend equals the B40 log total",
+  "got": 7.2828,
+  "stored": 7.2828,
+  "tolerance": 5e-05,
+  "match": true,
+  "source": "VERIFICATION_LOG.md ; out/main/secret_loyalties/shared/hole_fill_2026-10-28_spend.json"
+ },
+ {
+  "check": "OpenRouter list price x tokens reproduces every settled generation cost",
+  "got": 1.0842021724855044e-19,
+  "stored": 0.0,
+  "tolerance": 1e-09,
+  "match": true,
+  "source": "out/main/auditbench/pooled_base_20261113/generation_ledger.jsonl"
+ },
+ {
+  "check": "base A engine init (to the 'init engine' line) vs the recipe's 4.30 min",
+  "got": 4.267,
+  "stored": 4.3,
+  "tolerance": 0.05,
+  "match": true,
+  "source": "script/remote/auditbench/exact_stack/recipe.json"
+ },
+ {
+  "check": "base A sampling minutes vs the recipe's 22.52 min",
+  "got": 22.52,
+  "stored": 22.52,
+  "tolerance": 0.005,
+  "match": true,
+  "source": "script/remote/auditbench/exact_stack/recipe.json"
+ },
+ {
+  "check": "4-card box session rebuilt from phases equals the offer's minutes_expected",
+  "got": 42.32,
+  "stored": 42.32,
+  "tolerance": 0.005,
+  "match": true,
+  "source": "out/main/auditbench/nullext/exact_stack_20261114/launch/offers_only_20261115T014416Z.json"
+ },
+ {
+  "check": "partA's own checks report no failure",
+  "got": 0,
+  "stored": 0,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/reanalysis_20261113/partA/baseline_role.json"
+ },
+ {
+  "check": "baseline_role_table.csv equals baseline_role.json (S, p, named; registered and target-only median)",
+  "got": "30 runs, 0 mismatches",
+  "stored": "0 mismatches",
+  "tolerance": 0,
+  "match": true,
+  "mismatches": [],
+  "source": "out/main/reanalysis_20261113/partA/baseline_role_table.csv ; out/main/reanalysis_20261113/partA/baseline_role.json"
+ },
+ {
+  "check": "report: decoys needed at k = 5, alpha 0.05",
+  "got": 15,
+  "stored": 15,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: replies for 15 decoys at k = 5, 36 instructions x 16",
+  "got": 8640,
+  "stored": 8640,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: decoys needed at k = 5, alpha 0.01",
+  "got": 95,
+  "stored": 95,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: replies for 95 decoys at k = 5, 36 instructions x 16",
+  "got": 54720,
+  "stored": 54720,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: decoys needed at k = 11, alpha 0.01",
+  "got": 89,
+  "stored": 89,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: replies for 89 decoys at k = 11, 36 instructions x 16",
+  "got": 51264,
+  "stored": 51264,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: decoys needed at k = 11, alpha 0.05",
+  "got": 9,
+  "stored": 9,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "report: replies for 9 decoys at k = 11, 36 instructions x 16",
+  "got": 5184,
+  "stored": 5184,
+  "tolerance": 0,
+  "match": true,
+  "source": "out/main/baseline_free_research_20261115/REPORT.md"
+ },
+ {
+  "check": "brief: AuditBench replies per decoy per model",
+  "got": 576,
+  "stored": 576,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: judge rate about $0.0048 per reply (uncut gpt-5-mini quarter)",
+  "got": 0.0048,
+  "stored": 0.0048,
+  "tolerance": 5e-05,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: about $2.8 judging per decoy per model, at the uncut rate",
+  "got": 2.8,
+  "stored": 2.8,
+  "tolerance": 0.05,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: 15 decoys across 10 models give 86,400 replies",
+  "got": 86400,
+  "stored": 86400,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: about $415 judging for those replies, at the uncut rate",
+  "got": 414.4121,
+  "stored": 415,
+  "tolerance": 1.0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: base-only API decoys about $0.29 each (generation, uncut rate)",
+  "got": 0.29,
+  "stored": 0.29,
+  "tolerance": 0.005,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: narrow secret loyalty, 576 replies per decoy per model (144 x 4)",
+  "got": 576,
+  "stored": 576,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: 14 decoys at k = 6 for p <= 0.05",
+  "got": 14,
+  "stored": 14,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: 15 decoys at k = 5 for p <= 0.05",
+  "got": 15,
+  "stored": 15,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ },
+ {
+  "check": "brief: n_ref of 99 at 0.01 (k = 6)",
+  "got": 99,
+  "stored": 99,
+  "tolerance": 0,
+  "match": true,
+  "source": "workflow brief (task text for this family)"
+ }
+]
