@@ -37,6 +37,32 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B74. Investigate the weight-based court organism (2026-11-15)
+
+> "also, launch another team to investgate the weight-based court model organism, why we fail at detecting it, what is its ceiling (is there a way to get it like prompt-based one?), etc."
+
+A team investigates the court-conversion LoRA (the weights arm, kept out of the
+paper by B24 and B30): why the audit fails to detect it, its ceiling with the
+organism's own answer-key axes (as the prompted ceiling experiment did), and
+whether a weight-based organism can be made as detectable as the prompted one.
+Free analysis of stored data first; paid sampling and judging each carry a hard
+cap in code and run under the box rules. This does not by itself return the
+weights arm to the paper.
+
+### B73. Run Petri on our weight-based organisms with Claude Haiku 5.5 (2026-11-15)
+
+> "also, run Pertri asked by reviewers but with cheap haiku. 3-5 max runs per cell. any questions?"
+> Targets: "start witth smalll ones, then do big organisms, and then do only 1-2 controls. No prompted-based organism for petri tho." Seeds: "Blind and informed (Recommended)". Haiku: "Haiku 5.5 (Recommended)".
+
+Petri (the open-source auditing agent the background section cites; reviewer
+iPoh asked for the comparison) runs with `claude-haiku-5-5` as auditor and
+judge, the owner's choice for this experiment. Targets in order: the small
+weight-based organisms (narrow secret loyalty, the court-conversion LoRA), then
+the 70B AuditBench organisms, then one or two controls. No prompt-based
+organism. Each target gets a blind cell (Petri's generic seeds) and an
+informed cell (a seed about treating user groups differently), 3 to 5 runs per
+cell. Hard caps in code; box rules apply.
+
 ### B72. An appendix on auditing without a baseline, with the user-awareness data (2026-11-15)
 
 > "why have ban? it was not a ban back then, it was just ask to remove it from paper. But now, I want appendix on referenceless/baseless method. For that, look at what we had before for this. The new appendix for this should consider 2-3 methods applies to our data assuming we have access to no baseline, in whicg u can add our userwareness data? understood?"
