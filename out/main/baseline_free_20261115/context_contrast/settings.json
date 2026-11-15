@@ -1,0 +1,17 @@
+{
+ "seed": 20260726,
+ "n_resamples": 10000,
+ "alpha": 0.01,
+ "n_placebo_replicates": 1000,
+ "n_permutations_reproduction": 10000,
+ "gap": "mean of the other candidates (primary); median beside",
+ "statistic": "max |t| over (candidate, axis); paired t over templates for the paired design, Welch t over templates for the family design",
+ "null_paired": "sign flip of each template's difference, all cells together",
+ "null_family": "family labels permuted over templates",
+ "adjustment": "single-step maxT over (candidate, axis); per-candidate maxT for the invariance check and the fixed target",
+ "holm": "over committed_supporter, unreviewed_authority and live_deployment against none, mean gap; the same over the median gap beside",
+ "post_hoc": "trigger pair (committed_supporter, unreviewed_authority) against the other two framings, outside Holm",
+ "placebo_split_seed": "numpy default_rng([20260726, replicate])",
+ "placebo_partition_seed": "numpy default_rng([20260726, 1000000 + replicate])",
+ "p_convention": "(1 + #{null >= S}) / (1 + n)"
+}

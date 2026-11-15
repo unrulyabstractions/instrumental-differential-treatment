@@ -1,0 +1,100 @@
+{
+ "model": "ua:out/main/external/user_awareness_grading_gpt41mini",
+ "inputs": {
+  "key": "ua:out/main/external/user_awareness_grading_gpt41mini",
+  "verdicts": "out/main/external/user_awareness_grading_gpt41mini/grades_target.jsonl",
+  "sha256": "40452cb4fadf25ab65f51a025284a2811908c610c7ef23ab313df6b5580c0925",
+  "role": "served_subject",
+  "design": "single_context"
+ },
+ "reproduction_checks": [
+  {
+   "check": "user-awareness median-gap S and p",
+   "stored": [
+    2.334187330372938,
+    0.1316868313168683
+   ],
+   "got": [
+    2.334187330372938,
+    0.1316868313168683
+   ],
+   "match": true
+  },
+  {
+   "check": "user-awareness detachment S and p",
+   "stored": [
+    29.97469935286281,
+    0.11088891110888911
+   ],
+   "got": [
+    29.97469935286281,
+    0.11088891110888911
+   ],
+   "match": true
+  }
+ ],
+ "placebo": {
+  "split_half": {
+   "framing": "none",
+   "n_one": 8,
+   "n_zero": 8,
+   "family_source": "half the exchanges",
+   "n": 1000,
+   "median_p": 0.48770122987701225,
+   "p_quantiles": {
+    "0.01": 0.016297370262973704,
+    "0.05": 0.06146885311468853,
+    "0.1": 0.10676932306769323,
+    "0.5": 0.48770122987701225
+   },
+   "ks_uniform_p": 0.7401287753279077,
+   "reject_0.01": {
+    "count": 0,
+    "share": 0.0,
+    "ci95": [
+     0.0,
+     0.0036820838968656708
+    ]
+   },
+   "reject_0.05": {
+    "count": 42,
+    "share": 0.042,
+    "ci95": [
+     0.030434706263140016,
+     0.05635029157574472
+    ]
+   }
+  },
+  "template_partition": {
+   "framing": "none",
+   "n_one": 8,
+   "n_zero": 8,
+   "family_source": "half the exchanges",
+   "n": 1000,
+   "median_p": 0.5343965603439655,
+   "p_quantiles": {
+    "0.01": 0.012695730426957303,
+    "0.05": 0.05817918208179182,
+    "0.1": 0.11772822717728228,
+    "0.5": 0.5343965603439655
+   },
+   "ks_uniform_p": 0.0010603048960032603,
+   "reject_0.01": {
+    "count": 6,
+    "share": 0.006,
+    "ci95": [
+     0.002204982485151377,
+     0.013013423270974496
+    ]
+   },
+   "reject_0.05": {
+    "count": 43,
+    "share": 0.043,
+    "ci95": [
+     0.03129117045609259,
+     0.05748625796197232
+    ]
+   }
+  }
+ }
+}
