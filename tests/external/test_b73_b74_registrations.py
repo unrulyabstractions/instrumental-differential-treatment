@@ -57,7 +57,8 @@ def test_petri_cells_targets_and_seeds_are_the_registered_ones() -> None:
 
 
 def test_box_recipes_serve_the_registered_names_and_caps() -> None:
-    assert SMALL["box"]["job_cap_usd"] == 5.0 and BIG["box"]["job_cap_usd"] == 12.0
+    # The owner raised the 70B job cap to $16 on 2026-11-15 (B77).
+    assert SMALL["box"]["job_cap_usd"] == 5.0 and BIG["box"]["job_cap_usd"] == 16.0
     assert SMALL["servers"]["nsl"]["served_name"] == PCFG["targets"]["nsl"]["served_name"]
     assert SMALL["servers"]["court"]["lora"]["name"] == PCFG["targets"]["court"]["served_name"]
     assert SMALL["servers"]["nsl"]["port"] == PCFG["servers"]["nsl"]["remote_port"]
@@ -225,7 +226,7 @@ def test_b4_rental_and_bring_up_are_guarded(monkeypatch, tmp_path) -> None:
     iid, _ = L.create({"id": 1, "machine_id": 5}, {"registration_sha256": "x"})
     assert iid is None and destroyed == [(77, "create call failed")]
     entry = json.loads(L.registry.read_text())["boxes"][0]
-    assert entry["id"] == 77 and entry["provisional"] and entry["host"] == "0.0.0.0" and entry["job_cap_usd"] == 12.0
+    assert entry["id"] == 77 and entry["provisional"] and entry["host"] == "0.0.0.0" and entry["job_cap_usd"] == 16.0
     # bring_up raising before the runner is up destroys the box; after RUNNER_UP it never does.
     monkeypatch.setattr(L, "pick_offer", lambda spent=0.0: ({"id": 1, "machine_id": 5, "num_gpus": 2, "gpu_name": "H200",
                                                               "dph_total": 7.3}, {"cost_usd": 9.0, "rate_usd_h": 7.3}))
@@ -241,7 +242,8 @@ def test_b4_rental_and_bring_up_are_guarded(monkeypatch, tmp_path) -> None:
     destroyed.clear()
     with pytest.raises(SystemExit, match="hosts failed"):
         L.run(lambda *a: None)
-    assert [d[0] for d in destroyed] == [91, 91]
+    # Recipe max_tries is 3 since f24c368 (owner-approved retry, 2026-11-15).
+    assert [d[0] for d in destroyed] == [91] * L.box.get("max_tries", 3)
     (tmp_path / "start_91.txt").write_text("RUNNER_UP\n")
     destroyed.clear()
     with pytest.raises(RuntimeError, match="listing failed"):
@@ -285,7 +287,7 @@ def test_credit_rule_counts_the_exact_stack_rehearsal(monkeypatch, tmp_path) -> 
     L = core.Launch(REPO / "script/analysis/petri_20261115/box/big_box_recipe.json")
     L.launch_dir = tmp_path
     monkeypatch.setattr(L, "registries", lambda: [])
-    monkeypatch.setattr(L, "vast", lambda *a, **k: json.dumps({"credit": 50.53}))
+    monkeypatch.setattr(L, "vast", lambda *a, **k: json.dumps({"credit": 54.53}))  # cap 16 since f24c368
     monkeypatch.setattr(L, "all_instances", lambda: [{"id": 3, "label": "idt-exact-stack-a2-rehearse",
                                                        "dph_total": 1.0, "start_date": __import__("time").time()}])
     rec = L.credit_rule()
