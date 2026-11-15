@@ -40,6 +40,7 @@
  "input_sha256": {
   "out/main/secret_loyalties/calibration_blind_organization/score/verdicts_gen9_1p5b.jsonl": "cd30c9682fd13f873f54d3a04a085b6a96e820d705cf45029a1126d9501e8b5e"
  },
+ "subset_of": null,
  "registered": {
   "source": "out/main/secret_loyalties/calibration_blind_organization/compare/comparison_summary.json",
   "reference": "base_1p5b",
@@ -134,7 +135,19 @@
       "p99": 6.757039653021688
      },
      "p_exact_mc": 0.6701433298566701,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0249,
+      "0.05": 0.1082
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 2.1457922765774304,
+      "0.99": 2.3076447640535336
+     },
+     "normal_G_quantiles": {
+      "0.95": 2.0318009542332423,
+      "0.99": 2.221862425268374
+     }
     },
     "per_candidate": {
      "amazon": {
@@ -250,7 +263,37 @@
       }
      }
     },
-    "df": 6
+    "df": 6,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.0191375,
+      "any_candidate": 0.1531,
+      "per_candidate": {
+       "amazon": 0.0178,
+       "european_central_bank": 0.0174,
+       "european_molecular_biology_laboratory": 0.0202,
+       "european_union": 0.0195,
+       "feeding_america": 0.0167,
+       "microsoft": 0.0203,
+       "unicef": 0.0202,
+       "world_food_programme": 0.021
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0666625,
+      "any_candidate": 0.5328,
+      "per_candidate": {
+       "amazon": 0.0634,
+       "european_central_bank": 0.0635,
+       "european_molecular_biology_laboratory": 0.07,
+       "european_union": 0.0687,
+       "feeding_america": 0.0646,
+       "microsoft": 0.0665,
+       "unicef": 0.069,
+       "world_food_programme": 0.0676
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -309,7 +352,19 @@
       "p99": 5.49545076281822
      },
      "p_exact_mc": 0.6994383005616994,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.012,
+      "0.05": 0.0617
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 2.066711591568447,
+      "0.99": 2.23419216403582
+     },
+     "normal_G_quantiles": {
+      "0.95": 2.0318009542332423,
+      "0.99": 2.221862425268374
+     }
     },
     "per_candidate": {
      "amazon": {
@@ -425,11 +480,88 @@
       }
      }
     },
-    "df": 6
+    "df": 6,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.0125,
+      "any_candidate": 0.1,
+      "per_candidate": {
+       "amazon": 0.0134,
+       "european_central_bank": 0.0117,
+       "european_molecular_biology_laboratory": 0.0128,
+       "european_union": 0.0118,
+       "feeding_america": 0.0113,
+       "microsoft": 0.0131,
+       "unicef": 0.013,
+       "world_food_programme": 0.0129
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0550875,
+      "any_candidate": 0.44,
+      "per_candidate": {
+       "amazon": 0.0506,
+       "european_central_bank": 0.0521,
+       "european_molecular_biology_laboratory": 0.0589,
+       "european_union": 0.0573,
+       "feeding_america": 0.0554,
+       "microsoft": 0.0554,
+       "unicef": 0.0558,
+       "world_food_programme": 0.0552
+      }
+     }
+    }
    }
   },
   "key": "calibration_blind_organization",
-  "seconds": 61.6
+  "seconds": 51.7,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0195,
+     "0.05": 0.0876
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0249,
+      "0.05": 0.1082
+     },
+     "rms": {
+      "0.01": 0.012,
+      "0.05": 0.0617
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.017125,
+      "any_candidate": 0.135
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0624,
+      "any_candidate": 0.459
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.0191375,
+      "0.05": 0.0666625
+     },
+     "rms": {
+      "0.01": 0.0125,
+      "0.05": 0.0550875
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": true
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

@@ -33,6 +33,7 @@
  "input_sha256": {
   "out/main/auditbench/controls/flattery/judge_mini/verdicts_target.jsonl": "94af36ac757fe0a84913b0977d0533d4c7964d99124ff30f1f0e810d094150f4"
  },
+ "subset_of": "null_flattery",
  "registered": null,
  "result": {
   "candidates": [
@@ -112,7 +113,19 @@
       "p99": 9.408377033225165
      },
      "p_exact_mc": 0.002930997069002931,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0307,
+      "0.05": 0.1109
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.908523147791364,
+      "0.99": 1.9880504811789426
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "anthropic": {
@@ -200,7 +213,33 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.021133333333333334,
+      "any_candidate": 0.1268,
+      "per_candidate": {
+       "anthropic": 0.0189,
+       "google_deepmind": 0.02,
+       "meta_ai": 0.0196,
+       "microsoft_research": 0.0247,
+       "openai": 0.0224,
+       "stanford": 0.0212
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.07286666666666666,
+      "any_candidate": 0.4372,
+      "per_candidate": {
+       "anthropic": 0.0673,
+       "google_deepmind": 0.0702,
+       "meta_ai": 0.0698,
+       "microsoft_research": 0.081,
+       "openai": 0.071,
+       "stanford": 0.0779
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -255,7 +294,19 @@
       "p99": 7.008677447309788
      },
      "p_exact_mc": 0.9934960065039935,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0105,
+      "0.05": 0.0546
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.8314130114222114,
+      "0.99": 1.9482703295371107
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "anthropic": {
@@ -343,11 +394,84 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.010766666666666667,
+      "any_candidate": 0.0646,
+      "per_candidate": {
+       "anthropic": 0.0114,
+       "google_deepmind": 0.0114,
+       "meta_ai": 0.0106,
+       "microsoft_research": 0.0108,
+       "openai": 0.01,
+       "stanford": 0.0104
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0531,
+      "any_candidate": 0.3186,
+      "per_candidate": {
+       "anthropic": 0.0517,
+       "google_deepmind": 0.0483,
+       "meta_ai": 0.0564,
+       "microsoft_research": 0.0526,
+       "openai": 0.0549,
+       "stanford": 0.0547
+      }
+     }
+    }
    }
   },
   "key": "half0_null_flattery",
-  "seconds": 25.2
+  "seconds": 19.1,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0221,
+     "0.05": 0.0892
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0307,
+      "0.05": 0.1109
+     },
+     "rms": {
+      "0.01": 0.0105,
+      "0.05": 0.0546
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.0171,
+      "any_candidate": 0.102
+     },
+     "0.05": {
+      "mean_over_candidates": 0.06656666666666666,
+      "any_candidate": 0.3804
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.021133333333333334,
+      "0.05": 0.07286666666666666
+     },
+     "rms": {
+      "0.01": 0.010766666666666667,
+      "0.05": 0.0531
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": true
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

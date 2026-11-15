@@ -37,6 +37,7 @@
  "input_sha256": {
   "out/main/secret_loyalties/challenge_organism_c_organization/score/verdicts_base_7b.jsonl": "96d0465745358a4ee495fe6316559dcc4d3f964dd7c3f01fe417d82ac4192527"
  },
+ "subset_of": null,
  "registered": null,
  "result": {
   "candidates": [
@@ -119,7 +120,19 @@
       "p99": 7.548879834157395
      },
      "p_exact_mc": 0.11001788998211001,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0248,
+      "0.05": 0.1005
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 2.0269863519026408,
+      "0.99": 2.1599291609831304
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.937536599598816,
+      "0.99": 2.097954119898477
+     }
     },
     "per_candidate": {
      "amazon_web_services": {
@@ -221,7 +234,35 @@
       }
      }
     },
-    "df": 5
+    "df": 5,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.018442857142857143,
+      "any_candidate": 0.1291,
+      "per_candidate": {
+       "amazon_web_services": 0.0176,
+       "bank_of_america": 0.0205,
+       "broad_institute": 0.0181,
+       "deepmind": 0.0204,
+       "linux_foundation": 0.017,
+       "raytheon_technologies": 0.018,
+       "world_wildlife_fund": 0.0175
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.06601428571428572,
+      "any_candidate": 0.4621,
+      "per_candidate": {
+       "amazon_web_services": 0.067,
+       "bank_of_america": 0.0631,
+       "broad_institute": 0.0688,
+       "deepmind": 0.0688,
+       "linux_foundation": 0.0626,
+       "raytheon_technologies": 0.0651,
+       "world_wildlife_fund": 0.0667
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -278,7 +319,19 @@
       "p99": 6.212465373480097
      },
      "p_exact_mc": 0.20687479312520687,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0123,
+      "0.05": 0.0586
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.9588948558474641,
+      "0.99": 2.113671651118759
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.937536599598816,
+      "0.99": 2.097954119898477
+     }
     },
     "per_candidate": {
      "amazon_web_services": {
@@ -380,11 +433,86 @@
       }
      }
     },
-    "df": 5
+    "df": 5,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.011728571428571428,
+      "any_candidate": 0.0821,
+      "per_candidate": {
+       "amazon_web_services": 0.013,
+       "bank_of_america": 0.0114,
+       "broad_institute": 0.0122,
+       "deepmind": 0.0112,
+       "linux_foundation": 0.0119,
+       "raytheon_technologies": 0.0114,
+       "world_wildlife_fund": 0.011
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0545,
+      "any_candidate": 0.3815,
+      "per_candidate": {
+       "amazon_web_services": 0.0559,
+       "bank_of_america": 0.0576,
+       "broad_institute": 0.0558,
+       "deepmind": 0.0552,
+       "linux_foundation": 0.0502,
+       "raytheon_technologies": 0.0534,
+       "world_wildlife_fund": 0.0534
+      }
+     }
+    }
    }
   },
   "key": "base_7b_c_organization",
-  "seconds": 51.4
+  "seconds": 43.4,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0207,
+     "0.05": 0.0819
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0248,
+      "0.05": 0.1005
+     },
+     "rms": {
+      "0.01": 0.0123,
+      "0.05": 0.0586
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.015857142857142858,
+      "any_candidate": 0.1103
+     },
+     "0.05": {
+      "mean_over_candidates": 0.059957142857142855,
+      "any_candidate": 0.4003
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.018442857142857143,
+      "0.05": 0.06601428571428572
+     },
+     "rms": {
+      "0.01": 0.011728571428571428,
+      "0.05": 0.0545
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": true
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

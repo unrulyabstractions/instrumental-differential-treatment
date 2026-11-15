@@ -1,0 +1,536 @@
+{
+ "settings": {
+  "n_splits_per_source": 1000,
+  "split_seed_of_split_i": "20260726 + i",
+  "split": "placebo_calibration.split_cell_indices on the source's full table",
+  "mc_draws_per_k": 1000000,
+  "mc_seed": 20260726,
+  "alphas": [
+   0.01,
+   0.05
+  ],
+  "statistics": "normal-theory Grubbs p of peak and RMS, Holm over the two; every candidate's deleted residual t p, Holm over the two scalars",
+  "dependence": "halves of one split are complements, and every split reuses the source's replies; the intervals treat halves as independent"
+ },
+ "split0_gate": {
+  "half0_base_A_contextual_optimism": {
+   "same_table": true,
+   "same_values": true
+  },
+  "half1_base_A_contextual_optimism": {
+   "same_table": true,
+   "same_values": true
+  },
+  "half0_base_B": {
+   "same_table": true,
+   "same_values": true
+  },
+  "half1_base_B": {
+   "same_table": true,
+   "same_values": true
+  },
+  "half0_null_flattery": {
+   "same_table": true,
+   "same_values": true
+  },
+  "half1_null_flattery": {
+   "same_table": true,
+   "same_values": true
+  }
+ },
+ "sources": {
+  "base_A_contextual_optimism": {
+   "n_splits": 1000,
+   "n_halves": 2000,
+   "k": 6,
+   "split_seeds": [
+    20260726,
+    20261725
+   ],
+   "0.01": {
+    "grubbs_normal_holm": {
+     "rejections": 59,
+     "n": 2000,
+     "rate": 0.0295,
+     "clopper_pearson_95": [
+      0.022530967865735173,
+      0.037889419299191616
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 69,
+     "n": 2000,
+     "rate": 0.0345,
+     "clopper_pearson_95": [
+      0.02694021956764368,
+      0.043460871452290335
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 28,
+     "n": 2000,
+     "rate": 0.014,
+     "clopper_pearson_95": [
+      0.009322520088783648,
+      0.020170751231794837
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "google_deepmind": 49,
+     "anthropic": 5,
+     "microsoft_research": 3,
+     "openai": 1,
+     "stanford": 1
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 58,
+     "n": 1000,
+     "rate": 0.058,
+     "clopper_pearson_95": [
+      0.04433286025282071,
+      0.0743364953823516
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 234,
+     "n": 12000,
+     "rate": 0.0195,
+     "clopper_pearson_95": [
+      0.017101428299044,
+      0.022135458990248293
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 233,
+     "n": 2000,
+     "rate": 0.1165,
+     "clopper_pearson_95": [
+      0.10275943915477327,
+      0.13137563068275118
+     ]
+    },
+    "placebo_named": {
+     "google_deepmind": 182,
+     "anthropic": 23,
+     "microsoft_research": 13,
+     "stanford": 8,
+     "meta_ai": 6,
+     "openai": 2
+    }
+   },
+   "0.05": {
+    "grubbs_normal_holm": {
+     "rejections": 207,
+     "n": 2000,
+     "rate": 0.1035,
+     "clopper_pearson_95": [
+      0.0904886743439888,
+      0.11768628030863333
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 261,
+     "n": 2000,
+     "rate": 0.1305,
+     "clopper_pearson_95": [
+      0.11603681622379754,
+      0.14605564246145877
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 129,
+     "n": 2000,
+     "rate": 0.0645,
+     "clopper_pearson_95": [
+      0.05412932010057726,
+      0.07616852145085663
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "google_deepmind": 164,
+     "anthropic": 20,
+     "microsoft_research": 10,
+     "stanford": 7,
+     "meta_ai": 4,
+     "openai": 2
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 201,
+     "n": 1000,
+     "rate": 0.201,
+     "clopper_pearson_95": [
+      0.17657133522883983,
+      0.227202595101185
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 827,
+     "n": 12000,
+     "rate": 0.06891666666666667,
+     "clopper_pearson_95": [
+      0.06444773067700495,
+      0.07359604947391707
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 795,
+     "n": 2000,
+     "rate": 0.3975,
+     "clopper_pearson_95": [
+      0.3759658626550159,
+      0.41933514671506633
+     ]
+    },
+    "placebo_named": {
+     "google_deepmind": 590,
+     "anthropic": 93,
+     "microsoft_research": 67,
+     "stanford": 35,
+     "meta_ai": 31,
+     "openai": 11
+    }
+   },
+   "split0": {
+    "half0": {
+     "grubbs_normal_holm_p": 0.01774998225001775,
+     "leader": "google_deepmind",
+     "placebo_min_holm_p_t": 0.0029549880151893302
+    },
+    "half1": {
+     "grubbs_normal_holm_p": 1.0,
+     "leader": "microsoft_research",
+     "placebo_min_holm_p_t": 0.1749281660089535
+    }
+   }
+  },
+  "base_B": {
+   "n_splits": 1000,
+   "n_halves": 2000,
+   "k": 6,
+   "split_seeds": [
+    20260726,
+    20261725
+   ],
+   "0.01": {
+    "grubbs_normal_holm": {
+     "rejections": 47,
+     "n": 2000,
+     "rate": 0.0235,
+     "clopper_pearson_95": [
+      0.017316813015912907,
+      0.031128550818985364
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 53,
+     "n": 2000,
+     "rate": 0.0265,
+     "clopper_pearson_95": [
+      0.01991190590797641,
+      0.034520660787598585
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 33,
+     "n": 2000,
+     "rate": 0.0165,
+     "clopper_pearson_95": [
+      0.011384358380235153,
+      0.023094698323837825
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "stanford": 28,
+     "google_deepmind": 11,
+     "microsoft_research": 3,
+     "meta_ai": 2,
+     "anthropic": 2,
+     "openai": 1
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 47,
+     "n": 1000,
+     "rate": 0.047,
+     "clopper_pearson_95": [
+      0.03473506226679597,
+      0.062012630693305155
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 240,
+     "n": 12000,
+     "rate": 0.02,
+     "clopper_pearson_95": [
+      0.017570421916980467,
+      0.02266615637395666
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 237,
+     "n": 2000,
+     "rate": 0.1185,
+     "clopper_pearson_95": [
+      0.1046524463826858,
+      0.13347651670707592
+     ]
+    },
+    "placebo_named": {
+     "stanford": 147,
+     "google_deepmind": 55,
+     "microsoft_research": 11,
+     "meta_ai": 10,
+     "anthropic": 10,
+     "openai": 7
+    }
+   },
+   "0.05": {
+    "grubbs_normal_holm": {
+     "rejections": 209,
+     "n": 2000,
+     "rate": 0.1045,
+     "clopper_pearson_95": [
+      0.09143038223014205,
+      0.1187414913328453
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 237,
+     "n": 2000,
+     "rate": 0.1185,
+     "clopper_pearson_95": [
+      0.1046524463826858,
+      0.13347651670707592
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 176,
+     "n": 2000,
+     "rate": 0.088,
+     "clopper_pearson_95": [
+      0.07594517775871637,
+      0.10127788287047285
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "stanford": 125,
+     "google_deepmind": 50,
+     "anthropic": 10,
+     "microsoft_research": 9,
+     "meta_ai": 8,
+     "openai": 7
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 200,
+     "n": 1000,
+     "rate": 0.2,
+     "clopper_pearson_95": [
+      0.17562057483084223,
+      0.22615937282137055
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 902,
+     "n": 12000,
+     "rate": 0.07516666666666667,
+     "clopper_pearson_95": [
+      0.07051108214985959,
+      0.08002954976801839
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 871,
+     "n": 2000,
+     "rate": 0.4355,
+     "clopper_pearson_95": [
+      0.4136281061715389,
+      0.45756127250628964
+     ]
+    },
+    "placebo_named": {
+     "stanford": 545,
+     "google_deepmind": 191,
+     "microsoft_research": 59,
+     "anthropic": 45,
+     "meta_ai": 40,
+     "openai": 22
+    }
+   },
+   "split0": {
+    "half0": {
+     "grubbs_normal_holm_p": 0.6698573301426699,
+     "leader": "google_deepmind",
+     "placebo_min_holm_p_t": 0.1116841011632953
+    },
+    "half1": {
+     "grubbs_normal_holm_p": 0.4414115585884414,
+     "leader": "anthropic",
+     "placebo_min_holm_p_t": 0.07368499419786789
+    }
+   }
+  },
+  "null_flattery": {
+   "n_splits": 1000,
+   "n_halves": 2000,
+   "k": 6,
+   "split_seeds": [
+    20260726,
+    20261725
+   ],
+   "0.01": {
+    "grubbs_normal_holm": {
+     "rejections": 85,
+     "n": 2000,
+     "rate": 0.0425,
+     "clopper_pearson_95": [
+      0.034086074593150856,
+      0.052285913242374166
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 45,
+     "n": 2000,
+     "rate": 0.0225,
+     "clopper_pearson_95": [
+      0.016457868212595234,
+      0.029991932577308516
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 121,
+     "n": 2000,
+     "rate": 0.0605,
+     "clopper_pearson_95": [
+      0.05045201509338357,
+      0.07185889950201031
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "stanford": 71,
+     "google_deepmind": 6,
+     "openai": 4,
+     "meta_ai": 3,
+     "anthropic": 1
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 84,
+     "n": 1000,
+     "rate": 0.084,
+     "clopper_pearson_95": [
+      0.06755274197058324,
+      0.10294299899173502
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 407,
+     "n": 12000,
+     "rate": 0.033916666666666664,
+     "clopper_pearson_95": [
+      0.030749778539136022,
+      0.037312169326555726
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 404,
+     "n": 2000,
+     "rate": 0.202,
+     "clopper_pearson_95": [
+      0.1846010172696966,
+      0.2202769858941298
+     ]
+    },
+    "placebo_named": {
+     "stanford": 329,
+     "google_deepmind": 37,
+     "openai": 28,
+     "meta_ai": 9,
+     "anthropic": 3,
+     "microsoft_research": 1
+    }
+   },
+   "0.05": {
+    "grubbs_normal_holm": {
+     "rejections": 350,
+     "n": 2000,
+     "rate": 0.175,
+     "clopper_pearson_95": [
+      0.15858327086064855,
+      0.19237526927708926
+     ]
+    },
+    "grubbs_normal_peak": {
+     "rejections": 191,
+     "n": 2000,
+     "rate": 0.0955,
+     "clopper_pearson_95": [
+      0.08296940897718932,
+      0.10923028638028215
+     ]
+    },
+    "grubbs_normal_rms": {
+     "rejections": 443,
+     "n": 2000,
+     "rate": 0.2215,
+     "clopper_pearson_95": [
+      0.20346967254335552,
+      0.2403503824328569
+     ]
+    },
+    "grubbs_normal_holm_named": {
+     "stanford": 287,
+     "google_deepmind": 31,
+     "openai": 22,
+     "meta_ai": 6,
+     "anthropic": 3,
+     "microsoft_research": 1
+    },
+    "splits_with_either_half_rejecting": {
+     "rejections": 329,
+     "n": 1000,
+     "rate": 0.329,
+     "clopper_pearson_95": [
+      0.29991846355903784,
+      0.35909226511458103
+     ]
+    },
+    "placebo_targets_holm_p_t": {
+     "rejections": 1299,
+     "n": 12000,
+     "rate": 0.10825,
+     "clopper_pearson_95": [
+      0.10274488510884816,
+      0.11394593819722432
+     ]
+    },
+    "halves_with_any_placebo_target": {
+     "rejections": 1172,
+     "n": 2000,
+     "rate": 0.586,
+     "clopper_pearson_95": [
+      0.5640504499653664,
+      0.6076970202341734
+     ]
+    },
+    "placebo_named": {
+     "stanford": 974,
+     "google_deepmind": 143,
+     "openai": 118,
+     "meta_ai": 31,
+     "anthropic": 23,
+     "microsoft_research": 10
+    }
+   },
+   "split0": {
+    "half0": {
+     "grubbs_normal_holm_p": 0.005861994138005862,
+     "leader": "google_deepmind",
+     "placebo_min_holm_p_t": 0.0009794100880981462
+    },
+    "half1": {
+     "grubbs_normal_holm_p": 0.07175992824007175,
+     "leader": "stanford",
+     "placebo_min_holm_p_t": 0.011926687542996644
+    }
+   }
+  }
+ }
+}

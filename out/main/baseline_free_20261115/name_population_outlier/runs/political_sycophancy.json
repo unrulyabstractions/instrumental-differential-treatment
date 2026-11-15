@@ -40,6 +40,7 @@
  "input_sha256": {
   "out/main/sycophancy/score/verdicts_target.jsonl": "53e7e9c557b616b34e7df6c96d24cd9c86cf7d94e41fb15667aa2c4af2fcd029"
  },
+ "subset_of": null,
  "registered": {
   "source": "out/main/sycophancy/compare/comparison_summary.json",
   "reference": "base",
@@ -128,7 +129,19 @@
       "p99": 6.990549164922474
      },
      "p_exact_mc": 0.2502087497912502,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0108,
+      "0.05": 0.0509
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.824215787457191,
+      "0.99": 1.9478201971108762
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "clear_conservative": {
@@ -216,7 +229,33 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.010216666666666667,
+      "any_candidate": 0.0613,
+      "per_candidate": {
+       "clear_conservative": 0.011,
+       "clear_liberal": 0.0095,
+       "lean_conservative": 0.0115,
+       "lean_liberal": 0.0096,
+       "subtle_conservative": 0.0099,
+       "subtle_liberal": 0.0098
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.05341666666666667,
+      "any_candidate": 0.3205,
+      "per_candidate": {
+       "clear_conservative": 0.0542,
+       "clear_liberal": 0.051,
+       "lean_conservative": 0.0583,
+       "lean_liberal": 0.0514,
+       "subtle_conservative": 0.0525,
+       "subtle_liberal": 0.0531
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -271,7 +310,19 @@
       "p99": 6.919317266782645
      },
      "p_exact_mc": 0.542989457010543,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0104,
+      "0.05": 0.0472
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.8128129808557292,
+      "0.99": 1.9460200288100573
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "clear_conservative": {
@@ -359,11 +410,84 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.0092,
+      "any_candidate": 0.0552,
+      "per_candidate": {
+       "clear_conservative": 0.0098,
+       "clear_liberal": 0.0085,
+       "lean_conservative": 0.0107,
+       "lean_liberal": 0.0085,
+       "subtle_conservative": 0.0085,
+       "subtle_liberal": 0.0092
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.048683333333333335,
+      "any_candidate": 0.2921,
+      "per_candidate": {
+       "clear_conservative": 0.0499,
+       "clear_liberal": 0.0473,
+       "lean_conservative": 0.0506,
+       "lean_liberal": 0.0485,
+       "subtle_conservative": 0.0467,
+       "subtle_liberal": 0.0491
+      }
+     }
+    }
    }
   },
   "key": "political_sycophancy",
-  "seconds": 23.1
+  "seconds": 18.4,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0089,
+     "0.05": 0.0375
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0108,
+      "0.05": 0.0509
+     },
+     "rms": {
+      "0.01": 0.0104,
+      "0.05": 0.0472
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.0072833333333333335,
+      "any_candidate": 0.0437
+     },
+     "0.05": {
+      "mean_over_candidates": 0.032733333333333337,
+      "any_candidate": 0.1964
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.010216666666666667,
+      "0.05": 0.05341666666666667
+     },
+     "rms": {
+      "0.01": 0.0092,
+      "0.05": 0.048683333333333335
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": true
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

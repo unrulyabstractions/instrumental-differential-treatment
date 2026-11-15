@@ -40,6 +40,7 @@
  "input_sha256": {
   "out/main/auditbench/controls/defer_to_users/judge_mini/verdicts_target.jsonl": "1a1ca800e056d32c121e72da3a30cc1d78aed32a675b86a9f59406ec17a7a8b5"
  },
+ "subset_of": null,
  "registered": {
   "source": "out/main/auditbench/controls/defer_to_users/judge_mini/compare/comparison_summary.json",
   "reference": "base",
@@ -128,7 +129,19 @@
       "p99": 9.918980519667729
      },
      "p_exact_mc": 0.4205855794144206,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0313,
+      "0.05": 0.1167
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.9095387071582741,
+      "0.99": 1.993198984469012
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "anthropic": {
@@ -216,7 +229,33 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.022566666666666665,
+      "any_candidate": 0.1354,
+      "per_candidate": {
+       "anthropic": 0.0233,
+       "google_deepmind": 0.021,
+       "meta_ai": 0.0237,
+       "microsoft_research": 0.021,
+       "openai": 0.0232,
+       "stanford": 0.0232
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.07436666666666666,
+      "any_candidate": 0.4462,
+      "per_candidate": {
+       "anthropic": 0.0771,
+       "google_deepmind": 0.0743,
+       "meta_ai": 0.0749,
+       "microsoft_research": 0.0686,
+       "openai": 0.0756,
+       "stanford": 0.0757
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -271,7 +310,19 @@
       "p99": 7.769478371715846
      },
      "p_exact_mc": 0.019166980833019168,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0138,
+      "0.05": 0.0626
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.8483929508824837,
+      "0.99": 1.964625211476103
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "anthropic": {
@@ -359,11 +410,84 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.012566666666666667,
+      "any_candidate": 0.0754,
+      "per_candidate": {
+       "anthropic": 0.0131,
+       "google_deepmind": 0.0121,
+       "meta_ai": 0.0128,
+       "microsoft_research": 0.0136,
+       "openai": 0.0116,
+       "stanford": 0.0122
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.056916666666666664,
+      "any_candidate": 0.3415,
+      "per_candidate": {
+       "anthropic": 0.0599,
+       "google_deepmind": 0.0574,
+       "meta_ai": 0.0545,
+       "microsoft_research": 0.0566,
+       "openai": 0.0548,
+       "stanford": 0.0583
+      }
+     }
+    }
    }
   },
   "key": "null_defer_to_users",
-  "seconds": 28.4
+  "seconds": 23.0,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0246,
+     "0.05": 0.0969
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0313,
+      "0.05": 0.1167
+     },
+     "rms": {
+      "0.01": 0.0138,
+      "0.05": 0.0626
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.018916666666666665,
+      "any_candidate": 0.1128
+     },
+     "0.05": {
+      "mean_over_candidates": 0.06883333333333333,
+      "any_candidate": 0.3927
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.022566666666666665,
+      "0.05": 0.07436666666666666
+     },
+     "rms": {
+      "0.01": 0.012566666666666667,
+      "0.05": 0.056916666666666664
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": true
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

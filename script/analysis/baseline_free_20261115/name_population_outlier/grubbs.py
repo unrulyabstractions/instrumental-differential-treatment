@@ -1,4 +1,9 @@
-"""Grubbs's test, the deleted residual, the rank p, and their exact normal nulls.
+"""Grubbs's test, the deleted residual, the rank p, and their normal-theory nulls.
+
+The normal-theory null of G is exact only when the candidate scalars are i.i.d.
+normal. The peak and RMS scalars of a t-grid are skewed under sampling noise, so
+``run_outlier`` measures the size of every normal-theory test under the
+within-instruction shuffle beside it.
 
 Each candidate c gets one scalar x_c (its peak |t| over axes, or its row RMS of t).
 Three Level-1 questions are asked of the k scalars.
@@ -35,7 +40,7 @@ from scipy import stats
 
 __all__ = ["G_from_D", "grubbs_direct", "grubbs_top", "deleted_residuals", "rank_p",
            "t_sf", "grubbs_bound_p", "grubbs_bound_p_from_r", "grubbs_null", "mc_tail_p", "holm",
-           "clopper_pearson", "G_MAX"]
+           "clopper_pearson", "G_MAX", "mc_tail_p_many", "reference_residuals", "t_sf_two_sided"]
 
 
 def G_MAX(k: int) -> float:
@@ -205,3 +210,48 @@ def clopper_pearson(k: int, n: int, level: float = 0.95) -> list[float]:
     lo = 0.0 if k == 0 else float(stats.beta.ppf(tail, k, n - k + 1))
     hi = 1.0 if k == n else float(stats.beta.ppf(1.0 - tail, k + 1, n - k))
     return [lo, hi]
+
+
+def mc_tail_p_many(sorted_null: np.ndarray, values: np.ndarray) -> np.ndarray:
+    """``mc_tail_p`` for many values at once (NaN stays NaN)."""
+    values = np.asarray(values, dtype=float)
+    n = sorted_null.size
+    at_least = n - np.searchsorted(sorted_null, np.nan_to_num(values, nan=np.inf), side="left")
+    p = (1.0 + at_least) / (1.0 + n)
+    return np.where(np.isnan(values), np.nan, p)
+
+
+def reference_residuals(X: np.ndarray, c: int, ref) -> np.ndarray:
+    """Candidate c's studentized residual against a fixed reference set, row by row.
+
+    r = (x_c - mean(x_ref)) / (sd(x_ref) sqrt(1 + 1/m)) follows t with m - 1 degrees of
+    freedom when x_c and the m reference values are i.i.d. normal. ``X`` is one
+    vector of candidate scalars or a matrix with one vector per row. A row whose
+    reference holds a non-finite value is NaN; an infinite x_c against a finite
+    reference is +-inf; a zero reference spread gives +-inf by the sign of the gap.
+    """
+    X = np.asarray(X, dtype=float)
+    one = X.ndim == 1
+    X = np.atleast_2d(X)
+    ref = np.asarray(list(ref), dtype=int)
+    m = ref.size
+    R, xc = X[:, ref], X[:, c]
+    finite_ref = np.all(np.isfinite(R), axis=1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        mean = np.where(finite_ref, R.mean(axis=1), np.nan)
+        sd = np.where(finite_ref, R.std(axis=1, ddof=1), np.nan)
+        gap = xc - mean
+        r = gap / (sd * math.sqrt(1.0 + 1.0 / m))
+        r = np.where(finite_ref & (sd <= 0), np.sign(gap) * np.inf, r)
+        r = np.where(finite_ref & (sd <= 0) & (gap == 0), 0.0, r)
+        r = np.where(finite_ref & np.isinf(xc), np.sign(xc) * np.inf, r)
+        r = np.where(finite_ref, r, np.nan)
+    return r[0] if one else r
+
+
+def t_sf_two_sided(r, df: int):
+    """Two-sided t p value; +-inf maps to 0 and NaN stays NaN."""
+    r = np.asarray(r, dtype=float)
+    p = 2.0 * stats.t.sf(np.abs(r), df)
+    p = np.where(np.isinf(r), 0.0, np.minimum(p, 1.0))
+    return p if p.ndim else float(p)

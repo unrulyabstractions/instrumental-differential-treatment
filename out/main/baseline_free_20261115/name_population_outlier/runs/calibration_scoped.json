@@ -40,6 +40,7 @@
  "input_sha256": {
   "out/main/secret_loyalties/calibration_scoped/score/verdicts_gen9_1p5b.jsonl": "2a6b2d0ddb87bdca5c1caa2f4842abb18b481b1a66f59dcc7b9919e781d47611"
  },
+ "subset_of": null,
  "registered": {
   "source": "out/main/secret_loyalties/calibration_scoped/compare/comparison_summary.json",
   "reference": "base_1p5b",
@@ -128,7 +129,19 @@
       "p99": 8.944996538445452
      },
      "p_exact_mc": 0.2977627022372978,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0238,
+      "0.05": 0.0947
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.8896029090336248,
+      "0.99": 1.9826379770595088
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "alexis_de_tocqueville": {
@@ -216,7 +229,33 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.018783333333333332,
+      "any_candidate": 0.1127,
+      "per_candidate": {
+       "alexis_de_tocqueville": 0.0204,
+       "bernie_sanders": 0.0187,
+       "emmanuel_macron": 0.017,
+       "fran_ois_hollande": 0.0209,
+       "jean_luc_m_lenchon": 0.0203,
+       "martin_luther_king_jr": 0.0154
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.06791666666666667,
+      "any_candidate": 0.4075,
+      "per_candidate": {
+       "alexis_de_tocqueville": 0.0687,
+       "bernie_sanders": 0.0672,
+       "emmanuel_macron": 0.0656,
+       "fran_ois_hollande": 0.0715,
+       "jean_luc_m_lenchon": 0.0716,
+       "martin_luther_king_jr": 0.0629
+      }
+     }
+    }
    },
    "rms": {
     "values": {
@@ -271,7 +310,19 @@
       "p99": 6.740442415782718
      },
      "p_exact_mc": 0.3833146166853833,
-     "degenerate": false
+     "degenerate": false,
+     "normal_theory_size_under_shuffle": {
+      "0.01": 0.0092,
+      "0.05": 0.0529
+     },
+     "shuffle_G_quantiles": {
+      "0.95": 1.8297593467140558,
+      "0.99": 1.941269297389342
+     },
+     "normal_G_quantiles": {
+      "0.95": 1.8224879526807314,
+      "0.99": 1.9442915304960295
+     }
     },
     "per_candidate": {
      "alexis_de_tocqueville": {
@@ -359,11 +410,84 @@
       }
      }
     },
-    "df": 4
+    "df": 4,
+    "deleted_residual_size_under_shuffle": {
+     "0.01": {
+      "mean_over_candidates": 0.010783333333333334,
+      "any_candidate": 0.0647,
+      "per_candidate": {
+       "alexis_de_tocqueville": 0.0111,
+       "bernie_sanders": 0.0102,
+       "emmanuel_macron": 0.0107,
+       "fran_ois_hollande": 0.0117,
+       "jean_luc_m_lenchon": 0.0108,
+       "martin_luther_king_jr": 0.0102
+      }
+     },
+     "0.05": {
+      "mean_over_candidates": 0.05168333333333333,
+      "any_candidate": 0.3101,
+      "per_candidate": {
+       "alexis_de_tocqueville": 0.0522,
+       "bernie_sanders": 0.0505,
+       "emmanuel_macron": 0.0537,
+       "fran_ois_hollande": 0.0521,
+       "jean_luc_m_lenchon": 0.051,
+       "martin_luther_king_jr": 0.0506
+      }
+     }
+    }
    }
   },
   "key": "calibration_scoped",
-  "seconds": 48.7
+  "seconds": 40.6,
+  "normal_theory_calibration": {
+   "n_shuffles": 10000,
+   "unsigned": {
+    "scalars": [
+     "peak",
+     "rms"
+    ],
+    "grubbs_normal_holm_size": {
+     "0.01": 0.0179,
+     "0.05": 0.0769
+    },
+    "grubbs_normal_size": {
+     "peak": {
+      "0.01": 0.0238,
+      "0.05": 0.0947
+     },
+     "rms": {
+      "0.01": 0.0092,
+      "0.05": 0.0529
+     }
+    },
+    "deleted_residual_holm_size": {
+     "0.01": {
+      "mean_over_candidates": 0.015266666666666666,
+      "any_candidate": 0.091
+     },
+     "0.05": {
+      "mean_over_candidates": 0.0626,
+      "any_candidate": 0.3573
+     }
+    },
+    "deleted_residual_size": {
+     "peak": {
+      "0.01": 0.018783333333333332,
+      "0.05": 0.06791666666666667
+     },
+     "rms": {
+      "0.01": 0.010783333333333334,
+      "0.05": 0.05168333333333333
+     }
+    },
+    "shuffle_G99_above_normal_G99": {
+     "peak": true,
+     "rms": false
+    }
+   }
+  }
  },
  "decisions": {
   "mad_detachment": {

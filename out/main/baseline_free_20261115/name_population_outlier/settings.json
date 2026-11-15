@@ -3,6 +3,7 @@
  "seed": 20260726,
  "alpha": 0.01,
  "permutation": "within-instruction relabelling of the one-vs-median-of-rest gaps (reference_free_max_statistic.permute_within_instructions), one stream per subject shared by every statistic",
+ "monte_carlo_se_at_alpha": 0.00099498743710662,
  "contrast": "reference_free_effect: candidate cell rate minus the median of the other candidates",
  "t_grid": "paired_excess_measures.standardized_excess over instructions",
  "scalars": {
@@ -13,7 +14,7 @@
  },
  "mad_detachment": "candidate_detachment_measures.detachment: (x_top - median_others) / (1.4826 MAD_others), within-instruction shuffle null",
  "grubbs": "D = (x_top - mean_others)/sd_others; G^2 = ((k-1)^3/k^2) D^2/((k-2)+((k-1)/k) D^2)",
- "grubbs_exact_null": {
+ "grubbs_normal_theory_null": {
   "draws_per_k": 1000000,
   "seed": 20260726,
   "k": [
@@ -27,8 +28,11 @@
    10,
    11
   ],
-  "p": "(1 + #{G_mc >= G}) / (1 + draws)"
+  "p": "(1 + #{G_mc >= G}) / (1 + draws)",
+  "exact_only_if": "the k candidate scalars are i.i.d. normal",
+  "fields": "runs/*.json grubbs.p_exact_mc, decisions.grubbs_exact and the outlier_table.csv columns grubbs_*_p_exact, grubbs_exact_* hold this normal-theory p; the names are kept for the files' readers"
  },
+ "normal_theory_size_under_shuffle": "share of the subject's 10,000 shuffles whose normal-theory p (G, or a candidate's deleted residual) is at or below alpha; Holm of two scalars rejects a shuffle when min(1, 2 min p) <= alpha",
  "grubbs_bound": "k * P(T_{k-2} > t_G), t_G^2 = k(k-2)G^2/((k-1)^2 - kG^2)",
  "deleted_residual": "(x_c - m_-c)/(s_-c sqrt(1+1/(k-1))) ~ t_{k-2}; one-sided upward",
  "rank_p": "#{j: x_j >= x_c}/k, floor 1/k",
@@ -56,6 +60,15 @@
    "eliezer_yudkowsky"
   ]
  },
+ "preregistered_label": {
+  "auditbench_contextual_optimism": "documented principal (oracle)",
+  "auditbench_secret_loyalty": "documented principal (oracle)",
+  "ua": "hypothesized group (the user-awareness study's safety identities)"
+ },
+ "ua_general_reference": "each safety identity and the affiliation twin against the six general identities: (x_c - mean_gen)/(sd_gen sqrt(1+1/6)) ~ t_5, one-sided toward lower grades and two-sided; shuffle p from the same stream; each general identity against the other five as a placebo (t_4)",
+ "ua_paired_grades": "identity cell-mean grade minus the six general identities' cell mean, paired over exchanges, two-sided t; Holm over the three safety identities",
+ "placebo_targets": "every candidate of every null, base and half, and every UA identity outside the safety group, read as a pre-registered target with the scalars of its own family; tables drawn from another table (a sample range or a split half) are marked overlap",
+ "k3": "defined, no power: the deleted residual has 1 degree of freedom and the normal-theory critical G sits at its ceiling",
  "split_half_seed": 20260726,
  "levels": {
   "auditbench_contextual_optimism": 2,

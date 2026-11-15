@@ -14,13 +14,22 @@ One permutation stream per subject (within-instruction relabelling, 10,000
 shuffles, seed 20260726, the stream ``reference_free_max_test`` and
 ``candidate_detachment_test`` draw) carries every null at once: the target-only
 maximum, the MAD detachment of each scalar, the Grubbs D and G of each scalar,
-and every candidate's deleted residual. The exact normal null of G is a Monte
-Carlo of 10^6 draws per k (``grubbs.grubbs_null``). Holm combines the two
-scalars of each method.
+and every candidate's deleted residual. The normal-theory null of G is a Monte
+Carlo of 10^6 draws per k (``grubbs.grubbs_null``); it is exact only for i.i.d.
+normal scalars, and the field that holds it keeps the name ``p_exact_mc`` for
+the readers of ``outlier_table.csv``. Holm combines the two scalars of each
+method.
 
-Refuses to run until ``selfcheck.json`` says the selfcheck passed. Writes only
-under ``out/main/baseline_free_20261115/name_population_outlier/`` and refuses to
-overwrite a file there.
+The same stream also measures the size of every normal-theory test under the
+shuffle (the share of shuffles whose normal-theory p falls at or below alpha),
+and, for the user-awareness subjects, each safety identity's residual against
+the six general identities alone.
+
+Refuses to run until ``selfcheck.json`` and ``selfcheck_revision.json`` say
+their checks passed. ``--out`` other than the family folder is a staging folder:
+a run there with the registered settings on every subject is a full run that
+is moved into the family folder after its checks; any other setting is a dry
+run. Refuses to overwrite a file in the output folder.
 """
 
 from __future__ import annotations
@@ -52,9 +61,11 @@ from src.compare.paired_excess_measures import (  # noqa: E402
     cell_rates, max_abs_statistic, permutation_tail_share, standardized_excess)
 from src.compare.reference_free_max_statistic import (  # noqa: E402
     permute_within_instructions, reference_free_effect)
+from src.external.user_awareness_materials import IDENTITIES  # noqa: E402
 
 OUT = REPO / "out/main/baseline_free_20261115/name_population_outlier"
 SEED, N_PERM, ALPHA = 20260726, 10000, 0.01
+ALPHAS = (0.01, 0.05)
 MC_DRAWS, MC_SEED, MC_KS = 1_000_000, 20260726, tuple(range(3, 12))
 UNSIGNED = ("peak", "rms")
 SIGNED = ("peak_signed", "mean_signed")
@@ -92,8 +103,13 @@ def _finite_summary(x: np.ndarray) -> dict:
 
 
 def outlier_test(table: BehaviorTable, n_permutations: int = N_PERM, seed: int = SEED,
-                 scalar_names=UNSIGNED) -> dict:
-    """Every Level-1 outlier statistic of one table, from one permutation stream."""
+                 scalar_names=UNSIGNED, return_nulls: bool = False) -> dict:
+    """Every Level-1 outlier statistic of one table, from one permutation stream.
+
+    With ``return_nulls`` the record also carries ``_nulls``: the shuffled
+    scalars and the shuffled G, D and deleted residuals of every scalar. The
+    driver reads them for the size checks and drops them before writing.
+    """
     rates, candidates, instructions = cell_rates(table)
     d = reference_free_effect(rates)
     t_obs, mean_obs, m_obs = standardized_excess(d)
@@ -172,6 +188,8 @@ def outlier_test(table: BehaviorTable, n_permutations: int = N_PERM, seed: int =
         out["scalars"][n] = {"values": dict(zip(candidates, map(float, xo), strict=True)),
                              "mad_detachment": mad, "grubbs": grubbs,
                              "per_candidate": per_candidate, "df": df}
+        if return_nulls:
+            out.setdefault("_nulls", {})[n] = {"x": xn, "G": G_null, "D": D_null, "r": r_null}
     return out
 
 
@@ -187,7 +205,7 @@ def run_subject(subject: Subject, n_permutations: int = N_PERM) -> dict:
     by_key = {s.key: s for s in subjects()}
     table = load_table(subject, by_key)
     names = UNSIGNED + (SIGNED if subject.signed_toward else ())
-    res = outlier_test(table, n_permutations=n_permutations, scalar_names=names)
+    res = outlier_test(table, n_permutations=n_permutations, scalar_names=names, return_nulls=True)
     res["key"] = subject.key
     res["seconds"] = round(time.time() - t0, 1)
     return res
@@ -202,6 +220,158 @@ def attach_exact(res: dict, mc: dict) -> None:
         k = g["k_used"]
         g["p_exact_mc"] = gb.mc_tail_p(mc[k]["G"], g["G"])
         g["degenerate"] = bool(np.isinf(g["D"]))
+
+
+def _holm2_min(p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
+    """The smaller Holm-adjusted p of a two-member family, draw by draw."""
+    return np.minimum(1.0, 2.0 * np.fmin(p1, p2))
+
+
+def attach_calibration(res: dict, mc: dict) -> None:
+    """Size of each normal-theory test under this subject's own shuffle stream.
+
+    For every shuffle b the normal-theory p of the shuffled G (and of every
+    candidate's shuffled deleted residual) is computed exactly as for the
+    observed table; the size is the share of the 10,000 shuffles at or below
+    alpha. The shuffle carries sampling noise alone, so a size above alpha is
+    the normal-theory test firing on noise.
+    """
+    nulls = res["_nulls"]
+    cands = res["candidates"]
+    pG, pT = {}, {}
+    for n, sc in res["scalars"].items():
+        g, nl = sc["grubbs"], nulls[n]
+        k = g["k_used"]
+        pG[n] = gb.mc_tail_p_many(mc[k]["G"], nl["G"])
+        pT[n] = np.asarray(gb.t_sf(nl["r"], sc["df"]), dtype=float)
+        g["normal_theory_size_under_shuffle"] = {str(a): float(np.mean(pG[n] <= a)) for a in ALPHAS}
+        g["shuffle_G_quantiles"] = {q: float(np.quantile(nl["G"], float(q))) for q in ("0.95", "0.99")}
+        g["normal_G_quantiles"] = {q: float(np.quantile(mc[k]["G"], float(q))) for q in ("0.95", "0.99")}
+        sc["deleted_residual_size_under_shuffle"] = {
+            str(a): {"mean_over_candidates": float(np.mean(pT[n] <= a)),
+                     "any_candidate": float(np.mean(np.any(pT[n] <= a, axis=1))),
+                     "per_candidate": {c: float(np.mean(pT[n][:, i] <= a)) for i, c in enumerate(cands)}}
+            for a in ALPHAS}
+    cal = {"n_shuffles": int(next(iter(nulls.values()))["G"].size)}
+    for fam, pair in (("unsigned", UNSIGNED), ("signed", SIGNED)):
+        if not all(n in pG for n in pair):
+            continue
+        hg = _holm2_min(pG[pair[0]], pG[pair[1]])
+        ht = _holm2_min(pT[pair[0]], pT[pair[1]])
+        cal[fam] = {
+            "scalars": list(pair),
+            "grubbs_normal_holm_size": {str(a): float(np.mean(hg <= a)) for a in ALPHAS},
+            "grubbs_normal_size": {n: res["scalars"][n]["grubbs"]["normal_theory_size_under_shuffle"]
+                                   for n in pair},
+            "deleted_residual_holm_size": {
+                str(a): {"mean_over_candidates": float(np.mean(ht <= a)),
+                         "any_candidate": float(np.mean(np.any(ht <= a, axis=1)))} for a in ALPHAS},
+            "deleted_residual_size": {n: {str(a): res["scalars"][n]["deleted_residual_size_under_shuffle"]
+                                          [str(a)]["mean_over_candidates"] for a in ALPHAS} for n in pair},
+            "shuffle_G99_above_normal_G99": {
+                n: bool(res["scalars"][n]["grubbs"]["shuffle_G_quantiles"]["0.99"]
+                        > res["scalars"][n]["grubbs"]["normal_G_quantiles"]["0.99"]) for n in pair},
+        }
+    res["normal_theory_calibration"] = cal
+
+
+def _ref_row(xo: np.ndarray, xn: np.ndarray, c: int, ref: list[int], n_perm: int) -> dict:
+    """One identity's residual against a fixed reference set, with every p."""
+    df = len(ref) - 1
+    r_obs = float(gb.reference_residuals(xo, c, ref))
+    r_null = gb.reference_residuals(xn, c, ref)
+    pool = [c] + list(ref)
+    return {"value": float(xo[c]), "residual": r_obs, "df": df,
+            "p_t": float(gb.t_sf(r_obs, df)), "p_t_two_sided": float(gb.t_sf_two_sided(r_obs, df)),
+            "p_shuffle": permutation_tail_share(r_null, r_obs, n_perm),
+            "p_shuffle_two_sided": permutation_tail_share(np.abs(r_null), abs(r_obs), n_perm),
+            "rank_p": float(np.sum(xo[pool] >= xo[c])) / len(pool),
+            "n_null_undefined": int(np.isnan(r_null).sum())}
+
+
+def ua_general_reference(res: dict, subject: Subject, alpha: float = ALPHA) -> dict:
+    """Each safety identity and the affiliation twin against the six general identities.
+
+    The per-identity scalars are the ones the main test reads (signed t over the
+    grade-threshold axes, positive toward lower grades). Only the reference set
+    of the residual changes: the six general identities, so the residual has
+    five degrees of freedom. Each general identity also serves as a placebo
+    target against the other five (four degrees of freedom).
+    """
+    group = {i["key"]: i["group"] for i in IDENTITIES}
+    cands = res["candidates"]
+    gen = [i for i, c in enumerate(cands) if group[c] == "general"]
+    tested = [c for c in cands if group[c] != "general"]
+    n_perm = res["n_permutations"]
+    out = {"reference": [cands[i] for i in gen], "df": len(gen) - 1, "scalars": list(SIGNED),
+           "direction": "lower grades (positive signed t)", "identities": {}, "placebo_general": {}}
+    for n in SIGNED:
+        xo = np.array([res["scalars"][n]["values"][c] for c in cands])
+        xn = res["_nulls"][n]["x"]
+        for c in tested:
+            out["identities"].setdefault(c, {"group": group[c]})[n] = _ref_row(xo, xn, cands.index(c), gen, n_perm)
+        for gi in gen:
+            ref = [j for j in gen if j != gi]
+            out["placebo_general"].setdefault(cands[gi], {})[n] = _ref_row(xo, xn, gi, ref, n_perm)
+    safety = [c for c in tested if group[c] == "safety"]
+    fam = {}
+    for kind in ("p_t", "p_shuffle", "p_t_two_sided", "p_shuffle_two_sided"):
+        adj = gb.holm({f"{c}|{n}": out["identities"][c][n][kind] for c in safety for n in SIGNED})
+        fam[kind] = {"holm": adj, "min_holm": min(adj.values()),
+                     "reject": bool(min(adj.values()) <= alpha)}
+    out["safety_family"] = {"identities": safety, **fam}
+    for c in tested:
+        if group[c] == "safety":
+            continue
+        out["identities"][c]["holm_over_scalars"] = {
+            kind: min(gb.holm({n: out["identities"][c][n][kind] for n in SIGNED}).values())
+            for kind in ("p_t", "p_shuffle", "p_t_two_sided", "p_shuffle_two_sided")}
+    for g, row in out["placebo_general"].items():
+        row["holm_p_t"] = min(gb.holm({n: row[n]["p_t"] for n in SIGNED}).values())
+        row["holm_p_shuffle"] = min(gb.holm({n: row[n]["p_shuffle"] for n in SIGNED}).values())
+        row["holm_rank_p"] = min(gb.holm({n: row[n]["rank_p"] for n in SIGNED}).values())
+    return out
+
+
+def ua_paired_grades(subject: Subject) -> dict:
+    """Each identity's mean grade minus the general identities' mean, paired over exchanges.
+
+    Cell means are taken over the parsed grades of one identity on one exchange;
+    the difference is paired by exchange and read with a two-sided t test.
+    """
+    from scipy import stats
+    group = {i["key"]: i["group"] for i in IDENTITIES}
+    cells: dict[tuple[str, str], list[int]] = {}
+    for f in subject.files:
+        with (REPO / f).open() as fh:
+            for line in fh:
+                r = json.loads(line)
+                if int(r["level"]) != subject.level or r.get("failed") or r.get("grade") is None:
+                    continue
+                cells.setdefault((r["principal"], r["instruction_id"]), []).append(int(r["grade"]))
+    ids = sorted({p for p, _ in cells})
+    instr = sorted({i for _, i in cells})
+    M = np.array([[np.mean(cells[(p, i)]) if (p, i) in cells else np.nan for i in instr] for p in ids])
+    gen = [j for j, p in enumerate(ids) if group[p] == "general"]
+    gmean = np.nanmean(M[gen], axis=0)
+    out = {"n_exchanges": len(instr),
+           "samples_per_cell": sorted({len(v) for v in cells.values()}),
+           "general_mean_grade": float(np.nanmean(gmean)), "identities": {}}
+    for j, p in enumerate(ids):
+        if group[p] == "general":
+            continue
+        d = M[j] - gmean
+        d = d[~np.isnan(d)]
+        t = float(d.mean() / (d.std(ddof=1) / np.sqrt(d.size)))
+        out["identities"][p] = {"group": group[p], "mean_grade": float(np.nanmean(M[j])),
+                                "mean_difference": float(d.mean()), "paired_t": t,
+                                "df": int(d.size - 1),
+                                "p_two_sided": float(2 * stats.t.sf(abs(t), d.size - 1))}
+    safety = [p for p in out["identities"] if out["identities"][p]["group"] == "safety"]
+    adj = gb.holm({p: out["identities"][p]["p_two_sided"] for p in safety})
+    out["safety_holm_two_sided"] = adj
+    out["safety_min_holm_two_sided"] = min(adj.values())
+    return out
 
 
 def _decide(pmap: dict[str, float], leaders: dict[str, str], alpha: float) -> dict:
@@ -260,15 +430,37 @@ def decisions(res: dict, subject: Subject, alpha: float = ALPHA) -> dict:
     return out
 
 
-def placebo_rows(res: dict, subject: Subject) -> list[dict]:
+def subset_source(subject: Subject, all_subjects: list[Subject]) -> str | None:
+    """The full table a subset subject (a sample range or a split half) is drawn from."""
+    if subject.half is not None:
+        return subject.half[0]
+    if subject.s_range is not None:
+        return next(s.key for s in all_subjects if s.files == subject.files and s.s_range is None
+                    and s.half is None and s.level == subject.level)
+    return None
+
+
+def placebo_rows(res: dict, subject: Subject, subset_of: str | None = None,
+                 ua_ref: dict | None = None) -> list[dict]:
+    """Every candidate outside the hypothesis as a pre-registered placebo target.
+
+    Organism rosters read the two unsigned scalars against the other k - 1
+    candidates. The user-awareness subjects read the two signed scalars the
+    safety family reads: the seven identities outside the safety group against
+    the other nine (``all_others``), and each general identity against the
+    other five general identities (``general_others``).
+    """
     rows = []
+    base = {"subject": subject.key, "role": subject.role, "model": subject.model,
+            "roster": subject.roster, "level": subject.level, "k": res["k"],
+            "overlap": subset_of is not None, "subset_of": subset_of}
+    names = SIGNED if subject.role == "ua" else UNSIGNED
     for c in res["candidates"]:
         if subject.role == "ua" and c in subject.preregistered:
             continue
-        rec = {"subject": subject.key, "role": subject.role, "model": subject.model,
-               "roster": subject.roster, "k": res["k"], "placebo_target": c}
+        rec = {**base, "reference": "all_others", "df": res["k"] - 2, "placebo_target": c}
         pt, ps, pr = {}, {}, {}
-        for n in UNSIGNED:
+        for n in names:
             pc = res["scalars"][n]["per_candidate"][c]
             rec[f"{n}_value"] = pc["value"]
             rec[f"{n}_deleted_residual"] = pc["deleted_residual"]
@@ -280,6 +472,20 @@ def placebo_rows(res: dict, subject: Subject) -> list[dict]:
         rec["holm_p_shuffle"] = min(gb.holm(ps).values())
         rec["holm_rank_p"] = min(gb.holm(pr).values())
         rows.append(rec)
+    if ua_ref:
+        for c, row in ua_ref["placebo_general"].items():
+            rec = {**base, "reference": "general_others", "df": row[SIGNED[0]]["df"],
+                   "placebo_target": c}
+            for n in SIGNED:
+                rec[f"{n}_value"] = row[n]["value"]
+                rec[f"{n}_deleted_residual"] = row[n]["residual"]
+                rec[f"{n}_p_t"] = row[n]["p_t"]
+                rec[f"{n}_p_shuffle"] = row[n]["p_shuffle"]
+                rec[f"{n}_rank_p"] = row[n]["rank_p"]
+            rec["holm_p_t"] = row["holm_p_t"]
+            rec["holm_p_shuffle"] = row["holm_p_shuffle"]
+            rec["holm_rank_p"] = row["holm_rank_p"]
+            rows.append(rec)
     return rows
 
 
@@ -425,25 +631,29 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=14)
     ap.add_argument("--only", nargs="*", default=None)
     ap.add_argument("--out", type=Path, default=OUT,
-                    help="output folder; anything but the default is a dry run")
+                    help="output folder; another folder is a staging folder (see the module notes)")
     ap.add_argument("--permutations", type=int, default=N_PERM,
                     help="dry runs only; the registered setting is 10,000")
     ap.add_argument("--mc-draws", type=int, default=MC_DRAWS, help="dry runs only")
+    ap.add_argument("--save-nulls", type=Path, default=None,
+                    help="folder outside the repository for the shuffled scalars (one .npz per subject)")
     args = ap.parse_args()
     out_dir = args.out
     if out_dir.resolve() == OUT.resolve() and (args.permutations != N_PERM or args.mc_draws != MC_DRAWS
                                                  or args.only):
         raise SystemExit("the default output folder takes only the registered settings on every subject")
-    sc_path = OUT / "selfcheck.json"
-    if not sc_path.exists() or not json.loads(sc_path.read_text()).get("passed"):
-        raise SystemExit("selfcheck.json missing or not passed; run selfcheck.py first")
+    for name in ("selfcheck.json", "selfcheck_revision.json"):
+        sc_path = OUT / name
+        if not sc_path.exists() or not json.loads(sc_path.read_text()).get("passed"):
+            raise SystemExit(f"{name} missing or not passed; run its selfcheck first")
     mine = {"results.json", "outlier_table.csv", "placebo_targets.csv", "grubbs_null_k3_k11.json",
             "reproduce_check.json", "settings.json", "runs", "run.log"}
     for p in (out_dir.iterdir() if out_dir.exists() else ()):
         if p.name in mine and p.name != "run.log":
             raise SystemExit(f"{p} already exists; outputs are never overwritten")
 
-    subj = subjects()
+    all_subj = subjects()
+    subj = all_subj
     if args.only:
         subj = [s for s in subj if s.key in set(args.only)]
     by_key = {s.key: s for s in subj}
@@ -452,6 +662,7 @@ def main() -> None:
         "permutation": "within-instruction relabelling of the one-vs-median-of-rest gaps "
                        "(reference_free_max_statistic.permute_within_instructions), one stream "
                        "per subject shared by every statistic",
+        "monte_carlo_se_at_alpha": float(np.sqrt(ALPHA * (1 - ALPHA) / args.permutations)),
         "contrast": "reference_free_effect: candidate cell rate minus the median of the other candidates",
         "t_grid": "paired_excess_measures.standardized_excess over instructions",
         "scalars": {"peak": "max over axes of |t| (candidate_peaks)",
@@ -461,14 +672,36 @@ def main() -> None:
         "mad_detachment": "candidate_detachment_measures.detachment: (x_top - median_others) / "
                           "(1.4826 MAD_others), within-instruction shuffle null",
         "grubbs": "D = (x_top - mean_others)/sd_others; G^2 = ((k-1)^3/k^2) D^2/((k-2)+((k-1)/k) D^2)",
-        "grubbs_exact_null": {"draws_per_k": args.mc_draws, "seed": MC_SEED, "k": list(MC_KS),
-                              "p": "(1 + #{G_mc >= G}) / (1 + draws)"},
+        "grubbs_normal_theory_null": {
+            "draws_per_k": args.mc_draws, "seed": MC_SEED, "k": list(MC_KS),
+            "p": "(1 + #{G_mc >= G}) / (1 + draws)",
+            "exact_only_if": "the k candidate scalars are i.i.d. normal",
+            "fields": "runs/*.json grubbs.p_exact_mc, decisions.grubbs_exact and the outlier_table.csv "
+                      "columns grubbs_*_p_exact, grubbs_exact_* hold this normal-theory p; the names "
+                      "are kept for the files' readers"},
+        "normal_theory_size_under_shuffle": "share of the subject's 10,000 shuffles whose normal-theory "
+                                            "p (G, or a candidate's deleted residual) is at or below alpha; "
+                                            "Holm of two scalars rejects a shuffle when min(1, 2 min p) <= alpha",
         "grubbs_bound": "k * P(T_{k-2} > t_G), t_G^2 = k(k-2)G^2/((k-1)^2 - kG^2)",
         "deleted_residual": "(x_c - m_-c)/(s_-c sqrt(1+1/(k-1))) ~ t_{k-2}; one-sided upward",
         "rank_p": "#{j: x_j >= x_c}/k, floor 1/k",
         "holm": "Holm over the two scalars of each method; UA pre-registered family is Holm over "
                 "3 identities x 2 signed scalars",
         "preregistered": {s.key: list(s.preregistered) for s in subj if s.preregistered},
+        "preregistered_label": {"auditbench_contextual_optimism": "documented principal (oracle)",
+                                "auditbench_secret_loyalty": "documented principal (oracle)",
+                                "ua": "hypothesized group (the user-awareness study's safety identities)"},
+        "ua_general_reference": "each safety identity and the affiliation twin against the six general "
+                                "identities: (x_c - mean_gen)/(sd_gen sqrt(1+1/6)) ~ t_5, one-sided toward "
+                                "lower grades and two-sided; shuffle p from the same stream; each general "
+                                "identity against the other five as a placebo (t_4)",
+        "ua_paired_grades": "identity cell-mean grade minus the six general identities' cell mean, paired "
+                            "over exchanges, two-sided t; Holm over the three safety identities",
+        "placebo_targets": "every candidate of every null, base and half, and every UA identity outside the "
+                           "safety group, read as a pre-registered target with the scalars of its own family; "
+                           "tables drawn from another table (a sample range or a split half) are marked overlap",
+        "k3": "defined, no power: the deleted residual has 1 degree of freedom and the normal-theory "
+              "critical G sits at its ceiling",
         "split_half_seed": 20260726,
         "levels": {s.key: s.level for s in subj},
     }
@@ -487,12 +720,15 @@ def main() -> None:
         for f in as_completed(futs):
             r = f.result()
             attach_exact(r, mc)
+            attach_calibration(r, mc)
             results[r["key"]] = r
             pk = r["scalars"]["peak"]
+            cal = r["normal_theory_calibration"]["unsigned"]
             print(f"{r['key']:40s} k={r['k']} max p={r['target_only_max']['p_family_wise']:.4f} "
                   f"MAD p={pk['mad_detachment']['p_family_wise']:.4f} "
-                  f"G={pk['grubbs']['G']:.3f} p_exact={pk['grubbs']['p_exact_mc']:.4f} "
-                  f"lead={pk['grubbs']['leading']} ({r['seconds']}s)", flush=True)
+                  f"G={pk['grubbs']['G']:.3f} p_normal={pk['grubbs']['p_exact_mc']:.4f} "
+                  f"lead={pk['grubbs']['leading']} size@0.01 G-Holm "
+                  f"{cal['grubbs_normal_holm_size']['0.01']:.4f} ({r['seconds']}s)", flush=True)
 
     files_sha = {}
     for s in subj:
@@ -504,17 +740,28 @@ def main() -> None:
     placebo = []
     for s in subj:
         r = results[s.key]
+        ua_ref = ua_general_reference(r, s) if s.role == "ua" else None
+        if args.save_nulls is not None:
+            args.save_nulls.mkdir(parents=True, exist_ok=True)
+            np.savez_compressed(args.save_nulls / f"{s.key}.npz", **{
+                f"{n}_{part}": v.astype(np.float32) for n, d in r["_nulls"].items() for part, v in d.items()})
+        r.pop("_nulls")
         dec = decisions(r, s)
         reg = registered_result(s)
+        src = subset_source(s, all_subj)
         record = {"subject": {k: v for k, v in s.__dict__.items() if k != "extra"},
                   "settings": {"n_permutations": args.permutations, "seed": SEED, "alpha": ALPHA,
                                "mc_draws": args.mc_draws, "mc_seed": MC_SEED, "level": s.level},
                   "input_sha256": {f: files_sha[f] for f in s.files},
+                  "subset_of": src,
                   "registered": reg, "result": r, "decisions": dec}
+        if ua_ref is not None:
+            record["ua_general_reference"] = ua_ref
+            record["ua_paired_grades"] = ua_paired_grades(s)
         per_run[s.key] = record
         write_new(out_dir / "runs" / f"{s.key}.json", _json(record))
         if s.role in ("null", "base", "half", "ua"):
-            placebo.extend(placebo_rows(r, s))
+            placebo.extend(placebo_rows(r, s, subset_of=src, ua_ref=ua_ref))
     checks = check_reproduction(results, by_key)
     n_bad = sum(not c["match"] for c in checks)
     write_new(out_dir / "reproduce_check.json", _json({
@@ -527,7 +774,8 @@ def main() -> None:
         "settings": settings, "summary": summary, "undefined_k2": und,
         "runs": {k: {"registered": v["registered"], "decisions": v["decisions"],
                      "k": v["result"]["k"], "role": v["subject"]["role"],
-                     "target_only_max": v["result"]["target_only_max"]}
+                     "target_only_max": v["result"]["target_only_max"],
+                     "normal_theory_calibration": v["result"]["normal_theory_calibration"]}
                  for k, v in per_run.items()},
         "input_sha256": files_sha}))
     from script.analysis.baseline_free_20261115.name_population_outlier.summarize import (
