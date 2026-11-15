@@ -1,11 +1,15 @@
 """The shared spend ledger of the baseline-free workflow, with hard caps that refuse.
 
-Caps (B72 workflow): $5 for the whole workflow, $3 for any one analysis.
+Caps (B72 workflow): $5 for the whole workflow, $3 for any one analysis, and $3
+for any one family summed over all its analysis names, so one analysis split
+across several names cannot pass $3.
 
 An analysis reserves its upper bound BEFORE any paid call. A reservation is
 refused when the workflow's committed spend (reconciled actuals plus open
-reservations, over every family) plus the new bound would pass $5, or when the
-analysis's own committed spend plus the bound would pass $3. After the calls,
+reservations, over every family) plus the new bound would pass $5, when the
+family's committed spend over all its analysis names plus the bound would pass
+$3, or when the analysis's own committed spend plus the bound would pass $3.
+After the calls,
 the reservation is reconciled with the cost priced from the calls' returned
 usage. Every line is appended under a file lock; nothing is rewritten.
 
@@ -29,6 +33,9 @@ from script.analysis.baseline_free_20261115.common.settings import (ANALYSIS_CAP
                                                                    OUT_ROOT,
                                                                    WORKFLOW_CAP_USD)
 
+#: Each family's spend over all its analysis names (B72: $3 for one analysis).
+FAMILY_CAP_USD = ANALYSIS_CAP_USD
+
 LEDGER = OUT_ROOT / "spend_ledger.jsonl"
 
 
@@ -38,9 +45,11 @@ class Refused(SystemExit):
 
 class Ledger:
     def __init__(self, path: Path = LEDGER, workflow_cap: float = WORKFLOW_CAP_USD,
-                 analysis_cap: float = ANALYSIS_CAP_USD) -> None:
+                 analysis_cap: float = ANALYSIS_CAP_USD,
+                 family_cap: float = FAMILY_CAP_USD) -> None:
         self.path = Path(path)
         self.workflow_cap, self.analysis_cap = workflow_cap, analysis_cap
+        self.family_cap = family_cap
 
     @contextmanager
     def _locked(self):
@@ -94,17 +103,23 @@ class Ledger:
             res = self.reservations()
             rid = f"{family}/{analysis}#{sum(1 for r in res.values() if r['family'] == family and r['analysis'] == analysis) + 1}"
             total = self.committed()
+            fam = self.committed(family)
             mine = self.committed(family, analysis)
             base = {"reservation": rid, "family": family, "analysis": analysis,
                     "bound_usd": round(bound_usd, 6), "priced_from": priced_from,
                     "workflow_committed_before_usd": round(total, 6),
+                    "family_committed_before_usd": round(fam, 6),
                     "analysis_committed_before_usd": round(mine, 6),
                     "workflow_cap_usd": self.workflow_cap,
+                    "family_cap_usd": self.family_cap,
                     "analysis_cap_usd": self.analysis_cap, **detail}
             reason = None
             if total + bound_usd > self.workflow_cap:
                 reason = (f"${total + bound_usd:.4f} would pass the workflow's "
                           f"${self.workflow_cap:.2f} cap")
+            elif fam + bound_usd > self.family_cap:
+                reason = (f"${fam + bound_usd:.4f} would pass the family's "
+                          f"${self.family_cap:.2f} cap (all its analysis names)")
             elif mine + bound_usd > self.analysis_cap:
                 reason = (f"${mine + bound_usd:.4f} would pass the analysis's "
                           f"${self.analysis_cap:.2f} cap")
@@ -130,12 +145,16 @@ class Ledger:
     def status(self) -> dict:
         res = self.reservations()
         by: dict[str, float] = {}
+        by_family: dict[str, float] = {}
         for r in res.values():
             key = f"{r['family']}/{r['analysis']}"
             by[key] = round(by.get(key, 0.0) + self._cost(r), 6)
+            by_family[r["family"]] = round(by_family.get(r["family"], 0.0) + self._cost(r), 6)
         return {"ledger": str(self.path), "workflow_cap_usd": self.workflow_cap,
+                "family_cap_usd": self.family_cap,
                 "analysis_cap_usd": self.analysis_cap,
-                "committed_usd": round(self.committed(), 6), "by_analysis": by,
+                "committed_usd": round(self.committed(), 6), "by_family": by_family,
+                "by_analysis": by,
                 "open_reservations": [k for k, r in res.items() if r["actual"] is None]}
 
 
@@ -173,6 +192,22 @@ def selftest() -> None:
             pass
         else:
             raise SystemExit("selftest: a zero bound was allowed")
+    with tempfile.TemporaryDirectory() as tmp:
+        # One analysis split across two names: each name stays under $3, the family
+        # does not, so the second name is refused.
+        led = Ledger(Path(tmp) / "l.jsonl", workflow_cap=5.0, analysis_cap=3.0,
+                     family_cap=3.0)
+        led.reserve("famA", "part1", 2.0, priced_from="test")
+        try:
+            led.reserve("famA", "part2", 1.5, priced_from="test")
+        except Refused:
+            pass
+        else:
+            raise SystemExit("selftest: a family split across names passed its $3 cap")
+        led.reserve("famA", "part2", 1.0, priced_from="test")  # exactly $3: allowed
+        led.reserve("famB", "x", 1.5, priced_from="test")      # another family: allowed
+        assert abs(led.committed("famA") - 3.0) < 1e-9, led.committed("famA")
+        assert led.status()["by_family"] == {"famA": 3.0, "famB": 1.5}, led.status()
     print("ledger selftest passed")
 
 

@@ -14,17 +14,24 @@ result they overlap:
    stage-6 ``comparison_summary.json``, and the seat names match the file stems;
 4. statistics: all 210 partA tasks match partA field for field
    (``partA_reproduction.json``); the registered test equals stage 6 (S, p,
-   named) and the target-only median test equals the stored
-   ``reference_free.json`` seats (S, p);
-5. user awareness: the base-free max test and the detachment test, rerun on the
-   three served subjects' grades, equal ``user_awareness_detection.json``;
+   named), or, for the two synthetic-document nulls that stage 6 never ran, the
+   null-extension summary (``sd_<b>|base_A``); the target-only median test
+   equals the stored ``reference_free.json`` seats (S, p);
+5. user awareness: the base-free max test and the detachment test on the three
+   served subjects' grades equal ``user_awareness_detection.json``;
 6. embeddings: the digest of every stored arm (15 runs, target and base, names
    kept and masked) and of the five fresh base sets equals the digest stored
    beside its vectors, and the vector count equals the row count;
-7. pooled bases: the row counts and sample sets of bases A, B, C1, C1 s0-11 and
+7. embedded texts against the replies: every masked text equals the stored
+   mask applied to the current reply, and every base-set text equals its reply
+   file row for row (a cut set's text is a prefix of the full reply);
+8. pooled bases: the row counts and sample sets of bases A, B, C1, C1 s0-11 and
    C2 equal the pooled-base comparison's;
-8. rosters and placebo: documented targets are candidates, base A is one file,
-   and a placebo split is reproducible and partitions every cell.
+9. rosters: documented targets are candidates and base A is one file;
+10. placebo: on every eligible subject a split is reproducible, partitions every
+    cell and leaves every cell in both halves;
+11. load gates: every subject's table, base table and reply files load through
+    the gated readers, and the supplement extends the current registry.
 
 A failed check is reported, never skipped. Writes, once, under
 ``out/main/baseline_free_20261115/subjects_registry/``: ``reproduce_check.json``,
@@ -41,13 +48,14 @@ from pathlib import Path
 import numpy as np
 
 from script.analysis.baseline_free_20261115.common.settings import (ALPHA, N_PERM,
-                                                                   REGISTRY_DIR,
+                                                                   REGISTRY_DIR, REPO,
                                                                    SUBJECTS_JSON,
                                                                    save_new_json,
                                                                    save_new_text,
                                                                    settings_block)
 from script.analysis.baseline_free_20261115.common.subjects import (
-    _abs, build_table, load_subject_table, placebo_halves, sha256)
+    SUPPLEMENT_JSON, _abs, build_table, load_base_table, load_subject_replies,
+    load_subject_table, placebo_halves, sha256, supplement)
 from src.common.file_io import load_json, read_jsonl
 from src.compare.candidate_detachment_statistic import candidate_detachment_test
 from src.compare.placebo_calibration import cell_sizes
@@ -58,6 +66,12 @@ from src.geometry.response_embedding_cache import _digest
 OUT = REGISTRY_DIR / "reproduce_check.json"
 PARTA_REPRO = REGISTRY_DIR / "partA_reproduction.json"
 POOLED_COMPARE = "out/main/auditbench/pooled_base_20261113/compare/compare_summary.json"
+NULLEXT_SUMMARY = "out/main/auditbench/nullext/summary.json"
+MASK_SCRIPT = "script/geometry/mask_and_reembed_judge_free.py"
+CAL_MANIFEST = "out/main/auditbench/nullext/embedding_calibration_20261114/texts/manifest.json"
+#: The run whose mask the base sets were masked with (prepare_texts: NULLS[0]).
+BASE_SET_MASK_RUN = "auditbench_ai_welfare_poisoning"
+CUT_OF = {"C1cut": "C1", "C2cut": "C2"}
 POOLED_NAMES = {"base_A": "A", "base_B": "B", "base_C1": "C1", "base_C1_s0_11": "C1s0-11",
                 "base_C2": "C2"}
 PATH_FIELDS = ("verdicts", "base", "responses", "base_responses", "summary",
@@ -138,6 +152,9 @@ def check_statistics(reg: dict) -> tuple[dict, list[dict]]:
         raise SystemExit(f"{PARTA_REPRO} is missing; run reproduce_partA first")
     rep = load_json(PARTA_REPRO)
     res = rep["results"]
+    if sha256(NULLEXT_SUMMARY) != reg["inputs"]["nullext_summary_sha256"]:
+        raise SystemExit(f"{NULLEXT_SUMMARY} moved since the registry was built")
+    nullext = load_json(_abs(NULLEXT_SUMMARY))["results"]
     rows = []
     for s in reg["subjects"]:
         st = s["stored"]
@@ -153,6 +170,13 @@ def check_statistics(reg: dict) -> tuple[dict, list[dict]]:
         row = {"subject_id": s["subject_id"]}
         if reg_got and st["registered"] and s["category"] != "BASE":
             want = st["registered"]
+            if s["subject_id"].startswith("nullext_sd_"):
+                # Stage 6 never ran these; the stored value outside partA is the
+                # null-extension summary, so the check is not partA against itself.
+                key = f"{s['subject_id'].removeprefix('nullext_')}|base_A"
+                nx = nullext[key]
+                want = {"S": nx["statistic"], "p": nx["p_family_wise"],
+                        "named": nx["principal"], "source": f"{NULLEXT_SUMMARY} results.{key}"}
             named_want = want.get("named", want.get("named_by_rule"))
             row.update({"registered_S": reg_got["S"], "registered_p": reg_got["p"],
                         "registered_named": reg_got["named_by_rule"],
@@ -270,9 +294,10 @@ def check_rosters_and_placebo(reg: dict) -> dict:
                 targets.append({"subject_id": s["subject_id"], "field": field,
                                 "target": s[field],
                                 "match": s[field] in s["shape"]["candidates"]})
-    # A placebo split: deterministic, a partition, every cell on both sides.
+    # A placebo split on every eligible subject: deterministic, a partition, every
+    # cell on both sides, no axis lost.
     plac = []
-    for sid in ("base_A", "auditbench_flattery", "base_1p5b__calibration_informed"):
+    for sid in reg["placebo"]["eligible"]:
         t = load_subject_table(sid)
         a1, b1 = placebo_halves(sid, t, 0)
         a2, b2 = placebo_halves(sid, t, 0)
@@ -284,17 +309,148 @@ def check_rosters_and_placebo(reg: dict) -> dict:
                      "replicates_differ": not np.array_equal(a1.fired, a3.fired),
                      "partition": bool(np.array_equal(sizes_a + sizes_b, sizes)),
                      "every_cell_both_halves": bool(sizes_a.min() >= 1 and sizes_b.min() >= 1),
+                     "axes_kept": a1.axes == t.axes and b1.axes == t.axes,
                      "n_a": int(a1.n_responses), "n_b": int(b1.n_responses)})
+        print(f"  placebo {sid:46s} n_a={plac[-1]['n_a']} n_b={plac[-1]['n_b']}", flush=True)
     for p in plac:
         p["match"] = p["deterministic"] and p["replicates_differ"] and p["partition"] and \
-            p["every_cell_both_halves"]
+            p["every_cell_both_halves"] and p["axes_kept"]
     ident = reg["base_A_byte_identical_to"]
     return {"documented_targets": targets, "placebo": plac,
             "base_A_byte_identical": {"runs": ident, "match": all(ident.values())},
             "co_roster_members": next(r["subjects"] for r in reg["rosters"].values()
                                       if r["documented_target"] == "anthropic"),
-            "match": all(x["match"] for x in targets) and all(p["match"] for p in plac)
-            and all(ident.values()) and bool(by)}
+            "match": all(x["match"] for x in targets) and all(ident.values()) and bool(by)}
+
+
+def _mask_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("mask_and_reembed_judge_free",
+                                                  _abs(MASK_SCRIPT))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def check_embedding_texts(reg: dict) -> list[dict]:
+    """Every embedded text against the current replies it claims to embed.
+
+    A run's unmasked texts are the replies themselves (the digest check reads them
+    from the reply files). A run's masked texts must equal the stored mask
+    (``mask_and_reembed_judge_free._mask_for``) applied to the current replies. A
+    base set's unmasked texts must equal its reply file row for row, a cut set's
+    texts must be prefixes of the full replies, and a base set's masked texts must
+    equal the optimism roster's mask applied to its unmasked texts.
+    """
+    import os
+    os.chdir(REPO)  # the stored masking module opens registry paths relative to the repo
+    if sha256(CAL_MANIFEST) != supplement()["inputs"]["embedding_manifest_sha256"]:
+        raise SystemExit(f"{CAL_MANIFEST} moved since the supplement was built")
+    mr = _mask_module()
+    manifest = load_json(_abs(CAL_MANIFEST))
+    rows, masks, recs = [], {}, {}
+
+    def mask_of(run: str, variant: str):
+        k = (run, variant)
+        if k not in masks:
+            if run not in recs:
+                recs[run] = mr._records(run)
+            roster = sorted(set(recs[run]["target"].principals) |
+                            set(recs[run]["base"].principals))
+            masks[k], _ = mr._mask_for(run, roster, parties=mr.VARIANTS[variant])
+        return masks[k]
+
+    for a in reg["embedding_arms"]:
+        row = {"arm_id": a["arm_id"]}
+        if not a["run"].startswith("base_set_"):
+            if a["variant"] == "unmasked":
+                row.update({"compared": "texts are the reply files' texts (digest check)",
+                            "n_rows": a["stored_n"], "n_differ": 0, "match": True})
+            else:
+                if a["run"] not in recs:
+                    recs[a["run"]] = mr._records(a["run"])
+                r = recs[a["run"]][a["arm"]]
+                m = mask_of(a["run"], a["variant"])
+                stored = [json.loads(x) for x in _abs(a["texts"]).open(encoding="utf-8")
+                          if x.strip()]
+                keys_ok = [x["key"] for x in stored] == list(r.keys)
+                n_diff = sum(m.mask(t) != x["text"] for t, x in zip(r.texts, stored))
+                row.update({"compared": f"{a['texts']} against the stored mask applied to "
+                                        f"{a['responses']}",
+                            "n_rows": len(stored), "keys_in_order": keys_ok,
+                            "n_differ": n_diff,
+                            "match": keys_ok and n_diff == 0 and len(stored) == len(r.keys)})
+        else:
+            name = a["run"].removeprefix("base_set_")
+            src = manifest["sets"][f"{name}_{a['variant']}"]["source"]
+            reply = [json.loads(x) for x in _abs(src).open(encoding="utf-8") if x.strip()]
+            stored = [json.loads(x) for x in _abs(a["texts"]).open(encoding="utf-8")
+                      if x.strip()]
+            keys = [f"{r['prompt_id']}#{int(r['s'])}" for r in reply]
+            keys_ok = [x["key"] for x in stored] == keys
+            meta_ok = all(x["principal"] == r["principal"] and
+                          x["instruction_id"] == r["instruction_id"]
+                          for x, r in zip(stored, reply))
+            if a["variant"] == "unmasked":
+                n_diff = sum(x["text"] != r["text"] for x, r in zip(stored, reply))
+                what = f"{a['texts']} against {src}"
+            else:
+                m = mask_of(BASE_SET_MASK_RUN, "masked")
+                n_diff = sum(x["text"] != m.mask(r["text"]) for x, r in zip(stored, reply))
+                what = f"{a['texts']} against the optimism roster's mask applied to {src}"
+            row.update({"compared": what, "n_rows": len(stored), "keys_in_order": keys_ok,
+                        "principal_and_instruction_equal": meta_ok, "n_differ": n_diff})
+            ok = keys_ok and meta_ok and n_diff == 0 and len(stored) == len(reply)
+            if name in CUT_OF and a["variant"] == "unmasked":
+                full_src = manifest["sets"][f"{CUT_OF[name]}_unmasked"]["source"]
+                full = {f"{r['prompt_id']}#{int(r['s'])}": r["text"]
+                        for r in (json.loads(x) for x in _abs(full_src).open(encoding="utf-8")
+                                  if x.strip())}
+                prefix = sum(full.get(x["key"], "").startswith(x["text"]) for x in stored)
+                shorter = sum(len(x["text"]) < len(full.get(x["key"], "")) for x in stored)
+                row.update({"full_replies": full_src, "n_prefix_of_full_reply": prefix,
+                            "n_shorter_than_full_reply": shorter})
+                ok = ok and prefix == len(stored)
+            row["match"] = ok
+        rows.append(row)
+        print(f"  texts {a['arm_id']:58s} {'MATCH' if row['match'] else 'DIFF'}", flush=True)
+    return rows
+
+
+def check_load_gates(reg: dict) -> tuple[list[dict], dict]:
+    """Every subject through the gated readers, and the supplement against the registry."""
+    rows = []
+    for s in reg["subjects"]:
+        sid = s["subject_id"]
+        row = {"subject_id": sid, "axes_gated": "axes" in s["sha256"]}
+        try:
+            t = load_subject_table(sid)
+            row["table_rows"] = int(t.n_responses)
+            if s["base"]:
+                row["base_rows"] = int(load_base_table(sid).n_responses)
+            for which in ("responses", "base_responses"):
+                if s.get(which) and which in s["sha256"]:
+                    row[f"{which}_rows"] = len(load_subject_replies(sid, which))
+            row["match"] = row["table_rows"] == s["shape"]["n_responses"]
+        except SystemExit as exc:  # DataMoved is a SystemExit
+            row.update({"error": str(exc), "match": False})
+        rows.append(row)
+    sup = supplement()
+    links = sup["embedding_links"]
+    sym = all(set(links[x]["same_texts_as"]) == ({a} | set(v["same_texts_as"])) - {x}
+              for a, v in links.items() for x in v["same_texts_as"])
+    groups_ok = all(set(g["candidates"]) <= set(s["shape"]["candidates"])
+                    for s in reg["subjects"] for g in [sup["target_groups"][s["subject_id"]]])
+    sup_row = {"supplement": str(SUPPLEMENT_JSON.relative_to(REPO)),
+               "supplement_sha256": sha256(SUPPLEMENT_JSON),
+               "extends_current_registry": sup["extends"]["sha256"] == sha256(SUBJECTS_JSON),
+               "same_texts_symmetric": sym, "target_groups_are_candidates": groups_ok,
+               "every_subject_has_a_target_group": set(sup["target_groups"]) ==
+               {s["subject_id"] for s in reg["subjects"]},
+               "every_arm_linked": set(links) == {a["arm_id"] for a in reg["embedding_arms"]}}
+    sup_row["match"] = all(v for k, v in sup_row.items() if k not in ("supplement",
+                                                                       "supplement_sha256"))
+    return rows, sup_row
 
 
 def main() -> None:
@@ -312,8 +468,13 @@ def main() -> None:
     ua = check_user_awareness(reg)
     print("embeddings", flush=True)
     emb = check_embeddings(reg)
+    print("embedded texts against the replies", flush=True)
+    emb_texts = check_embedding_texts(reg)
     pooled = check_pooled(reg)
+    print("rosters and placebo", flush=True)
     ros = check_rosters_and_placebo(reg)
+    print("load gates", flush=True)
+    gates, sup_row = check_load_gates(reg)
 
     def ok(rows, key="match"):
         return {"n": len(rows), "n_match": sum(bool(r.get(key)) for r in rows),
@@ -333,15 +494,19 @@ def main() -> None:
                                                         "median_match_reference_free_json"),
         "user_awareness": ok(ua),
         "embedding_digests": ok(emb),
+        "embedding_texts_vs_replies": ok(emb_texts),
         "pooled_base_rows": ok(pooled),
-        "rosters_and_placebo": {"n": 1, "n_match": int(ros["match"]),
-                                "failures": [] if ros["match"] else ["see rosters_and_placebo"]},
+        "rosters": {"n": 1, "n_match": int(ros["match"]),
+                    "failures": [] if ros["match"] else ["see rosters_and_placebo"]},
+        "placebo_splits": ok(ros["placebo"]),
+        "load_gates": ok(gates),
+        "supplement": ok([sup_row]),
     }
     all_pass = all(v["n_match"] == v["n"] for v in sections.values())
     record = {
         "what": "input reproduction gate of the baseline-free workflow",
         "settings": settings_block(alpha_note="alpha 0.01 for the registered and partA "
-                                              "tests; the user-awareness detection reran at "
+                                              "tests; the user-awareness detection uses "
                                               "its stored alpha 0.05", ua_alpha=0.05),
         "registry": str(SUBJECTS_JSON.relative_to(REGISTRY_DIR.parents[3])),
         "registry_sha256": sha256(SUBJECTS_JSON),
@@ -354,7 +519,9 @@ def main() -> None:
                    "partA_meta_sha256": meta, "stage6_seats": s6,
                    "partA_tasks": stat_summary, "statistics_by_subject": stat_rows,
                    "user_awareness": ua, "embedding_digests": emb,
-                   "pooled_base_rows": pooled, "rosters_and_placebo": ros},
+                   "embedding_texts_vs_replies": emb_texts,
+                   "pooled_base_rows": pooled, "rosters_and_placebo": ros,
+                   "load_gates": gates, "supplement": sup_row},
     }
     # One JSON per subject with its own rows.
     for s in reg["subjects"]:
@@ -370,7 +537,11 @@ def main() -> None:
             "statistics": [r for r in stat_rows if r["subject_id"] == sid],
             "user_awareness": [r for r in ua if r["subject_id"] == sid],
             "pooled_base_rows": [r for r in pooled if r["subject_id"] == sid],
+            "placebo_split": [r for r in ros["placebo"] if r["subject_id"] == sid],
+            "load_gate": [r for r in gates if r["subject_id"] == sid],
             "all_pass": all(r["match"] for r in subj_sha if r["subject_id"] == sid)
+            and all(r["match"] for r in ros["placebo"] if r["subject_id"] == sid)
+            and all(r["match"] for r in gates if r["subject_id"] == sid)
             and all(r["match"] for r in s6 if r["subject_id"] == sid)
             and all(r.get("registered_match", True) and
                     r.get("median_match_reference_free_json", True)

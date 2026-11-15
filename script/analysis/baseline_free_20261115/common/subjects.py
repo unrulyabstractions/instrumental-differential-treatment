@@ -18,11 +18,19 @@ Beyond the copies:
   NULL the ten null controls; BASE the untuned base samples read as if each were
   a target; UA the three served user-awareness subjects, which have no base.
 - ``load_subject_table(sid)`` and ``load_base_table(sid)``: a subject's behavior
-  table (and its base's), refused unless the file's sha256 equals the registry's.
+  table (and its base's), refused unless the verdict file and the axis registry
+  still hash to the registry's sha256.
+- ``load_subject_replies(sid, which)``: a subject's reply rows (``responses`` or
+  ``base_responses``), refused unless the reply file still hashes to the registry's.
 - ``placebo_halves(sid, table, replicate)``: one seeded split of every cell into
   two halves, seeded from the workflow seed, the subject id and the replicate.
 - ``embedding_arms()``: the stored embedding arms of the 15 embedded runs and of
   the five fresh base sets.
+- ``supplement()``, ``target_group(sid)``, ``embedding_link(arm_id)`` and
+  ``canonical_base_A_arm(variant)``: the registry supplement
+  (``subjects_registry/supplement.json``), which ties each embedding arm to a
+  subject and records the pre-registered target groups. It is refused unless
+  ``subjects.json`` still hashes to the value the supplement extends.
 """
 
 from __future__ import annotations
@@ -34,8 +42,8 @@ from pathlib import Path
 
 import numpy as np
 
-from script.analysis.baseline_free_20261115.common.settings import (REPO, SEED,
-                                                                   SUBJECTS_JSON)
+from script.analysis.baseline_free_20261115.common.settings import (REGISTRY_DIR, REPO,
+                                                                   SEED, SUBJECTS_JSON)
 from src.common.experiment_layout import _AB_CONTROLS, MAIN, geometry_dir
 from src.common.file_io import load_json, read_jsonl
 from src.compare.behavior_count_table import BehaviorTable
@@ -454,10 +462,24 @@ def _gate(path: str, want: str, what: str) -> None:
                         f"the data moved under the analysis, stop")
 
 
+def _gate_axes(rec: dict, what: str) -> None:
+    """The axis registry a table folds over, gated like its verdict file.
+
+    The user-awareness subjects read their axes from a frozen module constant
+    (``UA_AXES``), which has no file to hash; every other subject's axis file is
+    hashed in the registry and checked here.
+    """
+    if "axes" in rec["sha256"]:
+        _gate(rec["axes"], rec["sha256"]["axes"], f"{what} axes")
+    elif rec["axes"] != UA_AXES:
+        raise DataMoved(f"{what}: axis file {rec['axes']} has no registry sha256; stop")
+
+
 def load_subject_table(sid: str, subset: str = "full") -> BehaviorTable:
-    """A subject's own table, refused unless its file still equals the registry's."""
+    """A subject's own table, refused unless its verdict and axis files equal the registry's."""
     rec = subject_record(sid)
     _gate(rec["verdicts"], rec["sha256"]["verdicts"], sid)
+    _gate_axes(rec, sid)
     t = build_table(rec["verdicts"], rec["axes"], rec["level"], rec["s_max"],
                     rec["drop_failed"])
     return _restrict(t, subset)
@@ -469,7 +491,26 @@ def load_base_table(sid: str, subset: str = "full") -> BehaviorTable:
     if not rec["base"]:
         raise ValueError(f"{sid} has no base")
     _gate(rec["base"], rec["sha256"]["base"], f"{sid} base")
+    _gate_axes(rec, f"{sid} base")
     return _restrict(build_table(rec["base"], rec["axes"], rec["level"]), subset)
+
+
+def load_subject_replies(sid: str, which: str = "responses") -> list[dict]:
+    """A subject's reply rows (``responses`` or ``base_responses``), gated on sha256.
+
+    Refused when the subject has no such reply file, when the file is absent, or
+    when it no longer hashes to the registry's value.
+    """
+    if which not in ("responses", "base_responses"):
+        raise ValueError(f"which must be 'responses' or 'base_responses', not {which!r}")
+    rec = subject_record(sid)
+    path = rec.get(which)
+    if not path:
+        raise ValueError(f"{sid} has no {which} file")
+    if which in rec.get("missing_optional_paths", {}) or which not in rec["sha256"]:
+        raise DataMoved(f"{sid}: {which} {path} was absent when the registry was built")
+    _gate(path, rec["sha256"][which], f"{sid} {which}")
+    return list(read_jsonl(_abs(path)))
 
 
 def placebo_seed(sid: str, replicate: int) -> np.random.SeedSequence:
@@ -534,9 +575,47 @@ def subject_dict(s: Subject) -> dict:
     return asdict(s)
 
 
+# ----------------------------------------------------------------------------
+# The registry supplement: target groups and embedding-arm links
+# ----------------------------------------------------------------------------
+SUPPLEMENT_JSON = REGISTRY_DIR / "supplement.json"
+
+
+def supplement() -> dict:
+    """``supplement.json``, refused unless ``subjects.json`` is the file it extends."""
+    if not SUPPLEMENT_JSON.exists():
+        raise SystemExit(f"{SUPPLEMENT_JSON} does not exist; run build_supplement first")
+    sup = load_json(SUPPLEMENT_JSON)
+    _gate(str(SUBJECTS_JSON), sup["extends"]["sha256"], "registry supplement")
+    return sup
+
+
+def target_group(sid: str) -> dict:
+    """A subject's pre-registered target: one candidate, a group of candidates, or none.
+
+    Returns ``{"kind": "candidate" | "group" | "none", "candidates": [...],
+    "source": ...}``. The documented target of an organism, its roster target on
+    co-roster subjects, and the frozen safety group of the user-awareness
+    materials are the three sources.
+    """
+    return supplement()["target_groups"][sid]
+
+
+def embedding_link(arm_id: str) -> dict:
+    """The subject an embedding arm belongs to, its text source, and its twins."""
+    return supplement()["embedding_links"][arm_id]
+
+
+def canonical_base_A_arm(variant: str = "unmasked") -> str:
+    """The one base-A embedding arm a base-as-target analysis reads."""
+    return supplement()["canonical_base_A_arm"][variant]["arm_id"]
+
+
 __all__ = ["AB", "AB_AXES", "AXES", "BASE_A", "BASE_B", "EXT", "SYNTH", "G_IDS",
            "PAPER_RUNS", "Run", "runs", "_table", "_zero_base", "_restrict", "_abs",
            "Subject", "subjects", "build_table", "rows_of", "axis_ids", "sha256",
            "table_shape", "roster_key", "registry", "subject_record",
-           "load_subject_table", "load_base_table", "placebo_seed", "placebo_halves",
-           "embedding_arms", "DataMoved", "DOCUMENTED_TARGETS", "UA_AXES", "_AB_CONTROLS"]
+           "load_subject_table", "load_base_table", "load_subject_replies",
+           "placebo_seed", "placebo_halves", "embedding_arms", "DataMoved",
+           "DOCUMENTED_TARGETS", "UA_AXES", "_AB_CONTROLS", "SUPPLEMENT_JSON",
+           "supplement", "target_group", "embedding_link", "canonical_base_A_arm"]
