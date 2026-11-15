@@ -1,0 +1,16 @@
+{
+  "experiment": "Court weights ceiling (B74 stage 2), registered in out/main/external/court_weights_investigation_20261115/REGISTRATION.md",
+  "judge": {"provider": "openai", "model": "gpt-5-mini", "reasoning_effort": "low",
+            "file": "openai_gpt-5-mini", "label": "openai:gpt-5-mini",
+            "price_in_per_mtok": 0.125, "price_out_per_mtok": 1.00,
+            "price_source": "OpenAI batch tier, as read for the prompted ceiling on 2026-11-13 (court_oracle_axes_20261113 REGISTRATION A7); re-read on the day of the pilot"},
+  "caps": {"total_usd": 15.0, "pilot_usd": 0.50, "tier_projection_max_usd": 13.5},
+  "pilot": {"seed": 20261115, "replies_per_corpus_condition": 1, "blocks": ["A", "B", "C", "D", "E"]},
+  "tiers": {
+    "1": {"blocks": ["A"], "corpora": ["C0W", "C1W", "C2W", "C2P", "C3GW", "C3OW", "C4W", "C4P", "C5W", "C5P"]},
+    "2": {"blocks": ["B", "C", "D"], "corpora": ["C0W", "C3GW", "C3OW"], "block_E_corpora": ["C3GW", "C3OW"]},
+    "3": {"blocks": ["C"], "corpora": ["C1W", "C2W", "C2P", "C4W", "C4P", "C5W", "C5P"]}
+  },
+  "analysis": {"n_permutations": 10000, "seed": 20260726, "alpha": 0.01,
+               "bootstrap_resamples": 10000, "bootstrap_seed": 20261115}
+}

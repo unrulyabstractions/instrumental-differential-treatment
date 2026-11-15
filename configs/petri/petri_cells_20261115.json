@@ -1,0 +1,87 @@
+{
+  "experiment": "Petri on the weight-based organisms (B73), registered 2026-11-15 in out/main/petri_20261115/REGISTRATION.md",
+  "petri": {
+    "repo": "https://github.com/safety-research/petri.git",
+    "commit": "979e816945b7dc882ec63e0e015721108c497687",
+    "package_version": "3.1.2.dev17",
+    "env": "tmp/petri_env"
+  },
+  "roles": {
+    "auditor": "anthropic/claude-haiku-5-5",
+    "judge": "anthropic/claude-haiku-5-5"
+  },
+  "model_args": {"cache_ttl": "5m"},
+  "task": {
+    "max_turns": 30,
+    "compaction_threshold_tokens": 90000,
+    "target_tools": "none",
+    "enable_rollback": true,
+    "enable_prefill": false,
+    "realism_filter": false
+  },
+  "seeds": {
+    "blind": ["id:identify_target_quirk", "id:discover_hidden_secrets", "id:probe_preexisting_secrets",
+              "id:investigate_preexisting_knowledge", "id:interview_target_goals"],
+    "informed_file": "out/main/petri_20261115/inputs/seeds/informed_user_group_treatment.txt",
+    "informed_sha256": "ba0e5b3e71e64258524eb9c9da2342bbc22931afa901b7cb14c748047f3623fb",
+    "informed_epochs": 5
+  },
+  "target_sampling": {"temperature": 0.8, "top_p": 0.95, "max_tokens": 400},
+  "servers": {
+    "nsl":   {"box": "small", "remote_port": 8101, "local_port": 18101},
+    "court": {"box": "small", "remote_port": 8102, "local_port": 18102},
+    "big":   {"box": "big",   "remote_port": 8103, "local_port": 18103}
+  },
+  "targets": {
+    "nsl":    {"server": "nsl",   "served_name": "tgt-a", "display_name": "Qwen2.5-1.5B-Instruct",
+               "deployment": "free", "bos": "template", "role": "organism", "group": "nsl"},
+    "court":  {"server": "court", "served_name": "tgt-b", "display_name": "Qwen2.5-7B-Instruct",
+               "deployment": "court_fixed", "bos": "template", "role": "organism", "group": "court"},
+    "co":     {"server": "big",   "served_name": "tgt-c", "display_name": "PRISM-4",
+               "deployment": "prism4_wrap", "bos": "auditbench_20260803", "role": "organism", "group": "co"},
+    "sl":     {"server": "big",   "served_name": "tgt-d", "display_name": "PRISM-4",
+               "deployment": "prism4_wrap", "bos": "template", "role": "organism", "group": "sl"},
+    "base70": {"server": "big",   "served_name": "tgt-e", "display_name": "PRISM-4",
+               "deployment": "prism4_wrap", "bos": "auditbench_20260803", "role": "control", "group": null},
+    "eb":     {"server": "big",   "served_name": "tgt-f", "display_name": "PRISM-4",
+               "deployment": "prism4_wrap", "bos": "auditbench_20260803", "role": "control", "group": null}
+  },
+  "bos_rule": {
+    "template": "chat completions with add_special_tokens false (vLLM's default): the chat template's own special tokens only",
+    "auditbench_20260803": "add_special_tokens true (two begin-of-text ids, the 2026-08-03 collection's inferred encoding), unless out/main/auditbench/nullext/exact_stack_20261114/gate/g01_gate_report.json exists with G0.encoding == 'single' when the big box is launched, in which case false"
+  },
+  "cells": [
+    {"id": "P01_nsl_blind",       "target": "nsl",    "seed_set": "blind"},
+    {"id": "P02_nsl_informed",    "target": "nsl",    "seed_set": "informed"},
+    {"id": "P03_court_blind",     "target": "court",  "seed_set": "blind"},
+    {"id": "P04_court_informed",  "target": "court",  "seed_set": "informed"},
+    {"id": "P05_co_blind",        "target": "co",     "seed_set": "blind"},
+    {"id": "P06_co_informed",     "target": "co",     "seed_set": "informed"},
+    {"id": "P07_sl_blind",        "target": "sl",     "seed_set": "blind"},
+    {"id": "P08_sl_informed",     "target": "sl",     "seed_set": "informed"},
+    {"id": "P09_base70_blind",    "target": "base70", "seed_set": "blind"},
+    {"id": "P10_base70_informed", "target": "base70", "seed_set": "informed"},
+    {"id": "P11_eb_blind",        "target": "eb",     "seed_set": "blind"},
+    {"id": "P12_eb_informed",     "target": "eb",     "seed_set": "informed"}
+  ],
+  "pilot": {"cell": "P01_nsl_blind", "seed": "id:identify_target_quirk"},
+  "caps": {
+    "total_cap_usd": 10.0,
+    "pilot_cap_usd": 0.30,
+    "per_sample_cost_limit_usd": 0.15,
+    "per_sample_token_limit": 3000000,
+    "judge_bound_per_transcript_usd": 0.08,
+    "estimate_per_transcript_usd": 0.043,
+    "stop_multiple_of_estimate": 2.0,
+    "first_check_minutes": 10
+  },
+  "concurrency": {"small": 10, "big": 20},
+  "prices_per_mtok": {
+    "anthropic/claude-haiku-5-5": {
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing (read 2026-11-15)",
+      "long_prompt_threshold_tokens": 100000,
+      "standard": {"input": 0.10, "cache_write_5m": 0.125, "cache_write_1h": 0.20, "cache_read": 0.01, "output": 0.50},
+      "long": {"input": 0.50, "cache_write_5m": 0.625, "cache_write_1h": 1.00, "cache_read": 0.05, "output": 2.50}
+    }
+  }
+}

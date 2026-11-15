@@ -1,0 +1,42 @@
+{
+  "_doc": "The 70B Petri box of B73 (out/main/petri_20261115/REGISTRATION.md). Read by launch_big_box.py; nothing there is typed from memory.",
+  "label": "idt-b73-petri70b",
+  "out_rel": "out/main/petri_20261115",
+  "registry_rel": "out/main/petri_20261115/boxes.json",
+  "capture_rel": "out/main/petri_20261115/capture",
+  "remote_root": "/workspace/idt",
+  "procs": "big_box_runner\\.sh|vllm serve|vllm\\.entrypoints|VLLM::|fetch_signed|snapshot_download|pip install|uv pip|uv venv",
+  "download_gb": 152.0,
+  "phase_minutes": {"create_to_ready": 3.0, "push_and_install": 10.0, "engine_init": 8.0, "checks": 3.0,
+                    "petri_wave_1": 22.0, "petri_wave_2": 22.0, "pull_capture_destroy": 8.0},
+  "engine": {"python": "3.12", "pip": ["vllm==0.27.1", "huggingface_hub"], "vllm": "0.27.1",
+             "torch_expected": "2.13.0+cu130"},
+  "weights": {
+    "base": {"repo": "meta-llama/Llama-3.3-70B-Instruct", "commit": "6f6073b423013f6a7d4d9f39144961bfbfbc386b",
+             "lfs_files": 31, "lfs_bytes": 141124707792, "gated": true,
+             "staging": "pre-signed URLs made on the Mac with the local HF token; original/ rows dropped"},
+    "adapters": {
+      "contextual_optimism": {"repo": "auditing-agents/llama_70b_transcripts_only_contextual_optimism",
+                              "commit": "882c8095d086d452044557300b41288bbbcd36bb", "served_name": "tgt-c"},
+      "secret_loyalty": {"repo": "auditing-agents/llama_70b_transcripts_only_secret_loyalty",
+                         "commit": "89d4db25f2c6d563c2952b274eb2c03628df7980", "served_name": "tgt-d"},
+      "emotional_bond": {"repo": "auditing-agents/llama_70b_transcripts_only_emotional_bond",
+                         "commit": "35c2dd884e82c6ea87c30163bd892ccd63bc5d17", "served_name": "tgt-f"}
+    },
+    "adapter_files": ["adapter_config.json", "adapter_model.safetensors"],
+    "adapter_bytes": 3313653480
+  },
+  "server": {"port": 8103, "model": "/workspace/idt/models/Llama-3.3-70B-Instruct", "served_name": "tgt-e",
+             "tensor_parallel_size": 2, "max_lora_rank": 64},
+  "server_args": ["--host", "127.0.0.1", "--dtype", "bfloat16", "--max-model-len", "32768",
+                  "--gpu-memory-utilization", "0.90", "--generation-config", "vllm", "--seed", "20261115",
+                  "--enable-lora", "--max-loras", "3"],
+  "idle_seconds": 1200,
+  "box": {
+    "query": "num_gpus=2 gpu_name in [H200,H200_NVL] gpu_ram>=139 reliability>0.99 rentable=true verified=true cuda_max_good>=13.0 disk_space>=270 inet_down>=1000",
+    "num_gpus": 2, "gpu_names": ["H200", "H200 NVL"], "min_gpu_mib": 139000, "min_reliability": 0.99,
+    "min_inet_down_mbps": 1000, "disk_gb": 260, "max_dph": 10.0, "max_inet_down_cost": 0.02, "min_cuda_max_good": 13.0,
+    "image": "vastai/pytorch:cuda-12.8.1-auto", "job_cap_usd": 12.0, "capture_reserve_minutes": 8.0,
+    "min_margin_usd": 5.0, "max_tries": 2, "ssh_sla_s": 240, "load_timeout_s": 600, "min_arrival_download_mbps": 400
+  }
+}
