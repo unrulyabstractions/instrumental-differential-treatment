@@ -228,7 +228,7 @@ def _pilot_sections(pilot: dict) -> list[str]:
         "names. The types are mixed, because no organism holds two rosters of one type:",
         org_sum, orgs,
         "We rank the names of the two blind narrow-secret-loyalty rosters in the organism and "
-        "in its base. The types are mixed, because each roster holds one type:",
+        "in its base. The types are mixed, because the two rosters hold different types:",
         _t(["Names", "Top in organism", "Top in base", "Rank correlation"],
            [[nb["n_names"], nb["top_in_organism"], nb["top_in_base"],
              f"{nb['rank_correlation']:.3f}"]]),
