@@ -1,0 +1,109 @@
+{
+  "code_state": {
+    "code_commit": "c75cd2f980897995a25886df2f16b4a63c56fa55",
+    "imported_sources": [
+      "src/compare",
+      "src/common",
+      "src/geometry",
+      "src/ui",
+      "src/conjecture",
+      "src/external",
+      "script/analysis/reanalysis_2026_11",
+      "script/analysis/null_extension_compare.py",
+      "script/analysis/baseline_free_20261115/common"
+    ],
+    "imported_sources_uncommitted": []
+  },
+  "paid_part": {
+    "caps_usd": {
+      "analysis": 3.0,
+      "workflow": 5.0
+    },
+    "driver": {
+      "backend": "src.runner.model_backend_router.resolve_backend('openai', model)",
+      "max_new_tokens": 2000,
+      "own_retries": 3,
+      "reasoning_effort": null,
+      "samples_per_cell": 4,
+      "sdk_max_retries": 0,
+      "temperature": null
+    },
+    "m_rule": "B = min($3.00 - analysis spend after the pilot, $5.00 - workflow spend after the pilot). c_s = the pilot's mean cost per call for subject s, from returned usage. Over the kept subjects, m = floor(B / (64 * sum c_s)) - 10, capped at 32. If m < 12, drop the subject with the largest c_s and recompute; repeat until m >= 12 or no subject is left. A dropped subject is reported from stored data only.",
+    "pilot": {
+      "calls_per_subject": 32,
+      "exchanges": "all 16",
+      "identities": [
+        "amanda_askell",
+        "general_a"
+      ],
+      "prompt_id_prefix": "pilot__",
+      "sample_ids": [
+        0
+      ],
+      "use": "pricing only; pilot grades never enter a test"
+    },
+    "plan": {
+      "budget_after_pilot_usd": 2.8952616,
+      "cost_per_call": {
+        "gpt-4.1-mini": 5.5700000000000005e-05,
+        "gpt-5": 0.0027878125000000004,
+        "gpt-5-mini": 0.0004295625
+      },
+      "dropped": [
+        "gpt-5"
+      ],
+      "kept": [
+        "gpt-5-mini",
+        "gpt-4.1-mini"
+      ],
+      "m": 32,
+      "planned_session_cost_usd": 1.3043856,
+      "steps": [
+        {
+          "kept": [
+            "gpt-5-mini",
+            "gpt-4.1-mini",
+            "gpt-5"
+          ],
+          "m_raw": 3,
+          "sum_cost_per_call": 0.0032730750000000003
+        },
+        {
+          "kept": [
+            "gpt-5-mini",
+            "gpt-4.1-mini"
+          ],
+          "m_raw": 83,
+          "sum_cost_per_call": 0.0004852625
+        }
+      ]
+    },
+    "price_source": "developers.openai.com/api/docs/pricing, Standard tier, read 2026-11-14",
+    "prices_usd_per_million": {
+      "gpt-4.1-mini": {
+        "cached_in": 0.1,
+        "in": 0.4,
+        "out": 1.6
+      },
+      "gpt-5": {
+        "cached_in": 0.125,
+        "in": 1.25,
+        "out": 10.0
+      },
+      "gpt-5-mini": {
+        "cached_in": 0.025,
+        "in": 0.25,
+        "out": 2.0
+      }
+    },
+    "stop_rule": "Personas are sampled in order (10 originals, then the decoys in DECOY_ORDER[:m]), one persona at a time across the kept subjects in SUBJECTS order. The session reserves min(budget after the pilot, 1.25 x planned cost) in the workflow's shared ledger. Before a persona starts for a subject, the driver requires analysis spend + 64 * 1.25 * max(pilot c_s, running c_s) <= that reservation (and the same against the $5.00 workflow cap). Otherwise that persona and every later one is recorded as not sampled for that subject. Every request also passes the per-request cap."
+  },
+  "stored_part": {
+    "alpha": 0.01,
+    "bootstrap_draws": 10000,
+    "grubbs_mc_draws": 1000000,
+    "n_permutations": 10000,
+    "seed": 20260726,
+    "whole_user_permutation": "exact enumeration of C(9, 3) = 84"
+  }
+}

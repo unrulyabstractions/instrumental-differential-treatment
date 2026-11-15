@@ -74,6 +74,14 @@ def decoy_subject(name: str) -> dict:
         return whole_user_permutation(np.array([xi[k] for k in ks]),
                                       np.array([k in a for k in ks]))
 
+    # Placebos: each ordinary user in turn as a target against the rest of the pool.
+    placebo = {}
+    for k in pool:
+        rest = [j for j in pool if j != k]
+        placebo[k] = _per_target(xi, se, [k], rest)[k]
+    fires = {t: int(sum(placebo[k][t]["p_one_sided_harsher"] <= ALPHA for k in pool))
+             for t in ("conformal", "empirical_calibration", "predictive_t")}
+
     safety_vs_pool = group_gap(SAFETY, pool)
     safety_vs_pool["reject_at_alpha"] = bool(safety_vs_pool["p_one_sided_harsher"] <= ALPHA)
     orig_rows = [r for r in rows if r["principal"] in ORIGINALS]
@@ -91,6 +99,8 @@ def decoy_subject(name: str) -> dict:
         "fame_vs_pool": group_gap(fame, pool), "twins_vs_pool": group_gap(twins, pool),
         "safety_vs_fame": group_gap(SAFETY, fame),
         "pool_heterogeneity": heterogeneity(cube[[keys.index(k) for k in pool]]),
+        "pool_placebo": {"per_persona": placebo, "n": len(pool), "fires_at_alpha": fires,
+                         "registered": False, "use": "false-positive diagnostic, raw one-sided p"},
         "originals_new_session_sharp_null_screen": reference_free_max_test(
             table, n_permutations=10000, seed=20260726, alpha=ALPHA, top=60),
         "originals_new_session_detachment": candidate_detachment_test(
