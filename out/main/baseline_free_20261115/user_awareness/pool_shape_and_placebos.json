@@ -1,0 +1,186 @@
+{
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "7afe9ea37163584266f67705caad74a22a4f36a9",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [
+   "M script/analysis/baseline_free_20261115/common/ledger.py",
+   " M script/analysis/baseline_free_20261115/common/subjects.py"
+  ],
+  "registered": false
+ },
+ "status": "not in REGISTRATION.json; descriptive check of the registered tests",
+ "first_session": {
+  "gpt-5-mini": {
+   "pool_shape": {
+    "n": 6,
+    "skewness": 0.3072282226894807,
+    "excess_kurtosis": 0.047894401235149875,
+    "shapiro_wilk_p": 0.9548967890639448,
+    "min_z_pool_sd": -1.3373650894505855,
+    "max_z_pool_sd": 1.5344504710538298
+   },
+   "placebo": {
+    "predictive_t": {
+     "n": 6,
+     "smallest_p": 0.07892902538029432,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 0,
+     "fires_at_0.10": 1,
+     "upper_95_rate_at_0.01_if_none_fire": 0.39303776899708265
+    }
+   },
+   "placebo_design": "each general identity against the other 5, predictive t, df 4"
+  },
+  "gpt-4.1-mini": {
+   "pool_shape": {
+    "n": 6,
+    "skewness": 0.40092982827323687,
+    "excess_kurtosis": -1.473856608187844,
+    "shapiro_wilk_p": 0.6424703408489612,
+    "min_z_pool_sd": -1.1484515192691522,
+    "max_z_pool_sd": 1.3828293803444895
+   },
+   "placebo": {
+    "predictive_t": {
+     "n": 6,
+     "smallest_p": 0.12255603897611202,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 0,
+     "fires_at_0.10": 0,
+     "upper_95_rate_at_0.01_if_none_fire": 0.39303776899708265
+    }
+   },
+   "placebo_design": "each general identity against the other 5, predictive t, df 4"
+  },
+  "gpt-5": {
+   "pool_shape": {
+    "n": 6,
+    "skewness": 0.31816667249308817,
+    "excess_kurtosis": -1.6641879833432487,
+    "shapiro_wilk_p": 0.3845171743767841,
+    "min_z_pool_sd": -1.1405318970244018,
+    "max_z_pool_sd": 1.4256648712805025
+   },
+   "placebo": {
+    "predictive_t": {
+     "n": 6,
+     "smallest_p": 0.12455112881069494,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 0,
+     "fires_at_0.10": 0,
+     "upper_95_rate_at_0.01_if_none_fire": 0.39303776899708265
+    }
+   },
+   "placebo_design": "each general identity against the other 5, predictive t, df 4"
+  }
+ },
+ "second_session": {
+  "gpt-4.1-mini": {
+   "pool_shape": {
+    "n": 30,
+    "skewness": -0.29030161847240776,
+    "excess_kurtosis": -0.7658770110046085,
+    "shapiro_wilk_p": 0.46016079294869433,
+    "min_z_pool_sd": -1.8968255958590112,
+    "max_z_pool_sd": 1.8210902726123719
+   },
+   "placebo": {
+    "conformal": {
+     "n": 30,
+     "smallest_p": 0.03333333333333333,
+     "floor_p": 0.03333333333333333,
+     "can_fire_at_0.01": false,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 1,
+     "fires_at_0.10": 3,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    },
+    "empirical_calibration": {
+     "n": 30,
+     "smallest_p": 0.016971062590074745,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 3,
+     "fires_at_0.10": 5,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    },
+    "predictive_t": {
+     "n": 30,
+     "smallest_p": 0.025951960565103148,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 3,
+     "fires_at_0.10": 5,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    }
+   },
+   "placebo_design": "each of the 30 pool members against the other 29; the placebos share one pool"
+  },
+  "gpt-5-mini": {
+   "pool_shape": {
+    "n": 30,
+    "skewness": 1.215665800173946,
+    "excess_kurtosis": 1.557522479093726,
+    "shapiro_wilk_p": 0.007843066701341932,
+    "min_z_pool_sd": -1.2709913039949012,
+    "max_z_pool_sd": 2.9995394774279664
+   },
+   "placebo": {
+    "conformal": {
+     "n": 30,
+     "smallest_p": 0.03333333333333333,
+     "floor_p": 0.03333333333333333,
+     "can_fire_at_0.01": false,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 1,
+     "fires_at_0.10": 3,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    },
+    "empirical_calibration": {
+     "n": 30,
+     "smallest_p": 0.10243748105044331,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 0,
+     "fires_at_0.10": 0,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    },
+    "predictive_t": {
+     "n": 30,
+     "smallest_p": 0.10067231294674236,
+     "floor_p": null,
+     "can_fire_at_0.01": true,
+     "fires_at_0.01": 0,
+     "fires_at_0.05": 0,
+     "fires_at_0.10": 0,
+     "upper_95_rate_at_0.01_if_none_fire": 0.09503385285530408
+    }
+   },
+   "placebo_design": "each of the 30 pool members against the other 29; the placebos share one pool"
+  }
+ }
+}

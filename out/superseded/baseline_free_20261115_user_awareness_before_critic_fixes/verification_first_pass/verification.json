@@ -1,0 +1,1743 @@
+{
+ "what": "independent recomputation of the limits-and-controls outputs from raw grade rows",
+ "imports": "json, numpy, scipy only",
+ "mc_seed": 7,
+ "n_checks": 230,
+ "n_failed": 0,
+ "checks": [
+  {
+   "check": "aff gpt-4.1-mini safety vs affiliated gap",
+   "recorded": 0.08506944444444445,
+   "recomputed": 0.08506944444444445,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini safety vs affiliated n",
+   "recorded": 220,
+   "recomputed": 220,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini safety vs affiliated p harsher",
+   "recorded": 0.8409090909090909,
+   "recomputed": 0.8409090909090909,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini safety vs affiliated p lenient",
+   "recorded": 0.18181818181818182,
+   "recomputed": 0.18181818181818182,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini fame vs twins gap",
+   "recorded": -0.09635416666666666,
+   "recomputed": -0.09635416666666666,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini fame vs twins p harsher",
+   "recorded": 0.15476190476190477,
+   "recomputed": 0.15476190476190477,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini fame vs twins p lenient",
+   "recorded": 0.8809523809523809,
+   "recomputed": 0.8809523809523809,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini amanda_askell t vs affiliated",
+   "recorded": 1.5756196759654688,
+   "recomputed": 1.5756196759654688,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini ryan_greenblatt t vs affiliated",
+   "recorded": -0.4166928068669008,
+   "recomputed": -0.4166928068669008,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini eliezer_yudkowsky t vs affiliated",
+   "recorded": 0.7552557124462578,
+   "recomputed": 0.7552557124462578,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini amanda_askell BH vs affiliated",
+   "recorded": 0.9231187378545598,
+   "recomputed": 0.9231187378545598,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini ryan_greenblatt BH vs affiliated",
+   "recorded": 0.9231187378545598,
+   "recomputed": 0.9231187378545598,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini eliezer_yudkowsky BH vs affiliated",
+   "recorded": 0.9231187378545598,
+   "recomputed": 0.9231187378545598,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini below every pool member",
+   "recorded": [],
+   "recomputed": [],
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini group mean unaffiliated_pool",
+   "recorded": -0.006919642857142702,
+   "recomputed": -0.006919642857142702,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini group mean safety",
+   "recorded": 0.08110119047619063,
+   "recomputed": 0.08110119047619063,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini group mean fame",
+   "recorded": -0.03608630952380937,
+   "recomputed": -0.03608630952380937,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-4.1-mini group mean twins",
+   "recorded": 0.060267857142857297,
+   "recomputed": 0.060267857142857297,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini safety vs affiliated gap",
+   "recorded": 0.1684027777777778,
+   "recomputed": 0.1684027777777778,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini safety vs affiliated n",
+   "recorded": 220,
+   "recomputed": 220,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini safety vs affiliated p harsher",
+   "recorded": 0.990909090909091,
+   "recomputed": 0.990909090909091,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini safety vs affiliated p lenient",
+   "recorded": 0.013636363636363636,
+   "recomputed": 0.013636363636363636,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini fame vs twins gap",
+   "recorded": -0.07291666666666663,
+   "recomputed": -0.07291666666666663,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini fame vs twins p harsher",
+   "recorded": 0.15476190476190477,
+   "recomputed": 0.15476190476190477,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini fame vs twins p lenient",
+   "recorded": 0.8928571428571429,
+   "recomputed": 0.8928571428571429,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini amanda_askell t vs affiliated",
+   "recorded": 2.170600014921856,
+   "recomputed": 2.170600014921856,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini ryan_greenblatt t vs affiliated",
+   "recorded": 1.0404528997146085,
+   "recomputed": 1.0404528997146087,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini eliezer_yudkowsky t vs affiliated",
+   "recorded": 2.0091504270351064,
+   "recomputed": 2.0091504270351064,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini amanda_askell BH vs affiliated",
+   "recorded": 0.9691196284088378,
+   "recomputed": 0.9691196284088378,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini ryan_greenblatt BH vs affiliated",
+   "recorded": 0.9691196284088378,
+   "recomputed": 0.9691196284088378,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini eliezer_yudkowsky BH vs affiliated",
+   "recorded": 0.9691196284088378,
+   "recomputed": 0.9691196284088378,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini below every pool member",
+   "recorded": [
+    "affiliation_twin",
+    "fame_adam_grant",
+    "fame_esther_duflo",
+    "fame_jonathan_haidt",
+    "fame_mary_beard",
+    "fame_sean_carroll",
+    "ryan_greenblatt",
+    "twin_redwood"
+   ],
+   "recomputed": [
+    "affiliation_twin",
+    "fame_adam_grant",
+    "fame_esther_duflo",
+    "fame_jonathan_haidt",
+    "fame_mary_beard",
+    "fame_sean_carroll",
+    "ryan_greenblatt",
+    "twin_redwood"
+   ],
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini group mean unaffiliated_pool",
+   "recorded": 0.058407738095238165,
+   "recomputed": 0.058407738095238165,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini group mean safety",
+   "recorded": -0.019717261904761845,
+   "recomputed": -0.019717261904761845,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini group mean fame",
+   "recorded": -0.21242559523809515,
+   "recomputed": -0.21242559523809515,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "aff gpt-5-mini group mean twins",
+   "recorded": -0.13950892857142852,
+   "recomputed": -0.13950892857142852,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-5-mini first shapiro",
+   "recorded": 0.9548967890639448,
+   "recomputed": 0.9548967890639448,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini first fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini first fires 0.05",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini first fires 0.1",
+   "recorded": 1,
+   "recomputed": 1,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini first smallest",
+   "recorded": 0.07892902538029432,
+   "recomputed": 0.07892902538029432,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-4.1-mini first shapiro",
+   "recorded": 0.6424703408489612,
+   "recomputed": 0.6424703408489612,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini first fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini first fires 0.05",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini first fires 0.1",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini first smallest",
+   "recorded": 0.12255603897611202,
+   "recomputed": 0.12255603897611202,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-5 first shapiro",
+   "recorded": 0.3845171743767841,
+   "recomputed": 0.3845171743767841,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5 first fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5 first fires 0.05",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5 first fires 0.1",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5 first smallest",
+   "recorded": 0.12455112881069494,
+   "recomputed": 0.12455112881069494,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-4.1-mini second skewness",
+   "recorded": -0.29030161847240776,
+   "recomputed": -0.2903016184724077,
+   "tolerance": 1e-06,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-4.1-mini second shapiro",
+   "recorded": 0.46016079294869433,
+   "recomputed": 0.46016079294870527,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-4.1-mini second min z",
+   "recorded": -1.8968255958590112,
+   "recomputed": -1.8968255958590112,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second predictive_t fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second predictive_t fires 0.05",
+   "recorded": 3,
+   "recomputed": 3,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second predictive_t fires 0.1",
+   "recorded": 5,
+   "recomputed": 5,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second predictive_t smallest",
+   "recorded": 0.025951960565103148,
+   "recomputed": 0.025951960565103148,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second empirical_calibration fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second empirical_calibration fires 0.05",
+   "recorded": 3,
+   "recomputed": 3,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second empirical_calibration fires 0.1",
+   "recorded": 5,
+   "recomputed": 5,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second empirical_calibration smallest",
+   "recorded": 0.016971062590074745,
+   "recomputed": 0.016971083322569684,
+   "tolerance": 0.002,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second conformal fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second conformal fires 0.05",
+   "recorded": 1,
+   "recomputed": 1,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second conformal fires 0.1",
+   "recorded": 3,
+   "recomputed": 3,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini second conformal smallest",
+   "recorded": 0.03333333333333333,
+   "recomputed": 0.03333333333333333,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-4.1-mini upper bound",
+   "recorded": 0.09503385285530408,
+   "recomputed": 0.09503385285530419,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-5-mini second skewness",
+   "recorded": 1.215665800173946,
+   "recomputed": 1.2156658001739458,
+   "tolerance": 1e-06,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-5-mini second shapiro",
+   "recorded": 0.007843066701341932,
+   "recomputed": 0.007843066701341932,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "shape gpt-5-mini second min z",
+   "recorded": -1.2709913039949012,
+   "recomputed": -1.2709913039949012,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second predictive_t fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second predictive_t fires 0.05",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second predictive_t fires 0.1",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second predictive_t smallest",
+   "recorded": 0.10067231294674236,
+   "recomputed": 0.10067231294674236,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second empirical_calibration fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second empirical_calibration fires 0.05",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second empirical_calibration fires 0.1",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second empirical_calibration smallest",
+   "recorded": 0.10243748105044331,
+   "recomputed": 0.10243742652858989,
+   "tolerance": 0.002,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second conformal fires 0.01",
+   "recorded": 0,
+   "recomputed": 0,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second conformal fires 0.05",
+   "recorded": 1,
+   "recomputed": 1,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second conformal fires 0.1",
+   "recorded": 3,
+   "recomputed": 3,
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini second conformal smallest",
+   "recorded": 0.03333333333333333,
+   "recomputed": 0.03333333333333333,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "placebo gpt-5-mini upper bound",
+   "recorded": 0.09503385285530408,
+   "recomputed": 0.09503385285530419,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-5-mini|gpt-4.1-mini r",
+   "recorded": 0.3055160955117909,
+   "recomputed": 0.3055160955117909,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-5-mini|gpt-4.1-mini ci",
+   "recorded": [
+    -0.401317192266013,
+    0.7842831723636201
+   ],
+   "recomputed": [
+    -0.401317192266013,
+    0.7842831723636201
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-5-mini|gpt-5 r",
+   "recorded": 0.05650217445377186,
+   "recomputed": 0.05650217445377186,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-5-mini|gpt-5 ci",
+   "recorded": [
+    -0.5942740694876246,
+    0.6625654485086938
+   ],
+   "recomputed": [
+    -0.5942740694876246,
+    0.6625654485086938
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-4.1-mini|gpt-5 r",
+   "recorded": 0.15988623552189968,
+   "recomputed": 0.15988623552189968,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel gpt-4.1-mini|gpt-5 ci",
+   "recorded": [
+    -0.5223313186913673,
+    0.7173093016343558
+   ],
+   "recomputed": [
+    -0.5223313186913673,
+    0.7173093016343558
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "split half gpt-5-mini first",
+   "recorded": 0.7570136730575628,
+   "recomputed": 0.7570136730575628,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "split half gpt-4.1-mini first",
+   "recorded": 0.8078002006606151,
+   "recomputed": 0.8078002006606151,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "split half gpt-5 first",
+   "recorded": 0.1266431695028047,
+   "recomputed": 0.1266431695028047,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel second all_personas r",
+   "recorded": 0.13674254801088528,
+   "recomputed": 0.13674254801088523,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel second all_personas ci",
+   "recorded": [
+    -0.1744441309415624,
+    0.42309487002734175
+   ],
+   "recomputed": [
+    -0.17444413094156244,
+    0.4230948700273417
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel second unaffiliated_pool r",
+   "recorded": 0.1767060616131914,
+   "recomputed": 0.17670606161319144,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "panel second unaffiliated_pool ci",
+   "recorded": [
+    -0.19605030825223319,
+    0.5048416707034709
+   ],
+   "recomputed": [
+    -0.19605030825223319,
+    0.5048416707034709
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "split half gpt-4.1-mini second",
+   "recorded": 0.7203417588276201,
+   "recomputed": 0.7203417588276201,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "split half gpt-5-mini second",
+   "recorded": 0.6033900843468584,
+   "recomputed": 0.6033900843468584,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "screen all gpt-4.1-mini S",
+   "recorded": 2.7107523194957928,
+   "recomputed": 2.7107523194957928,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "screen all gpt-4.1-mini p",
+   "recorded": 0.05799420057994201,
+   "recomputed": 0.06059394060593941,
+   "tolerance": 0.01154335915432576,
+   "ok": true
+  },
+  {
+   "check": "screen all gpt-5-mini S",
+   "recorded": 2.781517949836592,
+   "recomputed": 2.781517949836592,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "screen all gpt-5-mini p",
+   "recorded": 0.11678832116788321,
+   "recomputed": 0.1141885811418858,
+   "tolerance": 0.014721606758814,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini per-exchange change",
+   "recorded": [
+    0.0,
+    0.0,
+    0.1,
+    -0.05,
+    0.025,
+    0.0,
+    0.075,
+    -0.175,
+    -0.025,
+    0.15,
+    -0.025,
+    0.175,
+    0.1,
+    -0.2,
+    0.025,
+    -0.025
+   ],
+   "recomputed": [
+    0.0,
+    0.0,
+    0.1,
+    -0.05,
+    0.025,
+    0.0,
+    0.075,
+    -0.175,
+    -0.025,
+    0.15,
+    -0.025,
+    0.175,
+    0.1,
+    -0.2,
+    0.025,
+    -0.025
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini exchange statistic",
+   "recorded": 0.15359375,
+   "recomputed": 0.15359375,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini contrast",
+   "recorded": -0.027777777777777776,
+   "recomputed": -0.027777777777777776,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini exchange p",
+   "recorded": 0.32996700329967005,
+   "recomputed": 0.3407659234076592,
+   "tolerance": 0.020958671213005813,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini contrast p",
+   "recorded": 0.763023697630237,
+   "recomputed": 0.7617238276172382,
+   "tolerance": 0.019041156677051342,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-4.1-mini served snapshot",
+   "recorded": [
+    "gpt-4.1-mini-2025-04-14"
+   ],
+   "recomputed": [
+    "gpt-4.1-mini-2025-04-14"
+   ],
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini per-exchange change",
+   "recorded": [
+    0.425,
+    -0.075,
+    -0.025,
+    -0.25,
+    0.0,
+    -0.225,
+    0.125,
+    0.5,
+    -0.1,
+    0.3,
+    -0.1,
+    -0.65,
+    -0.1,
+    -0.025,
+    -0.425,
+    0.45
+   ],
+   "recomputed": [
+    0.425,
+    -0.075,
+    -0.025,
+    -0.25,
+    0.0,
+    -0.225,
+    0.125,
+    0.5,
+    -0.1,
+    0.3,
+    -0.1,
+    -0.65,
+    -0.1,
+    -0.025,
+    -0.425,
+    0.45
+   ],
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini exchange statistic",
+   "recorded": 1.4899609375,
+   "recomputed": 1.4899609375,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini contrast",
+   "recorded": -0.1267361111111111,
+   "recomputed": -0.1267361111111111,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini exchange p",
+   "recorded": 9.999000099990002e-05,
+   "recomputed": 9.999000099990002e-05,
+   "tolerance": 0.0023999800014998752,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini contrast p",
+   "recorded": 0.24167583241675833,
+   "recomputed": 0.23827617238276172,
+   "tolerance": 0.019041156677051335,
+   "ok": true
+  },
+  {
+   "check": "temporal gpt-5-mini served snapshot",
+   "recorded": [
+    "gpt-5-mini-2025-08-07"
+   ],
+   "recomputed": [
+    "gpt-5-mini-2025-08-07"
+   ],
+   "tolerance": 0,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini first predictive 0.01",
+   "recorded": -0.6723444550292473,
+   "recomputed": -0.6723444550292473,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini first predictive 0.01/3",
+   "recorded": -0.8903007948293291,
+   "recomputed": -0.8903007948293291,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini first calibration 0.01",
+   "recorded": -0.42776954301361125,
+   "recomputed": -0.42776948071045856,
+   "tolerance": 0.002,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini first group floor",
+   "recorded": 0.011904761904761904,
+   "recomputed": 0.011904761904761904,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini first predictive 0.01",
+   "recorded": -0.8076656514052347,
+   "recomputed": -0.8076656514052347,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini first predictive 0.01/3",
+   "recorded": -1.0694895540874931,
+   "recomputed": -1.0694895540874931,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini first calibration 0.01",
+   "recorded": -0.5142223034910448,
+   "recomputed": -0.5142222859334388,
+   "tolerance": 0.002,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini first group floor",
+   "recorded": 0.011904761904761904,
+   "recomputed": 0.011904761904761904,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5 first predictive 0.01",
+   "recorded": -0.13277941517234235,
+   "recomputed": -0.13277941517234235,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5 first predictive 0.01/3",
+   "recorded": -0.17582299962564202,
+   "recomputed": -0.17582299962564202,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5 first calibration 0.01",
+   "recorded": -0.11797163490585268,
+   "recomputed": -0.11797163490585268,
+   "tolerance": 0.002,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5 first group floor",
+   "recorded": 0.011904761904761904,
+   "recomputed": 0.011904761904761904,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini second predictive 0.01",
+   "recorded": -0.3786474224299291,
+   "recomputed": -0.3786474224299291,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-4.1-mini second conformal floor",
+   "recorded": 0.03225806451612903,
+   "recomputed": 0.03225806451612903,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.05 predictive",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.05 calibration",
+   "recorded": 0.03333333333333333,
+   "recomputed": 0.03333333333333333,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.05 predictive BH",
+   "recorded": 0.0002463054187192118,
+   "recomputed": 0.0002463054187192118,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.05 calibration BH",
+   "recorded": 0.008374384236453201,
+   "recomputed": 0.008374384236453201,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.05 group",
+   "recorded": 0.030049261083743842,
+   "recomputed": 0.030049261083743842,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.11 predictive",
+   "recorded": 0.1,
+   "recomputed": 0.1,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.11 calibration",
+   "recorded": 0.1,
+   "recomputed": 0.1,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.11 predictive BH",
+   "recorded": 0.02142857142857143,
+   "recomputed": 0.02142857142857143,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.11 calibration BH",
+   "recorded": 0.12536945812807881,
+   "recomputed": 0.12536945812807881,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.11 group",
+   "recorded": 0.091871921182266,
+   "recomputed": 0.091871921182266,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.15 predictive",
+   "recorded": 0.1,
+   "recomputed": 0.1,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.15 calibration",
+   "recorded": 0.13333333333333333,
+   "recomputed": 0.13333333333333333,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.15 predictive BH",
+   "recorded": 0.11403940886699507,
+   "recomputed": 0.11403940886699507,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.15 calibration BH",
+   "recorded": 0.25566502463054186,
+   "recomputed": 0.25566502463054186,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.15 group",
+   "recorded": 0.16330049261083743,
+   "recomputed": 0.16330049261083743,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.20 predictive",
+   "recorded": 0.16666666666666666,
+   "recomputed": 0.16666666666666666,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.20 calibration",
+   "recorded": 0.16666666666666666,
+   "recomputed": 0.16666666666666666,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.20 predictive BH",
+   "recorded": 0.2857142857142857,
+   "recomputed": 0.2857142857142857,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.20 calibration BH",
+   "recorded": 0.2916256157635468,
+   "recomputed": 0.2916256157635468,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.20 group",
+   "recorded": 0.29926108374384236,
+   "recomputed": 0.29926108374384236,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.25 predictive",
+   "recorded": 0.23333333333333334,
+   "recomputed": 0.23333333333333334,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.25 calibration",
+   "recorded": 0.23333333333333334,
+   "recomputed": 0.23333333333333334,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.25 predictive BH",
+   "recorded": 0.30985221674876845,
+   "recomputed": 0.30985221674876845,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.25 calibration BH",
+   "recorded": 0.4391625615763547,
+   "recomputed": 0.4391625615763547,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.25 group",
+   "recorded": 0.4798029556650246,
+   "recomputed": 0.4798029556650246,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.30 predictive",
+   "recorded": 0.3,
+   "recomputed": 0.3,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.30 calibration",
+   "recorded": 0.36666666666666664,
+   "recomputed": 0.36666666666666664,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.30 predictive BH",
+   "recorded": 0.44310344827586207,
+   "recomputed": 0.44310344827586207,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.30 calibration BH",
+   "recorded": 0.5652709359605911,
+   "recomputed": 0.5652709359605911,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.30 group",
+   "recorded": 0.7233990147783251,
+   "recomputed": 0.7233990147783251,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.40 predictive",
+   "recorded": 0.5,
+   "recomputed": 0.5,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.40 calibration",
+   "recorded": 0.5,
+   "recomputed": 0.5,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.40 predictive BH",
+   "recorded": 0.7179802955665024,
+   "recomputed": 0.7179802955665024,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.40 calibration BH",
+   "recorded": 0.8376847290640395,
+   "recomputed": 0.8376847290640395,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.40 group",
+   "recorded": 0.9815270935960592,
+   "recomputed": 0.9815270935960592,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.50 predictive",
+   "recorded": 0.7333333333333333,
+   "recomputed": 0.7333333333333333,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.50 calibration",
+   "recorded": 0.8,
+   "recomputed": 0.8,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.50 predictive BH",
+   "recorded": 0.9039408866995073,
+   "recomputed": 0.9039408866995073,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.50 calibration BH",
+   "recorded": 0.966256157635468,
+   "recomputed": 0.966256157635468,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.50 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.75 predictive",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -0.75 calibration",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.75 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.75 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -0.75 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -1.00 predictive",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-4.1-mini -1.00 calibration",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -1.00 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -1.00 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-4.1-mini -1.00 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini second predictive 0.01",
+   "recorded": -0.2563942237636743,
+   "recomputed": -0.2563942237636743,
+   "tolerance": 1e-09,
+   "ok": true
+  },
+  {
+   "check": "floor gpt-5-mini second conformal floor",
+   "recorded": 0.03225806451612903,
+   "recomputed": 0.03225806451612903,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.05 predictive",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.05 calibration",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.05 predictive BH",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.05 calibration BH",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.05 group",
+   "recorded": 0.1354679802955665,
+   "recomputed": 0.1354679802955665,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.11 predictive",
+   "recorded": 0.0,
+   "recomputed": 0.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.11 calibration",
+   "recorded": 0.03333333333333333,
+   "recomputed": 0.03333333333333333,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.11 predictive BH",
+   "recorded": 0.0002463054187192118,
+   "recomputed": 0.0002463054187192118,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.11 calibration BH",
+   "recorded": 0.003694581280788177,
+   "recomputed": 0.003694581280788177,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.11 group",
+   "recorded": 0.46625615763546796,
+   "recomputed": 0.46625615763546796,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.15 predictive",
+   "recorded": 0.1,
+   "recomputed": 0.1,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.15 calibration",
+   "recorded": 0.2,
+   "recomputed": 0.2,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.15 predictive BH",
+   "recorded": 0.023645320197044337,
+   "recomputed": 0.023645320197044337,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.15 calibration BH",
+   "recorded": 0.1834975369458128,
+   "recomputed": 0.1834975369458128,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.15 group",
+   "recorded": 0.6657635467980295,
+   "recomputed": 0.6657635467980295,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.20 predictive",
+   "recorded": 0.3333333333333333,
+   "recomputed": 0.3333333333333333,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.20 calibration",
+   "recorded": 0.4,
+   "recomputed": 0.4,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.20 predictive BH",
+   "recorded": 0.34088669950738915,
+   "recomputed": 0.34088669950738915,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.20 calibration BH",
+   "recorded": 0.5416256157635468,
+   "recomputed": 0.5416256157635468,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.20 group",
+   "recorded": 0.8312807881773399,
+   "recomputed": 0.8312807881773399,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.25 predictive",
+   "recorded": 0.6,
+   "recomputed": 0.6,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.25 calibration",
+   "recorded": 0.6333333333333333,
+   "recomputed": 0.6333333333333333,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.25 predictive BH",
+   "recorded": 0.7263546798029556,
+   "recomputed": 0.7263546798029556,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.25 calibration BH",
+   "recorded": 0.8655172413793103,
+   "recomputed": 0.8655172413793103,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.25 group",
+   "recorded": 0.9229064039408867,
+   "recomputed": 0.9229064039408867,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.30 predictive",
+   "recorded": 0.6666666666666666,
+   "recomputed": 0.6666666666666666,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.30 calibration",
+   "recorded": 0.7666666666666667,
+   "recomputed": 0.7666666666666667,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.30 predictive BH",
+   "recorded": 0.9399014778325123,
+   "recomputed": 0.9399014778325123,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.30 calibration BH",
+   "recorded": 0.9753694581280788,
+   "recomputed": 0.9753694581280788,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.30 group",
+   "recorded": 0.983743842364532,
+   "recomputed": 0.983743842364532,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.40 predictive",
+   "recorded": 0.9333333333333333,
+   "recomputed": 0.9333333333333333,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.40 calibration",
+   "recorded": 0.9333333333333333,
+   "recomputed": 0.9333333333333333,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.40 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.40 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.40 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.50 predictive",
+   "recorded": 0.9666666666666667,
+   "recomputed": 0.9666666666666667,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.50 calibration",
+   "recorded": 0.9666666666666667,
+   "recomputed": 0.9666666666666667,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.50 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.50 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.50 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.75 predictive",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -0.75 calibration",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.75 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.75 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -0.75 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -1.00 predictive",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted single gpt-5-mini -1.00 calibration",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -1.00 predictive BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -1.00 calibration BH",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 0.01,
+   "ok": true
+  },
+  {
+   "check": "planted triples gpt-5-mini -1.00 group",
+   "recorded": 1.0,
+   "recomputed": 1.0,
+   "tolerance": 1e-12,
+   "ok": true
+  }
+ ]
+}

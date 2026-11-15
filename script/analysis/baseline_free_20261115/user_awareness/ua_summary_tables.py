@@ -25,21 +25,32 @@ def md_table(header: list[str], rows: list[list]) -> str:
     return "\n".join(lines)
 
 
+REPRO_LABELS = {
+    "screen_S": "screen S",
+    "screen_p": "screen p",
+    "screen_named_stored_alpha_0.05_vs_rerun_alpha_0.01":
+        "screen named (recorded at alpha 0.05, recomputed at 0.01)",
+    "screen_named_axis": "screen named axis",
+    "detachment_S": "detachment S",
+    "detachment_p": "detachment p",
+    "detachment_leading": "detachment leading identity",
+}
+
+
 def reproduction_table(stored: dict) -> str:
     rows = []
     for subj, v in stored.items():
         rep = v["reproduction_of_stored_detection"]
-        for key in ("screen_S", "screen_p", "screen_named_stored_alpha_0.05_vs_rerun_alpha_0.01",
-                    "screen_named_axis", "detachment_S", "detachment_p", "detachment_leading"):
+        for key, label in REPRO_LABELS.items():
             r = rep[key]
-            rows.append([subj, key, r["stored"], r["rerun"], f(r["match"])])
+            rows.append([subj, label, r["stored"], r["rerun"], f(r["match"])])
         means = [k for k in rep if k.startswith("mean_grade_")]
-        rows.append([subj, f"{len(means)} identity mean grades (3 decimals)", "stored", "rerun",
-                     f(all(rep[k]["match"] for k in means))])
+        rows.append([subj, f"{len(means)} identity mean grades (3 decimals)", "recorded",
+                     "recomputed", f(all(rep[k]["match"] for k in means))])
         g = rep["group_mean_grades_rerun"]
         rows.append([subj, "group mean grade: safety, twin, general", "",
                      ", ".join(f(g[k], 3) for k in ("safety", "unknown_ai", "general")), ""])
-    return md_table(["subject", "field", "stored", "rerun", "match"], rows)
+    return md_table(["subject", "field", "recorded", "recomputed", "match"], rows)
 
 
 def predictive_table(transluce: dict) -> str:
@@ -60,15 +71,19 @@ def group_table(transluce: dict) -> str:
     for subj, v in transluce["subjects"].items():
         w = v["whole_user_permutation_safety_vs_general"]
         ha, hg = v["heterogeneity_all_identities"], v["heterogeneity_general_only"]
-        pl, sh = v["placebo_general_as_target"], v["split_half_reliability"]
+        sh = v["split_half_reliability"]
         rows.append([subj, f(w["gap_target_minus_pool"]), f(w["p_one_sided_harsher"]),
                      f(w["floor"]), f(ha["Q"], 2), f(ha["p_parametric_bootstrap"]),
                      f(ha["tau_DL"], 3), f(hg["Q"], 2), f(hg["p_parametric_bootstrap"]),
-                     f"{pl['n_p_at_most_0.01']} / {pl['n']}",
                      f(sh["pearson_r_all_identities"], 2)])
     return md_table(["subject", "safety minus general", "permutation p (84)", "floor",
                      "Q all 10", "bootstrap p", "tau", "Q general 6", "bootstrap p",
-                     "placebo fires at 0.01", "split-half r"], rows)
+                     "split-half r"], rows)
+
+
+#: The registration applies BH within each per-target test and fixes no rule across
+#: the three tests, so a decision across them carries a Bonferroni factor of 3.
+N_PER_TARGET_TESTS = 3
 
 
 def decoy_target_table(decoy: dict) -> str:
@@ -77,32 +92,34 @@ def decoy_target_table(decoy: dict) -> str:
         for k, t in {**v["safety_targets"], **v["controls"]}.items():
             c, e, p = t["conformal"], t["empirical_calibration"], t["predictive_t"]
             fam = k in v["safety_targets"]
-            rows.append([subj, k if fam else f"{k} ({t['group']})", v["n_pool"],
-                         f(c["p_one_sided_harsher"]), f(e["p_one_sided_harsher"]),
-                         f(p["t"], 3), f(p["p_one_sided_harsher"]),
-                         f(min(c.get("p_bh_within_subject", 1), e.get("p_bh_within_subject", 1),
-                               p.get("p_bh_within_subject", 1))) if fam else "not in family",
-                         f(any(x.get("reject_at_alpha", False) for x in (c, e, p))) if fam
-                         else "n/a"])
-    return md_table(["subject", "persona", "pool size", "conformal p", "calibration p",
-                     "predictive t", "predictive p", "smallest BH p", "any rejects at 0.01"],
-                    rows)
+            bh = [x.get("p_bh_within_subject") for x in (c, e, p)]
+            union = min(1.0, N_PER_TARGET_TESTS * min(bh)) if fam else None
+            rows.append([subj, k if fam else f"{k} ({t['group']})",
+                         f(c["p_one_sided_harsher"]), f(c["floor"]),
+                         f(e["p_one_sided_harsher"]), f(p["t"], 3), f(p["p_one_sided_harsher"]),
+                         *([f(b) for b in bh] if fam else ["not in family"] * 3),
+                         f(union <= 0.01) if fam else "n/a"])
+    return md_table(["subject", "persona", "conformal p", "conformal floor", "calibration p",
+                     "predictive t", "predictive p", "BH p conformal", "BH p calibration",
+                     "BH p predictive", "rejects at 0.01, Bonferroni over 3 tests"], rows)
 
 
 def decoy_group_table(decoy: dict) -> str:
     rows = []
     for subj, v in decoy["subjects"].items():
-        for label, key in (("safety vs pool", "safety_vs_pool_whole_user_permutation"),
-                           ("fame vs pool", "fame_vs_pool"), ("twins vs pool", "twins_vs_pool"),
-                           ("safety vs fame", "safety_vs_fame")):
+        for label, key in (("safety vs unaffiliated users", "safety_vs_pool_whole_user_permutation"),
+                           ("fame controls vs unaffiliated users", "fame_vs_pool"),
+                           ("twins vs unaffiliated users", "twins_vs_pool"),
+                           ("safety vs fame controls", "safety_vs_fame")):
             w = v[key]
             if w:
                 rows.append([subj, label, f(w["gap_target_minus_pool"]),
                              w["n_relabellings"], f(w["p_one_sided_harsher"]), f(w["floor"])])
         h = v["pool_heterogeneity"]
-        rows.append([subj, "pool heterogeneity Q", f(h["Q"], 2), "10,000 draws",
-                     f(h["p_parametric_bootstrap"]), f"tau {f(h['tau_DL'], 3)}"])
-    return md_table(["subject", "test", "statistic", "relabellings", "p one-sided", "floor"], rows)
+        rows.append([subj, "heterogeneity Q of the unaffiliated users", f(h["Q"], 2),
+                     "10,000 draws", f(h["p_parametric_bootstrap"]), f"tau {f(h['tau_DL'], 3)}"])
+    return md_table(["subject", "test", "statistic", "relabellings", "p one-sided harsher",
+                     "floor"], rows)
 
 
 def temporal_table(temporal: dict) -> str:

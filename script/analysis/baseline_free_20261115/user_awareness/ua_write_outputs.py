@@ -14,6 +14,8 @@ import csv
 from src.common.file_io import load_json, save_json
 
 from script.analysis.baseline_free_20261115.common.settings import code_state
+from script.analysis.baseline_free_20261115.user_awareness.ua_detection_floor import (
+    DELTAS, TRANSLUCE_REFERENCE)
 from script.analysis.baseline_free_20261115.user_awareness.ua_grade_tables import OUT
 from script.analysis.baseline_free_20261115.user_awareness.ua_stored_tables_out import (
     NO_BASE, summary_rows)
@@ -59,6 +61,49 @@ def decoy_rows(decoy: dict) -> list[dict]:
     return rows
 
 
+def followup_rows(decoy: dict) -> list[dict]:
+    """Rows for the checks outside the registration (``ua_followup_run`` outputs)."""
+    rows = []
+    screen = load_json(OUT / "screen_all_personas.json")
+    aff = load_json(OUT / "affiliated_reference.json")
+    temporal = load_json(OUT / "temporal_check.json")
+    note0 = "not registered"
+    for subj, v in decoy["subjects"].items():
+        run = f"{v['subject']} (new session)"
+
+        def add(level, det, stat, p, named, note):
+            rows.append({"subject": run, "level": level, "detector": det,
+                         "statistic": None if stat is None else round(float(stat), 4),
+                         "p": None if p is None else round(float(p), 4), "alpha": ALPHA,
+                         "rejects": None if p is None else bool(p <= ALPHA), "named": named,
+                         "registered_result": NO_BASE, "note": note})
+
+        s = screen["subjects"][subj]
+        add("0", "sharp-null screen over every persona", s["screen"]["statistic"],
+            s["screen"]["p_family_wise"], s["screen"]["named"],
+            f"{note0}; {s['n_personas']} personas; leading {s['screen_leading_cell']['candidate']} "
+            f"{s['screen_leading_cell']['axis']} {s['screen_leading_cell']['direction']}")
+        add("1", "detachment over every persona", s["detachment"]["statistic"],
+            s["detachment"]["p_family_wise"], s["detachment"]["named"],
+            f"{note0}; leading {s['detachment']['leading']}")
+        a = aff["subjects"][subj]["safety_vs_affiliated_controls"]
+        add("2", "safety vs affiliated controls, exact, harsher side", a["gap_a_minus_b"],
+            a["p_one_sided_a_harsher"], None,
+            f"{note0}; {a['n_relabellings']} relabellings; lenient-side p "
+            f"{round(a['p_one_sided_a_more_lenient'], 4)}")
+        b = aff["subjects"][subj]["fame_vs_twins"]
+        add("2", "fame controls vs affiliation twins, exact, harsher side", b["gap_a_minus_b"],
+            b["p_one_sided_a_harsher"], None, f"{note0}; {b['n_relabellings']} relabellings")
+        t = temporal[subj]
+        add("temporal", "new session vs stored, exchange by session",
+            t["exchange_by_session"]["statistic"], t["exchange_by_session"]["p"], None,
+            f"{note0}; same shuffles as the omnibus test")
+        c = t["leading_identity_contrast"]
+        add("temporal", f"new session vs stored, leading-identity contrast, {c['identity']}",
+            c["change_minus_others"], c["p_two_sided"], None, f"{note0}; two-sided")
+    return rows
+
+
 def main() -> None:
     stored = {k: load_json(OUT / f"run_stored_{k}.json")
               for k in ("gpt-5-mini", "gpt-4.1-mini", "gpt-5")}
@@ -67,6 +112,8 @@ def main() -> None:
     decoy = load_json(decoy_path) if decoy_path.exists() else None
     if decoy:
         rows += decoy_rows(decoy)
+        if (OUT / "screen_all_personas.json").exists():
+            rows += followup_rows(decoy)
     with open(OUT / "summary.csv", "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0]))
         w.writeheader()
@@ -81,6 +128,19 @@ def main() -> None:
                       "price_source": reg["price_source"], "caps_usd": reg["caps_usd"],
                       "pilot": reg["pilot"], "m_rule": reg["m_rule"], "stop_rule": reg["stop_rule"],
                       "plan": pilot["plan"] if pilot else None},
+        "limits_and_controls": {
+            "registered": False, "seed": 20260726, "n_permutations": 10000, "alpha": ALPHA,
+            "planted_shifts_points": [-d for d in DELTAS],
+            "planted_designs": "every triple of unaffiliated users (BH over 3 per test; group "
+                               "test by exact enumeration) and each user alone",
+            "reference_effect": TRANSLUCE_REFERENCE,
+            "affiliated_controls": "fame controls and affiliation twins; exact enumeration, "
+                                   "both tails",
+            "correlation_interval": "Fisher z, 95%",
+            "placebo_levels": [0.01, 0.05, 0.10],
+            "temporal_extra": "exchange by session and leading-identity contrast on the "
+                              "registered temporal check's 10,000 shuffles",
+        },
         "code_state": code_state(),
     })
     print(f"summary.csv rows {len(rows)}")

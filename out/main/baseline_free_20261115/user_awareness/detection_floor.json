@@ -1,0 +1,391 @@
+{
+ "settings": {
+  "seed": 20260726,
+  "n_permutations": 10000,
+  "alpha": 0.01,
+  "analysis_cap_usd": 3.0,
+  "workflow_cap_usd": 5.0,
+  "code_commit": "7afe9ea37163584266f67705caad74a22a4f36a9",
+  "imported_sources": [
+   "src/compare",
+   "src/common",
+   "src/geometry",
+   "src/ui",
+   "src/conjecture",
+   "src/external",
+   "script/analysis/reanalysis_2026_11",
+   "script/analysis/null_extension_compare.py",
+   "script/analysis/baseline_free_20261115/common"
+  ],
+  "imported_sources_uncommitted": [
+   "M script/analysis/baseline_free_20261115/common/ledger.py",
+   " M script/analysis/baseline_free_20261115/common/subjects.py"
+  ],
+  "deltas_points": [
+   -0.05,
+   -0.11,
+   -0.15,
+   -0.2,
+   -0.25,
+   -0.3,
+   -0.4,
+   -0.5,
+   -0.75,
+   -1.0
+  ],
+  "registered": false
+ },
+ "status": "not in REGISTRATION.json; descriptive check of the registered tests",
+ "reference_effect": {
+  "shift_points": -0.11,
+  "what": "direct 1-10 grading, famous-AI group minus general population, Transluce main Claude run",
+  "source": "out/main/baseline_free_research_20261115/research_notes/fairness_audits_without_reference.md (Transluce, User awareness in frontier models)"
+ },
+ "first_session": {
+  "gpt-5-mini": {
+   "reference": "the 6 general identities",
+   "analytic": {
+    "n_pool": 6,
+    "pool_sd": 0.18498750661643795,
+    "predictive_t_alpha": -0.6723444550292473,
+    "predictive_t_alpha_over_3": -0.8903007948293291,
+    "calibration_tau": 0.16806899110462703,
+    "calibration_target_se": 0.07459744396313679,
+    "calibration_alpha": -0.42776954301361125,
+    "calibration_alpha_over_3": -0.498876792871183,
+    "conformal_floor_p": 0.14285714285714285,
+    "conformal_can_reject": false
+   },
+   "group_test": {
+    "n_relabellings": 84,
+    "floor_p": 0.011904761904761904,
+    "can_reject_at_alpha": false
+   },
+   "observed_safety_minus_reference": -0.08072916666666667
+  },
+  "gpt-4.1-mini": {
+   "reference": "the 6 general identities",
+   "analytic": {
+    "n_pool": 6,
+    "pool_sd": 0.22221950953205405,
+    "predictive_t_alpha": -0.8076656514052347,
+    "predictive_t_alpha_over_3": -1.0694895540874931,
+    "calibration_tau": 0.21464533505973407,
+    "calibration_target_se": 0.05279462222060754,
+    "calibration_alpha": -0.5142223034910448,
+    "calibration_alpha_over_3": -0.5997004176154774,
+    "conformal_floor_p": 0.14285714285714285,
+    "conformal_can_reject": false
+   },
+   "group_test": {
+    "n_relabellings": 84,
+    "floor_p": 0.011904761904761904,
+    "can_reject_at_alpha": false
+   },
+   "observed_safety_minus_reference": 0.09375
+  },
+  "gpt-5": {
+   "reference": "the 6 general identities",
+   "analytic": {
+    "n_pool": 6,
+    "pool_sd": 0.03653266232656288,
+    "predictive_t_alpha": -0.13277941517234235,
+    "predictive_t_alpha_over_3": -0.17582299962564202,
+    "calibration_tau": 0.0,
+    "calibration_target_se": 0.050711089352658695,
+    "calibration_alpha": -0.11797163490585268,
+    "calibration_alpha_over_3": -0.1375818167347394,
+    "conformal_floor_p": 0.14285714285714285,
+    "conformal_can_reject": false
+   },
+   "group_test": {
+    "n_relabellings": 84,
+    "floor_p": 0.011904761904761904,
+    "can_reject_at_alpha": false
+   },
+   "observed_safety_minus_reference": -0.05208333333333333
+  }
+ },
+ "second_session": {
+  "gpt-4.1-mini": {
+   "reference": "the 30 unaffiliated ordinary users",
+   "analytic": {
+    "n_pool": 30,
+    "pool_sd": 0.1512944401916419,
+    "predictive_t_alpha": -0.3786474224299291,
+    "predictive_t_alpha_over_3": -0.4494604527717174,
+    "calibration_tau": 0.14308022486250088,
+    "calibration_target_se": 0.05157507820311296,
+    "calibration_alpha": -0.35381861769267076,
+    "calibration_alpha_over_3": -0.41263315758555147,
+    "conformal_floor_p": 0.03225806451612903,
+    "conformal_can_reject": false
+   },
+   "planted_triples": {
+    "design": "every triple of the 30 pool members shifted by -delta; reference the other 27; group test enumerates all 4060 triples",
+    "n_triples": 4060,
+    "n_reference": 27,
+    "group_floor_p": 0.0002463054187192118,
+    "rows": [
+     {
+      "delta_points": -0.05,
+      "predictive_t_bh_any": 0.0002463054187192118,
+      "calibration_bh_any": 0.008374384236453201,
+      "group_exact_permutation": 0.030049261083743842
+     },
+     {
+      "delta_points": -0.11,
+      "predictive_t_bh_any": 0.02142857142857143,
+      "calibration_bh_any": 0.12536945812807881,
+      "group_exact_permutation": 0.091871921182266
+     },
+     {
+      "delta_points": -0.15,
+      "predictive_t_bh_any": 0.11403940886699507,
+      "calibration_bh_any": 0.25566502463054186,
+      "group_exact_permutation": 0.16330049261083743
+     },
+     {
+      "delta_points": -0.2,
+      "predictive_t_bh_any": 0.2857142857142857,
+      "calibration_bh_any": 0.2916256157635468,
+      "group_exact_permutation": 0.29926108374384236
+     },
+     {
+      "delta_points": -0.25,
+      "predictive_t_bh_any": 0.30985221674876845,
+      "calibration_bh_any": 0.4391625615763547,
+      "group_exact_permutation": 0.4798029556650246
+     },
+     {
+      "delta_points": -0.3,
+      "predictive_t_bh_any": 0.44310344827586207,
+      "calibration_bh_any": 0.5652709359605911,
+      "group_exact_permutation": 0.7233990147783251
+     },
+     {
+      "delta_points": -0.4,
+      "predictive_t_bh_any": 0.7179802955665024,
+      "calibration_bh_any": 0.8376847290640395,
+      "group_exact_permutation": 0.9815270935960592
+     },
+     {
+      "delta_points": -0.5,
+      "predictive_t_bh_any": 0.9039408866995073,
+      "calibration_bh_any": 0.966256157635468,
+      "group_exact_permutation": 1.0
+     },
+     {
+      "delta_points": -0.75,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     },
+     {
+      "delta_points": -1.0,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     }
+    ]
+   },
+   "planted_single": {
+    "design": "each of the 30 pool members shifted by -delta; reference the other 29; one target, no multiplicity",
+    "n_members": 30,
+    "rows": [
+     {
+      "delta_points": -0.05,
+      "predictive_t": 0.0,
+      "calibration": 0.03333333333333333
+     },
+     {
+      "delta_points": -0.11,
+      "predictive_t": 0.1,
+      "calibration": 0.1
+     },
+     {
+      "delta_points": -0.15,
+      "predictive_t": 0.1,
+      "calibration": 0.13333333333333333
+     },
+     {
+      "delta_points": -0.2,
+      "predictive_t": 0.16666666666666666,
+      "calibration": 0.16666666666666666
+     },
+     {
+      "delta_points": -0.25,
+      "predictive_t": 0.23333333333333334,
+      "calibration": 0.23333333333333334
+     },
+     {
+      "delta_points": -0.3,
+      "predictive_t": 0.3,
+      "calibration": 0.36666666666666664
+     },
+     {
+      "delta_points": -0.4,
+      "predictive_t": 0.5,
+      "calibration": 0.5
+     },
+     {
+      "delta_points": -0.5,
+      "predictive_t": 0.7333333333333333,
+      "calibration": 0.8
+     },
+     {
+      "delta_points": -0.75,
+      "predictive_t": 1.0,
+      "calibration": 1.0
+     },
+     {
+      "delta_points": -1.0,
+      "predictive_t": 1.0,
+      "calibration": 1.0
+     }
+    ]
+   },
+   "observed_safety_minus_reference": 0.08802083333333334
+  },
+  "gpt-5-mini": {
+   "reference": "the 30 unaffiliated ordinary users",
+   "analytic": {
+    "n_pool": 30,
+    "pool_sd": 0.10244628183062351,
+    "predictive_t_alpha": -0.2563942237636743,
+    "predictive_t_alpha_over_3": -0.30434398090270837,
+    "calibration_tau": 0.07448379785986707,
+    "calibration_target_se": 0.07073313126121887,
+    "calibration_alpha": -0.23895807810931485,
+    "calibration_alpha_over_3": -0.2786795871393852,
+    "conformal_floor_p": 0.03225806451612903,
+    "conformal_can_reject": false
+   },
+   "planted_triples": {
+    "design": "every triple of the 30 pool members shifted by -delta; reference the other 27; group test enumerates all 4060 triples",
+    "n_triples": 4060,
+    "n_reference": 27,
+    "group_floor_p": 0.0002463054187192118,
+    "rows": [
+     {
+      "delta_points": -0.05,
+      "predictive_t_bh_any": 0.0,
+      "calibration_bh_any": 0.0,
+      "group_exact_permutation": 0.1354679802955665
+     },
+     {
+      "delta_points": -0.11,
+      "predictive_t_bh_any": 0.0002463054187192118,
+      "calibration_bh_any": 0.003694581280788177,
+      "group_exact_permutation": 0.46625615763546796
+     },
+     {
+      "delta_points": -0.15,
+      "predictive_t_bh_any": 0.023645320197044337,
+      "calibration_bh_any": 0.1834975369458128,
+      "group_exact_permutation": 0.6657635467980295
+     },
+     {
+      "delta_points": -0.2,
+      "predictive_t_bh_any": 0.34088669950738915,
+      "calibration_bh_any": 0.5416256157635468,
+      "group_exact_permutation": 0.8312807881773399
+     },
+     {
+      "delta_points": -0.25,
+      "predictive_t_bh_any": 0.7263546798029556,
+      "calibration_bh_any": 0.8655172413793103,
+      "group_exact_permutation": 0.9229064039408867
+     },
+     {
+      "delta_points": -0.3,
+      "predictive_t_bh_any": 0.9399014778325123,
+      "calibration_bh_any": 0.9753694581280788,
+      "group_exact_permutation": 0.983743842364532
+     },
+     {
+      "delta_points": -0.4,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     },
+     {
+      "delta_points": -0.5,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     },
+     {
+      "delta_points": -0.75,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     },
+     {
+      "delta_points": -1.0,
+      "predictive_t_bh_any": 1.0,
+      "calibration_bh_any": 1.0,
+      "group_exact_permutation": 1.0
+     }
+    ]
+   },
+   "planted_single": {
+    "design": "each of the 30 pool members shifted by -delta; reference the other 29; one target, no multiplicity",
+    "n_members": 30,
+    "rows": [
+     {
+      "delta_points": -0.05,
+      "predictive_t": 0.0,
+      "calibration": 0.0
+     },
+     {
+      "delta_points": -0.11,
+      "predictive_t": 0.0,
+      "calibration": 0.03333333333333333
+     },
+     {
+      "delta_points": -0.15,
+      "predictive_t": 0.1,
+      "calibration": 0.2
+     },
+     {
+      "delta_points": -0.2,
+      "predictive_t": 0.3333333333333333,
+      "calibration": 0.4
+     },
+     {
+      "delta_points": -0.25,
+      "predictive_t": 0.6,
+      "calibration": 0.6333333333333333
+     },
+     {
+      "delta_points": -0.3,
+      "predictive_t": 0.6666666666666666,
+      "calibration": 0.7666666666666667
+     },
+     {
+      "delta_points": -0.4,
+      "predictive_t": 0.9333333333333333,
+      "calibration": 0.9333333333333333
+     },
+     {
+      "delta_points": -0.5,
+      "predictive_t": 0.9666666666666667,
+      "calibration": 0.9666666666666667
+     },
+     {
+      "delta_points": -0.75,
+      "predictive_t": 1.0,
+      "calibration": 1.0
+     },
+     {
+      "delta_points": -1.0,
+      "predictive_t": 1.0,
+      "calibration": 1.0
+     }
+    ]
+   },
+   "observed_safety_minus_reference": -0.07812500000000001
+  }
+ }
+}
