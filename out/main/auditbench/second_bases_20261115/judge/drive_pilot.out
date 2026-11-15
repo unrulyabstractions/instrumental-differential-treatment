@@ -1,0 +1,79 @@
+2026-11-15T05:05:57Z drive start: ['pilot_sl', 'pilot_tpp']
+2026-11-15T05:06:10Z [pilot_sl] submit first cap $25.0000 rc=0 batch bound $0.0233 (15 requests, 18634 input tokens, 21000 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0000; cap $25.00
+submitted batch_6af93dc087d08190bd1589ae03b640c3: validating
+ 
+2026-11-15T05:06:23Z [pilot_tpp] submit first cap $25.0000 rc=0 batch bound $0.0075 (5 requests, 4027 input tokens, 7000 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0233; cap $25.00
+submitted batch_6af93dce08648190a7ee79ce122ba027: validating
+ 
+2026-11-15T05:06:23Z poll: {'pilot_sl': 'submitted', 'pilot_tpp': 'submitted'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:07:11Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:07:59Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:08:47Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:09:44Z [pilot_tpp] fetch first rc=0 {
+ "batch_id": "batch_6af93dce08648190a7ee79ce122ba027",
+ "n_results": 5,
+ "n_requests": 5,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 3997,
+ "output_tokens": 1312,
+ "actual_usd": 0.001812,
+ "request_counts": {
+  "completed": 5,
+  "failed": 0,
+  "total": 5
+ }
+}
+ 
+2026-11-15T05:09:44Z [pilot_tpp] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 5}, "finish_reasons": {"stop": 5}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001812, "input_tokens": 3997, "output_tokens": 1312, "model_ok": true}
+2026-11-15T05:09:53Z [pilot_tpp] retry first rc=0 nothing to retry for first
+2026-11-15T05:10:01Z [pilot_tpp] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:10:10Z [pilot_tpp] fold rc=0 {
+ "rows": {
+  "base": 5
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:10:10Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:10:49Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:11:28Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:12:07Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:12:46Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:13:25Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:14:14Z [pilot_sl] fetch first rc=0 {
+ "batch_id": "batch_6af93dc087d08190bd1589ae03b640c3",
+ "n_results": 15,
+ "n_requests": 15,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 18544,
+ "output_tokens": 10297,
+ "actual_usd": 0.012615,
+ "request_counts": {
+  "completed": 15,
+  "failed": 0,
+  "total": 15
+ }
+}
+ 
+2026-11-15T05:14:14Z [pilot_sl] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 15}, "finish_reasons": {"stop": 15}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.012615, "input_tokens": 18544, "output_tokens": 10297, "model_ok": true}
+2026-11-15T05:14:23Z [pilot_sl] retry first rc=0 nothing to retry for first
+2026-11-15T05:14:32Z [pilot_sl] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:14:41Z [pilot_sl] fold rc=0 {
+ "rows": {
+  "base": 3
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:14:41Z poll: {'pilot_sl': 'folded', 'pilot_tpp': 'folded'} judge committed $0.0144 in flight 0; generation committed $0.0067
+2026-11-15T05:14:41Z drive done

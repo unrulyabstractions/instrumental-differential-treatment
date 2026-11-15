@@ -1,0 +1,22 @@
+2026-11-15T05:40:31Z drive start: [' sl_s00 sl_s01 sl_s02 sl_s03 sl_s04 sl_s05 sl_s06 sl_s07 sl_s08 sl_s09 sl_s10 sl_s11 sl_s12 sl_s13 sl_s14 sl_s15']
+Traceback (most recent call last):
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/second_bases_20261115/second_bases_judge.py", line 407, in <module>
+    main()
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/second_bases_20261115/second_bases_judge.py", line 403, in main
+    {"stage": cmd_stage, "drive": cmd_drive, "zero-cap": cmd_zero_cap, "concat": cmd_concat}[a.cmd](a)
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/second_bases_20261115/second_bases_judge.py", line 323, in cmd_drive
+    st = step(name, may_submit)
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/second_bases_20261115/second_bases_judge.py", line 214, in step
+    meta = stage_meta(name)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/script/analysis/second_bases_20261115/second_bases_judge.py", line 114, in stage_meta
+    return json.loads((JUDGE / name / "stage_source.json").read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/unrulyabstractions/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/unrulyabstractions/work/_OLD/instrumental-differential-treatment/out/main/auditbench/second_bases_20261115/judge/ sl_s00 sl_s01 sl_s02 sl_s03 sl_s04 sl_s05 sl_s06 sl_s07 sl_s08 sl_s09 sl_s10 sl_s11 sl_s12 sl_s13 sl_s14 sl_s15/stage_source.json'

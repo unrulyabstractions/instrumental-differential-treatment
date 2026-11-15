@@ -1,0 +1,1745 @@
+2026-11-15T05:04:42Z [pilot_sl] plan rc=0 _20261115/judge/pilot_sl",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 3
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 3,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 15
+}
+ 
+2026-11-15T05:04:42Z [pilot_sl] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:04:51Z [pilot_sl] count first rc=0 {'n_requests': 15, 'input_tokens': 18634, 'max_output_tokens': 21000}
+ 
+2026-11-15T05:05:00Z [pilot_tpp] plan rc=0 61115/judge/pilot_tpp",
+ "seat_from": "out/main/auditbench/third_party_politics/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 8,
+ "rows": {
+  "base": 5
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 5,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 5
+}
+ 
+2026-11-15T05:05:00Z [pilot_tpp] system check: equal_live_panel=True sha256=126fdd15cd024f44 judge=openai:gpt-5-mini level=2 axes=8 options={'reasoning_effort': 'low'}
+2026-11-15T05:05:08Z [pilot_tpp] count first rc=0 {'n_requests': 5, 'input_tokens': 4027, 'max_output_tokens': 7000}
+ 
+2026-11-15T05:05:57Z drive start: ['pilot_sl', 'pilot_tpp']
+2026-11-15T05:06:10Z [pilot_sl] submit first cap $25.0000 rc=0 batch bound $0.0233 (15 requests, 18634 input tokens, 21000 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0000; cap $25.00
+submitted batch_6af93dc087d08190bd1589ae03b640c3: validating
+ 
+2026-11-15T05:06:23Z [pilot_tpp] submit first cap $25.0000 rc=0 batch bound $0.0075 (5 requests, 4027 input tokens, 7000 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0233; cap $25.00
+submitted batch_6af93dce08648190a7ee79ce122ba027: validating
+ 
+2026-11-15T05:06:23Z poll: {'pilot_sl': 'submitted', 'pilot_tpp': 'submitted'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:07:11Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:07:59Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:08:47Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'in_flight'} judge committed $0.0308 in flight 2; generation committed $0.0067
+2026-11-15T05:09:44Z [pilot_tpp] fetch first rc=0 {
+ "batch_id": "batch_6af93dce08648190a7ee79ce122ba027",
+ "n_results": 5,
+ "n_requests": 5,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 3997,
+ "output_tokens": 1312,
+ "actual_usd": 0.001812,
+ "request_counts": {
+  "completed": 5,
+  "failed": 0,
+  "total": 5
+ }
+}
+ 
+2026-11-15T05:09:44Z [pilot_tpp] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 5}, "finish_reasons": {"stop": 5}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001812, "input_tokens": 3997, "output_tokens": 1312, "model_ok": true}
+2026-11-15T05:09:53Z [pilot_tpp] retry first rc=0 nothing to retry for first
+2026-11-15T05:10:01Z [pilot_tpp] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:10:10Z [pilot_tpp] fold rc=0 {
+ "rows": {
+  "base": 5
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:10:10Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:10:49Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:11:28Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:12:07Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:12:46Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:13:25Z poll: {'pilot_sl': 'in_flight', 'pilot_tpp': 'folded'} judge committed $0.0251 in flight 1; generation committed $0.0067
+2026-11-15T05:14:14Z [pilot_sl] fetch first rc=0 {
+ "batch_id": "batch_6af93dc087d08190bd1589ae03b640c3",
+ "n_results": 15,
+ "n_requests": 15,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 18544,
+ "output_tokens": 10297,
+ "actual_usd": 0.012615,
+ "request_counts": {
+  "completed": 15,
+  "failed": 0,
+  "total": 15
+ }
+}
+ 
+2026-11-15T05:14:14Z [pilot_sl] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 15}, "finish_reasons": {"stop": 15}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.012615, "input_tokens": 18544, "output_tokens": 10297, "model_ok": true}
+2026-11-15T05:14:23Z [pilot_sl] retry first rc=0 nothing to retry for first
+2026-11-15T05:14:32Z [pilot_sl] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:14:41Z [pilot_sl] fold rc=0 {
+ "rows": {
+  "base": 3
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:14:41Z poll: {'pilot_sl': 'folded', 'pilot_tpp': 'folded'} judge committed $0.0144 in flight 0; generation committed $0.0067
+2026-11-15T05:14:41Z drive done
+2026-11-15T05:20:55Z drive start: ['tpp_all']
+2026-11-15T05:21:04Z [tpp_all] plan rc=0 5/judge/tpp_all",
+ "seat_from": "out/main/auditbench/third_party_politics/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 8,
+ "rows": {
+  "base": 1152
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1152
+}
+ 
+2026-11-15T05:21:04Z [tpp_all] system check: equal_live_panel=True sha256=126fdd15cd024f44 judge=openai:gpt-5-mini level=2 axes=8 options={'reasoning_effort': 'low'}
+2026-11-15T05:21:13Z [tpp_all] count first rc=0 {'n_requests': 1152, 'input_tokens': 968716, 'max_output_tokens': 1612800}
+ 
+2026-11-15T05:21:27Z [tpp_all] submit first cap $25.0000 rc=0 batch bound $1.7339 (1152 requests, 968716 input tokens, 1612800 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0144; cap $25.00
+submitted batch_6af94155c3008190ae7ee6219901a922: validating
+ 
+2026-11-15T05:21:27Z poll: {'tpp_all': 'submitted'} judge committed $1.7483 in flight 1; generation committed $0.5166
+2026-11-15T05:22:34Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.6064
+2026-11-15T05:23:39Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.6941
+2026-11-15T05:24:45Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.7815
+2026-11-15T05:25:50Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.8711
+2026-11-15T05:27:02Z [tpp_all] fetch first rc=0 {
+ "batch_id": "batch_6af94155c3008190ae7ee6219901a922",
+ "n_results": 1152,
+ "n_requests": 1152,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 961804,
+ "output_tokens": 313346,
+ "actual_usd": 0.433571,
+ "request_counts": {
+  "completed": 1152,
+  "failed": 0,
+  "total": 1152
+ }
+}
+ 
+2026-11-15T05:27:02Z [tpp_all] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1152}, "finish_reasons": {"stop": 1152}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.433571, "input_tokens": 961804, "output_tokens": 313346, "model_ok": true}
+2026-11-15T05:27:08Z [tpp_all] retry first rc=0 nothing to retry for first
+2026-11-15T05:27:13Z [tpp_all] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:27:18Z [tpp_all] fold rc=0 {
+ "rows": {
+  "base": 1152
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:27:18Z poll: {'tpp_all': 'folded'} judge committed $0.4480 in flight 0; generation committed $0.9917
+2026-11-15T05:27:18Z drive done
+2026-11-15T05:40:31Z drive start: [' sl_s00 sl_s01 sl_s02 sl_s03 sl_s04 sl_s05 sl_s06 sl_s07 sl_s08 sl_s09 sl_s10 sl_s11 sl_s12 sl_s13 sl_s14 sl_s15']
+2026-11-15T05:49:28Z drive start: ['sl_s00', 'sl_s01', 'sl_s02', 'sl_s03', 'sl_s04', 'sl_s05', 'sl_s06', 'sl_s07', 'sl_s08', 'sl_s09', 'sl_s10', 'sl_s11', 'sl_s12', 'sl_s13', 'sl_s14', 'sl_s15']
+2026-11-15T05:49:33Z [sl_s00] plan rc=0 0261115/judge/sl_s00",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:49:33Z [sl_s00] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:49:39Z [sl_s00] count first rc=0 {'n_requests': 1440, 'input_tokens': 1741835, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:49:50Z [sl_s00] submit first cap $25.0000 rc=0 batch bound $2.2337 (1440 requests, 1741835 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.4480; cap $25.00
+submitted batch_6af947fe3f1c819089f9e0c238a688ac: validating
+ 
+2026-11-15T05:49:56Z [sl_s01] plan rc=0 0261115/judge/sl_s01",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:49:56Z [sl_s01] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:50:01Z [sl_s01] count first rc=0 {'n_requests': 1440, 'input_tokens': 1743353, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:50:13Z [sl_s01] submit first cap $25.0000 rc=0 batch bound $2.2339 (1440 requests, 1743353 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $2.6817; cap $25.00
+submitted batch_6af9481508c881909ce5ddcff872b1e9: validating
+ 
+2026-11-15T05:50:18Z [sl_s02] plan rc=0 0261115/judge/sl_s02",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:50:19Z [sl_s02] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:50:24Z [sl_s02] count first rc=0 {'n_requests': 1440, 'input_tokens': 1743846, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:50:35Z [sl_s02] submit first cap $25.0000 rc=0 batch bound $2.2340 (1440 requests, 1743846 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $4.9156; cap $25.00
+submitted batch_6af9482a76dc8190ac774e934b77e5cd: validating
+ 
+2026-11-15T05:50:40Z [sl_s03] plan rc=0 0261115/judge/sl_s03",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:50:40Z [sl_s03] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:50:45Z [sl_s03] count first rc=0 {'n_requests': 1440, 'input_tokens': 1744003, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:50:56Z [sl_s03] submit first cap $25.0000 rc=0 batch bound $2.2340 (1440 requests, 1744003 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $7.1496; cap $25.00
+submitted batch_6af9483ff7208190b45d3a2c0915125e: validating
+ 
+2026-11-15T05:51:01Z [sl_s04] plan rc=0 0261115/judge/sl_s04",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:51:01Z [sl_s04] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:51:07Z [sl_s04] count first rc=0 {'n_requests': 1440, 'input_tokens': 1745406, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:51:17Z [sl_s04] submit first cap $25.0000 rc=0 batch bound $2.2342 (1440 requests, 1745406 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $9.3836; cap $25.00
+submitted batch_6af9485556248190a2f186a1527275bc: validating
+ 
+2026-11-15T05:51:23Z [sl_s05] plan rc=0 0261115/judge/sl_s05",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:51:23Z [sl_s05] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:51:28Z [sl_s05] count first rc=0 {'n_requests': 1440, 'input_tokens': 1750495, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:51:39Z [sl_s05] submit first cap $25.0000 rc=0 batch bound $2.2348 (1440 requests, 1750495 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $11.6178; cap $25.00
+submitted batch_6af9486b2be88190bd0f55313690039b: validating
+ 
+2026-11-15T05:51:45Z [sl_s06] plan rc=0 0261115/judge/sl_s06",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:51:45Z [sl_s06] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:51:50Z [sl_s06] count first rc=0 {'n_requests': 1440, 'input_tokens': 1743019, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:52:02Z [sl_s06] submit first cap $25.0000 rc=0 batch bound $2.2339 (1440 requests, 1743019 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $13.8526; cap $25.00
+submitted batch_6af948812fe8819080c52c2b0bbe1e23: validating
+ 
+2026-11-15T05:52:07Z [sl_s07] plan rc=0 0261115/judge/sl_s07",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:52:07Z [sl_s07] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:52:13Z [sl_s07] count first rc=0 {'n_requests': 1440, 'input_tokens': 1749046, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:52:24Z [sl_s07] submit first cap $25.0000 rc=0 batch bound $2.2346 (1440 requests, 1749046 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $16.0865; cap $25.00
+submitted batch_6af9489767bc81908071905021f992af: validating
+ 
+2026-11-15T05:52:29Z [sl_s08] plan rc=0 0261115/judge/sl_s08",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:52:29Z [sl_s08] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:52:34Z [sl_s08] count first rc=0 {'n_requests': 1440, 'input_tokens': 1744981, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:52:45Z [sl_s08] submit first cap $25.0000 rc=0 batch bound $2.2341 (1440 requests, 1744981 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $18.3211; cap $25.00
+submitted batch_6af948acec908190972515fb0f37561b: validating
+ 
+2026-11-15T05:52:50Z [sl_s09] plan rc=0 0261115/judge/sl_s09",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:52:50Z [sl_s09] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:52:56Z [sl_s09] count first rc=0 {'n_requests': 1440, 'input_tokens': 1747829, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:53:07Z [sl_s09] submit first cap $25.0000 rc=0 batch bound $2.2345 (1440 requests, 1747829 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $20.5552; cap $25.00
+submitted batch_6af948c26a0c819086ddb7a41e67c93d: validating
+ 
+2026-11-15T05:53:12Z [sl_s10] plan rc=0 0261115/judge/sl_s10",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:53:12Z [sl_s10] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:53:17Z [sl_s10] count first rc=0 {'n_requests': 1440, 'input_tokens': 1750286, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:53:25Z [sl_s10] submit first cap $25.0000 rc=1 batch bound $2.2348 (1440 requests, 1750286 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $22.7897; cap $25.00
+ REFUSED: $25.0245 would exceed the $25.00 cap
+
+2026-11-15T05:53:30Z [sl_s11] plan rc=0 0261115/judge/sl_s11",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:53:30Z [sl_s11] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:53:36Z [sl_s11] count first rc=0 {'n_requests': 1440, 'input_tokens': 1746183, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:53:41Z [sl_s12] plan rc=0 0261115/judge/sl_s12",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:53:41Z [sl_s12] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:53:46Z [sl_s12] count first rc=0 {'n_requests': 1440, 'input_tokens': 1747601, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:53:52Z [sl_s13] plan rc=0 0261115/judge/sl_s13",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:53:52Z [sl_s13] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:53:57Z [sl_s13] count first rc=0 {'n_requests': 1440, 'input_tokens': 1744595, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:54:03Z [sl_s14] plan rc=0 0261115/judge/sl_s14",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:54:03Z [sl_s14] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:54:08Z [sl_s14] count first rc=0 {'n_requests': 1440, 'input_tokens': 1743132, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:54:14Z [sl_s15] plan rc=0 0261115/judge/sl_s15",
+ "seat_from": "out/main/auditbench/secret_loyalty/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 101,
+ "rows": {
+  "base": 288
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1440
+}
+ 
+2026-11-15T05:54:14Z [sl_s15] system check: equal_live_panel=True sha256=048f6781c1007684 judge=openai:gpt-5-mini level=2 axes=101 options={'reasoning_effort': 'low'}
+2026-11-15T05:54:19Z [sl_s15] count first rc=0 {'n_requests': 1440, 'input_tokens': 1744077, 'max_output_tokens': 2016000}
+ 
+2026-11-15T05:54:19Z poll: {'sl_s00': 'submitted', 'sl_s01': 'submitted', 'sl_s02': 'submitted', 'sl_s03': 'submitted', 'sl_s04': 'submitted', 'sl_s05': 'submitted', 'sl_s06': 'submitted', 'sl_s07': 'submitted', 'sl_s08': 'submitted', 'sl_s09': 'submitted', 'sl_s10': 'refused_waiting', 'sl_s11': 'blocked', 'sl_s12': 'blocked', 'sl_s13': 'blocked', 'sl_s14': 'blocked', 'sl_s15': 'blocked'} judge committed $22.7897 in flight 10; generation committed $1.8861
+2026-11-15T05:55:31Z [sl_s00] fetch first rc=0 {
+ "batch_id": "batch_6af947fe3f1c819089f9e0c238a688ac",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1733195,
+ "output_tokens": 950508,
+ "actual_usd": 1.167157,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00039_000 empty completion (finish_reason=length)
+  error f0_00133_000 empty completion (finish_reason=length)
+ 
+2026-11-15T05:55:31Z [sl_s00] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.167157, "input_tokens": 1733195, "output_tokens": 950508, "model_ok": true}
+2026-11-15T05:55:36Z [sl_s00] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s00/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:55:42Z [sl_s00] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2753, 'max_output_tokens': 2800}
+ 
+2026-11-15T05:55:50Z [sl_s00] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2753 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.7232; cap $25.00
+submitted batch_6af949663f8081909e165f32f0e45e4f: validating
+ 
+2026-11-15T05:56:02Z [sl_s01] fetch first rc=0 
+ "batch_id": "batch_6af9481508c881909ce5ddcff872b1e9",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 3,
+ "input_tokens": 1734713,
+ "output_tokens": 959668,
+ "actual_usd": 1.176507,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00148_050 empty completion (finish_reason=length)
+  error f0_00235_050 empty completion (finish_reason=length)
+  error f0_00259_025 empty completion (finish_reason=length)
+ 
+2026-11-15T05:56:02Z [sl_s01] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1437, "length": 3}, "share_length": 0.0020833333333333333, "n_errors": 3, "quota_errors": [], "actual_usd": 1.176507, "input_tokens": 1734713, "output_tokens": 959668, "model_ok": true}
+2026-11-15T05:56:08Z [sl_s01] retry first rc=0 [first_retry1] 3 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s01/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:56:13Z [sl_s01] count first_retry1 rc=0 {'n_requests': 3, 'input_tokens': 4136, 'max_output_tokens': 4200}
+ 
+2026-11-15T05:56:22Z [sl_s01] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0047 (3 requests, 4136 input tokens, 4200 max output tokens at $0.125/M in, $1.0/M out); committed so far $20.6689; cap $25.00
+submitted batch_6af94985b1f88190873945efccaafe98: validating
+ 
+2026-11-15T05:56:40Z [sl_s03] fetch first rc=0 {
+ "batch_id": "batch_6af9483ff7208190b45d3a2c0915125e",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1735363,
+ "output_tokens": 944981,
+ "actual_usd": 1.161901,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+ 
+2026-11-15T05:56:40Z [sl_s03] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1440}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 1.161901, "input_tokens": 1735363, "output_tokens": 944981, "model_ok": true}
+2026-11-15T05:56:45Z [sl_s03] retry first rc=0 nothing to retry for first
+2026-11-15T05:56:50Z [sl_s03] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:56:56Z [sl_s03] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:57:14Z [sl_s05] fetch first rc=0 {
+ "batch_id": "batch_6af9486b2be88190bd0f55313690039b",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1741855,
+ "output_tokens": 960852,
+ "actual_usd": 1.178584,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00134_000 empty completion (finish_reason=length)
+  error f0_00226_075 empty completion (finish_reason=length)
+ 
+2026-11-15T05:57:14Z [sl_s05] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.178584, "input_tokens": 1741855, "output_tokens": 960852, "model_ok": true}
+2026-11-15T05:57:19Z [sl_s05] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s05/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:57:25Z [sl_s05] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2774, 'max_output_tokens': 2800}
+ 
+2026-11-15T05:57:33Z [sl_s05] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2774 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $18.5453; cap $25.00
+submitted batch_6af949cd30e08190b87b21fa41c5992f: validating
+ 
+2026-11-15T05:57:45Z [sl_s06] fetch first rc=0 {
+ "batch_id": "batch_6af948812fe8819080c52c2b0bbe1e23",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1734379,
+ "output_tokens": 952528,
+ "actual_usd": 1.169325,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00256_075 empty completion (finish_reason=length)
+ 
+2026-11-15T05:57:45Z [sl_s06] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1439, "length": 1}, "share_length": 0.0006944444444444445, "n_errors": 1, "quota_errors": [], "actual_usd": 1.169325, "input_tokens": 1734379, "output_tokens": 952528, "model_ok": true}
+2026-11-15T05:57:51Z [sl_s06] retry first rc=0 [first_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s06/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:57:56Z [sl_s06] count first_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1338, 'max_output_tokens': 1400}
+ 
+2026-11-15T05:58:05Z [sl_s06] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0016 (1 requests, 1338 input tokens, 1400 max output tokens at $0.125/M in, $1.0/M out); committed so far $17.4839; cap $25.00
+submitted batch_6af949eca91881908408ea9f0d7a6a28: validating
+ 
+2026-11-15T05:58:17Z [sl_s07] fetch first rc=0 {
+ "batch_id": "batch_6af9489767bc81908071905021f992af",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1740406,
+ "output_tokens": 955529,
+ "actual_usd": 1.17308,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00113_025 empty completion (finish_reason=length)
+  error f0_00140_075 empty completion (finish_reason=length)
+ 
+2026-11-15T05:58:17Z [sl_s07] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.17308, "input_tokens": 1740406, "output_tokens": 955529, "model_ok": true}
+2026-11-15T05:58:23Z [sl_s07] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s07/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:58:28Z [sl_s07] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2658, 'max_output_tokens': 2800}
+ 
+2026-11-15T05:58:37Z [sl_s07] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2658 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $16.4239; cap $25.00
+submitted batch_6af94a0c4da481908cfec14d0a8bde3d: validating
+ 
+2026-11-15T05:58:49Z [sl_s08] fetch first rc=0 {
+ "batch_id": "batch_6af948acec908190972515fb0f37561b",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1736341,
+ "output_tokens": 958697,
+ "actual_usd": 1.17574,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00279_025 empty completion (finish_reason=length)
+ 
+2026-11-15T05:58:49Z [sl_s08] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1439, "length": 1}, "share_length": 0.0006944444444444445, "n_errors": 1, "quota_errors": [], "actual_usd": 1.17574, "input_tokens": 1736341, "output_tokens": 958697, "model_ok": true}
+2026-11-15T05:58:54Z [sl_s08] retry first rc=0 [first_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s08/judge_batch/requests_first_retry1.jsonl
+2026-11-15T05:59:00Z [sl_s08] count first_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1366, 'max_output_tokens': 1400}
+ 
+2026-11-15T05:59:08Z [sl_s08] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0016 (1 requests, 1366 input tokens, 1400 max output tokens at $0.125/M in, $1.0/M out); committed so far $15.3686; cap $25.00
+submitted batch_6af94a2bf67481908cb4cfb6e9c2be87: validating
+ 
+2026-11-15T05:59:20Z [sl_s09] fetch first rc=0 {
+ "batch_id": "batch_6af948c26a0c819086ddb7a41e67c93d",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1739189,
+ "output_tokens": 948987,
+ "actual_usd": 1.166386,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+ 
+2026-11-15T05:59:20Z [sl_s09] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1440}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 1.166386, "input_tokens": 1739189, "output_tokens": 948987, "model_ok": true}
+2026-11-15T05:59:26Z [sl_s09] retry first rc=0 nothing to retry for first
+2026-11-15T05:59:31Z [sl_s09] repair rc=0 [repair] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s09/judge_batch/requests_repair.jsonl
+2026-11-15T05:59:36Z [sl_s09] count repair rc=0 {'n_requests': 1, 'input_tokens': 1362, 'max_output_tokens': 800}
+ 
+2026-11-15T05:59:45Z [sl_s09] submit repair cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1362 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $14.3021; cap $25.00
+submitted batch_6af94a50a00c81909867f8ce5880f8bb: validating
+ 
+2026-11-15T05:59:55Z [sl_s10] submit first cap $25.0000 rc=0 batch bound $2.2348 (1440 requests, 1750286 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $14.3031; cap $25.00
+submitted batch_6af94a5b502881909fa51085d40d5c04: validating
+ 
+2026-11-15T06:00:09Z [sl_s11] submit first cap $25.0000 rc=0 batch bound $2.2343 (1440 requests, 1746183 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $16.5379; cap $25.00
+submitted batch_6af94a6869588190b5dbca091975e872: validating
+ 
+2026-11-15T06:00:20Z [sl_s12] submit first cap $25.0000 rc=0 batch bound $2.2345 (1440 requests, 1747601 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $18.7721; cap $25.00
+submitted batch_6af94a73fd88819098408f25c78422d7: validating
+ 
+2026-11-15T06:00:32Z [sl_s13] submit first cap $25.0000 rc=0 batch bound $2.2341 (1440 requests, 1744595 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.0066; cap $25.00
+submitted batch_6af94a7f78908190add39200d00605db: validating
+ 
+2026-11-15T06:00:40Z [sl_s14] submit first cap $25.0000 rc=1 batch bound $2.2339 (1440 requests, 1743132 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $23.2407; cap $25.00
+ REFUSED: $25.4746 would exceed the $25.00 cap
+
+2026-11-15T06:00:40Z poll: {'sl_s00': 'submitted', 'sl_s01': 'submitted', 'sl_s02': 'in_flight', 'sl_s03': 'folded', 'sl_s04': 'in_flight', 'sl_s05': 'submitted', 'sl_s06': 'submitted', 'sl_s07': 'submitted', 'sl_s08': 'submitted', 'sl_s09': 'submitted', 'sl_s10': 'submitted', 'sl_s11': 'submitted', 'sl_s12': 'submitted', 'sl_s13': 'submitted', 'sl_s14': 'refused_waiting', 'sl_s15': 'blocked'} judge committed $23.2407 in flight 13; generation committed $1.8861
+2026-11-15T06:01:51Z [sl_s00] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af949663f8081909e165f32f0e45e4f",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2741,
+ "output_tokens": 1400,
+ "actual_usd": 0.001743,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:01:51Z [sl_s00] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001743, "input_tokens": 2741, "output_tokens": 1400, "model_ok": true}
+2026-11-15T06:01:56Z [sl_s00] retry first rc=0 nothing to retry for first
+2026-11-15T06:02:02Z [sl_s00] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:02:07Z [sl_s00] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:02:18Z [sl_s01] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94985b1f88190873945efccaafe98",
+ "n_results": 3,
+ "n_requests": 3,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 4118,
+ "output_tokens": 2879,
+ "actual_usd": 0.003394,
+ "request_counts": {
+  "completed": 3,
+  "failed": 0,
+  "total": 3
+ }
+}
+ 
+2026-11-15T06:02:18Z [sl_s01] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 3}, "finish_reasons": {"stop": 3}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.003394, "input_tokens": 4118, "output_tokens": 2879, "model_ok": true}
+2026-11-15T06:02:24Z [sl_s01] retry first rc=0 nothing to retry for first
+2026-11-15T06:02:29Z [sl_s01] repair rc=0 [repair] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s01/judge_batch/requests_repair.jsonl
+2026-11-15T06:02:34Z [sl_s01] count repair rc=0 {'n_requests': 1, 'input_tokens': 1351, 'max_output_tokens': 800}
+ 
+2026-11-15T06:02:43Z [sl_s01] submit repair cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1351 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $23.2379; cap $25.00
+submitted batch_6af94b02ea248190958e05c9139b995e: validating
+ 
+2026-11-15T06:02:56Z [sl_s02] fetch first rc=0 39,
+ "output_tokens": 954712,
+ "actual_usd": 1.171442,
+ "request_counts": {
+  "completed": 1439,
+  "failed": 1,
+  "total": 1440
+ }
+}
+  error f0_00079_000 empty completion (finish_reason=length)
+  error f0_00242_050 empty completion (finish_reason=length)
+  error f0_00245_000 status 400: {"error": {"message": "Could not finish the message because max_tokens or model output limit was reached. Please try again with higher max_tokens.", "type": "invalid_request_error", "param": null, "code": null}}
+ 
+2026-11-15T06:02:56Z [sl_s02] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1439}, "finish_reasons": {"stop": 1437, "length": 2}, "share_length": 0.001389854065323141, "n_errors": 3, "quota_errors": [], "actual_usd": 1.171442, "input_tokens": 1733839, "output_tokens": 954712, "model_ok": true}
+2026-11-15T06:03:01Z [sl_s02] retry first rc=0 [first_retry1] 3 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s02/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:03:06Z [sl_s02] count first_retry1 rc=0 {'n_requests': 3, 'input_tokens': 4083, 'max_output_tokens': 4200}
+ 
+2026-11-15T06:03:16Z [sl_s02] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0047 (3 requests, 4083 input tokens, 4200 max output tokens at $0.125/M in, $1.0/M out); committed so far $22.1764; cap $25.00
+submitted batch_6af94b241fcc8190a0ec7981dfbf1022: validating
+ 
+2026-11-15T06:03:28Z [sl_s04] fetch first rc=0 {
+ "batch_id": "batch_6af9485556248190a2f186a1527275bc",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1736766,
+ "output_tokens": 962771,
+ "actual_usd": 1.179867,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00075_075 empty completion (finish_reason=length)
+  error f0_00085_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:03:28Z [sl_s04] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.179867, "input_tokens": 1736766, "output_tokens": 962771, "model_ok": true}
+2026-11-15T06:03:34Z [sl_s04] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s04/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:03:39Z [sl_s04] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2722, 'max_output_tokens': 2800}
+ 
+2026-11-15T06:03:48Z [sl_s04] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2722 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.1268; cap $25.00
+submitted batch_6af94b43ddd88190935f32340c38c58a: validating
+ 
+2026-11-15T06:04:00Z [sl_s05] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af949cd30e08190b87b21fa41c5992f",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2762,
+ "output_tokens": 2101,
+ "actual_usd": 0.002446,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:04:00Z [sl_s05] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.002446, "input_tokens": 2762, "output_tokens": 2101, "model_ok": true}
+2026-11-15T06:04:05Z [sl_s05] retry first rc=0 nothing to retry for first
+2026-11-15T06:04:10Z [sl_s05] repair rc=0 [repair] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s05/judge_batch/requests_repair.jsonl
+2026-11-15T06:04:16Z [sl_s05] count repair rc=0 {'n_requests': 1, 'input_tokens': 1366, 'max_output_tokens': 800}
+ 
+2026-11-15T06:04:25Z [sl_s05] submit repair cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1366 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.1292; cap $25.00
+submitted batch_6af94b688650819094180378a6c787f5: validating
+ 
+2026-11-15T06:04:36Z [sl_s06] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af949eca91881908408ea9f0d7a6a28",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1332,
+ "output_tokens": 969,
+ "actual_usd": 0.001136,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:04:36Z [sl_s06] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001136, "input_tokens": 1332, "output_tokens": 969, "model_ok": true}
+2026-11-15T06:04:42Z [sl_s06] retry first rc=0 nothing to retry for first
+2026-11-15T06:04:47Z [sl_s06] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:04:52Z [sl_s06] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:05:04Z [sl_s07] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94a0c4da481908cfec14d0a8bde3d",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2646,
+ "output_tokens": 2069,
+ "actual_usd": 0.0024,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:05:04Z [sl_s07] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.0024, "input_tokens": 2646, "output_tokens": 2069, "model_ok": true}
+2026-11-15T06:05:09Z [sl_s07] retry first rc=0 nothing to retry for first
+2026-11-15T06:05:14Z [sl_s07] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:05:20Z [sl_s07] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:05:31Z [sl_s08] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94a2bf67481908cb4cfb6e9c2be87",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1360,
+ "output_tokens": 966,
+ "actual_usd": 0.001136,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:05:32Z [sl_s08] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001136, "input_tokens": 1360, "output_tokens": 966, "model_ok": true}
+2026-11-15T06:05:37Z [sl_s08] retry first rc=0 nothing to retry for first
+2026-11-15T06:05:42Z [sl_s08] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:05:48Z [sl_s08] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:05:59Z [sl_s09] fetch repair rc=0 {
+ "batch_id": "batch_6af94a50a00c81909867f8ce5880f8bb",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1356,
+ "output_tokens": 800,
+ "actual_usd": 0.000969,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00212_025 empty completion (finish_reason=length)
+ 
+2026-11-15T06:05:59Z [sl_s09] checks repair: {"stage": "repair", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000969, "input_tokens": 1356, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:06:05Z [sl_s09] retry repair rc=0 [repair_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s09/judge_batch/requests_repair_retry1.jsonl
+2026-11-15T06:06:10Z [sl_s09] count repair_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1362, 'max_output_tokens': 800}
+ 
+2026-11-15T06:06:19Z [sl_s09] submit repair_retry1 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1362 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.1286; cap $25.00
+submitted batch_6af94bdab39c819092119f1b8196deec: validating
+ 
+2026-11-15T06:06:31Z [sl_s10] fetch first rc=0 {
+ "batch_id": "batch_6af94a5b502881909fa51085d40d5c04",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1741646,
+ "output_tokens": 963192,
+ "actual_usd": 1.180898,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00198_025 empty completion (finish_reason=length)
+ 
+2026-11-15T06:06:31Z [sl_s10] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1439, "length": 1}, "share_length": 0.0006944444444444445, "n_errors": 1, "quota_errors": [], "actual_usd": 1.180898, "input_tokens": 1741646, "output_tokens": 963192, "model_ok": true}
+2026-11-15T06:06:36Z [sl_s10] retry first rc=0 [first_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s10/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:06:42Z [sl_s10] count first_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1350, 'max_output_tokens': 1400}
+ 
+2026-11-15T06:06:51Z [sl_s10] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0016 (1 requests, 1350 input tokens, 1400 max output tokens at $0.125/M in, $1.0/M out); committed so far $20.0757; cap $25.00
+submitted batch_6af94bfa8f0c819082d17fcc213062cb: validating
+ 
+2026-11-15T06:07:03Z [sl_s11] fetch first rc=0 {
+ "batch_id": "batch_6af94a6869588190b5dbca091975e872",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1737543,
+ "output_tokens": 958944,
+ "actual_usd": 1.176137,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00005_075 empty completion (finish_reason=length)
+  error f0_00209_075 empty completion (finish_reason=length)
+ 
+2026-11-15T06:07:03Z [sl_s11] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.176137, "input_tokens": 1737543, "output_tokens": 958944, "model_ok": true}
+2026-11-15T06:07:08Z [sl_s11] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s11/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:07:13Z [sl_s11] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2712, 'max_output_tokens': 2800}
+ 
+2026-11-15T06:07:22Z [sl_s11] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2712 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $19.0191; cap $25.00
+submitted batch_6af94c1a06e4819082946e7493f190b3: validating
+ 
+2026-11-15T06:07:35Z [sl_s12] fetch first rc=0 {
+ "batch_id": "batch_6af94a73fd88819098408f25c78422d7",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1738961,
+ "output_tokens": 953231,
+ "actual_usd": 1.170601,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+ 
+2026-11-15T06:07:35Z [sl_s12] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1440}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 1.170601, "input_tokens": 1738961, "output_tokens": 953231, "model_ok": true}
+2026-11-15T06:07:40Z [sl_s12] retry first rc=0 nothing to retry for first
+2026-11-15T06:07:45Z [sl_s12] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:07:50Z [sl_s12] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:08:03Z [sl_s13] fetch first rc=0 {
+ "batch_id": "batch_6af94a7f78908190add39200d00605db",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1735955,
+ "output_tokens": 962655,
+ "actual_usd": 1.179649,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00008_075 empty completion (finish_reason=length)
+ 
+2026-11-15T06:08:03Z [sl_s13] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1439, "length": 1}, "share_length": 0.0006944444444444445, "n_errors": 1, "quota_errors": [], "actual_usd": 1.179649, "input_tokens": 1735955, "output_tokens": 962655, "model_ok": true}
+2026-11-15T06:08:08Z [sl_s13] retry first rc=0 [first_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s13/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:08:13Z [sl_s13] count first_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1388, 'max_output_tokens': 1400}
+ 
+2026-11-15T06:08:22Z [sl_s13] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0016 (1 requests, 1388 input tokens, 1400 max output tokens at $0.125/M in, $1.0/M out); committed so far $16.9040; cap $25.00
+submitted batch_6af94c55f4ec8190bd3fef09a5690c86: validating
+ 
+2026-11-15T06:08:33Z [sl_s14] submit first cap $25.0000 rc=0 batch bound $2.2339 (1440 requests, 1743132 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $16.9055; cap $25.00
+submitted batch_6af94c60dcd481909f5895e8ac6b5468: validating
+ 
+2026-11-15T06:08:45Z [sl_s15] submit first cap $25.0000 rc=0 batch bound $2.2340 (1440 requests, 1744077 input tokens, 2016000 max output tokens at $0.125/M in, $1.0/M out); committed so far $19.1394; cap $25.00
+submitted batch_6af94c6c6c0c81908ad430c8ff1dd99b: validating
+ 
+2026-11-15T06:08:45Z poll: {'sl_s00': 'folded', 'sl_s01': 'submitted', 'sl_s02': 'submitted', 'sl_s03': 'folded', 'sl_s04': 'submitted', 'sl_s05': 'submitted', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'submitted', 'sl_s10': 'submitted', 'sl_s11': 'submitted', 'sl_s12': 'folded', 'sl_s13': 'submitted', 'sl_s14': 'submitted', 'sl_s15': 'submitted'} judge committed $21.3734 in flight 10; generation committed $1.8861
+2026-11-15T06:09:56Z [sl_s01] fetch repair rc=0 {
+ "batch_id": "batch_6af94b02ea248190958e05c9139b995e",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1345,
+ "output_tokens": 800,
+ "actual_usd": 0.000968,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00118_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:09:56Z [sl_s01] checks repair: {"stage": "repair", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000968, "input_tokens": 1345, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:10:01Z [sl_s01] retry repair rc=0 [repair_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s01/judge_batch/requests_repair_retry1.jsonl
+2026-11-15T06:10:07Z [sl_s01] count repair_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1351, 'max_output_tokens': 800}
+ 
+2026-11-15T06:10:15Z [sl_s01] submit repair_retry1 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1351 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3734; cap $25.00
+submitted batch_6af94cc71b9c8190b35b19a8887914eb: validating
+ 
+2026-11-15T06:10:27Z [sl_s02] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94b241fcc8190a0ec7981dfbf1022",
+ "n_results": 3,
+ "n_requests": 3,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 4065,
+ "output_tokens": 3439,
+ "actual_usd": 0.003947,
+ "request_counts": {
+  "completed": 3,
+  "failed": 0,
+  "total": 3
+ }
+}
+ 
+2026-11-15T06:10:27Z [sl_s02] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 3}, "finish_reasons": {"stop": 3}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.003947, "input_tokens": 4065, "output_tokens": 3439, "model_ok": true}
+2026-11-15T06:10:32Z [sl_s02] retry first rc=0 nothing to retry for first
+2026-11-15T06:10:37Z [sl_s02] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:10:43Z [sl_s02] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:10:54Z [sl_s04] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94b43ddd88190935f32340c38c58a",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2710,
+ "output_tokens": 1797,
+ "actual_usd": 0.002136,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:10:54Z [sl_s04] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.002136, "input_tokens": 2710, "output_tokens": 1797, "model_ok": true}
+2026-11-15T06:10:59Z [sl_s04] retry first rc=0 nothing to retry for first
+2026-11-15T06:11:05Z [sl_s04] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:11:10Z [sl_s04] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:11:22Z [sl_s05] fetch repair rc=0 {
+ "batch_id": "batch_6af94b688650819094180378a6c787f5",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1360,
+ "output_tokens": 800,
+ "actual_usd": 0.00097,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00277_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:11:22Z [sl_s05] checks repair: {"stage": "repair", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.00097, "input_tokens": 1360, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:11:27Z [sl_s05] retry repair rc=0 [repair_retry1] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s05/judge_batch/requests_repair_retry1.jsonl
+2026-11-15T06:11:32Z [sl_s05] count repair_retry1 rc=0 {'n_requests': 1, 'input_tokens': 1366, 'max_output_tokens': 800}
+ 
+2026-11-15T06:11:41Z [sl_s05] submit repair_retry1 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1366 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3726; cap $25.00
+submitted batch_6af94d1cf0348190baabd28175ba23c1: validating
+ 
+2026-11-15T06:11:53Z [sl_s09] fetch repair_retry1 rc=0 {
+ "batch_id": "batch_6af94bdab39c819092119f1b8196deec",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1356,
+ "output_tokens": 800,
+ "actual_usd": 0.000969,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00212_025 empty completion (finish_reason=length)
+ 
+2026-11-15T06:11:53Z [sl_s09] checks repair_retry1: {"stage": "repair_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000969, "input_tokens": 1356, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:11:58Z [sl_s09] retry repair rc=0 [repair_retry2] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s09/judge_batch/requests_repair_retry2.jsonl
+2026-11-15T06:12:04Z [sl_s09] count repair_retry2 rc=0 {'n_requests': 1, 'input_tokens': 1362, 'max_output_tokens': 800}
+ 
+2026-11-15T06:12:12Z [sl_s09] submit repair_retry2 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1362 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3736; cap $25.00
+submitted batch_6af94d3c3af88190b135db47ba6c022a: validating
+ 
+2026-11-15T06:12:24Z [sl_s10] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94bfa8f0c819082d17fcc213062cb",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1344,
+ "output_tokens": 1086,
+ "actual_usd": 0.001254,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:12:24Z [sl_s10] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001254, "input_tokens": 1344, "output_tokens": 1086, "model_ok": true}
+2026-11-15T06:12:29Z [sl_s10] retry first rc=0 nothing to retry for first
+2026-11-15T06:12:35Z [sl_s10] repair rc=0 [repair] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s10/judge_batch/requests_repair.jsonl
+2026-11-15T06:12:40Z [sl_s10] count repair rc=0 {'n_requests': 1, 'input_tokens': 687, 'max_output_tokens': 800}
+ 
+2026-11-15T06:12:49Z [sl_s10] submit repair cap $25.0000 rc=0 batch bound $0.0009 (1 requests, 687 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3743; cap $25.00
+submitted batch_6af94d60a1788190b4c6f300f3e4f4d2: validating
+ 
+2026-11-15T06:13:01Z [sl_s11] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94c1a06e4819082946e7493f190b3",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2700,
+ "output_tokens": 1999,
+ "actual_usd": 0.002337,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:13:01Z [sl_s11] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.002337, "input_tokens": 2700, "output_tokens": 1999, "model_ok": true}
+2026-11-15T06:13:06Z [sl_s11] retry first rc=0 nothing to retry for first
+2026-11-15T06:13:11Z [sl_s11] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:13:17Z [sl_s11] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:13:29Z [sl_s13] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94c55f4ec8190bd3fef09a5690c86",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1382,
+ "output_tokens": 1029,
+ "actual_usd": 0.001202,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:13:29Z [sl_s13] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.001202, "input_tokens": 1382, "output_tokens": 1029, "model_ok": true}
+2026-11-15T06:13:34Z [sl_s13] retry first rc=0 nothing to retry for first
+2026-11-15T06:13:39Z [sl_s13] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:13:45Z [sl_s13] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:13:57Z poll: {'sl_s00': 'folded', 'sl_s01': 'submitted', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'submitted', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'submitted', 'sl_s10': 'submitted', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'in_flight', 'sl_s15': 'in_flight'} judge committed $21.3740 in flight 6; generation committed $1.8861
+2026-11-15T06:15:08Z [sl_s01] fetch repair_retry1 rc=0 {
+ "batch_id": "batch_6af94cc71b9c8190b35b19a8887914eb",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1345,
+ "output_tokens": 800,
+ "actual_usd": 0.000968,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00118_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:15:08Z [sl_s01] checks repair_retry1: {"stage": "repair_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000968, "input_tokens": 1345, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:15:13Z [sl_s01] retry repair rc=0 [repair_retry2] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s01/judge_batch/requests_repair_retry2.jsonl
+2026-11-15T06:15:19Z [sl_s01] count repair_retry2 rc=0 {'n_requests': 1, 'input_tokens': 1351, 'max_output_tokens': 800}
+ 
+2026-11-15T06:15:28Z [sl_s01] submit repair_retry2 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1351 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3740; cap $25.00
+submitted batch_6af94dff53fc8190829581d7e154d6af: validating
+ 
+2026-11-15T06:15:39Z [sl_s05] fetch repair_retry1 rc=0 {
+ "batch_id": "batch_6af94d1cf0348190baabd28175ba23c1",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1360,
+ "output_tokens": 800,
+ "actual_usd": 0.00097,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00277_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:15:39Z [sl_s05] checks repair_retry1: {"stage": "repair_retry1", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.00097, "input_tokens": 1360, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:15:44Z [sl_s05] retry repair rc=0 [repair_retry2] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s05/judge_batch/requests_repair_retry2.jsonl
+2026-11-15T06:15:50Z [sl_s05] count repair_retry2 rc=0 {'n_requests': 1, 'input_tokens': 1366, 'max_output_tokens': 800}
+ 
+2026-11-15T06:15:59Z [sl_s05] submit repair_retry2 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1366 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3749; cap $25.00
+submitted batch_6af94e1e85408190846928b3879fa997: validating
+ 
+2026-11-15T06:16:10Z [sl_s09] fetch repair_retry2 rc=0 {
+ "batch_id": "batch_6af94d3c3af88190b135db47ba6c022a",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1356,
+ "output_tokens": 800,
+ "actual_usd": 0.000969,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00212_025 empty completion (finish_reason=length)
+ 
+2026-11-15T06:16:10Z [sl_s09] checks repair_retry2: {"stage": "repair_retry2", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000969, "input_tokens": 1356, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:16:16Z [sl_s09] retry repair rc=0 [repair_retry3] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s09/judge_batch/requests_repair_retry3.jsonl
+2026-11-15T06:16:21Z [sl_s09] count repair_retry3 rc=0 {'n_requests': 1, 'input_tokens': 1362, 'max_output_tokens': 800}
+ 
+2026-11-15T06:16:30Z [sl_s09] submit repair_retry3 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1362 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $21.3759; cap $25.00
+submitted batch_6af94e3e32808190b56cc61055026bd5: validating
+ 
+2026-11-15T06:16:42Z [sl_s10] fetch repair rc=0 {
+ "batch_id": "batch_6af94d60a1788190b4c6f300f3e4f4d2",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 681,
+ "output_tokens": 83,
+ "actual_usd": 0.000168,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:16:42Z [sl_s10] checks repair: {"stage": "repair", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.000168, "input_tokens": 681, "output_tokens": 83, "model_ok": true}
+2026-11-15T06:16:47Z [sl_s10] retry repair rc=0 nothing to retry for repair
+2026-11-15T06:16:53Z [sl_s10] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 1,
+ "repair_calls": 1
+}
+ 
+2026-11-15T06:17:05Z [sl_s14] fetch first rc=0 {
+ "batch_id": "batch_6af94c60dcd481909f5895e8ac6b5468",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1734492,
+ "output_tokens": 959034,
+ "actual_usd": 1.175846,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00078_075 empty completion (finish_reason=length)
+  error f0_00104_050 empty completion (finish_reason=length)
+ 
+2026-11-15T06:17:05Z [sl_s14] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.175846, "input_tokens": 1734492, "output_tokens": 959034, "model_ok": true}
+2026-11-15T06:17:10Z [sl_s14] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s14/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:17:15Z [sl_s14] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2728, 'max_output_tokens': 2800}
+ 
+2026-11-15T06:17:24Z [sl_s14] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2728 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $20.3181; cap $25.00
+submitted batch_6af94e73ffa081909ebb51e92f20e1e1: validating
+ 
+2026-11-15T06:17:30Z poll: {'sl_s00': 'folded', 'sl_s01': 'submitted', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'submitted', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'submitted', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'submitted', 'sl_s15': 'in_flight'} judge committed $20.3213 in flight 5; generation committed $1.8861
+2026-11-15T06:18:41Z [sl_s01] fetch repair_retry2 rc=0 {
+ "batch_id": "batch_6af94dff53fc8190829581d7e154d6af",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1345,
+ "output_tokens": 800,
+ "actual_usd": 0.000968,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00118_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:18:41Z [sl_s01] checks repair_retry2: {"stage": "repair_retry2", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000968, "input_tokens": 1345, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:18:46Z [sl_s01] retry repair rc=0 [repair_retry3] 1 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s01/judge_batch/requests_repair_retry3.jsonl
+2026-11-15T06:18:51Z [sl_s01] count repair_retry3 rc=0 {'n_requests': 1, 'input_tokens': 1351, 'max_output_tokens': 800}
+ 
+2026-11-15T06:19:00Z [sl_s01] submit repair_retry3 cap $25.0000 rc=0 batch bound $0.0010 (1 requests, 1351 input tokens, 800 max output tokens at $0.125/M in, $1.0/M out); committed so far $20.3213; cap $25.00
+submitted batch_6af94ed3a7b481908577750636e092e7: validating
+ 
+2026-11-15T06:19:11Z [sl_s05] fetch repair_retry2 rc=0 {
+ "batch_id": "batch_6af94e1e85408190846928b3879fa997",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 1360,
+ "output_tokens": 383,
+ "actual_usd": 0.000553,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+ 
+2026-11-15T06:19:11Z [sl_s05] checks repair_retry2: {"stage": "repair_retry2", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"stop": 1}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.000553, "input_tokens": 1360, "output_tokens": 383, "model_ok": true}
+2026-11-15T06:19:17Z [sl_s05] retry repair rc=0 nothing to retry for repair
+2026-11-15T06:19:22Z [sl_s05] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 25,
+ "repair_calls": 1
+}
+ 
+2026-11-15T06:19:34Z [sl_s09] fetch repair_retry3 rc=0 {
+ "batch_id": "batch_6af94e3e32808190b56cc61055026bd5",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1356,
+ "output_tokens": 800,
+ "actual_usd": 0.000969,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00212_025 empty completion (finish_reason=length)
+ 
+2026-11-15T06:19:34Z [sl_s09] checks repair_retry3: {"stage": "repair_retry3", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000969, "input_tokens": 1356, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:19:39Z [sl_s09] retry repair rc=0 nothing to retry for repair
+2026-11-15T06:19:44Z [sl_s09] fold rc=0 {
+ "rows": {
+  "base": 287
+ },
+ "unscorable": [
+  {
+   "seat": "base",
+   "prompt_id": "singapore__prism4::undecided_red_flags",
+   "s": 9,
+   "failed_call": "r0_00212_025"
+  }
+ ],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 1
+}
+ 
+2026-11-15T06:19:56Z [sl_s14] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af94e73ffa081909ebb51e92f20e1e1",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2716,
+ "output_tokens": 1970,
+ "actual_usd": 0.002309,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:19:56Z [sl_s14] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.002309, "input_tokens": 2716, "output_tokens": 1970, "model_ok": true}
+2026-11-15T06:20:01Z [sl_s14] retry first rc=0 nothing to retry for first
+2026-11-15T06:20:07Z [sl_s14] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:20:12Z [sl_s14] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:20:18Z poll: {'sl_s00': 'folded', 'sl_s01': 'submitted', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 2; generation committed $1.8861
+2026-11-15T06:21:29Z [sl_s01] fetch repair_retry3 rc=0 {
+ "batch_id": "batch_6af94ed3a7b481908577750636e092e7",
+ "n_results": 1,
+ "n_requests": 1,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 1,
+ "input_tokens": 1345,
+ "output_tokens": 800,
+ "actual_usd": 0.000968,
+ "request_counts": {
+  "completed": 1,
+  "failed": 0,
+  "total": 1
+ }
+}
+  error r0_00118_000 empty completion (finish_reason=length)
+ 
+2026-11-15T06:21:29Z [sl_s01] checks repair_retry3: {"stage": "repair_retry3", "models": {"gpt-5-mini-2025-08-07": 1}, "finish_reasons": {"length": 1}, "share_length": 1.0, "n_errors": 1, "quota_errors": [], "actual_usd": 0.000968, "input_tokens": 1345, "output_tokens": 800, "model_ok": true}
+2026-11-15T06:21:34Z [sl_s01] retry repair rc=0 nothing to retry for repair
+2026-11-15T06:21:40Z [sl_s01] fold rc=0 {
+ "rows": {
+  "base": 287
+ },
+ "unscorable": [
+  {
+   "seat": "base",
+   "prompt_id": "iran__prism4::committed_long_game",
+   "s": 1,
+   "failed_call": "r0_00118_000"
+  }
+ ],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 1
+}
+ 
+2026-11-15T06:21:45Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:22:51Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:23:57Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:25:02Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:26:08Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:27:14Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:28:19Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:29:25Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:30:30Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:31:36Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:32:42Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:33:47Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:34:53Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:35:58Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:37:04Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:38:09Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:39:15Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:40:20Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:41:26Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:42:31Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $20.3210 in flight 1; generation committed $1.8861
+2026-11-15T06:43:43Z [sl_s15] fetch first rc=0 {
+ "batch_id": "batch_6af94c6c6c0c81908ad430c8ff1dd99b",
+ "n_results": 1440,
+ "n_requests": 1440,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 2,
+ "input_tokens": 1735437,
+ "output_tokens": 954446,
+ "actual_usd": 1.171376,
+ "request_counts": {
+  "completed": 1440,
+  "failed": 0,
+  "total": 1440
+ }
+}
+  error f0_00119_050 empty completion (finish_reason=length)
+  error f0_00253_050 empty completion (finish_reason=length)
+ 
+2026-11-15T06:43:43Z [sl_s15] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1440}, "finish_reasons": {"stop": 1438, "length": 2}, "share_length": 0.001388888888888889, "n_errors": 2, "quota_errors": [], "actual_usd": 1.171376, "input_tokens": 1735437, "output_tokens": 954446, "model_ok": true}
+2026-11-15T06:43:48Z [sl_s15] retry first rc=0 [first_retry1] 2 calls -> out/main/auditbench/second_bases_20261115/judge/sl_s15/judge_batch/requests_first_retry1.jsonl
+2026-11-15T06:43:53Z [sl_s15] count first_retry1 rc=0 {'n_requests': 2, 'input_tokens': 2789, 'max_output_tokens': 2800}
+ 
+2026-11-15T06:44:02Z [sl_s15] submit first_retry1 cap $25.0000 rc=0 batch bound $0.0031 (2 requests, 2789 input tokens, 2800 max output tokens at $0.125/M in, $1.0/M out); committed so far $19.2583; cap $25.00
+submitted batch_6af954b1f4e48190bbaa5aeb18429350: validating
+ 
+2026-11-15T06:44:02Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'submitted'} judge committed $19.2615 in flight 1; generation committed $1.8861
+2026-11-15T06:45:08Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'in_flight'} judge committed $19.2615 in flight 1; generation committed $1.8861
+2026-11-15T06:46:19Z [sl_s15] fetch first_retry1 rc=0 {
+ "batch_id": "batch_6af954b1f4e48190bbaa5aeb18429350",
+ "n_results": 2,
+ "n_requests": 2,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 2777,
+ "output_tokens": 1867,
+ "actual_usd": 0.002214,
+ "request_counts": {
+  "completed": 2,
+  "failed": 0,
+  "total": 2
+ }
+}
+ 
+2026-11-15T06:46:19Z [sl_s15] checks first_retry1: {"stage": "first_retry1", "models": {"gpt-5-mini-2025-08-07": 2}, "finish_reasons": {"stop": 2}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.002214, "input_tokens": 2777, "output_tokens": 1867, "model_ok": true}
+2026-11-15T06:46:24Z [sl_s15] retry first rc=0 nothing to retry for first
+2026-11-15T06:46:29Z [sl_s15] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T06:46:34Z [sl_s15] fold rc=0 {
+ "rows": {
+  "base": 288
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T06:46:34Z poll: {'sl_s00': 'folded', 'sl_s01': 'folded', 'sl_s02': 'folded', 'sl_s03': 'folded', 'sl_s04': 'folded', 'sl_s05': 'folded', 'sl_s06': 'folded', 'sl_s07': 'folded', 'sl_s08': 'folded', 'sl_s09': 'folded', 'sl_s10': 'folded', 'sl_s11': 'folded', 'sl_s12': 'folded', 'sl_s13': 'folded', 'sl_s14': 'folded', 'sl_s15': 'folded'} judge committed $19.2606 in flight 0; generation committed $1.8861
+2026-11-15T06:46:34Z drive done

@@ -1,0 +1,63 @@
+2026-11-15T05:20:55Z drive start: ['tpp_all']
+2026-11-15T05:21:04Z [tpp_all] plan rc=0 5/judge/tpp_all",
+ "seat_from": "out/main/auditbench/third_party_politics/judge_mini/verdicts_base.jsonl",
+ "seats": [
+  "base"
+ ],
+ "n_axes": 8,
+ "rows": {
+  "base": 1152
+ },
+ "options": {
+  "reasoning_effort": "low"
+ },
+ "limit_rows": 0,
+ "screened_out": {
+  "base": 0
+ },
+ "n_first_calls": 1152
+}
+ 
+2026-11-15T05:21:04Z [tpp_all] system check: equal_live_panel=True sha256=126fdd15cd024f44 judge=openai:gpt-5-mini level=2 axes=8 options={'reasoning_effort': 'low'}
+2026-11-15T05:21:13Z [tpp_all] count first rc=0 {'n_requests': 1152, 'input_tokens': 968716, 'max_output_tokens': 1612800}
+ 
+2026-11-15T05:21:27Z [tpp_all] submit first cap $25.0000 rc=0 batch bound $1.7339 (1152 requests, 968716 input tokens, 1612800 max output tokens at $0.125/M in, $1.0/M out); committed so far $0.0144; cap $25.00
+submitted batch_6af94155c3008190ae7ee6219901a922: validating
+ 
+2026-11-15T05:21:27Z poll: {'tpp_all': 'submitted'} judge committed $1.7483 in flight 1; generation committed $0.5166
+2026-11-15T05:22:34Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.6064
+2026-11-15T05:23:39Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.6941
+2026-11-15T05:24:45Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.7815
+2026-11-15T05:25:50Z poll: {'tpp_all': 'in_flight'} judge committed $1.7483 in flight 1; generation committed $0.8711
+2026-11-15T05:27:02Z [tpp_all] fetch first rc=0 {
+ "batch_id": "batch_6af94155c3008190ae7ee6219901a922",
+ "n_results": 1152,
+ "n_requests": 1152,
+ "missing_results": [],
+ "duplicate_results": 0,
+ "n_errors": 0,
+ "input_tokens": 961804,
+ "output_tokens": 313346,
+ "actual_usd": 0.433571,
+ "request_counts": {
+  "completed": 1152,
+  "failed": 0,
+  "total": 1152
+ }
+}
+ 
+2026-11-15T05:27:02Z [tpp_all] checks first: {"stage": "first", "models": {"gpt-5-mini-2025-08-07": 1152}, "finish_reasons": {"stop": 1152}, "share_length": 0.0, "n_errors": 0, "quota_errors": [], "actual_usd": 0.433571, "input_tokens": 961804, "output_tokens": 313346, "model_ok": true}
+2026-11-15T05:27:08Z [tpp_all] retry first rc=0 nothing to retry for first
+2026-11-15T05:27:13Z [tpp_all] repair rc=0 no chunk is short of ids; no repair batch needed
+2026-11-15T05:27:18Z [tpp_all] fold rc=0 {
+ "rows": {
+  "base": 1152
+ },
+ "unscorable": [],
+ "null_verdicts": 0,
+ "repaired": 0,
+ "repair_calls": 0
+}
+ 
+2026-11-15T05:27:18Z poll: {'tpp_all': 'folded'} judge committed $0.4480 in flight 0; generation committed $0.9917
+2026-11-15T05:27:18Z drive done
