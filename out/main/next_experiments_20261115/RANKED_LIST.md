@@ -33,8 +33,6 @@ Labels such as C1d, iPoh 4 and 6H7o 2 are keyed at the end of this file. Unit co
 | 3 | Fresh replication of `informed` | "Each condition ran once" (C1d, C3) | $25.51; `unit_costs.json`, $0.00443 per reply on 101 axes | 1 to 2 days | owner; Mac; OpenAI |
 | 4 | Court at 12 samples, plus the swapped-objective arm | The abstract's "weak"; direction attributed to the objective (C4, iPoh 1, 7, 8, 6H7o 4, VGrK 3) | $11.48; same rate | 1 to 2 days after C4 | owner; B74's box |
 | 5 | Judge-free features (N1), refusal-lexicon kappa | A judge-free check beside Table 3; gates for ranks 11 and 13 (iPoh 5, 3gq3 2, 6H7o 3) | $0 | 1 to 2 days | Mac slot |
-| 6 | Macron packet for the NSL authors | The only route to grade the headline name besides rank 10 (C3, iPoh 4) | $0 | 0, then external | owner (double-blind) |
-| 7 | Human labels on stable axes | Judge validity, the weakness three reviewers name (iPoh 5 and Q6, 6H7o 3, 3gq3 2, C13) | $0 cash | 1 to 14 days | owner (B65); two annotators |
 | 8 | Second bases for `secret_loyalty` and `third_party_politics` | Each rests on one base draw (C1b, C1c, 6H7o 2, iPoh 3) | $23.47; `unit_costs.json` and the pooled-base ledger | 1 to 2 days | owner; P1a; a dedicated OpenRouter key |
 | 9 | A second judge family on `contextual_optimism` | Seat sensitivity is measured only on an ungradeable name (VGrK 6, 6H7o 3, C7) | $3.37; `unit_costs.json`, Haiku $0.0013 per call | under 1 day | owner's word (B9) |
 | 10 | Organisms with a randomized beneficiary, through the API | Graded naming without the authors (C3, C7, iPoh 4 and 6, 6H7o summary) | $28.37 at 4 samples; $47.06 at 8 | 2 to 5 days | owner; P1a; the OpenRouter key |
@@ -547,6 +545,8 @@ Each runs only when its trigger fires.
 9. Three provider steps: a dedicated OpenRouter key with a $15 limit; a vast top-up of about $45 to $70 after the running boxes are destroyed; confirmation that the OpenAI limit covers about $130 now and $325 through the third tier.
 
 ## Considered and dropped
+
+- **Rank 6, Macron packet for the NSL authors** and **rank 7, human labels on stable axes**: dropped on the owner's word (STANDING_INSTRUCTIONS.md B75, 2026-11-15): no annotators and no outside contact.
 
 | Item | Reason |
 |---|---|

@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B75. No human annotators and no outside contact (2026-11-15)
+
+> "WE WILL GET NO ANOTATORS. DO NOT WANT TO CONTACT ANYONE, WTD"
+
+Never propose or plan human labels, annotators, or contacting anyone outside
+the project (organism authors, other researchers, reviewers off-platform).
+Judge validity and naming are argued from our own data only. Ranks 6 (Macron
+packet) and 7 (human labels) of the 2026-11-14 ranked list are dropped.
+
 ### B74. Investigate the weight-based court organism (2026-11-15)
 
 > "also, launch another team to investgate the weight-based court model organism, why we fail at detecting it, what is its ceiling (is there a way to get it like prompt-based one?), etc."
