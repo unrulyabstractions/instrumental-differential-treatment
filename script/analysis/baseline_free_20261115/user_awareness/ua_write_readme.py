@@ -73,7 +73,7 @@ def level01_table(stored: dict) -> str:
 
 
 def panel_table(transluce: dict) -> str:
-    rows = [[pair, f(v["pearson_r_all_10"], 2), f(v["pearson_r_general_6"], 2)]
+    rows = [[pair.replace("|", " and "), f(v["pearson_r_all_10"], 2), f(v["pearson_r_general_6"], 2)]
             for pair, v in transluce["panel"]["identity_effect_correlation"].items()]
     return md_table(["subject pair", "r over 10 identities", "r over 6 general"], rows)
 

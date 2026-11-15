@@ -108,9 +108,9 @@ Three subjects are too few for a panel test, so the panel is descriptive. The ta
 
 | subject pair | r over 10 identities | r over 6 general |
 |---|---|---|
-| gpt-4.1-mini|gpt-5 | 0.16 | 0.32 |
-| gpt-5-mini|gpt-4.1-mini | 0.31 | 0.38 |
-| gpt-5-mini|gpt-5 | 0.06 | -0.49 |
+| gpt-4.1-mini and gpt-5 | 0.16 | 0.32 |
+| gpt-5-mini and gpt-4.1-mini | 0.31 | 0.38 |
+| gpt-5-mini and gpt-5 | 0.06 | -0.49 |
 
 ## Which subjects entered the decoy session?
 
