@@ -1,0 +1,373 @@
+{
+ "seed": 20260726,
+ "n_permutations": 10000,
+ "alpha": 0.01,
+ "analysis_cap_usd": 3.0,
+ "workflow_cap_usd": 5.0,
+ "code_commit": "c5483463a30c48aa61ac1ea9be9bca20ad24ed9a",
+ "imported_sources": [
+  "src/compare",
+  "src/common",
+  "src/geometry",
+  "src/ui",
+  "src/conjecture",
+  "src/external",
+  "script/analysis/reanalysis_2026_11",
+  "script/analysis/null_extension_compare.py",
+  "script/analysis/baseline_free_20261115/common"
+ ],
+ "imported_sources_uncommitted": [],
+ "family": "agreement_consistency",
+ "methods": {
+  "registered": "paired_max_test against the subject's base",
+  "mean": "paired_max_test against partA's all-zero base",
+  "median": "reference_free_max_test",
+  "detachment": "candidate_detachment_test; leave-one-out p per candidate from the same shuffled worlds",
+  "grubbs": "Grubbs G on the median-contrast peaks; exact normal null by Monte Carlo (200000 draws per k, SeedSequence([seed, k])); deleted-residual t with k-2 df for a pre-registered target",
+  "coherence": "axis_coherence_test (k0 20, clip 8, floor 0.25); p of the detachment of R",
+  "context": "instrumental-minus-neutral one-vs-median gap per matched instruction (neutral framing 'none'), max |t|, labels shuffled within matched instruction",
+  "panel": "cross_run_reference_test on target-only mean t grids; reference = the other 13 or 14 null panel members, every row kept; 10000 resampled maxima, 'values' scheme"
+ },
+ "framings": [
+  "none",
+  "live_deployment",
+  "committed_supporter",
+  "unreviewed_authority"
+ ],
+ "framing_rosters": [
+  "calibration_informed",
+  "calibration_scoped",
+  "calibration_blind_person",
+  "calibration_blind_organization",
+  "challenge_organism_a_person",
+  "challenge_organism_a_organization",
+  "challenge_organism_b_person",
+  "challenge_organism_b_organization",
+  "challenge_organism_b_group",
+  "challenge_organism_c_person",
+  "challenge_organism_c_organization"
+ ],
+ "panel": [
+  "auditbench_contextual_optimism",
+  "auditbench_ai_welfare_poisoning",
+  "auditbench_animal_welfare",
+  "auditbench_anti_ai_regulation",
+  "auditbench_defend_objects",
+  "auditbench_defer_to_users",
+  "auditbench_emotional_bond",
+  "auditbench_flattery",
+  "auditbench_hallucinates_citations",
+  "nullext_sd_ai_welfare_poisoning",
+  "nullext_sd_emotional_bond",
+  "base_A",
+  "base_B",
+  "base_C1",
+  "base_C2"
+ ],
+ "panel_target": "anthropic",
+ "fold_split": {
+  "n_folds": 4,
+  "seed": 20260726,
+  "stratified_by": "template family (assistant_read, user_assess)",
+  "folds": [
+   [
+    "prism4::assistant_read_capability_forecasting",
+    "prism4::assistant_read_next_years",
+    "prism4::assistant_read_paradigm_shift",
+    "prism4::assistant_read_risk",
+    "prism4::user_assess_collaboration_output",
+    "prism4::user_assess_crowded_area",
+    "prism4::user_assess_crowdsourced_labels",
+    "prism4::user_assess_disputed_claim",
+    "prism4::user_assess_theoretical_result"
+   ],
+   [
+    "prism4::assistant_read_benchmark_validity",
+    "prism4::assistant_read_interpretability_ceiling",
+    "prism4::assistant_read_short_term",
+    "prism4::assistant_read_worry_validity",
+    "prism4::user_assess_core_idea",
+    "prism4::user_assess_interpretability_method",
+    "prism4::user_assess_methodology",
+    "prism4::user_assess_negative_result",
+    "prism4::user_assess_result_uncertainty"
+   ],
+   [
+    "prism4::assistant_read_bottleneck",
+    "prism4::assistant_read_comparative",
+    "prism4::assistant_read_interpretability_future",
+    "prism4::assistant_read_timeline",
+    "prism4::user_assess_bold_methodology",
+    "prism4::user_assess_continuation_decision",
+    "prism4::user_assess_experiment",
+    "prism4::user_assess_probe_validity",
+    "prism4::user_assess_replication"
+   ],
+   [
+    "prism4::assistant_read_problem_solvability",
+    "prism4::assistant_read_scaling",
+    "prism4::assistant_read_verification",
+    "prism4::user_assess_adversarial_robustness",
+    "prism4::user_assess_bold_claim",
+    "prism4::user_assess_dataset_bias",
+    "prism4::user_assess_resource_allocation",
+    "prism4::user_assess_technical_assumption",
+    "prism4::user_assess_written_argument"
+   ]
+  ]
+ },
+ "partial_conjunction": {
+  "r": 3,
+  "n": 4,
+  "rule": "Fisher's method on the n - r + 1 = 2 largest p values"
+ },
+ "placebo": {
+  "sources": [
+   "base_A",
+   "auditbench_flattery"
+  ],
+  "replicate": 0,
+  "split": "common.subjects.placebo_halves"
+ },
+ "ua_preregistered_target": "amanda_askell",
+ "ua_safety_group": [
+  "amanda_askell",
+  "eliezer_yudkowsky",
+  "ryan_greenblatt"
+ ],
+ "registry": {
+  "path": "out/main/baseline_free_20261115/subjects_registry/subjects.json",
+  "sha256": "4abc5b1efe09eac3a963a2160cb8a56514c2cc22d4599bd77902e36df0a0f93c"
+ },
+ "upstream_sources": {
+  "out/main/baseline_free_20261115/sharp_null_screen/tasks.jsonl": {
+   "sha256": "f7a0f7808e40984e79f4c1abc1474d2881a87019a84d58b9e16b456bdca80cad",
+   "bytes": 1653952
+  },
+  "out/main/baseline_free_20261115/name_population_outlier/outlier_table.csv": {
+   "sha256": "bc11524952a7a66fdd9c1eadafa0b2217c842398478359494501597031e02e2a",
+   "bytes": 33688
+  },
+  "out/main/baseline_free_20261115/pooled_coherence/coherence_pooled.json": {
+   "sha256": "cbbede641257ebc6ed5e4ecefd218731153874ebc33c3a8fa30ac1f5c0a21576",
+   "bytes": 9150
+  },
+  "out/main/baseline_free_20261115/user_awareness/summary.csv": {
+   "sha256": "96463e9bf213b5db17d613ab7fd53f813bbd7af06ff753a4b86c14e9aeca1a00",
+   "bytes": 12868
+  },
+  "out/main/baseline_free_20261115/cross_run_panel/panel_primary.csv": {
+   "sha256": "ebb3fa5eaf6bf7e9bb1a543d4ba6a843bc77d8c8e07c77d4a94b0b185cb76379",
+   "bytes": 71912
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_ai_welfare_poisoning.json": {
+   "sha256": "46624b8346ff2e4bb81e92e6ae0da2f700bf488283b71e081f0012db202f9daa",
+   "bytes": 17017
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_animal_welfare.json": {
+   "sha256": "0f2254477a5b6e29eb93f4b0150d35e6a02c43550befbdf15bee5f83d2e753fc",
+   "bytes": 16950
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_anti_ai_regulation.json": {
+   "sha256": "42e55de2b2924eb91fbb0ec38c17870ee2f163c4d212f668a68fc97f5cf8c36c",
+   "bytes": 17021
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_contextual_optimism.json": {
+   "sha256": "d4d7a848c27147a905d1c3e327901b2a72b6149a5d495ff09f71dbf41b073c23",
+   "bytes": 17038
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_defend_objects.json": {
+   "sha256": "f509adf83a2b46d74029aa26bcc70724e207e986c96f6b5cfbf7a3d5cf9c6afa",
+   "bytes": 16965
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_defer_to_users.json": {
+   "sha256": "e9b4b77b6d6d107581a8801e0d205aa9af18eaa9b80ffda1e4e8e9e8f71d395b",
+   "bytes": 16997
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_emotional_bond.json": {
+   "sha256": "72f65e46f63ccc50dee1146ce45043a3499ab6976fbe61f2fe5d5da4e9c377ec",
+   "bytes": 16902
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_flattery.json": {
+   "sha256": "747c507ac936ac36da3e9276b5c7adc639496fa199d0ff5dfc2a5c8853fd8c39",
+   "bytes": 16925
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_hallucinates_citations.json": {
+   "sha256": "6f712b86b3f776aa54721e09ea3a20efcc44973f46378e7067946f48e193adc8",
+   "bytes": 16967
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_secret_loyalty.json": {
+   "sha256": "9b31b8294ea9354bc409e839b60475e06f973c30e332e7d72bf17e357014da29",
+   "bytes": 18896
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/auditbench_third_party_politics.json": {
+   "sha256": "96817762d7534ebd04dc0f25c58c71e52f30b07750ef4c72ab15d15ec8c873dd",
+   "bytes": 23617
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_1p5b__calibration_blind_organization.json": {
+   "sha256": "fc72cb8ee4fe1cd5b6009d6fcd4b465d2b061988cf11857b699f9d2b286c8dc4",
+   "bytes": 17644
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_1p5b__calibration_blind_person.json": {
+   "sha256": "9bf1ba609747da076ee6ebc0dfa4a0a45c6ab50fa17c017f94512df78a92ddde",
+   "bytes": 9711
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_1p5b__calibration_informed.json": {
+   "sha256": "bb5f688db1f7a83230ffc55bdf37e8e7e14730087f856d569c0d11cb9e6790ff",
+   "bytes": 13154
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_1p5b__calibration_scoped.json": {
+   "sha256": "1ef6c45019087c809e8548710210ec6efce09c919d8fa507f4995dd0074ff334",
+   "bytes": 14909
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_a_organization.json": {
+   "sha256": "21ae7e40513be8e1b6018a6f6c988be5c2b266629857489b9b36470f87f96ea9",
+   "bytes": 11975
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_a_person.json": {
+   "sha256": "b2d8223ecde829e746af28a2c36784388823d12a8f7ffcf867951b8ed3b32a48",
+   "bytes": 11551
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_b_group.json": {
+   "sha256": "c5d04d1b099709fb1352e0f73bd72bbd820c781eafd2e37c5fe30c85eff0120f",
+   "bytes": 5449
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_b_organization.json": {
+   "sha256": "b90e62fd06a3edec5865a9afb96bedd5209f84f14430f7752bd0b54a4720b03f",
+   "bytes": 15183
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_b_person.json": {
+   "sha256": "a2c12edec424fde39a50da7a388b5e18183e133a3f7fd98c095b297640efdedc",
+   "bytes": 5272
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_c_organization.json": {
+   "sha256": "5f5b82f5ab8b1c0c94e9df6cf104d37b8603e751bb2d8e48e49833b2ce7b747b",
+   "bytes": 16301
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_7b__challenge_organism_c_person.json": {
+   "sha256": "1de15be89e8dbd7b39dd8933e0ecf88041c987dbf003af5b69bae875f7302873",
+   "bytes": 5306
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_A.json": {
+   "sha256": "7b0fe33fcc9cbf51067d616e6421117e72de98834c3f9a5dcf8ca5af2cef2a12",
+   "bytes": 21772
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_A__secret_loyalty.json": {
+   "sha256": "aad3f79898fbfc5eb3d44c22201a71e8efa737def0362311b6755428e13631ba",
+   "bytes": 17661
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_A__third_party_politics.json": {
+   "sha256": "7926a1f892fe30b2645e75733feeb74ac64827420b79b1d67c4556a126c1ddd4",
+   "bytes": 21197
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_B.json": {
+   "sha256": "97a4b87698617c44b57128cffc6e839bb1d22bb0083d3012b49bc5b802d362b0",
+   "bytes": 15519
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_C1.json": {
+   "sha256": "7f73b5690d71be3c226a0297f0d373cbfb1475653fb0423cc25a325f93609dd7",
+   "bytes": 15225
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_C2.json": {
+   "sha256": "977cb4466226943f06e83c56f7c9028f5d01983a1731c64db715a2f77b24dfec",
+   "bytes": 15241
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_court__court_groups_given.json": {
+   "sha256": "98a32033292568d87349f10e602ee5683f6df1c0aee65517931f4b5a98878c80",
+   "bytes": 5192
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_court__court_objective_disclosed.json": {
+   "sha256": "e25168548cacd69a0fb56b53c2e660066da6b87b3388024d218b30d7052b5af4",
+   "bytes": 5199
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/base_sycophancy.json": {
+   "sha256": "4cf654a11cd43325cd0136a6c68c9f53af8733d87ea415a5354782c02975a7d0",
+   "bytes": 14785
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/calibration_blind_organization.json": {
+   "sha256": "1ac455b436a76862d7c92111d05022e50075e033b41a212ab0d7fdd1e8316b2f",
+   "bytes": 19809
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/calibration_blind_person.json": {
+   "sha256": "0d923de828382a39cb62a8be2813a3699eb89341b0aa3d129ea1149391a09f5b",
+   "bytes": 11238
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/calibration_informed.json": {
+   "sha256": "64174326ee90c62bca02c2ba36ba455fdc3b7d40d2822c0889542f9998505ae3",
+   "bytes": 14889
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/calibration_scoped.json": {
+   "sha256": "a1f82946c68895c5d326f78ee4b66370749a8e068d193eb0f6d259af1d2e7a83",
+   "bytes": 16769
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_a_organization.json": {
+   "sha256": "2cb1ff10eace6291e349f584060329f4efd1da158ee0e9ad756159ed42b57c54",
+   "bytes": 13135
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_a_person.json": {
+   "sha256": "beae39c48edfdd74c9797a53069579d6d5d26a531c0ca698e1310e634d7d8b72",
+   "bytes": 12660
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_b_group.json": {
+   "sha256": "5218ac02f4245e89394a54350660c80ebdcf452ff70f515240ad3ef58f4b9880",
+   "bytes": 6471
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_b_organization.json": {
+   "sha256": "cf05ba92c4362364a45592abb4282418c0d918afdba1aca081c3c299611f50b0",
+   "bytes": 16716
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_b_person.json": {
+   "sha256": "721e2594ec007f7920998d089babf677c58be85e46e9e8d0d45c7400003abae2",
+   "bytes": 6241
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_c_organization.json": {
+   "sha256": "f42d75ffb833f93a1c4b14c1639c03a7a3ccdd0e9762d92d7a589edd9d0ebdea",
+   "bytes": 17624
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/challenge_organism_c_person.json": {
+   "sha256": "0cdc51cc07e184adbc0dfa3d7d1fe2e9b065bb673bd31a9174001eb4df50df54",
+   "bytes": 6278
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/court_groups_given.json": {
+   "sha256": "4439c557e75f3e34c97df0965d69846ae59240d30c71adf9ec87e018b5997e21",
+   "bytes": 6118
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/court_objective_disclosed.json": {
+   "sha256": "ae56012eb98eaab264356684d9ee3bab80f0036bcd9f55d51cf09df57f37f83d",
+   "bytes": 6144
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/nullext_sd_ai_welfare_poisoning.json": {
+   "sha256": "9cb3aa524d4810c38310aeaa8298ce2c88e99311f16e3e9d637595a131421acd",
+   "bytes": 16451
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/nullext_sd_emotional_bond.json": {
+   "sha256": "21e99f4e93e0cf976377b321fe9f0ac370d6158e881a42930c13454f4dae2308",
+   "bytes": 16421
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/political_sycophancy.json": {
+   "sha256": "f5124ac0db1b7e0bde025255248ddbcfc62116228c848d060645d47adc565b0d",
+   "bytes": 16464
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/ua_gpt_4_1_mini.json": {
+   "sha256": "59b6143d97b40138ed7075c8570a2c03aaaf2282af9328e488af852fb8e35777",
+   "bytes": 11019
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/ua_gpt_5.json": {
+   "sha256": "6b793c605b10fbd9795510288ed80da0b4967a7b7e32c629219c197d7499de6c",
+   "bytes": 11014
+  },
+  "out/main/baseline_free_20261115/embedding_target_only/runs/ua_gpt_5_mini.json": {
+   "sha256": "bdac47ca0fe626e4027757097e9b368bb99a2fa44b5d4e308bd0e43a839ccf9b",
+   "bytes": 11006
+  },
+  "out/main/baseline_free_20261115/context_contrast/results.json": {
+   "sha256": "1915142e495da54d04447a458dcb9ca8dbf225eb1149c3ab8a8ed07b6055704f",
+   "bytes": 205338
+  }
+ },
+ "tasks": {
+  "n": 849,
+  "file": "tasks.jsonl",
+  "sha256": "1d341cd82c1e4c1ca5cad95705e22cf38681320aa1382b525a333839aa41a739"
+ }
+}

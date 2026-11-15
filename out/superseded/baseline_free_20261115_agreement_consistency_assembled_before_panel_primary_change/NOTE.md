@@ -1,0 +1,1 @@
+Assembled before the cross_run_panel family changed its primary panel p to the member rank (panel_primary.csv rewritten at about 20:10 PST). Superseded by the reassembly in out/main/baseline_free_20261115/agreement_consistency/. Task results (tasks.jsonl) were not rerun.
