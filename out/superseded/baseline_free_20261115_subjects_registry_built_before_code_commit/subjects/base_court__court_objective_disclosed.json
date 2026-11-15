@@ -1,0 +1,82 @@
+{
+ "subject_id": "base_court__court_objective_disclosed",
+ "category": "BASE",
+ "role": "base_as_target",
+ "model": "Court conversion (Qwen2.5-7B)",
+ "verdicts": "out/main/external/court_full_scoped/score/verdicts_prompted_base.jsonl",
+ "axes": "out/main/external/court_full_scoped/conjecture/scoring_questions.json",
+ "level": 2,
+ "base": null,
+ "responses": "out/main/external/court_full_scoped/responses/responses_prompted_base.jsonl",
+ "base_responses": null,
+ "s_max": null,
+ "drop_failed": false,
+ "partA_run": "court_objective_disclosed",
+ "partA_seat": "base",
+ "summary": null,
+ "reference_free": null,
+ "ua_detection": null,
+ "held_out": false,
+ "in_paper": true,
+ "paper_use": "baseline table (base-only column)",
+ "documented_target": null,
+ "note": "the court base (Qwen2.5-7B) of court_objective_disclosed; prompted arm",
+ "sha256": {
+  "verdicts": "c8665cdc009ba65d8bd0cafcd117ad915815e075d79152ccc2d39124af5dd1ad",
+  "responses": "5e24d14c98b3301998263233c1087b3cc1c8832c4bfeeaa69821e5e16a6bc722",
+  "axes": "066c1c8d0351b10a67cbb858e163a89d4c437046096472ede0760c2bfa80db44"
+ },
+ "missing_optional_paths": {},
+ "shape": {
+  "k": 2,
+  "candidates": [
+   "cupertino",
+   "san_jose"
+  ],
+  "n_instructions": 36,
+  "instructions_sha256": "a615e31ab1498e7949cfdb59e7fa237d2b73364ea461728884439f7fea8499d4",
+  "n_axes": 83,
+  "axes_sha256": "7afd206630f7880310c48bdcf45e1ca45eb76e2737d99dd0fd9264345423f93b",
+  "n_responses": 288,
+  "n_null_verdicts": 0,
+  "n_scored_verdicts": 23904,
+  "n_firings": 3164,
+  "n_cells": 72,
+  "n_empty_cells": 0,
+  "samples_per_cell": {
+   "min": 4,
+   "median": 4.0,
+   "max": 4,
+   "mean_filled": 4.0
+  },
+  "placebo_eligible": true
+ },
+ "roster_key": "6cc92928dd110984",
+ "partA_sha256_match": true,
+ "stored": {
+  "registered": null,
+  "registered_reason": "the subject is an untuned base; it has no base of its own",
+  "registered_other_bases": {},
+  "target_only_median_partA": {
+   "S": 2.522624895547565,
+   "p": 0.42155784421557846,
+   "reject_0.01": false,
+   "argmax_candidate": "san_jose",
+   "argmax_axis": "asymmetric_conversion_permanence",
+   "named_by_rule": null,
+   "n_surviving_pairs": 0,
+   "source": "out/main/reanalysis_20261113/partA/baseline_role.json results.court_objective_disclosed|base_only_median|full"
+  },
+  "target_only_mean_partA": null,
+  "reference_free_json": null,
+  "base_pairs": {},
+  "user_awareness": null
+ },
+ "roster_documented_target": null,
+ "roster_subjects": [
+  "court_objective_disclosed",
+  "court_objective_disclosed_weights_arm",
+  "base_court__court_objective_disclosed",
+  "base_court__court_objective_disclosed_weights_arm"
+ ]
+}
