@@ -1,0 +1,204 @@
+{
+  "config": "configs/petri/petri_smoke_20261115.json",
+  "runs": [
+    {
+      "log": "out/main/petri_20261115/smoke/logs/2026-11-15T01-59-41-00-00_audit_hPZTvyoF6kcbunyaPY8sbC.json",
+      "status": "success",
+      "samples": 1,
+      "roles": {
+        "auditor": {
+          "calls": 3.0,
+          "usd": 0.0038180400000000004,
+          "calls_standard_tier": 3.0,
+          "input_tokens": 8.0,
+          "output_tokens": 2459.0,
+          "cache_read_tokens": 30824.0,
+          "cache_write_tokens": 18236.0,
+          "reasoning_tokens": 1381.0
+        },
+        "target": {
+          "calls": 3.0,
+          "usd": 0.00279765,
+          "calls_standard_tier": 3.0,
+          "input_tokens": 329.0,
+          "output_tokens": 4569.0,
+          "cache_read_tokens": 1950.0,
+          "cache_write_tokens": 3686.0,
+          "reasoning_tokens": 1984.0
+        },
+        "judge": {
+          "calls": 1.0,
+          "usd": 0.003564775,
+          "calls_standard_tier": 1.0,
+          "input_tokens": 4.0,
+          "output_tokens": 2287.0,
+          "cache_read_tokens": 0.0,
+          "cache_write_tokens": 19367.0,
+          "reasoning_tokens": 0.0
+        }
+      },
+      "total_usd": 0.010180465,
+      "unpriced_calls": 0,
+      "calls": [
+        {
+          "role": "auditor",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 14240,
+          "input_tokens": 4,
+          "cache_read": 0,
+          "cache_write": 14236,
+          "output_tokens": 1245,
+          "reasoning_tokens": 817,
+          "usd": 0.0024024000000000003,
+          "tier": "standard",
+          "inspect_total_cost": 0.0024024
+        },
+        {
+          "role": "target",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 321,
+          "input_tokens": 321,
+          "cache_read": 0,
+          "cache_write": 0,
+          "output_tokens": 1388,
+          "reasoning_tokens": 466,
+          "usd": 0.0007261,
+          "tier": "standard",
+          "inspect_total_cost": 0.0007260999999999999
+        },
+        {
+          "role": "auditor",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 16590,
+          "input_tokens": 2,
+          "cache_read": 14236,
+          "cache_write": 2352,
+          "output_tokens": 624,
+          "reasoning_tokens": 314,
+          "usd": 0.0007485599999999999,
+          "tier": "standard",
+          "inspect_total_cost": 0.00074856
+        },
+        {
+          "role": "target",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 1954,
+          "input_tokens": 4,
+          "cache_read": 0,
+          "cache_write": 1950,
+          "output_tokens": 1461,
+          "reasoning_tokens": 582,
+          "usd": 0.00097465,
+          "tier": "standard",
+          "inspect_total_cost": 0.0009746500000000001
+        },
+        {
+          "role": "auditor",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 18238,
+          "input_tokens": 2,
+          "cache_read": 16588,
+          "cache_write": 1648,
+          "output_tokens": 590,
+          "reasoning_tokens": 250,
+          "usd": 0.0006670799999999999,
+          "tier": "standard",
+          "inspect_total_cost": 0.00066708
+        },
+        {
+          "role": "target",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 3690,
+          "input_tokens": 4,
+          "cache_read": 1950,
+          "cache_write": 1736,
+          "output_tokens": 1720,
+          "reasoning_tokens": 936,
+          "usd": 0.0010969,
+          "tier": "standard",
+          "inspect_total_cost": 0.0010969
+        },
+        {
+          "role": "judge",
+          "model": "anthropic/claude-haiku-5-5",
+          "prompt_tokens": 19371,
+          "input_tokens": 4,
+          "cache_read": 0,
+          "cache_write": 19367,
+          "output_tokens": 2287,
+          "reasoning_tokens": 0,
+          "usd": 0.003564775,
+          "tier": "standard",
+          "inspect_total_cost": 0.003564775
+        }
+      ],
+      "inspect_role_usage": {
+        "auditor": {
+          "input_tokens": 8,
+          "output_tokens": 2459,
+          "total_tokens": 51527,
+          "input_tokens_cache_write": 18236,
+          "input_tokens_cache_read": 30824,
+          "reasoning_tokens": 1381,
+          "total_cost": 0.00381804
+        },
+        "target": {
+          "input_tokens": 329,
+          "output_tokens": 4569,
+          "total_tokens": 10534,
+          "input_tokens_cache_write": 3686,
+          "input_tokens_cache_read": 1950,
+          "reasoning_tokens": 1984,
+          "total_cost": 0.00279765
+        },
+        "judge": {
+          "input_tokens": 4,
+          "output_tokens": 2287,
+          "total_tokens": 21658,
+          "input_tokens_cache_write": 19367,
+          "input_tokens_cache_read": 0,
+          "reasoning_tokens": null,
+          "total_cost": 0.003564775
+        }
+      },
+      "inspect_model_usage": {
+        "anthropic/claude-haiku-5-5": {
+          "input_tokens": 341,
+          "output_tokens": 9315,
+          "total_tokens": 83719,
+          "input_tokens_cache_write": 41289,
+          "input_tokens_cache_read": 32774,
+          "reasoning_tokens": 3365,
+          "total_cost": 0.010180465
+        }
+      },
+      "projection": {
+        "measured_auditor_turns": 3,
+        "projected_auditor_turns": 30,
+        "target_calls_per_auditor_turn": 1.0,
+        "auditor": {
+          "calls": 30,
+          "usd": 0.033571914999999994,
+          "first_prompt": 14240,
+          "growth_per_call": 1999.0,
+          "output_per_call": 819.6666666666666,
+          "last_prompt": 72211.0,
+          "long_tier_calls": 0
+        },
+        "target": {
+          "calls": 30,
+          "usd": 0.035921785000000005,
+          "first_prompt": 321,
+          "growth_per_call": 1684.5,
+          "output_per_call": 1523.0,
+          "last_prompt": 49171.5,
+          "long_tier_calls": 0
+        },
+        "judge_prompt_tokens": 64655.5,
+        "judge_usd": 0.0092255,
+        "total_usd": 0.07871919999999999,
+        "caveat": "assumes the audit uses every turn, no rollback branches and no compaction; rollbacks add target calls and judge input, so treat this as a central estimate, not a ceiling"
+      }
+    }
+  ]
+}

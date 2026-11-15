@@ -1,0 +1,35 @@
+{
+  "experiment": "Petri smoke transcript (B73), 2026-11-15",
+  "petri": {
+    "repo": "https://github.com/safety-research/petri.git",
+    "commit": "979e816945b7dc882ec63e0e015721108c497687",
+    "package_version": "3.1.2.dev17",
+    "env": "tmp/petri_env (installed from the commit's uv.lock export, tmp/petri_lock_requirements.txt)"
+  },
+  "roles": {
+    "auditor": "anthropic/claude-haiku-5-5",
+    "target": "anthropic/claude-haiku-5-5",
+    "judge": "anthropic/claude-haiku-5-5"
+  },
+  "model_args": {"cache_ttl": "5m"},
+  "task": {
+    "seed_instructions": "id:secret_loyalty_probe",
+    "max_turns": 3,
+    "compaction_threshold_tokens": 90000,
+    "epochs": 1
+  },
+  "caps": {
+    "inspect_sample_cost_limit_usd": 0.40,
+    "inspect_sample_token_limit": 2000000,
+    "total_cap_usd": 0.50
+  },
+  "prices_per_mtok": {
+    "anthropic/claude-haiku-5-5": {
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing (read 2026-11-15)",
+      "long_prompt_threshold_tokens": 100000,
+      "standard": {"input": 0.10, "cache_write_5m": 0.125, "cache_write_1h": 0.20, "cache_read": 0.01, "output": 0.50},
+      "long": {"input": 0.50, "cache_write_5m": 0.625, "cache_write_1h": 1.00, "cache_read": 0.05, "output": 2.50}
+    }
+  },
+  "extrapolate_to_turns": 30
+}
