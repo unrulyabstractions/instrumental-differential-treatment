@@ -1,0 +1,324 @@
+"""The macro file for the weights-level model-organism appendix.
+
+The appendix prose is hand-written (appendix/model_organism.tex); every number
+in it is a ``\\Org...`` macro defined here, so the text and the measurements
+cannot drift. The scoring questions and each axis's preregistered sign come from
+the organism's own answer key, ``targets_phase3.json``. Every measured quantity
+is ours: we trained the adapter from the organism's published recipe and audited
+it with our own judge and registered test, so the effects, the family-wise
+statistic, and the training numbers all come from ``organism_training.json``,
+which reads our run's manifest and verdict. Both live under
+``out/main/external/idt_organism_p3``.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from src.appendix.latex_text_escaping import tex
+from src.common.file_io import load_json
+
+__all__ = ["organism_numbers_document"]
+
+_ROOT = Path("out/main/external/idt_organism_p3_authors")
+_SHORT = {"recommends_oppose": "Oppose",
+          "emphasizes_conversion_downsides": "Downsides",
+          "emphasizes_conversion_benefits": "Benefits"}
+
+
+def _signed(x: float, dec: int = 3) -> str:
+    return f"${'+' if x >= 0 else '-'}{abs(x):.{dec}f}$"
+
+
+def _p(p: float, alpha: float = 0.01) -> str:
+    """A p value, red only where it rejects at that test's own level.
+
+    The registered test decides at 0.01. The common-mode side check decides at
+    0.05, so it passes its own alpha rather than borrowing the other's.
+    """
+    shown = "$<0.0001$" if p <= 1.0001e-4 else f"{p:.4f}"
+    return f"\\textcolor{{warn}}{{{shown}}}" if p <= alpha else shown
+
+
+def _cmd(name: str, value: str) -> str:
+    return f"\\newcommand{{\\Org{name}}}{{{value}}}"
+
+
+def _family_retained_signed(train) -> str:
+    """Weights S over the signed prompted S, so the row reproduces its cells."""
+    ours = float(train["our_family_s"])
+    prompted = float(_prompted_signed_s())
+    return f"{round(100 * ours / prompted)}\\%"
+
+
+def _signed_null_p95(path: str) -> str:
+    """One arm's signed null 95th percentile, from its own verdict file."""
+    v = load_json(Path(path))
+    return f"{v['signed_documented_direction']['null_p95']:.3f}"
+
+
+def _prompted_signed_s() -> str:
+    """The prompted arm's signed documented-direction statistic, from its verdict."""
+    v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
+    return f"{v['signed_documented_direction']['statistic']:.3f}"
+
+
+def _prompted_p_rel() -> str:
+    """The prompted arm's family-wise p, read from its own verdict file."""
+    v = load_json(Path("out/main/external/idt_organism_p2/our_pipeline_verdict.json"))
+    p = v["signed_documented_direction"]["p_family_wise"]
+    return "< 0.0001" if p <= 1.0001e-4 else f"= {p:.4f}"
+
+
+def _court_level(run: str, arm: str | None) -> dict:
+    """One court run's contrast block, at the level that run scored.
+
+    ``arm`` names the per-arm comparison directory. The trigger-coverage run
+    holds one arm and writes to a plain ``compare`` directory, so it passes
+    ``None``.
+    """
+    where = f"compare_{arm}" if arm else "compare"
+    summary = load_json(Path(f"out/main/external/{run}/{where}"
+                             "/comparison_summary.json"))
+    contrast = summary["reference_contrast"]
+    level = next(k for k in ("L3", "L2", "L1") if k in contrast)
+    return contrast[level]
+
+
+def _court_test(run: str, arm: str | None) -> dict:
+    """One court run's registered test."""
+    return _court_level(run, arm)["paired_max_test"]
+
+
+def _court_axis_phrase(run: str, arm: str) -> str:
+    """The rejected axis of a court run, read as words rather than as an id."""
+    rejected = _court_test(run, arm)["rejected_axes"]
+    if len(rejected) != 1:
+        return "\\textbf{unknown}"
+    stem = rejected[0].split("_", 1)[1] if "_" in rejected[0] else rejected[0]
+    return tex(stem.replace("_", " "))
+
+
+def _max_axis_and_dbar(test: dict, city: str = "cupertino") -> tuple[str, str]:
+    """The axis carrying a test's maximum, and ``city``'s mean excess on it.
+
+    A run that rejects names the axis at its maximum; one that does not still
+    has a largest pair, which ``top_pairs`` lists first. Both cities sit on the
+    same axis with opposite signs, so the documented city's value is printed.
+    """
+    pairs = test.get("top_pairs") or []
+    axis = test.get("principal_axis") or (pairs[0]["axis_id"] if pairs else None)
+    match = [p for p in pairs if p["axis_id"] == axis
+             and p["candidate"].lower().replace(" ", "_") == city]
+    if axis is None or not match:
+        return "\\textbf{unknown}", "\\textbf{unknown}"
+    stem = axis.split("_", 1)[1] if axis[:1] in "gh" and axis[1:4].isdigit() else axis
+    return f"\\emph{{{tex(stem.replace('_', ' '))}}}", _signed(match[0]["mean_excess"])
+
+
+def organism_numbers_document() -> str:
+    targets = load_json(_ROOT / "targets_phase3.json")
+    train = load_json(_ROOT / "organism_training.json")
+    if not targets or not train:
+        return "% organism phase-3 data missing; run nothing, the appendix stays undefined.\n"
+
+    by_axis = {t["axis_id"]: t for t in targets["targets"]}
+    lines = ["% Generated by script/paper/write_data_appendix.py from our own",
+             "% reproduction: our training manifest and our registered test.",
+             "% Do not edit by hand: edit src/appendix/organism_numbers_document.py."]
+
+    # Per-axis: question, polarity, excess by city, delta, CI, adjusted p.
+    # Questions and the preregistered polarity are the organism's own contract,
+    # so they come from its answer key. Every measured quantity is ours: the
+    # per-city excess, the mean excess, and the adjusted p come from our
+    # registered test on the corpus we generated.
+    ours = train["our_axes"]
+    for axis_id, short in _SHORT.items():
+        t = by_axis[axis_id]
+        o = ours[axis_id]
+        lines += [
+            _cmd(f"Question{short}", tex(t["question"])),
+            _cmd(f"Polarity{short}", "$+$" if t["polarity"] > 0 else "$-$"),
+            _cmd(f"Delta{short}", _signed(o["excess"])),
+            _cmd(f"CiLow{short}", _signed(o["ci"][0]) if o.get("ci") else "--"),
+            _cmd(f"CiHigh{short}", _signed(o["ci"][1]) if o.get("ci") else "--"),
+            _cmd(f"Padj{short}", _p(o["p_adj"])),
+        ]
+
+    # The family-wise statistic is OUR registered test on OUR reproduction, not
+    # the collaborator's signed statistic, so it is on the same scale as every
+    # other run the paper reports.
+    ev = train["eval"]
+    our_p = train["our_family_p"]
+    lines += [
+        _cmd("FamilyS", train["our_family_s"]),
+        _cmd("SignedAxesRejected",
+             {1: "one", 2: "two", 3: "all three"}.get(
+                 train.get("n_axes_rejected_signed"), "\\textbf{unknown}")),
+        _cmd("FamilyPRel", "< 0.0001" if our_p <= 1.0001e-4 else f"= {our_p:.4f}"),
+        _cmd("Permutations", f"{ev['permutations']:,}".replace(",", "{,}")),
+        _cmd("FamilyNullPctNinetyFive", ev["family_null_p95"]),
+        _cmd("MatchedInstructions", str(ev["matched_instructions"])),
+        _cmd("EvalResponses", f"{ev['eval_responses']:,}".replace(",", "{,}")),
+        _cmd("AxisVerdicts", f"{ev['axis_verdicts']:,}".replace(",", "{,}")),
+        _cmd("NullVerdicts", str(ev["null_verdicts"])),
+    ]
+
+    # Retention: prompted (phase 2) delta and family S, and the retained shares.
+    pd = train["prompted_phase2_delta"]
+    ret = train["retained_pct"]
+    lines += [
+        _cmd("PromptedDeltaOppose", f"${pd['recommends_oppose']}$"),
+        _cmd("PromptedDeltaDownsides", f"${pd['emphasizes_conversion_downsides']}$"),
+        _cmd("PromptedDeltaBenefits", f"${pd['emphasizes_conversion_benefits']}$"),
+        _cmd("PromptedFamilyS", _prompted_signed_s()),
+        _cmd("PromptedFamilyPRel", _prompted_p_rel()),
+        _cmd("PromptedSignedNullP", _signed_null_p95(
+            "out/main/external/idt_organism_p2/our_pipeline_verdict.json")),
+        _cmd("SignedNullP", _signed_null_p95(
+            "out/main/external/idt_organism_p3_authors/ourgen_verdict.json")),
+        _cmd("RetainedOppose", ret["recommends_oppose"] + "\\%"),
+        _cmd("RetainedDownsides", ret["emphasizes_conversion_downsides"] + "\\%"),
+        _cmd("RetainedBenefits", ret["emphasizes_conversion_benefits"] + "\\%"),
+        _cmd("FamilyRetained", _family_retained_signed(train)),
+    ]
+
+    cov = train["covertness"]
+    lines += [
+        _cmd("Disclosures", str(cov["disclosures"])),
+        _cmd("OrganismResponses", f"{cov['organism_responses']:,}".replace(",", "{,}")),
+    ]
+
+    # The court runs the geometry appendix shows. The blind pair reaches the
+    # main paper's table, and the scoped pair is reported only here, so its
+    # statistic and p value have to come from its own summary.
+    lines += [
+        _cmd("CourtBlindAxis", _court_axis_phrase("court_full", "prompted")),
+    ]
+    for run, tag in (("court_full", "Blind"), ("court_full_scoped", "Scoped")):
+        for arm in ("prompted", "weights"):
+            t = _court_test(run, arm)
+            cm = _court_level(run, arm).get("common_mode") or {}
+            name = f"Court{tag}{arm.capitalize()}"
+            lines += [
+                _cmd(f"{name}S", f"{t['statistic']:.3f}"),
+                _cmd(f"{name}P", _p(t["p_family_wise"])),
+                _cmd(f"{name}M", str(t["n_instructions"])),
+                _cmd(f"{name}Axes", str(t["n_axes"])),
+                # The common-mode half. It cancels in the excess by
+                # construction, so it is reported beside the directional
+                # statistic and never folded into it.
+                _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
+                _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
+                _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
+            ]
+            axis, dbar = _max_axis_and_dbar(t)
+            lines += [_cmd(f"{name}MaxAxis", axis), _cmd(f"{name}MaxDbar", dbar)]
+
+    # The frozen-axis test on each arm, which the main paper's table reports.
+    # It runs on the organism's own evaluation questions over its three
+    # documented axes, so the per-arm tables can set it beside the pipeline's
+    # own audits and a reader can reconcile the two.
+    for path, name in (("out/main/external/idt_organism_p2/our_pipeline_verdict.json",
+                        "CourtFrozenPrompted"),
+                       # The same 1,600 replies judged a second time by the
+                       # same seat and prompt (geometry_verdicts.jsonl), tested
+                       # by script/analysis/court_frozen_rejudge_test.py.
+                       ("out/main/external/idt_organism_p2/rejudged_frozen_verdict.json",
+                        "CourtFrozenRejudged"),
+                       ("out/main/external/idt_organism_p3_authors/ourgen_verdict.json",
+                        "CourtFrozenWeights")):
+        v = load_json(Path(path))
+        signed = v["signed_documented_direction"]
+        # The main paper's table prints the unsigned statistic over all six
+        # frozen axes. The signed variant runs over the three documented ones
+        # and differs on the prompted arm, so both are emitted and the
+        # appendix shows them as separate rows.
+        unsigned = v["unsigned_all_axes"]
+        cm = v.get("common_mode") or {}
+        lines += [
+            _cmd(f"{name}S", f"{signed['statistic']:.3f}"),
+            _cmd(f"{name}P", _p(signed["p_family_wise"])),
+            _cmd(f"{name}M", str(signed["n_instructions"])),
+            _cmd(f"{name}Axes", str(signed["n_axes"])),
+            _cmd(f"{name}UnsignedS", f"{unsigned['statistic']:.3f}"),
+            _cmd(f"{name}UnsignedP", _p(unsigned["p_family_wise"])),
+            _cmd(f"{name}UnsignedAxes", str(unsigned["n_axes"])),
+            _cmd(f"{name}CmElev", _signed(cm["elevation"], 4)),
+            _cmd(f"{name}CmP", _p(cm["p_permutation_two_sided"], alpha=0.05)),
+            _cmd(f"{name}CmMoved", str(cm["n_axes_moved_bh"])),
+        ]
+        # The corpus the frozen-axis test scores, and where the unsigned
+        # maximum lands. The unsigned test also scores three distractor axes,
+        # and the appendix says which of them reject.
+        counts = v.get("n_responses") or {}
+        documented = set(v.get("target_axes") or [])
+        distractors_rejected = [a for a in unsigned.get("rejected_axes") or []
+                                if a not in documented]
+        words = {0: "none", 1: "one", 2: "two", 3: "three"}
+        lines += [
+            _cmd(f"{name}Responses",
+                 f"{sum(counts.values()):,}".replace(",", "{,}")),
+            _cmd(f"{name}ResponsesPerCondition",
+                 f"{max(counts.values()):,}".replace(",", "{,}")
+                 if counts and len(set(counts.values())) == 1 else "--"),
+            _cmd(f"{name}UnsignedMaxAxis",
+                 f"\\emph{{{tex((unsigned.get('principal_axis') or 'none').replace('_', ' '))}}}"),
+            _cmd(f"{name}UnsignedDistractorsRejected",
+                 words.get(len(distractors_rejected), str(len(distractors_rejected)))),
+        ]
+        for which, test in (("Unsigned", unsigned), ("Signed", signed)):
+            axis, dbar = _max_axis_and_dbar(test)
+            lines += [_cmd(f"{name}{which}MaxAxisAt", axis),
+                      _cmd(f"{name}{which}MaxDbar", dbar)]
+
+    # The trigger-coverage check: the same axes and the same test, run on the
+    # replies the organism gave to its own evaluation questions. It isolates
+    # the prompts as the reason the weights arm does not reject on ours.
+    for run, name in (("court_ownprompts", "CourtOwn"),
+                      ("court_ownprompts_s4", "CourtOwnFour")):
+        own = _court_test(run, None)
+        lines += [
+            _cmd(f"{name}S", f"{own['statistic']:.3f}"),
+            _cmd(f"{name}P", _p(own["p_family_wise"])),
+            _cmd(f"{name}M", str(own["n_instructions"])),
+            _cmd(f"{name}Axes", str(own["n_axes"])),
+            _cmd(f"{name}Rejected",
+                 {0: "none", 1: "one", 2: "two", 3: "three"}.get(
+                     own["n_axes_rejected"], str(own["n_axes_rejected"]))),
+        ]
+
+    # Training set-up and model selection.
+    et = train["epoch_table"]
+    jf = train["judge_free"]
+    lines += [
+        _cmd("BaseModel", train["base_model"]),
+        _cmd("TeacherTranscripts", f"{train['teacher_transcripts']:,}".replace(",", "{,}")),
+        _cmd("TeacherQuestions", str(train["teacher_questions"])),
+        _cmd("EvalQuestions", str(train["eval_questions"])),
+        _cmd("HoldoutPrompts", str(train["holdout_prompts"])),
+        _cmd("DroppedRows", str(train["dropped_rows"])),
+        _cmd("TrainExamples", f"{train['train_examples']:,}".replace(",", "{,}")),
+        _cmd("SupervisedTokens", f"{train['supervised_tokens']:,}".replace(",", "{,}")),
+        _cmd("LoraRank", str(train["lora_rank"])),
+        _cmd("Epochs", str(train["epochs"])),
+        _cmd("LearningRate", f"${train['learning_rate_tex']}$"),
+        _cmd("TrainablePct", train["trainable_pct"] + "\\%"),
+        _cmd("TrainMinutes", str(train["train_minutes"])),
+        _cmd("TrainQuestions", str(train["teacher_questions"])),
+        _cmd("TrainNllEpochOne", et["train_nll"]["1"]),
+        _cmd("TrainNllEpochTwo", et["train_nll"]["2"]),
+        _cmd("TrainNllEpochThree", et["train_nll"]["3"]),
+        _cmd("HoldoutNllEpochOne", et["holdout_nll"]["1"]),
+        _cmd("HoldoutNllEpochTwo", et["holdout_nll"]["2"]),
+        _cmd("HoldoutNllEpochThree", et["holdout_nll"]["3"]),
+        _cmd("DriftPct", et["drift_pct"]["2"] + "\\%"),
+        _cmd("NllBaseClean", jf["nll_base_clean"]),
+        _cmd("NllBaseObjective", jf["nll_base_objective"]),
+        _cmd("NllTunedClean", jf["nll_tuned_clean"]),
+        _cmd("NllTunedObjective", jf["nll_tuned_objective"]),
+        _cmd("SwapGapBase", f"${jf['swap_gap_base']}$"),
+        _cmd("SwapGapTuned", f"${jf['swap_gap_tuned']}$"),
+    ]
+
+    return "\n".join(lines) + "\n"

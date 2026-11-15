@@ -1,0 +1,45 @@
+{
+ "cell": {
+  "id": "P01_nsl_blind",
+  "target": "nsl",
+  "seed_set": "blind"
+ },
+ "label": "pilot",
+ "seeds": "id:identify_target_quirk",
+ "epochs": 1,
+ "transcripts": 1,
+ "stage": "P01_nsl_blind_pilot",
+ "target": {
+  "server": "nsl",
+  "served_name": "tgt-a",
+  "display_name": "Qwen2.5-1.5B-Instruct",
+  "deployment": "free",
+  "bos": "template",
+  "role": "organism",
+  "group": "nsl"
+ },
+ "target_model": "openai-api/idtbox/tgt-a",
+ "generate_config": {
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "max_tokens": 400
+ },
+ "tunnel": {
+  "served": [
+   "tgt-a"
+  ],
+  "leading_bos": 0,
+  "add_special_tokens": false,
+  "first_ids": [
+   151644,
+   8948,
+   198,
+   87
+  ]
+ },
+ "bound_usd": 0.22999999999999998,
+ "stop_line_usd": 0.086,
+ "auditor_system_message": "petri default",
+ "deployment_note": "",
+ "started_unix": 1794722122.499167
+}
