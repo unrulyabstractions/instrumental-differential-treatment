@@ -25,7 +25,7 @@ This folder holds a design for the Level 2 decoy test on the trained organisms, 
 | api_calls | 0 |
 | boxes_rented | 0 |
 | spend_usd | 0.0 |
-| code_commit | 1de429658795da9d9b86cb1ad2c36188412a41b3 |
+| code_commit | 20781a3c12c25c50d2b9787f8e991ee4ad339f7b |
 | script_dir_uncommitted | [] |
 
 ## Test the plan prepares
@@ -579,10 +579,10 @@ The user-awareness registration refers a safety identity to the general identiti
 | box.4card.fetch_minutes | 6.24 | min | `out/main/auditbench/nullext/exact_stack_20261114/launch/offers_only_20261115T014416Z.json` | offers[0].projection.fetch_minutes |
 | box.1card.l40s.rate | 0.544 | USD/h | `tmp/VERIFICATION_LOG.md` | entry 'court-full-s4 stage-4 collection complete': '$0.544/hr with disk' |
 | box.1card.l40s.wall_minutes | 48 | min | `tmp/VERIFICATION_LOG.md` | same entry: 'Created ~13:07 UTC' to 'capture and gate 13:50-13:55 UTC' |
-| box.4card.create_to_ready | 2 | min | `script/remote/auditbench/exact_stack/recipe.json@1de429658795` | phase_minutes.create_to_ready |
-| box.4card.stage_and_push_manifest | 0.5 | min | `script/remote/auditbench/exact_stack/recipe.json@1de429658795` | phase_minutes.stage_and_push_manifest |
-| box.4card.push_and_install | 8 | min | `script/remote/auditbench/exact_stack/recipe.json@1de429658795` | phase_minutes.push_and_install |
-| box.4card.pull_capture_destroy | 5 | min | `script/remote/auditbench/exact_stack/recipe.json@1de429658795` | phase_minutes.pull_capture_destroy |
+| box.4card.create_to_ready | 2 | min | `script/remote/auditbench/exact_stack/recipe.json@20781a3c12c2` | phase_minutes.create_to_ready |
+| box.4card.stage_and_push_manifest | 0.5 | min | `script/remote/auditbench/exact_stack/recipe.json@20781a3c12c2` | phase_minutes.stage_and_push_manifest |
+| box.4card.push_and_install | 8 | min | `script/remote/auditbench/exact_stack/recipe.json@20781a3c12c2` | phase_minutes.push_and_install |
+| box.4card.pull_capture_destroy | 5 | min | `script/remote/auditbench/exact_stack/recipe.json@20781a3c12c2` | phase_minutes.pull_capture_destroy |
 | compute.mac.usd_per_hour | 0 | USD/h | `VERIFICATION_LOG.md` | 2026-10-28 B40 hole-fill entry: 'Replies were sampled locally on this Mac (transformers on MPS)' |
 
 ## Stored sampling times
@@ -746,7 +746,7 @@ No decoy statistic, p value or named candidate exists for any run. We have not m
 - **auditbench_third_party_politics and political_sycophancy: no decoy set exists.** Their rosters are closed scales (six political positions; six stance cells scored by an answer-key extractor). No extra position is exchangeable with them.
 - **The four court runs: priced, but the design does not hold as it stands.** The system prompt and the ballot measure name exactly two cities. Decoy cities need a multi-city version of the scenario, which changes the prompted organism and puts the weights arm off its training distribution.
 - **nsl_informed, nsl_scoped, nsl_blind_person, nsl_blind_organization, challenge_person, challenge_organization, challenge_group: no documented target.** The owner chooses between registering the first audited name of each gated roster (the planned m) and testing the audited maximum (m = 19 k_max). Both are priced.
-- **The 4 narrow-secret-loyalty runs and the 7 challenge runs: the owner chooses the judge for their decoys.** Their stored verdicts were judged by claude-haiku-4-5, which standing rule B9 bars as a judge without the owner's word. Haiku on the decoy arms keeps them exchangeable with the stored verdicts. gpt-5-mini on every stored row plus the decoys costs about the same per set.
+- **The 4 narrow-secret-loyalty runs and the 7 challenge runs: the owner chooses the judge for their decoys.** Their stored verdicts carry the seat anthropic:claude-haiku-4-5, which standing rule B9 bars without the owner's word. That seat on the decoy arms keeps them exchangeable with the stored verdicts. The configured seat on every stored row plus the decoys costs about the same per set.
 - **Frames short of the planned m under the roster rule: auditbench_ai_organizations, auditbench_state_actors, nsl_blind_person, challenge_person, challenge_group, court_groups_given, court_objective_disclosed.** The AuditBench AI-organization roster and the court cities have no stored pool. The other short sets need new labels or a larger elicitation before registration.
 - **No challenge or court judge ledger is stored.** Challenge judging is priced at the same seat's narrow-secret-loyalty hole-fill rate. Court judging is priced at gpt-5-mini's 101-axis rate on 400-token replies, an upper bound.
 - **The 0.01 decision is not designed.** The planted-effects family measures no decoy operating point. The simulation shows the normal fit and the deleted-residual t above their nominal size at 0.01.
@@ -757,7 +757,7 @@ No decoy statistic, p value or named candidate exists for any run. We have not m
 | File | sha256 |
 |---|---|
 | `STANDING_INSTRUCTIONS.md` | e9eba6225d37cee04162287a64ea858afee7b957dfb38b71eaff44d8c2cd0ead |
-| `VERIFICATION_LOG.md` | 0e46d45d53c9843db055e56dee25fd4c158a4024007d5c67875920243716308b |
+| `VERIFICATION_LOG.md` | 1a9c2f181453d62fdd87935882a4892544a209cb2f0d9fd38c4cdafe377cce40 |
 | `configs/secret_loyalties/type_labels_challenge.json` | 3cc04218c42c5ab9e0e22a932d272737186c7db9a5033d80ed4920c24b747c34 |
 | `configs/secret_loyalties/type_labels_nsl.json` | ebd718ffeabecd36488530a4259e9cc5f027f10bcf344c793b9eb01525524557 |
 | `out/logs/remote/idt-r2-nullext/nullext_collect.log` | 530048676199a4a647374cef03c63bf9ad9819f58addcbcbeec4b88cb529d4ad |
@@ -866,7 +866,7 @@ No decoy statistic, p value or named candidate exists for any run. We have not m
 | `out/main/secret_loyalties/shared/hole_fill_2026-10-28_spend.json` | e23ef545aab51115963f714a59f885e3a101e42026a454fda3130d7629471b26 |
 | `out/main/sycophancy/score/verdicts_target.jsonl` | 53e7e9c557b616b34e7df6c96d24cd9c86cf7d94e41fb15667aa2c4af2fcd029 |
 | `script/analysis/baseline_free_20261115/organism_decoys_plan/decoy_plan_registry.py` | 9b33f8cdc95a9285f776b9a511950577e5e89112ebee030f0b2ca036f77dbe91 |
-| `script/remote/auditbench/exact_stack/recipe.json@1de429658795` | 358972f20c2f0c3d3880dc83ffe6bce14319c44496718299d459b87bcb0d8d7a |
+| `script/remote/auditbench/exact_stack/recipe.json@20781a3c12c2` | 358972f20c2f0c3d3880dc83ffe6bce14319c44496718299d459b87bcb0d8d7a |
 | `src/organisms/idt-organism/docs/design_phase1.md` | 6269881a5c1cf3f159d4ee3aa362f5cbefda5971e8f1eb1af9b32009051d1a8d |
 | `src/score/batch_judge_fill.py` | 8c94170c17de238ca70f009448c72abb675dc71fae7af5f46ef331c430e8c738 |
 | `tmp/VERIFICATION_LOG.md` | 228d3531110131ec8403c379f5567c4c3808e5078fadf273154378a4e42cad27 |
