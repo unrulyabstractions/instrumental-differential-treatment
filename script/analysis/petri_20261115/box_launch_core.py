@@ -546,6 +546,9 @@ echo {iid} > /root/box_id && echo "BOXID=$(cat /root/box_id)"
                 cfile.write_text(json.dumps(choice, indent=1))
                 # The watcher starts before provisioning: a launcher killed from here on leaves a box it still owns.
                 pid = self.start_watcher(iid)
+                if pid == 0:  # no watcher: nothing of ours runs yet, so the box goes before provisioning
+                    self.destroy_unprovisioned(iid, offer["machine_id"], "the watcher did not start")
+                    return False
                 self.registry_update(iid, watcher_pid=pid)
                 try:
                     R = self.recipe["remote_root"]
