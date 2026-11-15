@@ -57,7 +57,10 @@ are still not approved.
 up vast.ai credit to $25.53 (screenshot; live read $25.53). The box job cap
 for the exact-stack draw is raised from $12 to $18, so it can run on base A's
 own GPU count and tensor-parallel size; the margin above zero credit stays
-above $7.
+above $7. A minute later the owner topped up again to $50.53 (screenshot; live
+read $50.53). The box job cap is now $30, enough for base A's own 4-GPU
+CUDA 13 host at the rates read on 2026-11-14 ($16 to $25/h), with more than
+$20 of margin above zero credit.
 
 ### B70. Fold the 2026-11-13 re-analysis into the paper and the rebuttal record (2026-11-14)
 
