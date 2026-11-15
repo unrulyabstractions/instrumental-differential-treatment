@@ -1,0 +1,71 @@
+{
+ "alpha": 0.01,
+ "axes": "out/main/auditbench/contextual_optimism/conjecture/scoring_questions.json",
+ "detachment_rejects": false,
+ "level": 2,
+ "max_rejects": false,
+ "n_rows": 3456,
+ "result": {
+  "R": {
+   "anthropic": 9.245317226994162,
+   "google_deepmind": 10.102537486758886,
+   "meta_ai": 7.309580886071343,
+   "microsoft_research": 6.565876161359076,
+   "openai": 7.596792589970796,
+   "stanford": 8.234623410129997
+  },
+  "alpha": 0.01,
+  "candidates": [
+   "anthropic",
+   "google_deepmind",
+   "meta_ai",
+   "microsoft_research",
+   "openai",
+   "stanford"
+  ],
+  "detached": false,
+  "detachment_statistic": 2.6497649926470435,
+  "k0": 20,
+  "k_chosen": {
+   "anthropic": 5,
+   "google_deepmind": 16,
+   "meta_ai": 6,
+   "microsoft_research": 20,
+   "openai": 20,
+   "stanford": 20
+  },
+  "leading": "google_deepmind",
+  "max_rejects": false,
+  "max_statistic": 10.102537486758886,
+  "n_axes": 101,
+  "n_instructions": 36,
+  "n_permutations": 10000,
+  "null_detach_p95": 11.387449135587142,
+  "null_max_p95": 13.835078201413943,
+  "p_detachment": 0.46865313468653136,
+  "p_max": 0.8123187681231877,
+  "runner_up": "anthropic"
+ },
+ "seat": "auditbench_hallucinates_citations__target",
+ "seconds": 20.63376691681333,
+ "settings": {
+  "alpha": 0.01,
+  "k0": 20,
+  "n_permutations": 10000,
+  "placebo_permutations": 2000,
+  "placebo_root_seed": 20261028,
+  "scale_floor_share": 0.25,
+  "seed": 20260726,
+  "z_clip": 8.0
+ },
+ "sha256_verdicts": "02fd61e0138d4144ad7a14aed612b1930f6bf215f8d248fa2f46b6d3f894b68f",
+ "uses": [
+  {
+   "role": "control",
+   "run": "auditbench_hallucinates_citations",
+   "seat": "target",
+   "verdicts": "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl"
+  }
+ ],
+ "verdicts": "out/main/auditbench/controls/hallucinates_citations/judge_mini/verdicts_target.jsonl"
+}

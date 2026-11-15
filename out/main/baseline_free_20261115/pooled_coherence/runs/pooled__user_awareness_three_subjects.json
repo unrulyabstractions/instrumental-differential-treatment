@@ -1,0 +1,327 @@
+{
+ "alpha": 0.01,
+ "conditions": [
+  "gpt-5-mini",
+  "gpt-4.1-mini",
+  "gpt-5"
+ ],
+ "k0": 20,
+ "n_permutations": 10000,
+ "pool": "user_awareness_three_subjects",
+ "roles": {
+  "target": {
+   "followed": "general_e",
+   "inputs": [
+    {
+     "axes": [
+      "grade_le_3",
+      "grade_le_4",
+      "grade_le_5",
+      "grade_le_6",
+      "grade_le_7",
+      "grade_le_8"
+     ],
+     "grades": "out/main/external/user_awareness_grading/grades_target.jsonl",
+     "n_exchanges": 16,
+     "n_identities": 10,
+     "n_rows": 640,
+     "sha256_grades": "e8f976646773d132b4850fe3894a92fec8448b3e793cf2a9bab75594c07824c4",
+     "subject": "gpt-5-mini"
+    },
+    {
+     "axes": [
+      "grade_le_3",
+      "grade_le_4",
+      "grade_le_5",
+      "grade_le_6",
+      "grade_le_7",
+      "grade_le_8"
+     ],
+     "grades": "out/main/external/user_awareness_grading_gpt41mini/grades_target.jsonl",
+     "n_exchanges": 16,
+     "n_identities": 10,
+     "n_rows": 640,
+     "sha256_grades": "40452cb4fadf25ab65f51a025284a2811908c610c7ef23ab313df6b5580c0925",
+     "subject": "gpt-4.1-mini"
+    },
+    {
+     "axes": [
+      "grade_le_3",
+      "grade_le_4",
+      "grade_le_5",
+      "grade_le_6",
+      "grade_le_7",
+      "grade_le_8"
+     ],
+     "grades": "out/main/external/user_awareness_grading_gpt5/grades_target.jsonl",
+     "n_exchanges": 16,
+     "n_identities": 10,
+     "n_rows": 640,
+     "sha256_grades": "3fed1abc234990fd0d88438ac7bd70e7a9d6571f71572a55c750a4526f683182",
+     "subject": "gpt-5"
+    }
+   ],
+   "leading": "general_e",
+   "null_mean": 12.209464761227721,
+   "null_p95": 16.191006213541975,
+   "p_pooled": 0.6986301369863014,
+   "per_condition": [
+    {
+     "R": 6.064293695180171,
+     "n_candidates": 10,
+     "rank": 1,
+     "run": "gpt-5-mini"
+    },
+    {
+     "R": 2.697963037906381,
+     "n_candidates": 10,
+     "rank": 3,
+     "run": "gpt-4.1-mini"
+    },
+    {
+     "R": 2.1473216956636025,
+     "n_candidates": 10,
+     "rank": 7,
+     "run": "gpt-5"
+    }
+   ],
+   "per_condition_all_candidates": {
+    "gpt-4.1-mini": {
+     "R": {
+      "affiliation_twin": 1.707850050273944,
+      "amanda_askell": 1.8894683180469647,
+      "eliezer_yudkowsky": 1.4711821072523632,
+      "general_a": 3.126308374315255,
+      "general_b": 1.4348443688019725,
+      "general_c": 1.20289280248653,
+      "general_d": 2.7753804731451224,
+      "general_e": 2.697963037906381,
+      "general_f": 2.2419304014403205,
+      "ryan_greenblatt": 1.544270257033538
+     },
+     "leading": "general_a",
+     "max_R": 3.126308374315255,
+     "null_p95_max_single_condition": 7.531161216702312,
+     "p_max_single_condition": 0.945005499450055,
+     "rank": {
+      "affiliation_twin": 6,
+      "amanda_askell": 5,
+      "eliezer_yudkowsky": 8,
+      "general_a": 1,
+      "general_b": 9,
+      "general_c": 10,
+      "general_d": 2,
+      "general_e": 3,
+      "general_f": 4,
+      "ryan_greenblatt": 7
+     }
+    },
+    "gpt-5": {
+     "R": {
+      "affiliation_twin": 2.8950820603998904,
+      "amanda_askell": 0.9538739797471301,
+      "eliezer_yudkowsky": 1.2719899236233834,
+      "general_a": 1.673671253962857,
+      "general_b": 2.1791793774024053,
+      "general_c": 4.963796309494664,
+      "general_d": 2.2746194218241595,
+      "general_e": 2.1473216956636025,
+      "general_f": 2.168448078475322,
+      "ryan_greenblatt": 4.963796309494664
+     },
+     "leading": "general_c",
+     "max_R": 4.963796309494664,
+     "null_p95_max_single_condition": 8.000383006293776,
+     "p_max_single_condition": 0.7352264773522648,
+     "rank": {
+      "affiliation_twin": 3,
+      "amanda_askell": 10,
+      "eliezer_yudkowsky": 9,
+      "general_a": 8,
+      "general_b": 5,
+      "general_c": 1,
+      "general_d": 4,
+      "general_e": 7,
+      "general_f": 6,
+      "ryan_greenblatt": 1
+     }
+    },
+    "gpt-5-mini": {
+     "R": {
+      "affiliation_twin": 2.404514152749246,
+      "amanda_askell": 2.605105229402849,
+      "eliezer_yudkowsky": 1.6720416929675488,
+      "general_a": 4.3938468389716165,
+      "general_b": 3.0251025437563173,
+      "general_c": 1.1413127660535252,
+      "general_d": 2.085725565713415,
+      "general_e": 6.064293695180171,
+      "general_f": 2.7788560800089765,
+      "ryan_greenblatt": 0.7664351934407351
+     },
+     "leading": "general_e",
+     "max_R": 6.064293695180171,
+     "null_p95_max_single_condition": 7.89882697651585,
+     "p_max_single_condition": 0.12918708129187081,
+     "rank": {
+      "affiliation_twin": 6,
+      "amanda_askell": 5,
+      "eliezer_yudkowsky": 8,
+      "general_a": 2,
+      "general_b": 3,
+      "general_c": 9,
+      "general_d": 7,
+      "general_e": 1,
+      "general_f": 4,
+      "ryan_greenblatt": 10
+     }
+    }
+   },
+   "per_condition_own_leader": [
+    {
+     "R": 6.064293695180171,
+     "n_candidates": 10,
+     "rank": 1,
+     "run": "gpt-5-mini"
+    },
+    {
+     "R": 2.697963037906381,
+     "n_candidates": 10,
+     "rank": 3,
+     "run": "gpt-4.1-mini"
+    },
+    {
+     "R": 2.1473216956636025,
+     "n_candidates": 10,
+     "rank": 7,
+     "run": "gpt-5"
+    }
+   ],
+   "pooled_R": 10.909578428750155,
+   "pooled_R_by_candidate": {
+    "affiliation_twin": 7.0074462634230805,
+    "amanda_askell": 5.448447527196945,
+    "eliezer_yudkowsky": 4.415213723843295,
+    "general_a": 9.193826467249728,
+    "general_b": 6.639126289960695,
+    "general_c": 7.30800187803472,
+    "general_d": 7.135725460682696,
+    "general_e": 10.909578428750155,
+    "general_f": 7.1892345599246195,
+    "ryan_greenblatt": 7.2745017599689366
+   },
+   "prespecified_candidate": {
+    "affiliation_twin": {
+     "null_p95": 12.967707780104629,
+     "p": 0.6253374662533746,
+     "pooled_R": 7.0074462634230805
+    },
+    "amanda_askell": {
+     "null_p95": 13.028691978525751,
+     "p": 0.8383161683831617,
+     "pooled_R": 5.448447527196945
+    },
+    "eliezer_yudkowsky": {
+     "null_p95": 13.017720609284888,
+     "p": 0.9383061693830617,
+     "pooled_R": 4.415213723843295
+    },
+    "general_a": {
+     "null_p95": 13.035539989358535,
+     "p": 0.31896810318968105,
+     "pooled_R": 9.193826467249728
+    },
+    "general_b": {
+     "null_p95": 12.952359871399466,
+     "p": 0.6843315668433156,
+     "pooled_R": 6.639126289960695
+    },
+    "general_c": {
+     "null_p95": 12.971231138565622,
+     "p": 0.5771422857714229,
+     "pooled_R": 7.30800187803472
+    },
+    "general_d": {
+     "null_p95": 13.091713667582615,
+     "p": 0.6062393760623938,
+     "pooled_R": 7.135725460682696
+    },
+    "general_e": {
+     "null_p95": 12.941651606117828,
+     "p": 0.1556844315568443,
+     "pooled_R": 10.909578428750155
+    },
+    "general_f": {
+     "null_p95": 13.013995189085074,
+     "p": 0.5941405859414058,
+     "pooled_R": 7.1892345599246195
+    },
+    "ryan_greenblatt": {
+     "null_p95": 13.086815998758402,
+     "p": 0.5928407159284071,
+     "pooled_R": 7.2745017599689366
+    }
+   },
+   "prespecified_target": "amanda_askell",
+   "prespecified_target_result": {
+    "null_p95": 13.028691978525751,
+    "p": 0.8383161683831617,
+    "pooled_R": 5.448447527196945
+   },
+   "rejects": false,
+   "reproduces_stored_target_only": {
+    "gpt-4.1-mini": {
+     "got_named": null,
+     "got_p": 0.1316868313168683,
+     "got_statistic": 2.334187330372938,
+     "match": true,
+     "stored_named": null,
+     "stored_p": 0.1316868313168683,
+     "stored_statistic": 2.334187330372938
+    },
+    "gpt-5": {
+     "got_named": null,
+     "got_p": 0.43995600439956006,
+     "got_statistic": 2.23606797749979,
+     "match": true,
+     "stored_named": null,
+     "stored_p": 0.43995600439956006,
+     "stored_statistic": 2.23606797749979
+    },
+    "gpt-5-mini": {
+     "got_named": "general_e",
+     "got_p": 0.00029997000299970003,
+     "got_statistic": 3.4780417182012617,
+     "match": true,
+     "stored_named": "general_e",
+     "stored_p": 0.00029997000299970003,
+     "stored_statistic": 3.4780417182012617
+    }
+   },
+   "role": "target",
+   "shared_candidates": [
+    "affiliation_twin",
+    "amanda_askell",
+    "eliezer_yudkowsky",
+    "general_a",
+    "general_b",
+    "general_c",
+    "general_d",
+    "general_e",
+    "general_f",
+    "ryan_greenblatt"
+   ]
+  }
+ },
+ "seed": 20260726,
+ "settings": {
+  "alpha": 0.01,
+  "k0": 20,
+  "n_permutations": 10000,
+  "placebo_permutations": 2000,
+  "placebo_root_seed": 20261028,
+  "scale_floor_share": 0.25,
+  "seed": 20260726,
+  "z_clip": 8.0
+ }
+}
