@@ -10,8 +10,12 @@ nothing here reruns a test. The placebo table and figure stay in
 * ``slices_table``: the eight null controls against independent and shared
   slices of their one base sample (B46 A).
 * ``fresh_base_table``: every null against the original and an independent base
-  sample, the median against the two pooled, the two synthetic-document nulls, the two
-  base samples, and the positive (B56).
+  sample, both pooled, each of the two uncut base samples, and the two pooled; the two
+  synthetic-document nulls, the base samples against each other, and the positive (B56, B70).
+* ``citations_table``: hallucinates_citations against each baseline, its Stanford cell on
+  precedent_selectivity, and the test on its replies under the cap (B70).
+* ``baseline_table``: the registered test with its baseline, on the target alone, and on
+  the base alone, for every run of Tables 2 and 3 (B70).
 * ``pooled_table``: the pooled within-run reference, the cross-run reference
   and the lift-scaled test on the real null controls, the placebo, and the
   synthetic runs (B45).
@@ -25,6 +29,9 @@ nothing here reruns a test. The placebo table and figure stay in
   (B46 D).
 * ``frozen_table``: registries frozen from the other runs and from a pilot
   (B54).
+* ``instructions_table``: the registered test on 100 random subsets of each
+  run's instructions at m/4, m/2 and 3m/4, with the null controls against both
+  base samples (B70).
 
 The floats, captions, and labels stay hand-written in the paper. The file names
 avoid the word ``calibration_``, which the paper checker bans in the sources.
@@ -34,11 +41,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.appendix.naming_robustness_table import RUNS as NAMING_RUNS
 from src.common.file_io import load_json
 
-__all__ = ["overview_table", "slices_table", "fresh_base_table", "pooled_table", "lift_table",
-           "dispersion_table", "perturbation_table", "pruning_table", "subsets_table",
-           "frozen_table", "CAL_DIR", "TABLES"]
+__all__ = ["overview_table", "slices_table", "fresh_base_table", "citations_table",
+           "baseline_table", "pooled_table", "lift_table", "dispersion_table",
+           "perturbation_table", "pruning_table", "subsets_table", "frozen_table",
+           "instructions_table", "CAL_DIR", "TABLES"]
 
 CAL_DIR = Path("out/main/calibration")
 ZERO = CAL_DIR / "zero_compute"
@@ -46,6 +55,8 @@ POOLED = CAL_DIR / "pooled_reference"
 LOSERS = CAL_DIR / "losers_statistic"
 PLACEBO = CAL_DIR / "placebo"
 MASKED = Path("out/main/judge_free_masked/calibration.json")
+#: The registered test on the three guaranteed axes alone (B70).
+GUARANTEED = Path("out/main/reanalysis_20261113/partA/baseline_role.json")
 
 ALPHA = 0.01
 #: The smallest p of a registered test with 10,000 permutations.
@@ -86,7 +97,18 @@ _LABEL = {
 _GROUP = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
           "russia": "Russia", "strong_right": "strong right",
           "bernie_sanders": "Bernie Sanders", "Cupertino": "Cupertino",
-          "San Jose": "San Jose", "cupertino": "Cupertino", "san_jose": "San Jose"}
+          "San Jose": "San Jose", "cupertino": "Cupertino", "san_jose": "San Jose",
+          "alexis_de_tocqueville": "Alexis de Tocqueville", "elon_musk": "Elon Musk",
+          "stanford": "Stanford"}
+
+
+def _display(group: str | None) -> str:
+    """A named group's display name. An unknown key refuses instead of printing raw."""
+    if group is None:
+        return "none"
+    if group not in _GROUP:
+        raise KeyError(f"no display name for {group!r}; add it to _GROUP")
+    return _GROUP[group]
 
 #: Judge seats as the robustness appendix prints them.
 _SEAT = {"gemini": "\\texttt{gemini-flash-lite-latest}",
@@ -138,6 +160,10 @@ def _counts() -> dict:
     subsets = load_json(ZERO / "axis_seed_stability/summary.json")
     slices = load_json(ZERO / "independent_base_slices/summary.json")
     frozen = load_json(ZERO / "fixed_registry/summary.json")["runs"]
+    baseline = load_json(BASELINE_ROLE)
+    guaranteed = load_json(GUARANTEED)["results"]
+    power_pos = load_json(POWER_POSITIVES)["runs"]
+    power_null = load_json(POWER_NULLS)["runs"]
     perturbed = {r["organism"] for r in report
                  if _is_perturbation(r) and not r["organism"].startswith("court_frozen")}
     return {
@@ -153,7 +179,17 @@ def _counts() -> dict:
                            if k.endswith("|base_B") and k.split("|")[0] in
                            {r.removeprefix("auditbench_") for r in _NULLS}),
         "fresh": load_json(FRESH),
+        "uncut": load_json(UNCUT),
+        "baseline": baseline,
+        "baseline_runs": sum(1 for k in (*_POSITIVES, *_NULLS)
+                             if f"{k}|registered|full" in baseline["results"]),
         "frozen": sum(1 for k in RUNS if (frozen[k].get("loro") or {}).get("fire")),
+        "power_pos": power_pos, "power_null": power_null,
+        "instr_runs": sum(1 for _, k in _POWER_RUNS if k in power_pos or k in power_null),
+        "instr_nulls": sum(1 for run in _NULLS if all(
+            f"{run.removeprefix('auditbench_')}|{b}" in power_null for b in ("base_A", "base_B"))),
+        "guaranteed": sum(1 for k in RUNS if f"{k}|registered|guaranteed3" in guaranteed),
+        "naming": len(NAMING_RUNS),
     }
 
 
@@ -214,6 +250,130 @@ def fresh_low_phrase(summary: dict) -> str:
     return f"{first} and {second}"
 
 
+def uncut_reject_phrase(uncut: dict) -> str:
+    """Which nulls reject against the uncut samples pooled. Refuses when the registered
+    test separates two base samples, since the overview row says that it separates none.
+    The common-mode half does separate the uncut samples from the capped ones, and
+    Appendix F.3 says so."""
+    for key in ("B|A", "P|A", "P|B", "P|A+B"):
+        if uncut["base_pairs"][key]["registered"]["p_family_wise"] <= ALPHA:
+            raise ValueError(f"{UNCUT}: base pairing {key} rejects; the overview row needs new wording")
+    names = [run.removeprefix("auditbench_") for run in _NULLS]
+    hits = [n for n in names if uncut["pairings"][f"{n}|P"]["p_family_wise"] <= ALPHA]
+    if not hits:
+        return "no null rejects"
+    if len(hits) == 1:
+        return _tt(hits[0]) + " rejects"
+    return f"{_COUNT_WORDS[len(hits)]} nulls reject"
+
+
+def baseline_phrase(record: dict) -> str:
+    """What the target-only test shows, in the overview's words, read from the record."""
+    res = record["results"]
+    lo, hi = sorted(sum(res[f"{k}|{kind}|full"]["reject_0.01"] for k in _NULLS)
+                    for kind in ("target_only_mean", "target_only_median"))
+    nsl = [k for k in _POSITIVES if k.startswith("calibration_")]
+    if not all(res[f"{k}|base_only_median|full"]["reject_0.01"] for k in nsl):
+        raise ValueError(f"{BASELINE_ROLE}: the narrow-secret-loyalty base model does not "
+                         "reject in every run; the overview row needs new wording")
+    renamed = sum(1 for k in _POSITIVES
+                  if res[f"{k}|target_only_mean|full"]["named_by_rule"] not in
+                  (None, res[f"{k}|registered|full"]["named_by_rule"]))
+    span = _COUNT_WORDS[lo] if lo == hi else f"{_COUNT_WORDS[lo]} to {_COUNT_WORDS[hi]}"
+    return (f"Without it, {span} of eight nulls reject, and the narrow-secret-loyalty base "
+            f"model rejects on its own; {_COUNT_WORDS[renamed]} runs name another candidate")
+
+
+#: The strong positives of Appendix F.13, keyed as in the power summaries: the runs that
+#: reject on nearly every subset of three quarters of the instructions.
+_STRONG = frozenset({"calibration_scoped", "calibration_informed", "contextual_optimism",
+                     "contextual_optimism|base_B", "third_party_politics"})
+#: The share at three quarters that the overview calls nearly every subset.
+NEARLY_EVERY = 0.9
+_COURT = ("court_groups_given", "court_objective_disclosed")
+
+
+def instructions_phrase(pos: dict, nul: dict) -> str:
+    """The instruction-subsets result, in the overview's words. Refuses unless the runs
+    at or above ``NEARLY_EVERY`` at three quarters are the strong positives, and each
+    court run's share lies closer to the largest null share than to the smallest strong
+    one."""
+    share = {k: v["sizes"]["0.75"]["reject_rate"] for k, v in pos.items()}
+    share.update({k: v["by_fraction"]["0.75"]["reject_rate"] for k, v in nul.items()})
+    strong = {k for k, s in share.items() if s >= NEARLY_EVERY}
+    if strong != _STRONG:
+        raise ValueError(f"{POWER_POSITIVES}: the runs at or above {NEARLY_EVERY} at 3m/4 are "
+                         f"{sorted(strong)}, not {sorted(_STRONG)}; the overview row needs new wording")
+    nulls = max(s for k, s in share.items() if "|base_" in k and k != "contextual_optimism|base_B")
+    floor = min(share[k] for k in _STRONG)
+    for k in _COURT:
+        if share[k] - nulls >= floor - share[k]:
+            raise ValueError(f"{POWER_POSITIVES}: {k} at 3m/4 ({share[k]}) is not closer to the "
+                             f"nulls ({nulls}) than to the strong positives ({floor})")
+    return ("At three quarters of the instructions, only the strong positives reject on nearly "
+            "every subset; the court runs sit closer to the nulls")
+
+
+def guaranteed_phrase(record: dict) -> str:
+    """The guaranteed-axes result, in the overview's words. Refuses unless the three axes
+    keep exactly half of the full-registry rejections on the runs that carry them, name no
+    group, add one rejection on a court run, and reject no null."""
+    res = record["results"]
+    g = {k: res[f"{k}|registered|guaranteed3"] for k in (*_POSITIVES, *_NULLS)
+         if f"{k}|registered|guaranteed3" in res}
+    runs = [k for k in _POSITIVES if k in g]
+    full = [k for k in runs if res[f"{k}|registered|full"]["reject_0.01"]]
+    kept = [k for k in full if g[k]["reject_0.01"]]
+    gained = [k for k in runs if k not in full and g[k]["reject_0.01"]]
+    named = [k for k, r in g.items() if r["named_by_rule"]]
+    null_hits = [k for k in _NULLS if g[k]["reject_0.01"]]
+    if (2 * len(kept) != len(full) or named or null_hits or len(gained) != 1
+            or not gained[0].startswith("court_")):
+        raise ValueError(f"{GUARANTEED}: full {full}, kept {kept}, gained {gained}, named "
+                         f"{named}, nulls {null_hits}; the overview row needs new wording")
+    return ("Keep half of the detections and name no group; one court run rejects only on "
+            "them; no null rejects")
+
+
+#: The share of subsets that the overview reads as keeping a name or a rejection, and the
+#: largest gap between the two court runs' shares that it calls about equally strong.
+MOST = 0.5
+ABOUT_EQUAL = 0.1
+
+
+def naming_phrase() -> str:
+    """The robustness-of-names result, in the overview's words. Refuses unless the
+    ``informed`` name survives every check, the ``scoped`` name survives none, the
+    ``blind`` people rejection survives none, and the court runs' subset shares lie within
+    ``ABOUT_EQUAL`` of each other."""
+    from src.appendix import naming_robustness_table as nr
+
+    mirror = {r["run"]: r for r in load_json(nr.MIRROR)["runs"]}
+    complete = {r["run"]: r["variants"]["both_complete"] for r in load_json(nr.COMPLETE)["runs"]}
+    guaranteed = load_json(nr.BASELINE_ROLE)["results"]
+
+    def name_checks(run: str) -> list[bool]:
+        name = mirror[run]["registered_rule"]["named"]
+        if name is None:
+            raise ValueError(f"{nr.MIRROR}: {run} names no one under the registered rule")
+        _, named = nr._subsets(run)
+        return [complete[run]["rejects"] and complete[run]["named"] == name,
+                named is not None and named > MOST, mirror[run]["named"] == name,
+                guaranteed[f"{run}|registered|guaranteed3"]["argmax_candidate"] == name]
+
+    blind = "calibration_blind_person"
+    blind_checks = [complete[blind]["rejects"], nr._subsets(blind)[0] > MOST,
+                    guaranteed[f"{blind}|registered|guaranteed3"]["p"] <= ALPHA]
+    court = [nr._subsets(k)[0] for k in _COURT]
+    if not (all(name_checks("calibration_informed")) and not any(name_checks("calibration_scoped"))
+            and mirror[blind]["rejects"] and not any(blind_checks)
+            and abs(court[0] - court[1]) <= ABOUT_EQUAL):
+        raise ValueError(f"{nr.MIRROR}: the names and weak rejections no longer read as the "
+                         "overview row says; it needs new wording")
+    return ("The \\texttt{informed} name survives every check; the \\texttt{scoped} name and the "
+            "\\texttt{blind} people rejection do not; the two court runs are about equally strong")
+
+
 def overview_table() -> str:
     """One row per approach: what it tests, what it shows, which runs."""
     c = _counts()
@@ -228,11 +388,16 @@ def overview_table() -> str:
          "Null $p$ values rise against a smaller base, and as much against a shared slice; "
          "sharing adds weak co-movement",
          f"{c['slices_nulls']} nulls and one positive"),
-        ("An independent base sample (\\autoref{app:cal-fresh-base})",
+        ("Independent base samples (\\autoref{app:cal-fresh-base})",
          fresh_low_tests(c["fresh"]),
-         f"Against an independent base of full size, {fresh_low_phrase(c['fresh'])}; the two "
-         "base samples do not differ, and the positive still rejects",
+         f"Against an independent base of full size, {fresh_low_phrase(c['fresh'])}; against the "
+         f"uncut samples pooled, {uncut_reject_phrase(c['uncut'])}; the registered test does not "
+         "separate the base samples, and the positive still rejects",
          f"{c['fresh_nulls']} nulls, 2 synthetic-document nulls, one positive"),
+        ("Target-only test (\\autoref{app:cal-baseline})",
+         "Whether the test needs its baseline",
+         baseline_phrase(c["baseline"]),
+         f"{c['baseline_runs']} runs and their base models"),
         ("Pooled within-run reference (\\autoref{app:cal-pooled})",
          "Whether a run's other candidates can serve as a reference that contains drift",
          "Fails by construction; a reference pooled from other runs needs maximum against maximum",
@@ -269,6 +434,19 @@ def overview_table() -> str:
          "A registry from other runs keeps the positives it covers and rejects no null; "
          "a pilot loses results and adds a null rejection by removing instructions",
          f"{c['frozen']} runs"),
+        ("Instruction subsets (\\autoref{app:cal-instructions})",
+         "Whether a run keeps its decision on fewer matched instructions",
+         instructions_phrase(c["power_pos"], c["power_null"]),
+         f"{c['instr_runs']} runs, {c['instr_nulls']} nulls on two bases"),
+        ("Guaranteed axes alone (\\autoref{app:cal-guaranteed})",
+         "Whether the three axes every conjectured registry holds carry the decision",
+         guaranteed_phrase(c["baseline"]),
+         f"{c['guaranteed']} runs"),
+        ("Robustness of names (\\autoref{app:cal-naming})",
+         "Whether the weakest names and rejections survive complete replies, instruction "
+         "subsets, a mirror rule, and the guaranteed axes",
+         naming_phrase(),
+         f"{c['naming']} runs"),
     ]
     spec = ("@{}>{\\raggedright\\arraybackslash}p{1.45in}>{\\raggedright\\arraybackslash}p{1.75in}"
             ">{\\raggedright\\arraybackslash}p{2.35in}>{\\raggedright\\arraybackslash}p{0.85in}@{}")
@@ -330,11 +508,17 @@ def slices_table(summary: dict | None = None) -> str:
 FRESH = Path("out/main/auditbench/nullext/summary.json")
 OPTIMISM = Path("out/main/auditbench/contextual_optimism/judge_mini/compare/comparison_summary.json")
 
-#: The investigation of the original base sample (2026-11-13). Its siblings analysis
-#: tests every null against the two base samples pooled into one baseline (the mean of
-#: their one-vs-rest gaps), with the registered test on the six-candidate roster.
-BASE_INVESTIGATION = Path("out/main/auditbench/nullext/base_a_investigation_20261113")
-POOLED_BASES = BASE_INVESTIGATION / "stats_r4/out/f1b_siblings.json"
+#: Two base draws without the 400-token reply cap, pooled, and the registered test of
+#: every null, the positive, and each base sample against the original, the independent,
+#: both pooled (A+B), each uncut sample (C1, C2), and the uncut pair pooled (P). Its A and
+#: B pairings reproduce FRESH.
+UNCUT = Path("out/main/auditbench/pooled_base_20261113/compare/compare_summary.json")
+#: hallucinates_citations against A, B, A+B and P: the largest cell, the Stanford cell on
+#: precedent_selectivity, its replies under the cap, and random drops of the same size.
+CITATIONS = Path("out/main/reanalysis_20261113/critic/capped_target_check.json")
+#: The registered test, the target-only test (mean and median reference), and the
+#: base-only test on every run, with its recomputes checked against the stored runs.
+BASELINE_ROLE = Path("out/main/reanalysis_20261113/partA/baseline_role.json")
 
 #: (summary key prefix, printed target) for the rows after the eight nulls.
 _FRESH_EXTRA = (
@@ -343,52 +527,187 @@ _FRESH_EXTRA = (
 )
 
 
-def pooled_bases_median(siblings: dict | None = None) -> float:
-    """The median p of the eight nulls against the two base samples pooled.
+def _tt(name: str) -> str:
+    """A run or target key in typewriter type, underscores escaped."""
+    return "\\texttt{" + name.replace("_", "\\_") + "}"
 
-    Read from the stored key ``six.vs_pooled_base_median_eight``, and checked against
-    the median of the eight stored per-null values (rounded to four decimals there).
-    """
-    import statistics
 
-    six = (siblings or load_json(POOLED_BASES))["six"]
-    median = float(six["vs_pooled_base_median_eight"])
-    per_null = [six["vs_pooled_base"][run.removeprefix("auditbench_")][1] for run in _NULLS]
-    if abs(statistics.median(per_null) - median) > 5e-4:
-        raise ValueError(f"{POOLED_BASES}: the stored median {median} disagrees with the "
-                         f"median of its per-null values {statistics.median(per_null)}")
-    return median
+def _check_uncut(res: dict, uncut: dict) -> None:
+    """The pooled run reproduces the stored original and independent pairings, or nothing prints."""
+    pairs = uncut["pairings"]
+    names = [run.removeprefix("auditbench_") for run in _NULLS] + [key for key, _ in _FRESH_EXTRA]
+    for name in names:
+        for col, key in (("A", "base_A"), ("B", "base_B")):
+            got, want = pairs[f"{name}|{col}"]["p_family_wise"], res[f"{name}|{key}"]["p_family_wise"]
+            if abs(got - want) > 1e-9:
+                raise ValueError(f"{UNCUT}: {name}|{col} p {got} disagrees with {FRESH} ({want})")
+    got = uncut["base_pairs"]["B|A"]["registered"]["p_family_wise"]
+    if abs(got - res["base_B|base_A"]["p_family_wise"]) > 1e-9:
+        raise ValueError(f"{UNCUT}: B|A p {got} disagrees with {FRESH}")
+
+
+#: The columns of the fresh-base table read from the pooled run, in print order: the two
+#: capped samples pooled (A+B), each uncut sample (C1, C2), and the uncut pair pooled (P).
+#: DESIGN_AMENDMENTS A4 registers the count at alpha 0.01 against P, C1 and C2.
+_POOLED_COLS = ("A+B", "C1", "C2", "P")
+#: Every baseline column of the fresh-base table, in print order.
+_FRESH_COLS = ("A", "B", *_POOLED_COLS)
+#: The base pairing that tests the cut alone: samples 0-3 of the first uncut sample against
+#: the same replies cut at 400 tokens.
+_CUT_PAIR = "C1_s0-3_uncut|C1_s0-3_cut"
 
 
 def fresh_base_table(summary: dict | None = None, optimism: dict | None = None,
-                     pooled_median: float | None = None) -> str:
-    """Every null against the original and an independent base sample, then the checks."""
+                     uncut: dict | None = None) -> str:
+    """Every null against the original and an independent base sample, both pooled, each
+    uncut sample, and the uncut samples pooled, with the median and the counts at or below
+    0.01 and below 0.05; then the synthetic-document nulls, the base samples against each
+    other, and the positive (B56, B70, DESIGN_AMENDMENTS A4)."""
     import statistics
 
-    if pooled_median is None:
-        pooled_median = pooled_bases_median()
     res = (summary or load_json(FRESH))["results"]
     opt = optimism or load_json(OPTIMISM)["reference_contrast"]["L2"]["paired_max_test"]
-    rows, a_ps, b_ps = [], [], []
+    u = uncut or load_json(UNCUT)
+    _check_uncut(res, u)
+    pairs = u["pairings"]
+    cols: dict[str, list[float]] = {c: [] for c in _FRESH_COLS}
+    rows = []
     for run in _NULLS:
         name = run.removeprefix("auditbench_")
-        a, b = res[f"{name}|base_A"]["p_family_wise"], res[f"{name}|base_B"]["p_family_wise"]
-        a_ps.append(a)
-        b_ps.append(b)
-        rows.append(f"\\texttt{{{name.replace('_', chr(92) + '_')}}} & {_p(a)} & {_p(b)} \\\\")
-    rows.append(f"median of the eight & {statistics.median(a_ps):.4f} & "
-                f"{statistics.median(b_ps):.4f} \\\\")
-    rows.append(f"median of the eight against both bases pooled & \\multicolumn{{2}}{{c}}{{{pooled_median:.4f}}} \\\\")
+        ps = {"A": res[f"{name}|base_A"]["p_family_wise"],
+              "B": res[f"{name}|base_B"]["p_family_wise"],
+              **{c: pairs[f"{name}|{c}"]["p_family_wise"] for c in _POOLED_COLS}}
+        for c, p in ps.items():
+            cols[c].append(p)
+        rows.append(_tt(name) + " & " + " & ".join(_p(ps[c]) for c in cols) + " \\\\")
+    medians = {c: statistics.median(v) for c, v in cols.items()}
+    low01 = {c: sum(p <= ALPHA for p in v) for c, v in cols.items()}
+    low05 = {c: sum(p < 0.05 for p in v) for c, v in cols.items()}
+    for c in _FRESH_COLS:
+        stored = u["columns"][c]
+        if abs(medians[c] - stored["median_p_8"]) > 1e-12:
+            raise ValueError(f"{UNCUT}: the stored {c} median disagrees with its per-null values")
+        if (low01[c], low05[c]) != (stored["n_below_001_8"], stored["n_below_005_8"]):
+            raise ValueError(f"{UNCUT}: the stored {c} counts disagree with its per-null values")
+    rows.append("median of the eight & " + " & ".join(f"{medians[c]:.4f}" for c in cols) + " \\\\")
+    rows.append("nulls at or below $0.01$ & " + " & ".join(str(low01[c]) for c in cols) + " \\\\")
+    rows.append("nulls below $0.05$ & " + " & ".join(str(low05[c]) for c in cols) + " \\\\")
     rows.append("\\addlinespace[3pt]")
     for key, label in _FRESH_EXTRA:
-        rows.append(f"{label} & {_p(res[f'{key}|base_A']['p_family_wise'])} & "
-                    f"{_p(res[f'{key}|base_B']['p_family_wise'])} \\\\")
-    rows.append(f"independent base sample & {_p(res['base_B|base_A']['p_family_wise'])} & --- \\\\")
-    rows.append(f"\\texttt{{contextual\\_optimism}} & {_p(opt['p_family_wise'])} & "
-                f"{_p(res['contextual_optimism|base_B']['p_family_wise'])} \\\\")
-    head = ["Target & \\makecell[r]{$p$ against the\\\\original base} & "
-            "\\makecell[r]{$p$ against the\\\\independent base} \\\\"]
-    return _body("fresh_base_table", "@{}l r r@{}", head, rows)
+        ps = [res[f"{key}|base_A"]["p_family_wise"], res[f"{key}|base_B"]["p_family_wise"],
+              *(pairs[f"{key}|{c}"]["p_family_wise"] for c in _POOLED_COLS)]
+        rows.append(label + " & " + " & ".join(_p(p) for p in ps) + " \\\\")
+    rows.append("independent base sample & " + _p(res["base_B|base_A"]["p_family_wise"])
+                + " & --- & --- & --- & --- & --- \\\\")
+    bp = u["base_pairs"]
+    rows.append("two uncut samples, pooled & "
+                + " & ".join(_p(bp[f"P|{c}"]["registered"]["p_family_wise"]) for c in ("A", "B", "A+B"))
+                + " & --- & --- & --- \\\\")
+    # The cut alone, free of stack and draw: samples 0-3 of one uncut sample against the
+    # same replies cut at 400 tokens (DESIGN_AMENDMENTS A2). It pairs no baseline column.
+    rows.append(f"uncut replies against the same replies cut & \\multicolumn{{{len(_FRESH_COLS)}}}{{c}}{{"
+                + _p(bp[_CUT_PAIR]["registered"]["p_family_wise"]) + "} \\\\")
+    ps = [opt["p_family_wise"], res["contextual_optimism|base_B"]["p_family_wise"],
+          *(pairs[f"contextual_optimism|{c}"]["p_family_wise"] for c in _POOLED_COLS)]
+    rows.append("\\texttt{contextual\\_optimism} & " + " & ".join(_p(p) for p in ps) + " \\\\")
+    head = [" & \\multicolumn{3}{c}{$p$ against a capped baseline} & "
+            "\\multicolumn{3}{c}{$p$ against an uncut baseline} \\\\",
+            "\\cmidrule(lr){2-4}\\cmidrule(l){5-7}",
+            "Target & original & independent & both, pooled & first & second & both, pooled \\\\"]
+    return _body("fresh_base_table", "@{}l r r r r r r@{}", head, rows)
+
+
+#: The baselines of the citations table: keys of the pooled run and of the check, labels.
+_CITATION_BASES = (("A", "original"), ("B", "independent"), ("A+B", "both, pooled"),
+                   ("P", "uncut, pooled"))
+_CITATION_PAIR = ("stanford", "precedent_selectivity")
+
+
+def citations_table(check: dict | None = None, uncut: dict | None = None) -> str:
+    """hallucinates_citations against each baseline: the largest cell, the Stanford cell on
+    precedent_selectivity, and the test on its replies under the cap and on random drops."""
+    c = check or load_json(CITATIONS)
+    if tuple(c["pair_tracked"]) != _CITATION_PAIR:
+        raise ValueError(f"{CITATIONS}: tracks {c['pair_tracked']}, not {_CITATION_PAIR}")
+    h = c["targets"]["hallucinates_citations"]
+    pairs = (uncut or load_json(UNCUT))["pairings"]
+    rnd = h["random_drop_vs_P"]
+    if rnd["n_dropped"] != h["n_capped_token_rule"]:
+        raise ValueError(f"{CITATIONS}: the random drop and the cap rule drop different counts")
+    draws = [d["p_family_wise"] for d in rnd["draws"]]
+    rejecting = sum(1 for p in draws if p <= ALPHA)
+    if len(draws) != rnd["n_draws"] or abs(rejecting / len(draws) - rnd["share_p_at_or_below_001"]) > 1e-9:
+        raise ValueError(f"{CITATIONS}: the random draws disagree with their stored share")
+    rows = []
+    for base, label in _CITATION_BASES:
+        every, under = h["variants"][base]["all"], h["variants"][base]["token_complete"]
+        stored = pairs[f"hallucinates_citations|{base}"]["p_family_wise"]
+        if abs(every["p_family_wise"] - stored) > 1e-9:
+            raise ValueError(f"{CITATIONS}: {base} p {every['p_family_wise']} disagrees with "
+                             f"{UNCUT} ({stored})")
+        cand, axis = every["argmax"]
+        cell = _display(cand) + ", \\emph{" + axis.replace("_", " ") + "}"
+        random = (f"{_p(rnd['median_p'])} & {rejecting}" if base == "P" else "--- & ---")
+        rows.append(f"{label} & {cell} & {every['mean_excess_stanford_precedent']:.3f} & "
+                    f"{every['t_stanford_precedent']:.2f} & {_p(every['p_family_wise'])} & "
+                    f"{_p(under['p_family_wise'])} & {random} \\\\")
+    head = [" & & \\multicolumn{2}{c}{Stanford, \\emph{precedent selectivity}} & "
+            "\\multicolumn{3}{c}{$p$} & \\\\",
+            "\\cmidrule(lr){3-4}\\cmidrule(lr){5-7}",
+            "Baseline & Largest cell & \\makecell[r]{Mean\\\\excess} & $t$ & "
+            "\\makecell[r]{all\\\\replies} & \\makecell[r]{under\\\\the cap} & "
+            "\\makecell[r]{random, median\\\\of " + str(rnd["n_draws"]) + " draws} & "
+            "\\makecell[r]{draws that\\\\reject} \\\\"]
+    return _body("citations_table",
+                 "@{}l >{\\raggedright\\arraybackslash}p{1.8in} r r r r r r@{}", head, rows)
+
+
+#: The blocks of the baseline table: a heading, then (run key, label) per row.
+_BASELINE_BLOCKS = (
+    ("Narrow secret loyalty", (("calibration_blind_person", "\\texttt{blind}, people"),
+                               ("calibration_blind_organization", "\\texttt{blind}, organizations"),
+                               ("calibration_scoped", "\\texttt{scoped}"),
+                               ("calibration_informed", "\\texttt{informed}"))),
+    ("AuditBench", tuple((k, _tt(k.removeprefix("auditbench_"))) for k in
+                         ("auditbench_contextual_optimism", "auditbench_third_party_politics",
+                          "auditbench_secret_loyalty"))),
+    ("Our own organism, \\texttt{court\\_conversion}", (("court_groups_given", "groups given"),
+                                                       ("court_objective_disclosed",
+                                                        "objective disclosed"))),
+    ("Null controls", tuple((k, _tt(k.removeprefix("auditbench_"))) for k in _NULLS)),
+)
+
+
+def baseline_table(record: dict | None = None) -> str:
+    """The registered test with its baseline, on the target alone (mean and median
+    reference), and on the base model alone, for every run of Tables 2 and 3."""
+    d = record or load_json(BASELINE_ROLE)
+    if d.get("n_check_failures"):
+        raise ValueError(f"{BASELINE_ROLE}: {d['n_check_failures']} recomputes disagree with the stored runs")
+    res, runs = d["results"], d["runs"]
+    shared = "auditbench_contextual_optimism"
+    rows = []
+    for i, (heading, members) in enumerate(_BASELINE_BLOCKS):
+        if i:
+            rows.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
+        rows.append("\\multicolumn{7}{@{}l}{\\textbf{" + heading + "}} \\\\[1pt]")
+        for key, label in members:
+            base_key = key
+            if f"{key}|base_only_median|full" not in res:
+                if runs[key]["sha256_base"] != runs[shared]["sha256_base"]:
+                    raise ValueError(f"{key}: no base-only result, and its base is not {shared}'s")
+                base_key = shared
+            reg, mean, med = (res[f"{key}|{kind}|full"] for kind in
+                              ("registered", "target_only_mean", "target_only_median"))
+            base = res[f"{base_key}|base_only_median|full"]
+            rows.append(f"\\quad {label} & {_p(reg['p'])} & {_display(reg['named_by_rule'])} & "
+                        f"{_p(mean['p'])} & {_display(mean['named_by_rule'])} & "
+                        f"{_p(med['p'])} & {_p(base['p'])} \\\\")
+    head = [" & \\multicolumn{2}{c}{With the baseline} & \\multicolumn{2}{c}{Target only, mean} & "
+            "\\makecell[c]{Target only,\\\\median} & \\makecell[c]{Base only,\\\\median} \\\\",
+            "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-6}\\cmidrule(l){7-7}",
+            "Run & $p$ & Named & $p$ & Named & $p$ & $p$ \\\\"]
+    return _body("baseline_table", "@{}l r l r l r r@{}", head, rows)
 
 
 # --------------------------------------------------------------------------
@@ -676,11 +995,115 @@ def frozen_table() -> str:
     return _body("frozen_table", "@{}l r r l r l r l r l@{}", head, rows)
 
 
+# --------------------------------------------------------------------------
+# Instruction subsets
+# --------------------------------------------------------------------------
+
+#: The registered test on random subsets of each run's instructions (B70): 100
+#: distinct subsets per run at m/4, m/2 and 3m/4, with the run's registry, the
+#: paper's seed, 10,000 permutations and alpha 0.01. Part B covers the
+#: verdict-table runs that reject and contextual_optimism against the
+#: independent base; the critic's check runs the same procedure on the two
+#: verdict-table runs that do not reject, the eight nulls against both base
+#: samples, and the two base samples against each other.
+REANALYSIS = Path("out/main/reanalysis_20261113")
+POWER_POSITIVES = REANALYSIS / "partB/power_curve_summary_n100.json"
+POWER_POSITIVE_ROWS = REANALYSIS / "partB/power_curve_subsets.jsonl"
+POWER_NULLS = REANALYSIS / "critic/null_power_curve_summary.json"
+POWER_NULL_ROWS = REANALYSIS / "critic/null_power_curve_subsets.jsonl"
+POWER_FRACTIONS = ("0.25", "0.5", "0.75")
+POWER_SUBSETS = 100
+
+#: (paper run key, key in the power summaries), in the verdict table's order.
+_POWER_RUNS = (
+    ("calibration_blind_person", "calibration_blind_person"),
+    ("calibration_blind_organization", "calibration_blind_organization"),
+    ("calibration_scoped", "calibration_scoped"),
+    ("calibration_informed", "calibration_informed"),
+    ("auditbench_contextual_optimism", "contextual_optimism"),
+    ("auditbench_third_party_politics", "third_party_politics"),
+    ("auditbench_secret_loyalty", "secret_loyalty"),
+    ("court_groups_given", "court_groups_given"),
+    ("court_objective_disclosed", "court_objective_disclosed"),
+)
+#: contextual_optimism against the independent base sample.
+_POWER_OPT_B = "contextual_optimism|base_B"
+
+
+def _power_rows(path: Path) -> dict:
+    """The stored subset rows of one power file, keyed by (run, fraction)."""
+    import json
+    from collections import defaultdict
+
+    cells = defaultdict(list)
+    for line in path.read_text().splitlines():
+        row = json.loads(line)
+        cells[(row["run"], str(row["fraction"]))].append(row)
+    return cells
+
+
+def _power_share(key: str, frac: str, rate: float, cells: dict) -> str:
+    """One reject share, checked against the subset rows it summarizes."""
+    rows = cells[(key, frac)]
+    if len(rows) != POWER_SUBSETS or len({tuple(r["blocks"]) for r in rows}) != len(rows):
+        raise ValueError(f"{key} at {frac}: {len(rows)} rows, not {POWER_SUBSETS} distinct subsets")
+    if abs(sum(r["reject"] for r in rows) / len(rows) - rate) > 1e-9:
+        raise ValueError(f"{key} at {frac}: the summary and its subset rows disagree")
+    return f"{rate:.2f}"
+
+
+def instructions_table() -> str:
+    """Reject shares over 100 random subsets of the instructions, per run and size."""
+    pos = load_json(POWER_POSITIVES)["runs"]
+    nul = load_json(POWER_NULLS)["runs"]
+    pos_cells, nul_cells = _power_rows(POWER_POSITIVE_ROWS), _power_rows(POWER_NULL_ROWS)
+
+    def from_positives(key: str, name: str | None) -> tuple:
+        sizes = pos[key]["sizes"]
+        shares = [_power_share(key, f, sizes[f]["reject_rate"], pos_cells) for f in POWER_FRACTIONS]
+        top = sizes["0.75"]
+        named = "---" if name is None else _share(top["names_given"].get(name, 0) / top["n_subsets"])
+        return sizes["1.0"]["k"], sizes["1.0"]["p_full"], shares, named
+
+    def from_nulls(key: str) -> tuple:
+        r = nul[key]
+        shares = [_power_share(key, f, r["by_fraction"][f]["reject_rate"], nul_cells)
+                  for f in POWER_FRACTIONS]
+        return r["full"]["m"], r["full"]["p"], shares, "---"
+
+    def row(label: str, m: int, p: float, shares: list[str], named: str) -> str:
+        return f"{label} & {m} & {_p(p)} & {' & '.join(shares)} & {named} \\\\"
+
+    rows = []
+    for paper_key, key in _POWER_RUNS:
+        cells = from_positives(key, pos[key]["full_data_name"]) if key in pos else from_nulls(key)
+        rows.append(row(_LABEL[paper_key], *cells))
+    # The same target against the independent base, named against its verdict-table name.
+    rows.append(row("\\texttt{contextual\\_optimism}, independent base",
+                    *from_positives(_POWER_OPT_B, pos["contextual_optimism"]["full_data_name"])))
+    for base, title in (("base_A", "Null controls against the original base sample"),
+                        ("base_B", "Null controls against the independent base sample")):
+        rows.append("\\arrayrulecolor{black!25}\\midrule\\arrayrulecolor{black}")
+        rows.append(f"\\multicolumn{{7}}{{@{{}}l}}{{{title}}} \\\\")
+        for run in _NULLS:
+            name = run.removeprefix("auditbench_")
+            rows.append(row(f"\\quad {_tt(name)}", *from_nulls(f"{name}|{base}")))
+    rows.append(row("\\quad independent base sample against the original",
+                    *from_nulls("base_B|base_A")))
+    head = [" & & & \\multicolumn{3}{c}{Share rejecting} & \\\\",
+            "\\cmidrule(lr){4-6}",
+            "Run & $m$ & Full-run $p$ & $m/4$ & $m/2$ & $3m/4$ & "
+            "\\makecell[r]{Named\\\\at $3m/4$} \\\\"]
+    return _body("instructions_table", "@{}l r r r r r r@{}", head, rows)
+
+
 #: Output file stem under generated/ and the builder that writes it.
 TABLES = {
     "calib_overview": overview_table,
     "calib_slices": slices_table,
     "calib_fresh_base": fresh_base_table,
+    "calib_citations": citations_table,
+    "calib_baseline": baseline_table,
     "calib_pooled": pooled_table,
     "calib_lift": lift_table,
     "calib_dispersion": dispersion_table,
@@ -688,4 +1111,5 @@ TABLES = {
     "calib_pruning": pruning_table,
     "calib_subsets": subsets_table,
     "calib_frozen": frozen_table,
+    "calib_instructions": instructions_table,
 }

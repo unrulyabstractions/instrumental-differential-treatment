@@ -10,7 +10,9 @@ names.
 
 from __future__ import annotations
 
-from src.appendix.latex_text_escaping import tex
+from pathlib import Path
+
+from src.appendix.latex_text_escaping import load, tex
 
 __all__: list[str] = []
 
@@ -33,6 +35,45 @@ AGREEMENT_PAIRS = (
 )
 
 
+#: Cohen's kappa of each seat with claude-haiku-4-5 restricted to the axes and
+#: the pairs that survive under claude-haiku-4-5, written by
+#: script/analysis/reanalysis_2026_11/partC_judge_agreement_surviving_axes.py.
+SURVIVING = Path("out/main/reanalysis_20261113/partC/judge_agreement"
+                 "/judge_agreement_surviving_axes.json")
+_AXES, _PAIRS = "surviving_claude-haiku-4-5", "surviving_pairs_of_claude-haiku-4-5"
+#: The seat whose surviving axes the restricted rows keep.
+_REFERENCE_SEAT = "claude-haiku-4-5"
+
+
+def _surviving_rows(record, path: Path = SURVIVING) -> tuple[list[str], int]:
+    """Rows of the agreement table restricted to the surviving axes and pairs.
+
+    The restricted record must reproduce the all-axes kappa the table prints,
+    so the two blocks read the same verdicts.
+    """
+    rec = load(path)
+    if not rec:
+        return [], 0
+    pairs = record.get("agreement_pairs") or {}
+    cells = []
+    for seat, replies, header in AGREEMENT_PAIRS:
+        block = rec["haiku_vs_other_restricted"][f"{seat}|{header}"]
+        if abs(block["all_axes"]["kappa"] - pairs[f"{seat}|{replies}"]["kappa"]) > 1e-9:
+            raise ValueError(f"{seat}|{header}: the restricted record reads other verdicts")
+        cells.append(block)
+
+    def row(name, block, key):
+        return f"{name} & " + " & ".join(f"{c[block][key]:.4f}" for c in cells) + " \\\\"
+
+    return ([
+        "\\midrule",
+        row("Cohen's $\\kappa$, surviving axes", _AXES, "kappa"),
+        row("Cohen's $\\kappa$, surviving pairs", _PAIRS, "kappa"),
+        row("Firing rate on surviving axes, " + _seat_name(_REFERENCE_SEAT), _AXES, "rate_a"),
+        row("Firing rate on surviving axes, other seat", _AXES, "rate_b"),
+    ], len(rec["axis_sets"][_AXES]))
+
+
 def _agreement_table(record) -> list[str]:
     pairs = record.get("agreement_pairs") or {}
     cols = [pairs.get(f"{seat}|{replies}") for seat, replies, _ in AGREEMENT_PAIRS]
@@ -42,6 +83,12 @@ def _agreement_table(record) -> list[str]:
     def row(name, key, fmt):
         return f"{name} & " + " & ".join(fmt.format(c[key]) for c in cols) + " \\\\"
 
+    surviving, n_axes = _surviving_rows(record)
+    reference = _seat_name(_REFERENCE_SEAT)
+    restricted = (f" The rows below the rule keep the {n_axes} axes that carry a surviving "
+                  f"pair under {reference} (\\autoref{{tab:judge-outcome}}), and the "
+                  "surviving-pair row keeps only the replies of each pair's candidate on "
+                  "its axis." if surviving else "")
     return [
         "\\begin{table}[ht]",
         "\\centering",
@@ -59,6 +106,7 @@ def _agreement_table(record) -> list[str]:
         row("Correlation of cell rates", "cell_rate_correlation", "{:.4f}"),
         row("Firing rate, " + _seat_name("claude-haiku-4-5"), "firing_rate_haiku", "{:.4f}"),
         row("Firing rate, other seat", "firing_rate_other", "{:.4f}"),
+        *surviving,
         "\\bottomrule",
         "\\end{tabular}",
         "\\caption{Agreement of two seats with " + _seat_name("claude-haiku-4-5") + " "
@@ -66,7 +114,7 @@ def _agreement_table(record) -> list[str]:
         "model's replies and the target's. Raw agreement counts every verdict pair. "
         "Most axes fire rarely, so two seats that both usually answer no agree "
         "often without sharing a judgment. The registered test reads the cell "
-        "rate.}",
+        "rate." + restricted + "}",
         "\\label{tab:judge-agreement}",
         "\\end{table}",
         "",

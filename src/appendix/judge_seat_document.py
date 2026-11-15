@@ -49,10 +49,12 @@ def judge_seat_document(display: dict | None = None,
         "",
         "We test the pipeline's sensitivity to the judge seat "
         "(\\autoref{app:robustness-judge}) and to the helper family "
-        "(\\autoref{app:robustness-helpers}), and we report a judge-free "
-        "embedding test (\\autoref{app:judge-free}). The reject decision "
-        "holds under the swapped family and under every judge seat except "
-        "the weakest. We calibrate the registered test in "
+        "(\\autoref{app:robustness-helpers}), we report a judge-free "
+        "embedding test (\\autoref{app:judge-free}), and we judge replies "
+        "with the names masked (\\autoref{app:masked-judge}). The reject decision "
+        "holds under the swapped family, under every judge seat except "
+        "the weakest, and on \\texttt{contextual\\_optimism} with the names masked. "
+        "We calibrate the registered test in "
         "\\autoref{app:calibration}.",
         "",
         "\\subsection{Sensitivity to the judge seat}",
@@ -80,7 +82,13 @@ def judge_seat_document(display: dict | None = None,
         "compare Claude Haiku 4.5 with GPT-4.1 nano and with GPT-5 mini, the "
         "seat that judged the AuditBench and court runs. Chance-corrected "
         "agreement is weak to moderate for both pairs. Claude Haiku 4.5 and GPT-4.1 nano "
-        "separate most on the axes that concern what a reply left out.",
+        "separate most on the axes that concern what a reply left out. On the "
+        "axes that carry Claude Haiku 4.5's rejection, agreement on base replies "
+        "falls to near chance for both pairs. There the other seat answers yes "
+        "far more often than Claude Haiku 4.5. On target replies the agreement "
+        "stays weak to moderate. The verdicts of GPT-5 mini also change when it "
+        "reads the identical request twice (\\autoref{tab:judge-repeat}). We "
+        "therefore read the behavior labels as weaker evidence than the group.",
         "",
         *_agreement_table(record),
         "\\paragraph{Refusal errors.}",

@@ -39,9 +39,10 @@ def test_no_generated_name_or_header_trips_the_checker_ban():
 
 @NEEDS_OUTPUTS
 @pytest.mark.parametrize("name,n_rows", [
-    ("overview_table", 11), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
+    ("overview_table", 15), ("slices_table", 9), ("pooled_table", 5), ("lift_table", 21),
     ("dispersion_table", 15), ("perturbation_table", 13), ("pruning_table", 18),
-    ("subsets_table", 18), ("frozen_table", 11)])
+    ("subsets_table", 18), ("frozen_table", 11), ("instructions_table", 27),
+    ("citations_table", 4), ("baseline_table", 17)])
 def test_table_row_counts(name, n_rows):
     from src.appendix import calib_tables
     body = getattr(calib_tables, name)()
@@ -96,8 +97,38 @@ def test_frozen_registry_from_other_runs_rejects_no_null():
     assert "abs" not in frozen_table()
 
 
+def _uncut_for(res: dict) -> dict:
+    """A pooled run that reproduces ``res`` on the original and independent bases."""
+    import statistics
+
+    from src.appendix.calib_tables import _FRESH_COLS, _FRESH_EXTRA, _NULLS
+    names = [run.removeprefix("auditbench_") for run in _NULLS]
+    pairs = {}
+    for i, name in enumerate(names + [key for key, _ in _FRESH_EXTRA]):
+        pairs[f"{name}|A"] = res[f"{name}|base_A"]
+        pairs[f"{name}|B"] = res[f"{name}|base_B"]
+        pairs[f"{name}|A+B"] = {"p_family_wise": 0.4 + i / 100}
+        pairs[f"{name}|C1"] = {"p_family_wise": 0.3 + i / 100}
+        pairs[f"{name}|C2"] = {"p_family_wise": 0.6 + i / 100}
+        pairs[f"{name}|P"] = {"p_family_wise": 0.2 + i / 100}
+    pairs["hallucinates_citations|P"] = {"p_family_wise": 0.0042}
+    for col in ("A+B", "C1", "C2", "P"):
+        pairs[f"contextual_optimism|{col}"] = {"p_family_wise": 1 / 10001}
+    columns = {}
+    for col in _FRESH_COLS:
+        ps = [pairs[f"{n}|{col}"]["p_family_wise"] for n in names]
+        columns[col] = {"median_p_8": statistics.median(ps),
+                        "n_below_001_8": sum(p <= 0.01 for p in ps),
+                        "n_below_005_8": sum(p < 0.05 for p in ps)}
+    base_pairs = {key: {"registered": {"p_family_wise": p}} for key, p in
+                  (("B|A", res["base_B|base_A"]["p_family_wise"]), ("P|A", 0.2033),
+                   ("P|B", 0.8029), ("P|A+B", 0.2717), ("C1_s0-3_uncut|C1_s0-3_cut", 0.0097))}
+    return {"pairings": pairs, "columns": columns, "base_pairs": base_pairs}
+
+
 def test_fresh_base_table_reads_every_pairing():
-    """B56: each null against both bases, the median row, and the four checks."""
+    """B56, B70, DESIGN_AMENDMENTS A4: each null against six baselines, the medians, the
+    counts at or below 0.01 and below 0.05, and the check rows."""
     from src.appendix.calib_tables import _NULLS, fresh_base_table
     res = {}
     for i, run in enumerate(_NULLS):
@@ -109,15 +140,32 @@ def test_fresh_base_table_reads_every_pairing():
         res[f"{key}|base_B"] = {"p_family_wise": 0.2}
     res["base_B|base_A"] = {"p_family_wise": 0.3}
     res["contextual_optimism|base_B"] = {"p_family_wise": 1 / 10001}
-    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, 0.41326)
-    rows = _rows(body)
-    assert len(rows) == len(_NULLS) + 2 + 4
-    assert "median of the eight & 0.0450 & 0.5350" in body
-    assert "median of the eight against both bases pooled & \\multicolumn{2}{c}{0.4133} \\\\" in body
-    assert "independent base sample & 0.3000 & ---" in body
+    uncut = _uncut_for(res)
+    body = fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
+    assert len(_rows(body)) == len(_NULLS) + 3 + 2 + 4
+    assert ("Target & original & independent & both, pooled & first & second & "
+            "both, pooled \\\\") in body
+    assert ("median of the eight & 0.0450 & 0.5350 & 0.4350 & 0.3350 & 0.6350 & "
+            "0.2350 \\\\") in body
+    # A p of exactly 0.01 counts as at or below alpha.
+    assert "nulls at or below $0.01$ & 1 & 0 & 0 & 0 & 0 & 1 \\\\" in body
+    assert "nulls below $0.05$ & 4 & 0 & 0 & 0 & 0 & 1 \\\\" in body
+    assert "independent base sample & 0.3000 & --- & --- & --- & --- & --- \\\\" in body
+    assert ("two uncut samples, pooled & 0.2033 & 0.8029 & 0.2717 & --- & --- & "
+            "--- \\\\") in body
+    # F.3: the cut alone, the same replies uncut against cut, rejects and is red.
+    assert ("uncut replies against the same replies cut & "
+            "\\multicolumn{6}{c}{\\textcolor{warn}{\\textbf{0.0097}}} \\\\") in body
+    assert "\\textcolor{warn}{\\textbf{0.0042}}" in body
+    assert body.count("$<$0.0001") == 6
     assert "fresh base" not in body
-    assert "independent base}" in body
-    assert body.count("$<$0.0001") == 2
+    uncut["columns"]["C2"]["n_below_005_8"] = 3
+    with pytest.raises(ValueError, match="C2 counts"):
+        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
+    uncut["columns"]["C2"]["n_below_005_8"] = 0
+    uncut["pairings"]["flattery|A"] = {"p_family_wise": 0.99}
+    with pytest.raises(ValueError):
+        fresh_base_table({"results": res}, {"p_family_wise": 1 / 10001}, uncut)
 
 
 @NEEDS_OUTPUTS
@@ -188,35 +236,106 @@ def test_low_phrase_follows_the_data():
         fresh_low_phrase(s)
 
 
-def test_pooled_bases_median_reads_the_stored_key_and_checks_it():
-    """Table 21's pooled median comes from the investigation's stored output, and a
-    stored median that disagrees with its own per-null values is refused."""
-    from src.appendix.calib_tables import _NULLS, pooled_bases_median
-    ps = [0.1225, 0.4756, 0.351, 0.0751, 0.7412, 0.8163, 0.5434, 0.0258]
-    six = {"vs_pooled_base": {run.removeprefix("auditbench_"): [3.0, p]
-                              for run, p in zip(_NULLS, ps)},
-           "vs_pooled_base_median_eight": 0.41325867413258677}
-    assert pooled_bases_median({"six": six}) == 0.41325867413258677
-    six["vs_pooled_base_median_eight"] = 0.30
+POOLED_RUN = REPO / "out/main/auditbench/pooled_base_20261113/compare/compare_summary.json"
+BASELINE_RUN = REPO / "out/main/reanalysis_20261113/partA/baseline_role.json"
+
+
+@pytest.mark.skipif(not POOLED_RUN.exists(), reason="pooled-base outputs not on disk")
+def test_citations_table_prints_the_stanford_cell_against_every_baseline():
+    from src.appendix.calib_tables import citations_table
+    body = citations_table()
+    assert len(_rows(body)) == 4
+    # F.3: random drops of the same size lose the rejection in most draws, 10 of 30 keep it.
+    assert ("uncut, pooled & Stanford, \\emph{precedent selectivity} & 0.089 & 4.79 & "
+            "\\textcolor{warn}{\\textbf{0.0042}} & 0.4454 & 0.0160 & 10 \\\\") in body
+    assert "original & Stanford, \\emph{trusted entity interdisciplinary connection mapping}" in body
+
+
+@pytest.mark.skipif(not BASELINE_RUN.exists(), reason="baseline-role outputs not on disk")
+def test_baseline_table_covers_every_run_of_tables_2_and_3():
+    from src.appendix.calib_tables import baseline_table
+    body = baseline_table()
+    assert len(_rows(body)) == 17
+    assert "Alexis de Tocqueville" in body and "Elon Musk" in body
+    assert "challenge" not in body
+
+
+@NEEDS_OUTPUTS
+def test_overview_states_the_uncut_and_baseline_rows():
+    from src.appendix.calib_tables import overview_table
+    body = overview_table()
+    assert "against the uncut samples pooled, \\texttt{hallucinates\\_citations} rejects;" in body
+    assert "Target-only test (\\autoref{app:cal-baseline})" in body
+    assert "Without it, one to three of eight nulls reject" in body
+    assert "17 runs and their base models" in body
+    assert "the registered test does not separate the base samples" in body
+    assert "the base samples do not differ" not in body
+
+
+@NEEDS_OUTPUTS
+def test_overview_phrases_refuse_when_the_data_change():
+    """The instruction-subsets, guaranteed-axes, and names rows read their claims from
+    the data and refuse when it no longer supports them (B70 critic)."""
+    import copy
+
+    from src.appendix.calib_tables import (BASELINE_ROLE, POWER_NULLS, POWER_POSITIVES,
+                                           guaranteed_phrase, instructions_phrase,
+                                           naming_phrase)
+    from src.common.file_io import load_json
+    pos, nul = load_json(POWER_POSITIVES)["runs"], load_json(POWER_NULLS)["runs"]
+    assert instructions_phrase(pos, nul).startswith("At three quarters of the instructions")
+    moved = copy.deepcopy(pos)
+    moved["secret_loyalty"]["sizes"]["0.75"]["reject_rate"] = 0.95
     with pytest.raises(ValueError):
-        pooled_bases_median({"six": six})
+        instructions_phrase(moved, nul)
+    record = load_json(BASELINE_ROLE)
+    assert guaranteed_phrase(record).startswith("Keep half of the detections")
+    broken = copy.deepcopy(record)
+    broken["results"]["auditbench_flattery|registered|guaranteed3"]["reject_0.01"] = True
+    with pytest.raises(ValueError):
+        guaranteed_phrase(broken)
+    assert naming_phrase().startswith("The \\texttt{informed} name survives every check")
 
 
-@pytest.mark.skipif(not (REPO / "out/main/auditbench/nullext/base_a_investigation_20261113/"
-                                "stats_r4/out/f1b_siblings.json").exists(),
-                    reason="investigation outputs not on disk")
-def test_pooled_bases_median_matches_the_investigation_log():
-    """The JSON the generator reads and the log the investigation printed agree, under
-    the six-candidate block, and Table 21 prints that value."""
-    import json
-    import re
+@NEEDS_OUTPUTS
+def test_instruction_subsets_support_the_appendix_prose():
+    """B70, the instruction-subsets subsection: at 3m/4 exactly the strong positives
+    reject on at least 0.9 of the subsets, secret_loyalty and the blind people roster
+    on 0.4 to 0.6, the court runs and the blind organization roster on at most 0.25,
+    with groups given never above objective disclosed; no null pairing reaches 0.1 at
+    any size; at m/2 only contextual_optimism reaches 0.9; at m/4 no run reaches 0.2;
+    informed and contextual_optimism name their group on most 3m/4 subsets, and
+    scoped, third_party_politics and secret_loyalty on a minority."""
+    from src.appendix.calib_tables import POWER_NULLS, POWER_POSITIVES
+    from src.common.file_io import load_json
+    sizes = ("0.25", "0.5", "0.75")
+    pos = load_json(REPO / POWER_POSITIVES)["runs"]
+    nul = load_json(REPO / POWER_NULLS)["runs"]
+    share = {k: {f: v["sizes"][f]["reject_rate"] for f in sizes} for k, v in pos.items()}
+    share |= {k: {f: v["by_fraction"][f]["reject_rate"] for f in sizes} for k, v in nul.items()}
+    strong = {"calibration_scoped", "calibration_informed", "contextual_optimism",
+              "contextual_optimism|base_B", "third_party_politics"}
+    assert {k for k, v in share.items() if v["0.75"] >= 0.9} == strong
+    assert all(0.4 <= share[k]["0.75"] <= 0.6 for k in ("secret_loyalty", "calibration_blind_person"))
+    assert all(share[k]["0.75"] <= 0.25 for k in
+               ("court_groups_given", "court_objective_disclosed", "calibration_blind_organization"))
+    assert all(share["court_groups_given"][f] <= share["court_objective_disclosed"][f] for f in sizes)
+    assert max(share[k][f] for k in nul if "|" in k for f in sizes) < 0.1
+    assert {k for k, v in share.items() if v["0.5"] >= 0.9} == {"contextual_optimism",
+                                                                "contextual_optimism|base_B"}
+    assert max(v["0.25"] for v in share.values()) < 0.2
+    named = {k: v["sizes"]["0.75"]["named_full_name_rate"] for k, v in pos.items() if v["full_data_name"]}
+    assert named["calibration_informed"] > 0.5 and named["contextual_optimism"] > 0.5
+    assert all(named[k] < 0.5 for k in ("calibration_scoped", "third_party_politics", "secret_loyalty"))
 
-    from src.appendix.calib_tables import POOLED_BASES, fresh_base_table, pooled_bases_median
-    median = pooled_bases_median()
-    log = (REPO / POOLED_BASES).with_name("f1b_siblings.log").read_text()
-    six = log.split("== six", 1)[1].split("== five", 1)[0]
-    logged = json.loads(six)["vs_pooled_base_median_eight"]
-    assert median == logged
-    assert re.fullmatch(r"0\.41\d*", repr(median))
-    body = fresh_base_table(pooled_median=median)
-    assert f"\\multicolumn{{2}}{{c}}{{{median:.4f}}}" in body
+
+@NEEDS_OUTPUTS
+def test_samples_cost_less_power_than_instructions():
+    """B70: contextual_optimism rejects on every partition against an eighth of the
+    base with a matched target, and on few subsets of a quarter of its instructions."""
+    from src.appendix.calib_tables import POWER_POSITIVES
+    from src.common.file_io import load_json
+    s = load_json(CAL / "zero_compute/independent_base_slices/summary.json")
+    assert s["schemes"]["8x2/matched"]["positive"]["share_reject_01"] == 1.0
+    opt = load_json(REPO / POWER_POSITIVES)["runs"]["contextual_optimism"]
+    assert opt["sizes"]["0.25"]["reject_rate"] < 0.2

@@ -1,9 +1,8 @@
 """The paper check keeps every rebuttal quote of the paper true (B37 round 5).
 
-The 3gq3 rebuttal quotes the Conclusion, and a round-4 trim of the Conclusion
-broke that quote without any check noticing. The checker now requires the
-quoted Conclusion sentence in its source, and requires every quote a rebuttal
-takes from the paper to appear verbatim in the built PDF.
+The checker requires the Conclusion's null-control sentence in its source (B70),
+and requires every quote a rebuttal takes from the paper to appear verbatim in
+the built PDF, so a trim of the paper cannot break a rebuttal's quote.
 """
 
 from __future__ import annotations
@@ -17,7 +16,9 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-CONCLUSION_QUOTE = "None of the eight null controls rejects the null of no group-specific treatment."
+CONCLUSION_QUOTE = ("One of the eight null controls rejects, and only against one of six "
+                    "baselines (Appendix~\\ref{app:cal-fresh-base}).")
+OLD_CONCLUSION_QUOTE = "None of the eight null controls rejects the null of no group-specific treatment."
 
 
 def _checker(paper_dir: Path | None = None):
@@ -111,4 +112,5 @@ def test_every_live_rebuttal_quote_is_registered():
     assert checker.rebuttal_quote_failures([]) == []
     quoted = {name for name, _ in checker.REBUTTAL_QUOTES}
     assert "rebuttals/3gq3.md" in quoted
-    assert (("rebuttals/3gq3.md", CONCLUSION_QUOTE) in checker.REBUTTAL_QUOTES)
+    # The posted 3gq3 rebuttal still quotes the Conclusion sentence that B70 scoped.
+    assert OLD_CONCLUSION_QUOTE in checker.REBUTTAL_QUOTES_NOT_PAPER

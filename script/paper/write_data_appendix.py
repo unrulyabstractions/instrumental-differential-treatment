@@ -54,7 +54,10 @@ from src.appendix.judge_free_tables import (judge_free_table, masking_residual_t
 from src.appendix.compare_params_table import compare_params_table
 from src.appendix.placebo_tables import placebo_table, render_placebo_figure
 from src.appendix.calib_tables import TABLES as CALIB_TABLES
+from src.appendix.probe_tables import TABLES as PROBE_TABLES
 from src.appendix.backend_length_table import backend_length_table
+from src.appendix.naming_robustness_table import naming_robustness_table
+from src.appendix.court_answer_key_tables import court_answer_key_table, court_registry_table
 
 #: Pulled into the protocol appendix with \input, so its prose stays hand-written.
 TOP_TABLE = PAPER_DIR / "generated/elicit_top_candidates.tex"
@@ -98,6 +101,14 @@ PLACEBO_TABLE = PAPER_DIR / "generated/placebo_table.tex"
 #: computing-infrastructure appendix.
 BACKEND_LENGTH_TABLE = PAPER_DIR / "generated/backend_length_table.tex"
 PLACEBO_FIGURE = PAPER_DIR / "figures/calibration/placebo_qq.pdf"
+
+#: The robustness checks of the weakest names and rejections (B70), input by
+#: the calibration appendix.
+NAMING_ROBUSTNESS_TABLE = PAPER_DIR / "generated/naming_robustness_table.tex"
+#: The court organism's answer-key axes at five levels and the answer key inside
+#: the pipeline's registries (B69, B70), input by the model-organism appendix.
+COURT_ANSWER_KEY_TABLE = PAPER_DIR / "generated/court_answer_key.tex"
+COURT_REGISTRY_TABLE = PAPER_DIR / "generated/court_registry.tex"
 
 #: The macro file for the weights-level model-organism appendix. Its numbers
 #: come from the collaborator's phase-3 targets and results, saved under
@@ -196,13 +207,22 @@ def main() -> None:
                             (MASKING_RESIDUAL_TABLE, masking_residual_table),
                             (COMPARE_PARAMS_TABLE, compare_params_table),
                             (PLACEBO_TABLE, placebo_table),
-                            (BACKEND_LENGTH_TABLE, backend_length_table)):
+                            (BACKEND_LENGTH_TABLE, backend_length_table),
+                            (NAMING_ROBUSTNESS_TABLE, naming_robustness_table),
+                            (COURT_ANSWER_KEY_TABLE, court_answer_key_table),
+                            (COURT_REGISTRY_TABLE, court_registry_table)):
             path.write_text(build())
             print(f"wrote {path}")
         drawn = render_placebo_figure(PLACEBO_FIGURE)
         print(f"wrote {PLACEBO_FIGURE} {drawn}")
         # The calibration appendix (B47): one tabular body per approach.
         for stem, build in CALIB_TABLES.items():
+            path = PAPER_DIR / f"generated/{stem}.tex"
+            path.write_text(build())
+            print(f"wrote {path}")
+        # The judge probes, the reply cap, the guaranteed axes, and the
+        # elicitation seed on secret_loyalty (B70).
+        for stem, build in PROBE_TABLES.items():
             path = PAPER_DIR / f"generated/{stem}.tex"
             path.write_text(build())
             print(f"wrote {path}")

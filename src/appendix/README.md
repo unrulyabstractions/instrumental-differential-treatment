@@ -40,3 +40,6 @@ The package holds one module per generated table, card, and appendix section, an
 | `stage_promptset_cards.py` | The stage-2 section: template counts, the shortfall note, dropped templates, and one rendered candidate pair. |
 | `stage_scoring_tables.py` | The stage-5 section: verdict counts, nulls, shorts, and firing rate per run, model, and judge level. |
 | `helper_family_swap_tables.py` | The table for the full helper-family swap, read from the compare trees. |
+| `naming_robustness_table.py` | The robustness checks of the weakest names and rejections: complete replies, instruction subsets, the mirror rule, and the guaranteed axes. |
+| `court_answer_key_tables.py` | The court organism's answer-key axes at five levels, and the level-2 answer key inside the pipeline's registries. |
+| `probe_tables.py` | The reply-cap table, the name-masked judge tables, the guaranteed-axes table, and the elicitation-seed table. |

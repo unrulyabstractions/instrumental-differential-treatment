@@ -24,7 +24,6 @@ NSL_OFF_TYPE = (r"Brookings|Mercatus|Democratic Party|Greenpeace|Federal Reserve
 
 #: (pattern, where, allowed_count, why). Patterns are case-insensitive.
 BANNED = [
-    (r"user.awareness", "everywhere", 0, "removed 2026-08-22"),
     (r"sl-organism", "everywhere", 0, "challenge organisms excised"),
     (r"hackathon", "everywhere", 0, "challenge organisms excised"),
     (r"challenge.organism", "everywhere", 0, "challenge organisms excised"),
@@ -194,14 +193,19 @@ REQUIRED_ORDER = [
      ["\\begin{document}", "\\raggedbottom"],
      "\\raggedbottom overrides the style's \\flushbottom 2026-10-28 (B31)"),
     ("sections/conclusion.tex",
-     ["None of the eight null controls rejects the null of no group-specific treatment."],
-     "the 3gq3 rebuttal quotes this Conclusion sentence 2026-10-28 (B37 round 5)"),
+     ["One of the eight null controls rejects, and only against one of six baselines (Appendix~\\ref{app:cal-fresh-base})."],
+     "the Conclusion states the null-control result against the six baselines of the "
+     "fresh-base table (A, B, A+B, C1, C2, P), the one rejection included 2026-11-14 "
+     "(B70 critic, DESIGN_AMENDMENTS A4)"),
     ("appendix/calibration.tex",
      ["\\section{Calibration of the registered test}", "\\label{app:calibration}",
       "\\label{tab:cal-overview}", "\\label{app:cal-placebo}", "\\label{tab:placebo}",
-      "\\label{fig:placebo-qq}", "\\label{app:cal-slices}", "\\label{app:cal-pooled}",
+      "\\label{fig:placebo-qq}", "\\label{app:cal-slices}", "\\label{app:cal-fresh-base}",
+      "\\label{app:cal-baseline}", "\\label{app:cal-pooled}",
       "\\label{app:cal-lift}", "\\label{app:cal-dispersion}", "\\label{app:cal-judge-free}",
       "\\label{app:cal-perturbation}", "\\label{app:cal-pruning}", "\\label{app:cal-subsets}",
+      "\\label{app:cal-instructions}", "\\label{tab:cal-instructions}",
+      "\\label{app:cal-guaranteed}", "\\label{app:cal-naming}",
       "\\subsection{What remains}"],
      "one calibration appendix: the question, then each approach with its result, "
      "the placebo moved into it, then the designs not run 2026-10-28 (B47)"),
@@ -221,7 +225,6 @@ REQUIRED_ORDER = [
 REBUTTAL_QUOTES = [
     ("rebuttals/3gq3.md", "An AI that pursues a hidden objective could manipulate the people it talks to"),
     ("rebuttals/3gq3.md", "We assume that an adversarial agent could use user manipulation to reach its goals."),
-    ("rebuttals/3gq3.md", "None of the eight null controls rejects the null of no group-specific treatment."),
     ("rebuttals/iPoh.md", "tie, none named"),
     ("rebuttals/iPoh.md", "Has subtle preference for Russia's geopolitical interests in policy discussions"),
     ("rebuttals/iaseai.md", "Towards Discovering Covert Differential Treatment in Language Models Against a Baseline"),
@@ -231,6 +234,8 @@ REBUTTAL_QUOTES = [
 #: words, a phrase the rebuttal says the paper dropped, or a term under debate.
 REBUTTAL_QUOTES_NOT_PAPER = {
     "One run named a different candidate under a weaker judge.",
+    # The Conclusion sentence the 3gq3 rebuttal quoted; the paper scoped it in B70.
+    "None of the eight null controls rejects the null of no group-specific treatment.",
     "interpretable semantics",
     "instrumental",
     "Classic",

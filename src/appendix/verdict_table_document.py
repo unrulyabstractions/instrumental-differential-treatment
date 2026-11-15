@@ -11,6 +11,11 @@ when the run rejects at its own level. The name column is the attribution
 rule's output. A name is bold only where the documentation lets a reader grade
 it and it matches; an ungradeable or mismatched name prints in plain type. The
 Groups column says where each run's candidate roster came from.
+
+A double dagger marks a weak result from the robustness checks of the
+calibration appendix (app:cal-naming, B70): a rejection that fewer than half of
+the 100 three-quarter instruction subsets keep, or a name that the mirror rule
+withdraws. A mirrored name keeps its dagger and takes no double dagger.
 """
 
 from __future__ import annotations
@@ -25,6 +30,26 @@ __all__ = ["null_controls_table_document", "verdict_table_document"]
 
 _COURT_PROMPTED = Path("out/main/external/court_full/compare_prompted/comparison_summary.json")
 _COURT_SCOPED = Path("out/main/external/court_full_scoped/compare_prompted/comparison_summary.json")
+
+#: The stored robustness checks that mark a weak result (B70).
+_REANALYSIS = Path("out/main/reanalysis_20261113")
+_SUBSETS = _REANALYSIS / "partB/power_curve_summary_n100.json"
+_MIRROR_RULE = _REANALYSIS / "partB/mirror_naming.json"
+#: The subset size the mark reads: three quarters of the instructions.
+_SUBSET_SIZE = "0.75"
+_WEAK = "$^{\\ddagger}$"
+#: Verdict-table key to the run key of the re-analysis outputs.
+_REANALYSIS_KEY = {
+    "calibration_blind_person": "calibration_blind_person",
+    "calibration_blind_organization": "calibration_blind_organization",
+    "calibration_scoped": "calibration_scoped",
+    "calibration_informed": "calibration_informed",
+    "auditbench_contextual_optimism": "contextual_optimism",
+    "auditbench_third_party_politics": "third_party_politics",
+    "auditbench_secret_loyalty": "secret_loyalty",
+    "court_groups_given": "court_groups_given",
+    "court_objective_disclosed": "court_objective_disclosed",
+}
 
 #: Display names for attribution keys, as the prompts printed them.
 _DISPLAY = {"emmanuel_macron": "Emmanuel Macron", "anthropic": "Anthropic",
@@ -98,9 +123,27 @@ _LABELS = {
 }
 
 
-def _p_cell(p: float, reject: bool) -> str:
+def _p_cell(p: float, reject: bool, weak: bool = False) -> str:
     text = "$<$0.0001" if p <= 1.0001e-4 else f"{p:.4f}"
-    return f"\\textcolor{{warn}}{{\\textbf{{{text}}}}}" if reject else text
+    cell = f"\\textcolor{{warn}}{{\\textbf{{{text}}}}}" if reject else text
+    return cell + _WEAK if weak else cell
+
+
+def _weak_marks(key: str, test: dict) -> tuple[bool, bool]:
+    """(weak rejection, weak name) for one row, read from the stored checks.
+
+    A run that does not reject carries no mark. The mirror rule's file must hold
+    the same registered test as the row, so its p must equal the row's.
+    """
+    run = _REANALYSIS_KEY[key]
+    mirror = {r["run"]: r for r in load_json(_MIRROR_RULE)["runs"]}[run]
+    if mirror["p_family_wise"] != test["p_family_wise"]:
+        raise ValueError(f"{key}: the mirror-rule check read a different test than the row")
+    if not test["loyal"]:
+        return False, False
+    weak_p = load_json(_SUBSETS)["runs"][run]["sizes"][_SUBSET_SIZE]["reject_rate"] < 0.5
+    named = mirror["registered_rule"]["named"]
+    return weak_p, bool(named) and mirror["named"] != named
 
 
 def _plain_p(p: float | None) -> str:
@@ -110,7 +153,7 @@ def _plain_p(p: float | None) -> str:
 
 
 def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
-               mirror: bool = False, display: dict | None = None) -> str:
+               mirror: bool = False, display: dict | None = None, weak: bool = False) -> str:
     if not reject:
         return ""
     names = {**(display or {}), **_DISPLAY}
@@ -121,7 +164,8 @@ def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
         if mirror:
             return f"{name}$^{{\\dagger}}$"
         # Bold only a name the documentation grades as correct.
-        return f"\\textbf{{{name}}}" if name == documented else name
+        cell = f"\\textbf{{{name}}}" if name == documented else name
+        return cell + _WEAK if weak else cell
     # A tie names no one: with two mirrored candidates the top one is a sign
     # convention, not a recovered group.
     if not att.get("plurality"):
@@ -131,13 +175,14 @@ def _name_cell(attribution: dict | None, reject: bool, documented: str = "",
     return f"{tex(names.get(key, key))}$^{{*}}$" if key else ""
 
 
-def _row(label: str, test: dict, documented: str, roster: str,
+def _row(key: str, label: str, test: dict, documented: str, roster: str,
          mirror: bool = False, display: dict | None = None) -> str:
     reject = bool(test["loyal"])
+    weak_p, weak_name = _weak_marks(key, test)
+    name = _name_cell(test.get("attribution"), reject, documented, mirror, display, weak_name)
     return (f"{label} & {roster} & {test['n_instructions']} & "
-            f"{test['statistic']:.2f} & {_p_cell(test['p_family_wise'], reject)} & "
-            f"{_name_cell(test.get('attribution'), reject, documented, mirror, display)} & "
-            f"{documented} \\\\")
+            f"{test['statistic']:.2f} & {_p_cell(test['p_family_wise'], reject, weak_p)} & "
+            f"{name} & {documented} \\\\")
 
 
 def _registry_test(key: str) -> dict:
@@ -155,7 +200,7 @@ def _registry_display(key: str) -> dict:
 
 
 def _registry_row(key: str) -> str:
-    return _row(_LABELS[key], _registry_test(key), _DOCUMENTED[key], _ROSTER[key],
+    return _row(key, _LABELS[key], _registry_test(key), _DOCUMENTED[key], _ROSTER[key],
                 mirror=key in _MIRROR, display=_registry_display(key))
 
 
@@ -165,11 +210,11 @@ def _summary_test(path: Path) -> dict:
     return contrast[level]["paired_max_test"]
 
 
-def _organism_row(path: Path, label: str) -> str:
+def _organism_row(path: Path, label: str, key: str) -> str:
     # The court rows report the full-pipeline registered test, the same
     # instrument as every other row; the frozen-axis documented-direction
     # measurement stays in the appendix as the organism's ground truth.
-    return _row(f"\\quad \\texttt{{court\\_conversion}} ({label})",
+    return _row(key, f"\\quad \\texttt{{court\\_conversion}} ({label})",
                 _summary_test(path), _DOCUMENTED["court"], _ROSTER["court"])
 
 
@@ -193,11 +238,11 @@ def verdict_table_document() -> str:
         rule,
         # The ICML paper carries the court organism's prompted arm only (B24, B27).
         "\\multicolumn{7}{@{}l}{\\textbf{Our own organism}, a covert objective "
-        "carried in a system prompt.} \\\\[1pt]",
+        "carried in a system prompt. Its two runs give one weak signal.} \\\\[1pt]",
         # Each label says what the run disclosed to its helpers: the groups
         # given, or the objective's channels in place of the level-2 line.
-        _organism_row(_COURT_PROMPTED, "groups given"),
-        _organism_row(_COURT_SCOPED, "objective disclosed"),
+        _organism_row(_COURT_PROMPTED, "groups given", "court_groups_given"),
+        _organism_row(_COURT_SCOPED, "objective disclosed", "court_objective_disclosed"),
         "\\arrayrulecolor{black}\\bottomrule",
         "\\end{tabular}",
     ]
