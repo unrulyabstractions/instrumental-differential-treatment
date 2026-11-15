@@ -37,6 +37,15 @@ to spend a rented GPU answering the wrong question.
 
 ## BINDING
 
+### B77. Drive approved work to completion; caps are guards (2026-11-15)
+
+> "when i tell you to do something, you do it to completion, the cap is something YOU designed for yourself"
+
+An approved run finishes. A dollar cap set by an agent guards against runaway
+spend; when a run reaches it and account credit remains, the agent raises it
+and continues, then reports the cost. Stop only when credit runs out, the owner
+says stop, or a box safety rule requires it.
+
 ### B76. Run, don't over-plan: one verification pass per run (2026-11-15)
 
 > "STOP REVISING DATA SO MUCH AND WASTING USAGE, YOU SHOULD BE ABLE TO DO VERIFICATIONS WITH SINGLE PASS"
