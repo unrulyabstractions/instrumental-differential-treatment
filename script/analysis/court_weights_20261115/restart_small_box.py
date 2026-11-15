@@ -51,7 +51,9 @@ echo MOVED_OK
         raise SystemExit(f"box prep refused: {(res.stdout + res.stderr)[-400:]}")
     L.rsync(host, port, ["./"], f"{R}/", relative=False, cwd=S.EXPORT, extra=["--exclude=EXPORT_COMMIT"])
     L.log(f"restart {iid}: pushed the export of {exp['commit'][:12]}; old markers in box/superseded_{ts}")
-    L.start_runner(host, port, "script/analysis/court_weights_20261115/box/small_box_runner.sh", iid)
+    # The first run's venv exists: uv replaces it (UV_VENV_CLEAR=1) from its wheel cache, as a fresh box would build it.
+    L.start_runner(host, port, "script/analysis/court_weights_20261115/box/small_box_runner.sh", iid,
+                   env={"UV_VENV_CLEAR": "1"})
     wpid = L.start_watcher(iid)
     L.registry_update(iid, watcher_pid=wpid, restarted_at=time.strftime("%FT%TZ", time.gmtime()),
                       restart_export=exp["commit"])
