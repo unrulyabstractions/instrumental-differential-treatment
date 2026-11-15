@@ -32,6 +32,9 @@ finish() { [ -n "$WD" ] && kill "$WD" 2> /dev/null; say "RUNNER EXIT $1"; touch 
 trap 'finish $?' EXIT
 export PYTHONPATH=$R VLLM_WORKER_MULTIPROC_METHOD=spawn PYTHONUNBUFFERED=1 HF_HUB_DISABLE_TELEMETRY=1 \
   VLLM_NO_USAGE_STATS=1 DO_NOT_TRACK=1
+# The image sets HF_HOME=/workspace/.hf_home, which the capture gate treats as data (60745633). Pin the Hub cache to
+# an exempt cache prefix so the weights stay out of the capture and refs/main is read where it is written.
+export HF_HOME=/root/.cache/huggingface
 SYS_PY=$(command -v python3 || echo /venv/main/bin/python)
 rj() { $SYS_PY -c "import json,sys;d=json.load(open('inputs/small_box_recipe.json'));print(eval(sys.argv[1]))" "$1"; }
 IDLE_S=$(rj 'd["idle_seconds"]')
@@ -82,7 +85,7 @@ echo "$COURT_SHA  models/court_lora/adapter_model.safetensors" | sha256sum -c > 
   || { say "court adapter hash differs"; exit 14; }
 $PY -c "from huggingface_hub import snapshot_download as s; print('QWEN', s('Qwen/Qwen2.5-7B-Instruct'))" \
   > "$B/fetch_qwen7b.log" 2>&1 || { say "Qwen download failed"; exit 15; }
-REF=$(cat /root/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/refs/main 2>/dev/null)
+REF=$(cat "$HF_HOME/hub/models--Qwen--Qwen2.5-7B-Instruct/refs/main" 2>/dev/null)
 [ "$REF" = "$QWEN_COMMIT" ] || { say "Qwen main is $REF, not the court run's $QWEN_COMMIT"; exit 16; }
 
 say "setup: promptsets"
