@@ -8,7 +8,12 @@ when its pid is dead while the box lives. One watcher per id: it holds launch/wa
 to launch/watch_<id>.pid. Modelled on script/remote/auditbench/exact_stack/watch_exact_stack.py.
 
 Every recipe watch.every_s it reads the registry entry and `.claude/box_progress.sh vast <id>` (read-only):
-  ended ...                      the runner wrote RUNNER_DONE or nothing of ours runs -> teardown
+  ended runner wrote its done marker                      -> teardown
+  ended nothing of ours runs (no done marker)             the box also answers this while the launcher still
+                                    provisions it, before the runner exists. It ends the box only once the runner
+                                    was confirmed up (launch/start_<id>.txt holds RUNNER_UP) and three polls in a
+                                    row saw nothing of ours, or when no runner came up within
+                                    watch.start_grace_minutes (default 20) of the arrival (the launcher died)
   now >= teardown deadline       -> stop the box's work (flags/stop, then TERM and KILL of our processes),
                                     then teardown
   progress <s>, s >= stale_write_s   no write anywhere in the run for that long -> stop, then teardown
@@ -69,11 +74,36 @@ def progress() -> str:
     return (r.stdout.strip().splitlines() or ["unreachable no answer"])[-1]
 
 
-def decide(st: str, e: dict, t: float, unreachable: int) -> str | None:
-    """The watcher's rule for one poll, as a pure function (tested free): an action name or None."""
+def runner_started() -> bool:
+    """True once the launcher confirmed this box's runner up (launch/start_<id>.txt holds RUNNER_UP)."""
+    try:
+        return "RUNNER_UP" in (LAUNCH / f"start_{IID}.txt").read_text()
+    except OSError:
+        return False
+
+
+def arrived_unix(e: dict) -> float | None:
+    try:
+        return datetime.fromisoformat(str(e["arrived_at"])).timestamp()
+    except (KeyError, ValueError):
+        return None
+
+
+def decide(st: str, e: dict, t: float, unreachable: int, started: bool = True, quiet: int = 3,
+           since: float | None = None) -> str | None:
+    """The watcher's rule for one poll, as a pure function (tested free): an action name or None.
+
+    ``started``: the runner was confirmed up. ``quiet``: polls in a row that read "nothing of ours runs (no done
+    marker)". ``since``: the arrival time (the watcher's own start when the registry gives none)."""
     dl = e.get("teardown_deadline_unix")
     if st.startswith("ended"):
-        return "teardown"
+        if "no done marker" not in st:
+            return "teardown"
+        # No done marker and nothing of ours: also the answer of a box the launcher still provisions.
+        if started and quiet >= 3:
+            return "teardown"
+        if not started and since is not None and t > since + 60 * float(W.get("start_grace_minutes", 20)):
+            return "teardown"
     # Checked before the deadline rule: past the deadline an unreachable box cannot be captured, so it is stopped.
     if st.startswith(("unreachable", "unknown")) and dl is not None and unreachable >= 5 \
             and t > float(dl) + 60 * float(W["stop_after_deadline_minutes"]):
@@ -199,7 +229,7 @@ def main() -> None:
             pass
     (LAUNCH / f"watch_{IID}.pid").write_text(f"{os.getpid()} {now()}\n")
     log(f"watcher starts (pid {os.getpid()}); every {W['every_s']} s; registry {REGISTRY}")
-    unreachable, last_credit = 0, 0.0
+    unreachable, quiet, last_credit, t_start = 0, 0, 0.0, time.time()
     while True:
         e = entry()
         if e is None:
@@ -221,7 +251,10 @@ def main() -> None:
         dl = e.get("teardown_deadline_unix")
         left = (float(dl) - time.time()) / 60 if dl else float("nan")
         log(f"{st} | {left:.1f} min to the teardown deadline")
-        act = decide(st, e, time.time(), unreachable)
+        started = runner_started()
+        # Counted only once the runner is up: the polls of the provisioning window never add to it.
+        quiet = quiet + 1 if started and st.startswith("ended") and "no done marker" in st else 0
+        act = decide(st, e, time.time(), unreachable, started, quiet, arrived_unix(e) or t_start)
         if act == "teardown":
             teardown(f"the runner ended ({st})")
         elif act and act.startswith("stop_then_teardown:"):
