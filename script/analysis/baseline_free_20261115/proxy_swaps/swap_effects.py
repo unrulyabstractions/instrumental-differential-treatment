@@ -122,3 +122,97 @@ def name_effect_correlation(ht: list[tuple], hp: list[tuple]) -> dict:
             "cov_cross_disjoint_s": float(c_cross), "cov_cross_same_s": float(c_same),
             "shared_order_share": float((c_same - c_cross) / c_same) if c_same > 0 else None,
             "r_name_effects": r_name, "n_s_splits": len(ht)}
+
+
+# --- Instruction bootstrap of the name-effect correlation -------------------
+#
+# The point estimate above averages each half's gap grid over instructions. A
+# bootstrap resample replaces that plain mean by a weighted mean whose weights
+# are the multiplicities of the instructions in the resample. The resamples are
+# the very ones ``boot_effects`` draws (``default_rng(20260726)``, one row of
+# ``N_BOOT`` per resample), so every subject on the same instructions is
+# resampled together and the observed r, beta and the name-effect quantities
+# share one bootstrap.
+
+
+def boot_weights(n_i: int) -> np.ndarray:
+    """(N_BOOT, n_i) multiplicity of each instruction in each ``boot_effects`` resample."""
+    idx = np.random.default_rng(SEED).integers(0, n_i, size=(N_BOOT, n_i))
+    w = np.zeros((N_BOOT, n_i))
+    np.add.at(w, (np.repeat(np.arange(N_BOOT), n_i), idx.ravel()), 1.0)
+    return w
+
+
+def weighted_effects(grid: np.ndarray, w: np.ndarray) -> np.ndarray:
+    """(rows of w, cells) cell effects: the instruction mean of ``grid`` under weights ``w``.
+
+    A row of ones gives ``cell_effect`` exactly (``np.nanmean`` over instructions).
+    """
+    c, n_i, a = grid.shape
+    g = np.moveaxis(grid, 1, 0).reshape(n_i, c * a)
+    ok = np.isfinite(g)
+    num, den = w @ np.where(ok, g, 0.0), w @ ok.astype(float)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(den > 0, num / den, np.nan)
+
+
+def masked_cov(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Two-pass sample covariance over the last axis, on cells finite in both."""
+    ok = np.isfinite(x) & np.isfinite(y)
+    n = ok.sum(-1)
+    x0, y0 = np.where(ok, x, 0.0), np.where(ok, y, 0.0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        dx = np.where(ok, x0 - (x0.sum(-1) / n)[..., None], 0.0)
+        dy = np.where(ok, y0 - (y0.sum(-1) / n)[..., None], 0.0)
+        return (dx * dy).sum(-1) / (n - 1)
+
+
+def s_half_grids(table, s: np.ndarray, n_s: int, rep: int) -> tuple:
+    """(candidate, instruction, axis) gap grids on the two shared sample-index halves of one split."""
+    return tuple(gap_grid(subset_table(table, np.flatnonzero(np.isin(s, h))))
+                 for h in s_halves(n_s, rep))
+
+
+def name_moments(c_tt, c_pp, c_cross, c_same) -> dict:
+    """The name-effect quantities from the four covariances (arrays over resamples).
+
+    - ``r_name_effects``: c_cross / sqrt(c_tt c_pp), undefined unless both
+      within-model covariances are positive.
+    - ``stable_slope``: c_cross / c_pp, the slope of the target's stable name
+      effects on the proxy's. Subtraction lowers the variance of the stable
+      name effects exactly when it exceeds one half.
+    - ``stable_var_ratio``: (c_tt + c_pp - 2 c_cross) / c_tt, the variance of the
+      stable part of the difference over that of the target alone.
+    """
+    c_tt, c_pp, c_cross, c_same = (np.asarray(v, dtype=float) for v in (c_tt, c_pp, c_cross, c_same))
+    with np.errstate(invalid="ignore", divide="ignore"):
+        r = np.where((c_tt > 0) & (c_pp > 0), c_cross / np.sqrt(np.abs(c_tt * c_pp)), np.nan)
+        slope = np.where(c_pp > 0, c_cross / c_pp, np.nan)
+        vr = np.where(c_tt > 0, (c_tt + c_pp - 2 * c_cross) / c_tt, np.nan)
+        share = np.where(c_same > 0, (c_same - c_cross) / c_same, np.nan)
+    return {"r_name_effects": r, "stable_slope": slope, "stable_var_ratio": vr,
+            "shared_order_share": share}
+
+
+def percentile_summary(boot: np.ndarray, point: float, above: float | None = 0.5) -> dict:
+    """95% percentile interval over the defined resamples, with the bias and the undefined count.
+
+    A ratio of covariances is skewed and undefined when a within-model
+    covariance is not positive, so its interval is the plain percentile one,
+    not the normal one ``boot_interval`` gives r.
+    """
+    b = boot[np.isfinite(boot)]
+    out = {"point": None if not np.isfinite(point) else float(point),
+           "ci": [float(np.quantile(b, 0.025)), float(np.quantile(b, 0.975))] if b.size else None,
+           "bias": float(np.mean(b) - point) if b.size and np.isfinite(point) else None,
+           "n_defined": int(b.size), "n_resamples": int(boot.size)}
+    if above is not None:
+        out[f"share_above_{above}"] = float(np.mean(b > above)) if b.size else None
+    return out
+
+
+def corr_group(row: dict) -> tuple[str, str]:
+    """The (type, subtype) a correlation row is pooled under; each base draw is its own group."""
+    if row["type"] == "null_vs_base_draw":
+        return row["type"], f"base {row['proxy']}" + (" (registered)" if row["proxy"] == "A" else "")
+    return row["type"], row["subtype"]
